@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "open-clubmanager:build:production"
+              "buildTarget": "open-clubmanager:build:production"
             },
             "development": {
-              "browserTarget": "open-clubmanager:build:development"
+              "buildTarget": "open-clubmanager:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -75,7 +75,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "open-clubmanager:build"
+            "buildTarget": "open-clubmanager:build"
           }
         },
         "test": {
