@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import {PersistenceModule} from "../persistence.module";
-import {PersonRepository} from "../repository/person.repository";
-import {Person} from "../model/person";
+import { PersistenceModule } from '../persistence.module';
+import { PersonRepository } from '../repository/person.repository';
+import { Person } from '../model/person';
 
 @Injectable({
-  providedIn: PersistenceModule
+    providedIn: PersistenceModule,
 })
 export class PersonService {
+    constructor(private repository: PersonRepository) {}
 
-  constructor(private repository: PersonRepository) { }
-
-  getUser(email: string): Promise<Person|null> {
-    return this.repository.findByEmail(email);
-  }
+    getUser(email: string): Promise<Person | null> {
+        return this.repository.findByEmail(email);
+    }
 }

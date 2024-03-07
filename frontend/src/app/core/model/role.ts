@@ -1,8 +1,8 @@
 enum Role {
-  MEMBER,
-  BOARD,
-  TREASURER,
-  PRESS,
-  YOUTH_WARD,
-  SECRETARY
+    MEMBER,
+    BOARD,
+    TREASURER,
+    PRESS,
+    YOUTH_WARD,
+    SECRETARY,
 }
