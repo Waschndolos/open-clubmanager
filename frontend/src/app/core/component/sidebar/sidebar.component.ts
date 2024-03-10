@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgForOf } from '@angular/common';
-import { $localize } from '@angular/localize/init';
 
 export class Link {
     name: string;
