@@ -1,8 +1,5 @@
-
-  <div class="list-group">
-    <a href="#" class="list-group-item list-group-item-action active">Dashboard</a>
-    <a href="#" class="list-group-item list-group-item-action">Link 1</a>
-    <a href="#" class="list-group-item list-group-item-action">Link 2</a>
-    <a href="#" class="list-group-item list-group-item-action">Link 3</a>
-  </div>
-
+<div class="list-group">
+  <a [routerLink]="link.link" class="list-group-item list-group-item-action" [class.active]="activeIndex === i" (click)="updateIndex(i)" *ngFor="let link of links; let i = index;">
+    {{link.name}}
+  </a>
+</div>
