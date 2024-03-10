@@ -1,0 +1,19 @@
+$primary-dark: #0056b3;
+$success-dark: #1e7e34;
+$info-dark: #117a8b;
+$background: #000000;
+
+
+$theme-colors: (
+  "primary": $primary-dark,
+  "success": $success-dark,
+  "info": $info-dark,
+  "background": $background,
+  "text": #ffffff
+);
+
+.sidebar {
+  background-color: $background !important;
+}
+
+@import '../../node_modules/bootstrap/scss/bootstrap';

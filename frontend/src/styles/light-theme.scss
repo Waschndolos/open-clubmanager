@@ -1,0 +1,18 @@
+$primary: #003366;
+$success: #4CAF50;
+$info: #2196F3;
+$background: #FFFFFF;
+
+$theme-colors: (
+  "primary": $primary,
+  "success": $success,
+  "info": $info,
+  "background": $background,
+  "text": #000000
+);
+
+.sidebar {
+  background-color: $background !important;
+}
+
+@import '../../node_modules/bootstrap/scss/bootstrap';
