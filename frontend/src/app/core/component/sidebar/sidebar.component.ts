@@ -14,9 +14,9 @@ export class Link {
 @Component({
     selector: 'app-sidebar',
     standalone: true,
-    imports: [RouterLink, NgForOf],
     templateUrl: './sidebar.component.html',
     styleUrl: './sidebar.component.css',
+    imports: [RouterLink, NgForOf],
 })
 export class SidebarComponent implements OnInit {
     activeIndex: number = 0;
