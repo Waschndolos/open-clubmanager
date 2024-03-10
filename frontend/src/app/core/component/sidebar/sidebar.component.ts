@@ -24,7 +24,10 @@ export class SidebarComponent implements OnInit {
     links: Link[] = [];
 
     ngOnInit(): void {
-        this.links = [new Link('Home', '/'), new Link('Members', 'member')];
+        this.links = [
+            new Link($localize`Sidebar.Home`, '/'),
+            new Link($localize`Sidebar.Members`, 'member'),
+        ];
     }
 
     updateIndex(index: number): void {
