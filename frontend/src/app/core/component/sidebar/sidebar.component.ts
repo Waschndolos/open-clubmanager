@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgForOf } from '@angular/common';
+import { $localize } from '@angular/localize/init';
 
 export class Link {
     name: string;
@@ -24,7 +25,10 @@ export class SidebarComponent implements OnInit {
     links: Link[] = [];
 
     ngOnInit(): void {
-        this.links = [new Link('Home', '/'), new Link('Members', 'member')];
+        this.links = [
+            new Link($localize`Sidebar.Home`, '/'),
+            new Link($localize`Sidebar.Members`, 'member'),
+        ];
     }
 
     updateIndex(index: number): void {

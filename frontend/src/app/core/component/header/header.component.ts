@@ -11,7 +11,7 @@ import { ThemeService } from '../../service/theme.service';
 export class HeaderComponent {
     constructor(private themeService: ThemeService) {}
 
-    toggleMode(): void {
+    toggleTheme(): void {
         this.themeService.toggleDarkMode();
     }
 }

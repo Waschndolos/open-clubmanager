@@ -4,6 +4,12 @@
   "newProjectRoot": "projects",
   "projects": {
     "open-clubmanager": {
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "de-DE": "src/locale/messages.de.xlf"
+        }
+      },
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,6 +19,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "localize": ["de-DE"],
             "outputPath": "dist/open-clubmanager",
             "index": "src/index.html",
             "main": "src/main.ts",
