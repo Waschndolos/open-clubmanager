@@ -1,5 +1,7 @@
-<div class="list-group">
-  <a [routerLink]="link.link" class="list-group-item list-group-item-action" [class.active]="activeIndex === i" (click)="updateIndex(i)" *ngFor="let link of links; let i = index;">
-    {{link.name}}
+<div class="list-group list-group-flush">
+  <a [routerLink]="link.link" class="list-group-item list-group-item-action" [class.active]="activeIndex === i"
+     (click)="updateIndex(i)" *ngFor="let link of links; let i = index;">
+    {{ link.name }}
   </a>
 </div>
+
