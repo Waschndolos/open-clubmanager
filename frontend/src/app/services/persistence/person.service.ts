@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { PersistenceModule } from '../persistence.module';
-import { PersonRepository } from '../repository/person.repository';
-import { Person } from '../model/person';
+import { PersonRepository } from '../../repositories/domain/person.repository';
 
 @Injectable({
-    providedIn: PersistenceModule,
+    providedIn: 'root',
 })
 export class PersonService {
     constructor(private repository: PersonRepository) {}

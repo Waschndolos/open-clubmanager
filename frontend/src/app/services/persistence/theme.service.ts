@@ -1,5 +1,5 @@
 import { Injectable, OnInit } from '@angular/core';
-import { LocalStorageService } from '../../persistence/service/local-storage.service';
+import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
     providedIn: 'root',

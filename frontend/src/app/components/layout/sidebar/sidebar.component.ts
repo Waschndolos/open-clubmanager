@@ -15,7 +15,7 @@ export class Link {
     selector: 'app-sidebar',
     standalone: true,
     templateUrl: './sidebar.component.html',
-    styleUrl: './sidebar.component.css',
+    styleUrl: './sidebar.component.scss',
     imports: [RouterLink, NgForOf],
 })
 export class SidebarComponent implements OnInit {

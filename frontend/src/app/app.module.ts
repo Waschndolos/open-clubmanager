@@ -3,9 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './core/component/header/header.component';
-import { SidebarComponent } from './core/component/sidebar/sidebar.component';
-import { FooterComponent } from './core/component/footer/footer.component';
+import { HeaderComponent } from './components/layout/header/header.component';
+import { SidebarComponent } from './components/layout/sidebar/sidebar.component';
+import { FooterComponent } from './components/layout/footer/footer.component';
 
 @NgModule({
     declarations: [AppComponent],
