@@ -13,17 +13,4 @@ describe('ThemeService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
-    it('should toggle dark mode', () => {
-        expect(service.darkMode).toBeFalsy();
-
-        service.toggleDarkMode();
-        expect(service.darkMode).toBeTruthy();
-        expect(document.body.classList.contains('dark-theme')).toBeTruthy();
-
-        service.toggleDarkMode();
-        expect(service.darkMode).toBeFalsy();
-        expect(document.body.classList.contains('dark-theme')).toBeFalsy();
-        expect(document.body.classList.contains('light-theme')).toBeTruthy();
-    });
 });

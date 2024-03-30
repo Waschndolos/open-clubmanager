@@ -1,21 +1,28 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
+import { LocalStorageService } from '../../persistence/service/local-storage.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ThemeService {
-    darkMode: boolean = false;
-    constructor() {}
+export class ThemeService implements OnInit {
+    constructor(private localStorageService: LocalStorageService) {}
+
+    ngOnInit(): void {}
 
     toggleDarkMode(): void {
-        this.darkMode = !this.darkMode;
-
-        if (this.darkMode) {
-            document.body.classList.remove('light-theme');
-            document.body.classList.add('dark-theme');
+        if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
+            document.documentElement.setAttribute('data-bs-theme', 'light');
+            this.localStorageService.save('theme', 'light');
         } else {
-            document.body.classList.remove('dark-theme');
-            document.body.classList.add('light-theme');
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+            this.localStorageService.save('theme', 'dark');
         }
+    }
+
+    initTheme() {
+        let theme = this.localStorageService.load('theme', 'light');
+
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        this.localStorageService.save('theme', theme);
     }
 }
