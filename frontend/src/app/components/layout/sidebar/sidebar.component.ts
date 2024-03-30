@@ -1,14 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NgForOf } from '@angular/common';
+import { NgClass, NgForOf, NgIf } from '@angular/common';
 
-export class Link {
-    name: string;
-    link: string;
-    constructor(name: string, link: string) {
-        this.name = name;
-        this.link = link;
-    }
+interface NavItem {
+    displayName: string;
+    route?: string;
+    children?: NavItem[];
+    isOpen?: boolean;
 }
 
 @Component({
@@ -16,21 +14,34 @@ export class Link {
     standalone: true,
     templateUrl: './sidebar.component.html',
     styleUrl: './sidebar.component.scss',
-    imports: [RouterLink, NgForOf],
+    imports: [RouterLink, NgForOf, NgIf, NgClass],
 })
-export class SidebarComponent implements OnInit {
-    activeIndex: number = 0;
+export class SidebarComponent {
+    navItems: NavItem[] = [
+        { displayName: 'Home', route: '/' },
+        {
+            displayName: 'Members',
+            children: [
+                {
+                    displayName: 'Member overview',
+                    route: '/members',
+                },
+                { displayName: 'Member List', route: '/members/list' },
+            ],
+        },
+        { displayName: 'Kontakt', route: '/contact' },
+    ];
 
-    links: Link[] = [];
+    activeItem: NavItem | null = null;
 
-    ngOnInit(): void {
-        this.links = [
-            new Link($localize`Sidebar.Home`, '/'),
-            new Link($localize`Sidebar.Members`, 'member'),
-        ];
-    }
-
-    updateIndex(index: number): void {
-        this.activeIndex = index;
+    setActiveItem(item: NavItem | null, event?: Event) {
+        if (event) {
+            event.stopPropagation();
+        }
+        if (item && item.children && item.children.length) {
+            item.isOpen = !item.isOpen; // Submenü-Status umschalten
+        } else {
+            this.activeItem = item; // Setzen Sie das aktive Element, wenn es keine Kinder gibt
+        }
     }
 }
