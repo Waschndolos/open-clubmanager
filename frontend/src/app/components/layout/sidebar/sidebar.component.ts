@@ -18,18 +18,24 @@ interface NavItem {
 })
 export class SidebarComponent {
     navItems: NavItem[] = [
-        { displayName: 'Home', route: '/' },
+        { displayName: $localize`:@@menu_side_home:Home`, route: '/' },
         {
-            displayName: 'Members',
+            displayName: $localize`:@@menu_side_members:Members`,
             children: [
                 {
-                    displayName: 'Member overview',
+                    displayName: $localize`:@@menu_side_member_overview:Member overview`,
                     route: '/members',
                 },
-                { displayName: 'Member List', route: '/members/list' },
+                {
+                    displayName: $localize`:@@menu_side_member_list:Member list`,
+                    route: '/members/list',
+                },
             ],
         },
-        { displayName: 'Kontakt', route: '/contact' },
+        {
+            displayName: $localize`:@@menu_side_contact:Contact`,
+            route: '/contact',
+        },
     ];
 
     activeItem: NavItem | null = null;
@@ -39,9 +45,9 @@ export class SidebarComponent {
             event.stopPropagation();
         }
         if (item && item.children && item.children.length) {
-            item.isOpen = !item.isOpen; // Submenü-Status umschalten
+            item.isOpen = !item.isOpen;
         } else {
-            this.activeItem = item; // Setzen Sie das aktive Element, wenn es keine Kinder gibt
+            this.activeItem = item;
         }
     }
 }

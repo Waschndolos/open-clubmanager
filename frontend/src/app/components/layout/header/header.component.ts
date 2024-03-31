@@ -9,6 +9,7 @@ import { ThemeService } from '../../../services/persistence/theme.service';
     styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
+    title = $localize`:@@header_title:Open Clubmanager`;
     constructor(private themeService: ThemeService) {}
 
     toggleTheme(): void {

@@ -7,7 +7,6 @@ import { ThemeService } from './services/persistence/theme.service';
     styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-    title = 'open-clubmanager';
     constructor(private _themeService: ThemeService) {}
 
     ngOnInit(): void {

@@ -2,20 +2,52 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="5490868557630362952" datatype="html">
-        <source>Sidebar.Home</source>
-        <target>Start</target>
+      <trans-unit id="header_title" datatype="html">
+        <source>Open Clubmanager</source>
+        <target>Open Clubmanager</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/core/component/sidebar/sidebar.component.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="sourcefile">src/app/components/layout/header/header.component.ts</context>
+          <context context-type="linenumber">12</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4688723300635827615" datatype="html">
-        <source>Sidebar.Members</source>
+      <trans-unit id="menu_side_home" datatype="html">
+        <source>Home</source>
+        <target>Startseite</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/layout/sidebar/sidebar.component.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="menu_side_members" datatype="html">
+        <source>Members</source>
         <target>Mitglieder</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/core/component/sidebar/sidebar.component.ts</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="sourcefile">src/app/components/layout/sidebar/sidebar.component.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="menu_side_member_overview" datatype="html">
+        <source>Member overview</source>
+        <target>Übersicht</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/layout/sidebar/sidebar.component.ts</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="menu_side_member_list" datatype="html">
+        <source>Member list</source>
+        <target>Mitgliederliste</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/layout/sidebar/sidebar.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="menu_side_contact" datatype="html">
+        <source>Contact</source>
+        <target>Kontakt</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/layout/sidebar/sidebar.component.ts</context>
+          <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
     </body>
