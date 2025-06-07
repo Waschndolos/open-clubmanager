@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./clubmanager.db"
+}
+
+model Member {
+  id              Int           @id @default(autoincrement())
+  number          Int           @unique
+  firstName       String
+  lastName        String
+  email           String
+  birthday        String?
+  phone           String?
+  phoneMobile     String?
+  comment         String?
+  entryDate       String?
+  exitDate        String?
+  street          String?
+  postalCode      String?
+  city            String?
+  state           String?
+  accountHolder   String?
+  iban            String?
+  bic             String?
+  bankName        String?
+  sepaMandateDate String?
+  roles           Role[]        @relation("MemberRoles")
+  groups          Group[]       @relation("MemberGroups")
+  sections        ClubSection[] @relation("MemberSections")
+}
+
+model Role {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  members Member[] @relation("MemberRoles")
+}
+
+model Group {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  members Member[] @relation("MemberGroups")
+}
+
+model ClubSection {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  members Member[] @relation("MemberSections")
+}
