@@ -1,3 +1,5 @@
 prisma/*.db*
 node_modules
 /.env
+clubmanager.db
+dist/

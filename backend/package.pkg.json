@@ -1,0 +1,19 @@
+{
+  "name": "open-clubmanager",
+  "version": "1.0.0",
+  "bin": "dist/server.js",
+  "pkg": {
+    "scripts": ["../../backend/dist/**/*.js"],
+    "assets": [
+      "../frontend/dist/**/*",
+      "prisma/schema.prisma",
+      "clubmanager.db"
+    ],
+    "targets": [
+      "node18-win-x64",
+      "node18-linux-x64",
+      "node18-macos-x64"
+    ],
+    "outputPath": "../deployment/release"
+  }
+}

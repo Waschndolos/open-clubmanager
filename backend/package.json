@@ -4,7 +4,8 @@
   "type": "module",
   "main": "src/server.ts",
   "scripts": {
-    "dev": "ts-node src/server.ts",
+    "dev": "node --loader ts-node/esm src/server.ts",
+    "build": "tsc",
     "seed": "node --loader ts-node/esm prisma/seed.ts",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
@@ -22,6 +23,7 @@
     "@prisma/client": "^6.9.0",
     "better-sqlite3": "^11.10.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0"
   },
   "devDependencies": {
