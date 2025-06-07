@@ -1,5 +1,7 @@
 # Open ClubManager
 
+🚧 This project is currently under construction. Features and structure may change frequently. 🚧
+
 **Open ClubManager** is an open source web application for managing clubs. It features a modern React-based frontend and
 a TypeScript + SQLite backend powered by Prisma and Express. ClubManager is designed to be lightweight, self-hostable,
 and suitable for small to medium-sized clubs or associations.
