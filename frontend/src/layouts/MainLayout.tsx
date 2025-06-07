@@ -1,4 +1,4 @@
-import {Box, Grid} from '@mui/material';
+import {Box} from '@mui/material';
 import AppMenu from "../components/menu/AppMenu";
 import Content from "../components/content/Content";
 import Header from "../components/header/Header";

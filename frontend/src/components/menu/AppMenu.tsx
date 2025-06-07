@@ -2,8 +2,7 @@ import {Box, List, Typography} from "@mui/material";
 import AppMenuItem from "./AppMenuItem";
 import packageJson from '../../../package.json'
 import {useTranslation} from "react-i18next";
-import {Dashboard, Money, Person, Person2, Settings} from "@mui/icons-material";
-import {Finance} from "../finance/Finance";
+import {Dashboard, Money, Person2, Settings} from "@mui/icons-material";
 
 
 export default function AppMenu() {

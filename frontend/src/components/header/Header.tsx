@@ -1,5 +1,5 @@
 import {AppBar, Box, IconButton, Menu, MenuItem, Toolbar, Typography} from '@mui/material'
-import {DarkMode, LanguageOutlined, LanguageTwoTone, LightMode} from '@mui/icons-material'
+import {DarkMode, LanguageTwoTone, LightMode} from '@mui/icons-material'
 import {useThemeContext} from '../../theme/ThemeContext'
 import {useTranslation} from "react-i18next";
 import React, {useState} from "react";
