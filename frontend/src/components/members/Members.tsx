@@ -19,7 +19,7 @@ export default function Members() {
     const [search, setSearch] = useState("");
     const { t } = useTranslation();
     const filtered = members.filter((member) =>
-        Object.entries(member ?? {}).some(([_, value]) => {
+        Object.entries(member ?? {}).some(([ value]) => {
             if (Array.isArray(value)) {
                 return value.some((v) =>
                     typeof v.name === "string" && v.name.toLowerCase().includes(search.toLowerCase())
