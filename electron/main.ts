@@ -1,15 +1,22 @@
-import { app, BrowserWindow } from 'electron'
+import {app, BrowserWindow} from 'electron'
 import * as path from 'path'
-import { spawn } from 'child_process'
-import * as url from 'url'
+import {spawn} from 'child_process'
+import * as fs from 'fs'
 
 let mainWindow: BrowserWindow | null = null
 let backendProcess: ReturnType<typeof spawn> | null = null
-
+let hasWindowBeenCreated = false
 const isDev = !app.isPackaged
-
+console.log('🔁 main.ts executed!')
 function createWindow() {
-    if (mainWindow !== null) return
+    if (hasWindowBeenCreated) return;
+    if (mainWindow !== null) {
+        console.log('⚠️  createWindow called but mainWindow exists')
+        return
+    }
+    hasWindowBeenCreated = true
+
+    console.log('🪟 Creating new BrowserWindow...')
 
     mainWindow = new BrowserWindow({
         width: 1200,
@@ -18,14 +25,24 @@ function createWindow() {
             contextIsolation: true
         }
     })
+    mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+        console.error(`❌ Failed to load: ${errorCode} - ${errorDescription}`)
+    })
+    mainWindow.on('unresponsive', () => {
+        console.warn('⚠️ Window became unresponsive')
+    })
+
 
     if (isDev) {
-        mainWindow.loadURL('http://localhost:5173') // vite dev server
+        mainWindow.loadURL('http://localhost:5173')
     } else {
-        const indexPath = path.join(__dirname, '../frontend/dist/index.html')
-        mainWindow.loadURL(
-            url.pathToFileURL(indexPath).toString()
-        )
+        const indexPath = path.join(__dirname, '..', '..', 'frontend', 'dist', 'index.html')
+
+        if (fs.existsSync(indexPath)) {
+            mainWindow.loadFile(indexPath)
+        } else {
+            console.error('❌ index.html not found at', indexPath)
+        }
     }
 
     mainWindow.on('closed', () => {
