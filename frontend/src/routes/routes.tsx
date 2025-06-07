@@ -3,7 +3,7 @@ import NotFound from "../pages/NotFound";
 import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
 
-export let router = createBrowserRouter([
+export const router = createBrowserRouter([
     {
         path: "/",
         Component: MainLayout,
