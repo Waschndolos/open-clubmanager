@@ -27,9 +27,11 @@
     "create": "Create Member",
     "table": {
       "header": {
+        "id": "ID",
         "firstName": "Firstname",
         "lastName": "Lastname",
-        "email": "Email"
+        "email": "Email",
+        "actions": "Actions"
       }
     }
   }

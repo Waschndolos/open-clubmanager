@@ -9,21 +9,26 @@ type MemberTableProps = {
 
 export default function MemberTable({members}: MemberTableProps) {
     const { t } = useTranslation();
+    const visibleKeys = Object.keys(members[0]) as (keyof Member)[];
     return(
         <Paper>
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>{t("members.table.header.firstName")}</TableCell>
-                        <TableCell>{t("members.table.header.lastName")}</TableCell>
-                        <TableCell>{t("members.table.header.email")}</TableCell>
+                        {visibleKeys.map((key) => (
+                            <TableCell key={key}>{t("members.table.header." + key)}</TableCell>
+                        ))}
+                        <TableCell>{t("members.table.header.actions")}</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {members.map((member) => (
-                        <TableRow key={member.id}>
-                            <TableCell>{member.firstName}</TableCell>
-                            <TableCell>{member.email}</TableCell>
+                    {members.map((member,index) => (
+                        <TableRow key={index}>
+                            {visibleKeys.map((key)=> (
+                                <TableCell key={key as string}>
+                                    {formatValue(member[key])}
+                                </TableCell>
+                            ))}
                             <TableCell>
                                 <IconButton><Edit /></IconButton>
                                 <IconButton><Delete /></IconButton>
@@ -35,4 +40,11 @@ export default function MemberTable({members}: MemberTableProps) {
             </Table>
         </Paper>
     )
+}
+
+function formatValue(value: unknown): string {
+    if (value instanceof Date) return value.toLocaleDateString();
+    if (typeof value === "string" || typeof value === "number") return value.toString();
+    if (value === undefined || value === null) return "-";
+    return JSON.stringify(value);
 }

@@ -27,9 +27,11 @@
     "create": "Mitglied hinzufügen",
     "table": {
       "header": {
+        "id": "ID",
         "firstName": "Vorname",
         "lastName": "Nachname",
-        "email": "E-Mail"
+        "email": "E-Mail",
+        "actions": "Aktionen"
       }
     }
   }
