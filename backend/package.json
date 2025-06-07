@@ -9,7 +9,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "prisma:reset": "prisma migrate reset"
+    "prisma:reset": "prisma migrate reset",
+    "licenses": "license-checker --production --markdown > THIRD_PARTY_LICENSES.md"
   },
   "keywords": [],
   "author": "",

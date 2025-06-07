@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "licenses": "license-checker --production --markdown > THIRD_PARTY_LICENSES.md"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
