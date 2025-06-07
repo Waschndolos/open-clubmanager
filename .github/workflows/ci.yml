@@ -26,7 +26,10 @@ jobs:
       - name: Run TypeScript compiler
         run: npx tsc --noEmit
 
-      - name: (Optional) Run tests or seed script
+      - name: Run migrate deploy
+        run: npx prisma migrate deploy
+
+      - name: Run tests or seed script
         run: npm run seed
 
   frontend:
