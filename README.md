@@ -99,11 +99,8 @@ npx prisma studio
 
 Contributions, issues and feature requests are welcome!
 
-1. Fork this repository
-2. Create a new branch (`git checkout -b feature/my-feature`)
-3. Commit your changes (`git commit -m 'feat: add new feature'`)
-4. Push to the branch (`git push origin feature/my-feature`)
-5. Create a pull request
+For details, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 
 Please follow the [Code of Conduct](#-code-of-conduct) and submit only clean, tested code.
 
@@ -112,7 +109,7 @@ Please follow the [Code of Conduct](#-code-of-conduct) and submit only clean, te
 ## 📜 Code of Conduct
 
 This project and everyone participating in it is expected to adhere to
-the [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct).
+the [Contributor Covenant](CODE_OF_CONDUCT.md).
 
 Be respectful, inclusive, and constructive. We value every contribution, regardless of experience level, background, or
 role.
@@ -121,7 +118,11 @@ role.
 
 ## 📄 License
 
-This project is licensed under the [CC BY-NC 4.0 License](LICENSE).
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
+
+You may use, modify, and share the code non-commercially, provided you give appropriate credit. Commercial use is not permitted.
+
+For full terms, see the LICENSE file or visit https://creativecommons.org/licenses/by-nc/4.0/.
 
 ---
 
