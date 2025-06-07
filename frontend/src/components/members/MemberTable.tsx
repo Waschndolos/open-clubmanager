@@ -18,9 +18,12 @@ export default function MemberTable({members}: MemberTableProps) {
 
 
     return (
-        <Paper>
-            <Box sx={{overflow: "auto"}}>
-                <Table sx={{minWidth: 200}}>
+        <Paper sx={{height: "calc(100vh - 300px)", display: "flex", flexDirection: "column"}}>
+            <Box sx={{
+                flex: 1,
+                overflow: "auto",
+            }}>
+                <Table stickyHeader={true} sx={{minWidth: 200, maxHeight: 200}}>
                     <TableHead>
                         <TableRow>
                             {visibleKeys.map((key) => (
