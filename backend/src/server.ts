@@ -2,6 +2,7 @@ import express, {Request, Response} from 'express'
 import cors from 'cors'
 import memberRoutes from './routes/member.js'
 
+
 const app = express()
 
 console.log("Setup middlewares")
