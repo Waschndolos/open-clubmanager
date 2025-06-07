@@ -20,5 +20,19 @@
       "title": "Settings",
       "description": "Configure Open Clubmanager to suit your needs."
     }
+  },
+  "members": {
+    "title": "Member Management",
+    "search": "Search Member",
+    "create": "Create Member",
+    "table": {
+      "header": {
+        "id": "ID",
+        "firstName": "Firstname",
+        "lastName": "Lastname",
+        "email": "Email",
+        "actions": "Actions"
+      }
+    }
   }
 }

@@ -20,5 +20,19 @@
       "title": "Einstellungen",
       "description": "Konfiguriere dir Open Clubmanager so wie du es brauchst."
     }
+  },
+  "members": {
+    "title": "Mitgliederverwaltung",
+    "search": "Suche Mitglied",
+    "create": "Mitglied hinzufügen",
+    "table": {
+      "header": {
+        "id": "ID",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "email": "E-Mail",
+        "actions": "Aktionen"
+      }
+    }
   }
 }
