@@ -28,11 +28,31 @@
     "table": {
       "header": {
         "id": "ID",
-        "firstName": "Firstname",
-        "lastName": "Lastname",
+        "number": "Member Number",
+        "birthday": "Birthday",
+        "phone": "Phone",
+        "phoneMobile": "Mobile",
+        "comment": "Comment",
+        "entryDate": "Entry Date",
+        "exitDate": "Exit Date",
+        "street": "Street",
+        "postalCode": "Postal Code",
+        "city": "City",
+        "state": "State",
+        "accountHolder": "Account Holder",
+        "iban": "IBAN",
+        "bic": "BIC",
+        "bankName": "Bank Name",
+        "sepaMandateDate": "SEPA Mandate Date",
+        "roles": "Roles",
+        "groups": "Groups",
+        "sections": "Sections",
+        "firstName": "First Name",
+        "lastName": "Last Name",
         "email": "Email",
         "actions": "Actions"
       }
+
     }
   }
 }
