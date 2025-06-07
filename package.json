@@ -1,0 +1,43 @@
+{
+  "name": "open-clubmanager",
+  "version": "1.0.0",
+  "main": "electron/dist/main.js",
+  "scripts": {
+    "dev": "concurrently -k -n FRONTEND,BACKEND,ELECTRON -c yellow,cyan,green \"npm --prefix frontend run dev\" \"npm --prefix backend run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "build": "npm run build:frontend && npm run build:backend && npm run build:electron",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "npm --prefix backend run build && cp backend/clubmanager.db dist/",
+    "build:electron": "tsc --project electron/tsconfig.json",
+    "electron:dev": "electron .",
+    "dist": "mkdir dist -p && npm run build && electron-builder"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^29.4.6",
+    "electron-builder": "^24.13.3",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "appId": "org.clubmanager.app",
+    "productName": "ClubManager",
+    "files": [
+      "electron/",
+      "frontend/dist/",
+      "backend/dist/",
+      "backend/clubmanager.db"
+    ],
+    "extraResources": [
+      "backend/clubmanager.db"
+    ],
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

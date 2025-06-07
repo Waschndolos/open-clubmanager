@@ -1,0 +1,34 @@
+{
+  "appId": "org.clubmanager.app",
+  "productName": "Open ClubManager",
+  "copyright": "Copyright © 2025 Waschndolos",
+  "directories": {
+    "buildResources": "assets",
+    "output": "dist-electron"
+  },
+  "files": [
+    "electron/dist/**/*",
+    "frontend/dist/**/*",
+    "backend/dist/**/*",
+    "backend/clubmanager.db"
+  ],
+  "extraResources": [
+    {
+      "from": "backend/clubmanager.db",
+      "to": "clubmanager.db"
+    }
+  ],
+  "asar": true,
+  "mac": {
+    "target": ["dmg"],
+    "category": "public.app-category.productivity"
+  },
+  "win": {
+    "target": ["nsis"],
+    "publisherName": "Waschndolos"
+  },
+  "linux": {
+    "target": ["AppImage"],
+    "category": "Utility"
+  }
+}
