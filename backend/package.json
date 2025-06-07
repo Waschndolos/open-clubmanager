@@ -5,6 +5,7 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "ts-node src/server.ts",
+    "build": "tsc",
     "seed": "node --loader ts-node/esm prisma/seed.ts",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",

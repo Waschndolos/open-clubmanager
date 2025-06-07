@@ -4,10 +4,12 @@ import memberRoutes from './routes/member.js'
 
 const app = express()
 
+console.log("Setup middlewares")
 // Middlewares
 app.use(cors())
 app.use(express.json())
 
+console.log("Setup routes")
 // Routes
 app.use('/api/members', memberRoutes)
 

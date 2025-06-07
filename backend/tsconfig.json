@@ -7,11 +7,9 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "outDir": "dist",
-    "resolveJsonModule": true
+    "rootDir": "src"
   },
-  "ts-node": {
-    "esm": true
-  },
-  "include": ["src", "prisma"]
+  "include": ["src"]
 }
