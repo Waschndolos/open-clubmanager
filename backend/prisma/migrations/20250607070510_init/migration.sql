@@ -9,8 +9,8 @@ CREATE TABLE "Member" (
     "phone" TEXT,
     "phoneMobile" TEXT,
     "comment" TEXT,
-    "entryDate" TEXT,
-    "exitDate" TEXT,
+    "entryDate" DATETIME,
+    "exitDate" DATETIME,
     "street" TEXT,
     "postalCode" TEXT,
     "city" TEXT,
@@ -19,7 +19,7 @@ CREATE TABLE "Member" (
     "iban" TEXT,
     "bic" TEXT,
     "bankName" TEXT,
-    "sepaMandateDate" TEXT
+    "sepaMandateDate" DATETIME
 );
 
 -- CreateTable

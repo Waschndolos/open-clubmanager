@@ -1,12 +1,14 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "module",
+  "main": "src/server.ts",
   "scripts": {
     "dev": "ts-node src/server.ts",
-    "seed": "ts-node prisma/seed.ts",
+    "seed": "node --loader ts-node/esm prisma/seed.ts",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
+    "prisma:migrate:reset": "prisma migrate reset",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:reset": "prisma migrate reset",

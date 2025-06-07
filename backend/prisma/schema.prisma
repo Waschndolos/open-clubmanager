@@ -17,8 +17,8 @@ model Member {
   phone           String?
   phoneMobile     String?
   comment         String?
-  entryDate       String?
-  exitDate        String?
+  entryDate       DateTime?
+  exitDate        DateTime?
   street          String?
   postalCode      String?
   city            String?
@@ -27,7 +27,7 @@ model Member {
   iban            String?
   bic             String?
   bankName        String?
-  sepaMandateDate String?
+  sepaMandateDate DateTime?
   roles           Role[]        @relation("MemberRoles")
   groups          Group[]       @relation("MemberGroups")
   sections        ClubSection[] @relation("MemberSections")
