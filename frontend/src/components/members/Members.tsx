@@ -32,7 +32,7 @@ export default function Members() {
                     onChange={(e) => setSearch(e.target.value)}
                 />
                 <Button variant="contained" startIcon={<Add />}>
-                    Mitglied hinzufügen
+                    {t("members.create")}
                 </Button>
             </Box>
             <MemberTable members={filtered}/>

@@ -23,7 +23,8 @@
   },
   "members": {
     "title": "Member Management",
-    "search": "Search member",
+    "search": "Search Member",
+    "create": "Create Member",
     "table": {
       "header": {
         "firstName": "Firstname",

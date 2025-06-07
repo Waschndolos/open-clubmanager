@@ -24,6 +24,7 @@
   "members": {
     "title": "Mitgliederverwaltung",
     "search": "Suche Mitglied",
+    "create": "Mitglied hinzufügen",
     "table": {
       "header": {
         "firstName": "Vorname",
