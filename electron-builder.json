@@ -13,8 +13,11 @@
     "backend/dist/**/*",
     "backend/package.json"
   ],
-
   "extraResources": [
+    {
+      "from": "assets/clubmanager-icon.ico",
+      "to": "assets/clubmanager-icon.ico"
+    },
     {
       "from": "backend/clubmanager.db",
       "to": "clubmanager.db"
@@ -22,15 +25,15 @@
   ],
   "asar": true,
   "mac": {
-    "target": ["dmg"],
+    "target": "dmg",
     "category": "public.app-category.productivity"
   },
   "win": {
-    "target": ["nsis"],
+    "target": "nsis",
     "publisherName": "Waschndolos"
   },
   "linux": {
-    "target": ["AppImage"],
-    "category": "Utility"
+    "target": "AppImage",
+    "category": "Office"
   }
 }

@@ -1,6 +1,11 @@
 import {app, BrowserWindow} from 'electron';
 import * as path from 'path';
 
+const isDev = !app.isPackaged;
+const iconPath = isDev
+    ? path.join(__dirname, '..', '..', 'assets', 'clubmanager-icon.ico')
+    : path.join(process.resourcesPath, 'assets', 'clubmanager-icon.ico');
+
 let mainWindow: BrowserWindow | null = null;
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -39,11 +44,12 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
+        icon: iconPath,
         webPreferences: {
             contextIsolation: true,
         },
     });
-    const isDev = !app.isPackaged;
+
 
     if (isDev) {
         console.log(`Starting in dev mode`)
