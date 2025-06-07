@@ -5,7 +5,7 @@ import {RouterProvider} from "react-router";
 import { router } from "./routes/routes"
 import '@fontsource/roboto/300.css';
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RouterProvider router={router} />
   </StrictMode>,
