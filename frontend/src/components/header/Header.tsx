@@ -1,5 +1,5 @@
 import {AppBar, Box, IconButton, Menu, MenuItem, Toolbar, Typography} from '@mui/material'
-import {DarkMode, LightMode} from '@mui/icons-material'
+import {DarkMode, LanguageOutlined, LanguageTwoTone, LightMode} from '@mui/icons-material'
 import {useThemeContext} from '../../theme/ThemeContext'
 import {useTranslation} from "react-i18next";
 import React, {useState} from "react";
@@ -27,15 +27,15 @@ export default function Header() {
                 </Typography>
 
                 <Box display="flex" alignItems="center" gap={1}>
-                    <IconButton onClick={handleLanguageClick}>
-                        🌐
+                    <IconButton onClick={handleLanguageClick} color={"secondary"}>
+                        <LanguageTwoTone></LanguageTwoTone>
                     </IconButton>
                     <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
                         <MenuItem onClick={() => handleLanguageChange('de')}>🇩🇪 Deutsch</MenuItem>
                         <MenuItem onClick={() => handleLanguageChange('en')}>🇬🇧 English</MenuItem>
                     </Menu>
 
-                    <IconButton color="inherit" onClick={toggleTheme}>
+                    <IconButton onClick={toggleTheme} color={"secondary"}>
                         {mode === 'light' ? <DarkMode/> : <LightMode/>}
                     </IconButton>
                 </Box>

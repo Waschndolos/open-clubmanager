@@ -1,24 +1,27 @@
-import {ListItemButton, ListItemText} from "@mui/material";
+import {ListItemButton, ListItemIcon, ListItemText} from "@mui/material";
 import {useNavigate} from 'react-router-dom';
+import {ReactElement} from "react";
 
 type MenuItemProps = {
     label: string,
-    onClick?: () => void,
+    icon?: ReactElement
     link?: string
 };
 
-export default function AppMenuItem({label, link}: MenuItemProps) {
+export default function AppMenuItem({label, icon, link}: MenuItemProps) {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        if (link === 'dashboard') navigate('/dashboard');
-        else if (link === 'members') navigate('/members');
-        else if (link === 'finance') navigate('/finance');
-        else if (link === 'settings') navigate('/settings');
+        navigate(`${link}`)
     };
 
     return (
         <ListItemButton onClick={handleClick}>
+            {icon && (
+                <ListItemIcon>
+                    {icon}
+                </ListItemIcon>
+            )}
             <ListItemText primary={label}/>
         </ListItemButton>
     );

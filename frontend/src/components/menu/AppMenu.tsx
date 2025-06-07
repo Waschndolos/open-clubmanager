@@ -2,6 +2,8 @@ import {Box, List, Typography} from "@mui/material";
 import AppMenuItem from "./AppMenuItem";
 import packageJson from '../../../package.json'
 import {useTranslation} from "react-i18next";
+import {Dashboard, Money, Person, Person2, Settings} from "@mui/icons-material";
+import {Finance} from "../finance/Finance";
 
 
 export default function AppMenu() {
@@ -16,10 +18,10 @@ export default function AppMenu() {
             boxShadow: 2,
         }}>
             <List sx={{ flexGrow: 1 }}>
-                <AppMenuItem label={t('menu.dashboard')} link="dashboard"/>
-                <AppMenuItem label={t('menu.members')} link="members"/>
-                <AppMenuItem label={t('menu.finance')} link="finance"/>
-                <AppMenuItem label={t('menu.settings')} link="settings"/>
+                <AppMenuItem label={t('menu.dashboard')} icon={<Dashboard />} link="dashboard"/>
+                <AppMenuItem label={t('menu.members')} icon={<Person2/>} link="members"/>
+                <AppMenuItem label={t('menu.finance')} icon={<Money/>} link="finance"/>
+                <AppMenuItem label={t('menu.settings')} icon={<Settings/>} link="settings"/>
             </List>
 
             <Box sx={{ marginTop: 'auto' }}>
