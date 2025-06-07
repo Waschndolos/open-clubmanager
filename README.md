@@ -1,5 +1,7 @@
 # Open ClubManager
 
+[![CI](https://github.com/Waschndolos/open-clubmanager/actions/workflows/ci.yml/badge.svg)](https://github.com/Waschndolos/open-clubmanager/actions/workflows/ci.yml)
+
 🚧 This project is currently under construction. Features and structure may change frequently. 🚧
 
 **Open ClubManager** is an open source web application for managing clubs. It features a modern React-based frontend and
