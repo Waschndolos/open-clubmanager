@@ -1,5 +1,5 @@
 import {Box, Grid} from '@mui/material';
-import Menu from "../components/menu/Menu";
+import AppMenu from "../components/menu/AppMenu";
 import Content from "../components/content/Content";
 import Header from "../components/header/Header";
 
@@ -10,7 +10,7 @@ export default function MainLayout() {
             <Header />
             <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
                 <Box sx={{ width: '20%', borderRight: '1px solid #ddd' }}>
-                    <Menu />
+                    <AppMenu />
                 </Box>
                 <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
                     <Content />

@@ -1,0 +1,24 @@
+{
+  "menu": {
+    "dashboard": "Startseite",
+    "members": "Mitgliederverwaltung",
+    "finance": "Finanzen",
+    "settings": "Einstellungen"
+  },
+  "dashboard": {
+    "welcome": "Willkommen bei Open Clubmanager",
+    "description": "Die App zur einfachen Verwaltung von Mitgliedern, Finanzen und Vereinsdaten – direkt auf deinem PC.",
+    "members": {
+      "title": "Mitgliederverwaltung",
+      "description": "Erfasse, bearbeite und verwalte alle Mitglieder deines Vereins inklusive Gruppen, Rollen und SEPA-Daten."
+    },
+    "finance": {
+      "title": "Finanzen",
+      "description": "Behalte den Überblick über Mitgliedsbeiträge, Zahldaten und SEPA-Lastschriften."
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "description": "Konfiguriere dir Open Clubmanager so wie du es brauchst."
+    }
+  }
+}

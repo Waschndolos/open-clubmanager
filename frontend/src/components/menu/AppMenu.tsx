@@ -1,9 +1,11 @@
 import {Box, List, Typography} from "@mui/material";
-import MenuItem from "./MenuItem";
+import AppMenuItem from "./AppMenuItem";
 import packageJson from '../../../package.json'
+import {useTranslation} from "react-i18next";
 
 
-export default function Menu() {
+export default function AppMenu() {
+    const { t } = useTranslation();
     return (
         <Box sx={{
             display: 'flex',
@@ -14,9 +16,10 @@ export default function Menu() {
             boxShadow: 2,
         }}>
             <List sx={{ flexGrow: 1 }}>
-                <MenuItem label="Home" />
-                <MenuItem label="Members" />
-                <MenuItem label="Finance" />
+                <AppMenuItem label={t('menu.dashboard')} link="dashboard"/>
+                <AppMenuItem label={t('menu.members')} link="members"/>
+                <AppMenuItem label={t('menu.finance')} link="finance"/>
+                <AppMenuItem label={t('menu.settings')} link="settings"/>
             </List>
 
             <Box sx={{ marginTop: 'auto' }}>

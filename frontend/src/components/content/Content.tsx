@@ -1,4 +1,5 @@
 import {Box} from "@mui/material";
+import { Outlet } from "react-router";
 
 export default function Content() {
     return (
@@ -9,7 +10,7 @@ export default function Content() {
             padding: 4,
             boxShadow: 1,
         }}>
-            Content
+            <Outlet></Outlet>
         </Box>
     )
 }

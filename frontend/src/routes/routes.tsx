@@ -1,7 +1,10 @@
 import {createBrowserRouter} from "react-router";
 import NotFound from "../pages/NotFound";
-import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
+import Dashboard from "../components/dashboard/Dashboard";
+import Members from "../components/members/Members";
+import {Finance} from "../components/finance/Finance";
+import { Settings } from "../components/settings/Settings";
 
 export const router = createBrowserRouter([
     {
@@ -9,8 +12,20 @@ export const router = createBrowserRouter([
         Component: MainLayout,
         children: [
             {
-                index: true,
-                Component: Home,
+                path: "/dashboard",
+                Component: Dashboard,
+            },
+            {
+                path: "/members",
+                Component: Members
+            },
+            {
+                path: "/finance",
+                Component: Finance
+            },
+            {
+                path: "/settings",
+                Component: Settings
             },
             {
                 path: "*",
