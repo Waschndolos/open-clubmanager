@@ -6,9 +6,8 @@ export default function Content() {
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
-            width: '100%',
-            padding: 2,
-            boxShadow: 2,
+            padding: 4,
+            boxShadow: 1,
         }}>
             Content
         </Box>

@@ -9,7 +9,7 @@ export default function Header() {
         <AppBar position="static" color="primary">
             <Toolbar>
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                    ClubManager
+                   Open ClubManager
                 </Typography>
                 <IconButton color="inherit" onClick={toggleTheme}>
                     {mode === 'light' ? <DarkMode /> : <LightMode />}

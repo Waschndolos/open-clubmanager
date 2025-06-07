@@ -10,7 +10,7 @@ export default function Menu() {
             flexDirection: 'column',
             height: '100%',
             width: '100%',
-            padding: 2,
+            padding: 4,
             boxShadow: 2,
         }}>
             <List sx={{ flexGrow: 1 }}>

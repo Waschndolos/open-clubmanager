@@ -6,18 +6,16 @@ import Header from "../components/header/Header";
 
 export default function MainLayout() {
     return (
-        <>
-            <Header/>
-            <Box sx={{width: '100vw', height: '100vh', flexGrow: 1, padding: "3rem", overflow: 'hidden'}}>
-                <Grid container spacing={2}>
-                    <Grid size={3}>
-                        <Menu></Menu>
-                    </Grid>
-                    <Grid size={9}>
-                        <Content></Content>
-                    </Grid>
-                </Grid>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
+            <Header />
+            <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
+                <Box sx={{ width: '20%', borderRight: '1px solid #ddd' }}>
+                    <Menu />
+                </Box>
+                <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+                    <Content />
+                </Box>
             </Box>
-        </>
+        </Box>
     );
 }
