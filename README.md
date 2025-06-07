@@ -35,7 +35,7 @@ and suitable for small to medium-sized clubs or associations.
 
 ```
 /clubmanager
-├── frontend/        # React client
+├── assets/          # Assets for the electron build
 ├── backend/         # Express API + Prisma + SQLite
 │   ├── src/
 │   │   ├── server.ts
@@ -44,6 +44,8 @@ and suitable for small to medium-sized clubs or associations.
 │   │   ├── schema.prisma
 │   │   ├── migrations/
 │   │   └── seed.ts
+├── electron/        # Electron build
+├── frontend/        # React client
 ```
 
 ---
