@@ -32,7 +32,7 @@ export default function Members() {
 
 
     useEffect(() => {
-        fetch("http://localhost:3001/api/members") // ⇐ deine API-URL
+        fetch("http://localhost:3001/api/members")
             .then((res) => {
                 if (!res.ok) throw new Error("Error fetching members.");
                 return res.json();
