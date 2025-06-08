@@ -5,19 +5,50 @@ import MemberTable from "./MemberTable";
 import {Member} from "./types";
 import {Add, Clear} from "@mui/icons-material";
 import {useEffect, useState} from "react";
+import {EditMemberDialog} from "./EditMemberDialog";
 
 const mockMembers: Member[] = [
     {id: 1, firstName: "Anna", lastName: "Müller", email: "anna@example.com"},
     {id: 2, firstName: "Max", lastName: "Meier", email: "max@example.com"},
 ];
 
-export default function Members() {
-    const [members, setMembers] = useState<Member[]>(mockMembers);
+export function createEmptyMember(): Member {
+    return {
+        id: 0,
+        email: "",
+        number: 0,
+        firstName: "",
+        lastName: "",
+        birthday: "",
+        phone: "",
+        phoneMobile: "",
+        comment: "",
+        entryDate: undefined,
+        exitDate: undefined,
+        street: "",
+        postalCode: "",
+        city: "",
+        state: "",
+        accountHolder: "",
+        iban: "",
+        bic: "",
+        bankName: "",
+        sepaMandateDate: undefined,
+        roles: [],
+        groups: [],
+        sections: []
+    };
+}
 
+
+export default function Members() {
+    const {t} = useTranslation();
+    const [members, setMembers] = useState<Member[]>(mockMembers);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState("");
-    const {t} = useTranslation();
+    const [newMemberDialogOpen, setNewMemberDialogOpen] = useState(false);
+
     const filtered = members.filter((member) =>
         Object.values(member ?? {}).some((value) => {
             if (Array.isArray(value)) {
@@ -34,8 +65,7 @@ export default function Members() {
         setMembers(prev => prev.map(m => m.id === updated.id ? updated : m));
     };
 
-
-    useEffect(() => {
+    const fetchMembers = () => {
         fetch("http://localhost:3001/api/members")
             .then((res) => {
                 if (!res.ok) throw new Error("Error fetching members.");
@@ -44,7 +74,28 @@ export default function Members() {
             .then((data: Member[]) => setMembers(data))
             .catch((err) => setError(err.message))
             .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        fetchMembers();
     }, []);
+
+    const handleMemberCreated = async (member: Member) => {
+        try {
+            const res = await fetch("http://localhost:3001/api/members", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(member),
+            });
+
+            if (!res.ok) throw new Error("Error creating member.");
+            fetchMembers();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setNewMemberDialogOpen(false);
+        }
+    };
 
     if (loading) return <CircularProgress/>;
     if (error) return <Typography color="error">{error}</Typography>;
@@ -77,11 +128,19 @@ export default function Members() {
                         }
                     }}
                 />
-                <Button variant="contained" startIcon={<Add/>}>
+                <Button variant="contained" startIcon={<Add/>} onClick={() => setNewMemberDialogOpen(true)}>
                     {t("members.create")}
                 </Button>
             </Box>
             <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated}/>
+            {newMemberDialogOpen && (
+                <EditMemberDialog
+                    member={createEmptyMember()}
+                    isNew
+                    onClose={() => setNewMemberDialogOpen(false)}
+                    onSave={handleMemberCreated}
+                />
+            )}
         </Box>
 
     )

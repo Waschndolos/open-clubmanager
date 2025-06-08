@@ -26,9 +26,18 @@
     "save": "Speichern"
   },
   "members": {
-    "edit": {
-      "title": "Mitglied editieren"
+    "dialogs":  {
+      "validation": {
+        "emailRequired": "Email ist ein Pflichtfeld"
+      },
+      "edit": {
+        "title": "Mitglied editieren"
+      },
+      "create": {
+        "title": "Neues Mitglied anlegen"
+      }
     },
+
     "title": "Mitgliederverwaltung",
     "search": "Suche Mitglied",
     "create": "Mitglied hinzufügen",

@@ -65,7 +65,7 @@ CREATE TABLE "_MemberSections" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Member_number_key" ON "Member"("number");
+CREATE UNIQUE INDEX "Member_email_key" ON "Member"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Role_name_key" ON "Role"("name");
