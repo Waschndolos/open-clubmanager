@@ -4,7 +4,7 @@
   "type": "module",
   "main": "src/server.ts",
   "scripts": {
-    "dev": "node --loader ts-node/esm src/server.ts",
+    "dev:backend": "node --loader ts-node/esm src/server.ts",
     "build": "tsc",
     "seed": "node --loader ts-node/esm prisma/seed.ts",
     "postinstall": "prisma generate",
