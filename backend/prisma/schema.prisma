@@ -9,10 +9,10 @@ datasource db {
 
 model Member {
   id              Int           @id @default(autoincrement())
-  number          Int           @unique
+  number          Int
   firstName       String
   lastName        String
-  email           String
+  email           String        @unique
   birthday        String?
   phone           String?
   phoneMobile     String?
