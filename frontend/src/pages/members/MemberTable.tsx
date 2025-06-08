@@ -2,7 +2,7 @@ import {Box, Checkbox, FormControlLabel, IconButton, Menu, MenuItem, Typography}
 import {useTranslation} from "react-i18next";
 import {AgGridReact} from "ag-grid-react";
 import React, {useMemo, useRef, useState} from "react";
-import {Member} from "./types";
+import {Member} from "../../components/api/types";
 import {AllCommunityModule, ModuleRegistry, themeMaterial} from "ag-grid-community";
 import {ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";

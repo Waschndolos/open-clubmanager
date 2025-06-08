@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Member} from "./types";
+import {Member} from "../../components/api/types";
 import {
     Button,
     Dialog,

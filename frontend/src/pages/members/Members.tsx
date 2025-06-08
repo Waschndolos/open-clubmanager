@@ -2,7 +2,7 @@ import {Button, CircularProgress, IconButton, InputAdornment, TextField, Typogra
 import Box from "@mui/material/Box";
 import {useTranslation} from "react-i18next";
 import MemberTable from "./MemberTable";
-import {Member} from "./types";
+import {Member} from "../../components/api/types";
 import {Add, Clear} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";

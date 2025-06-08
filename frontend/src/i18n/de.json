@@ -3,7 +3,8 @@
     "dashboard": "Startseite",
     "members": "Mitgliederverwaltung",
     "finance": "Finanzen",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "entities": "Vereinsverwaltung"
   },
   "dashboard": {
     "welcome": "Willkommen bei Open Clubmanager",
@@ -25,6 +26,19 @@
     "abort": "Abbrechen",
     "save": "Speichern"
   },
+  "entities": {
+    "groups": {
+      "title": "Gruppenverwaltung"
+    },
+    "roles": {
+      "title": "Rollenverwaltung"
+    },
+    "sections": {
+      "title": "Abteilungsverwaltun"
+    }
+  },
+
+
   "members": {
     "dialogs":  {
       "validation": {
@@ -37,7 +51,6 @@
         "title": "Neues Mitglied anlegen"
       }
     },
-
     "title": "Mitgliederverwaltung",
     "search": "Suche Mitglied",
     "create": "Mitglied hinzufügen",

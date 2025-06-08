@@ -1,10 +1,11 @@
 import {createBrowserRouter} from "react-router";
 import NotFound from "../pages/NotFound";
 import MainLayout from "../layouts/MainLayout";
-import Dashboard from "../components/dashboard/Dashboard";
-import Members from "../components/members/Members";
-import {Finance} from "../components/finance/Finance";
-import { Settings } from "../components/settings/Settings";
+import Dashboard from "../pages/dashboard/Dashboard";
+import Members from "../pages/members/Members";
+import {Finance} from "../pages/finance/Finance";
+import { Settings } from "../pages/settings/Settings";
+import {EntitiesPage} from "../pages/entities/EntitiesPage";
 
 export const router = createBrowserRouter([
     {
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
             {
                 path: "/settings",
                 Component: Settings
+            },
+            {
+                path: "/entities",
+                Component: EntitiesPage
             },
             {
                 path: "*",
