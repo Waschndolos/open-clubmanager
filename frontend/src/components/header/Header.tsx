@@ -1,5 +1,5 @@
 import {AppBar, Box, IconButton, Menu, MenuItem, Toolbar, Typography} from '@mui/material'
-import {DarkMode, LanguageTwoTone, LightMode} from '@mui/icons-material'
+import {DarkMode, LightMode} from '@mui/icons-material'
 import {useThemeContext} from '../../theme/ThemeContext'
 import {useTranslation} from "react-i18next";
 import React, {useState} from "react";
@@ -9,14 +9,29 @@ export default function Header() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const {mode, toggleTheme} = useThemeContext()
 
+    console.log(i18nInstance.options.resources)
+
 
     const handleLanguageClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget)
     }
 
     const handleLanguageChange = (lng: string) => {
-        i18nInstance.changeLanguage(lng)
-        setAnchorEl(null)
+        i18nInstance.changeLanguage(lng).then(() => setAnchorEl(null))
+    }
+    const availableLanguages = Object.keys(i18nInstance.options.resources ?? {});
+
+    const getIcon = (lng: string) => {
+        console.log("Checking", lng)
+        switch (lng) {
+            case 'en':
+                return '🇬🇧'
+            case 'de':
+                return '🇩🇪'
+            case 'fr':
+                return '🇫🇷'
+        }
+        return '<UNK>'
     }
 
     return (
@@ -28,11 +43,16 @@ export default function Header() {
 
                 <Box display="flex" alignItems="center" gap={1}>
                     <IconButton onClick={handleLanguageClick} color={"secondary"}>
-                        <LanguageTwoTone></LanguageTwoTone>
+                        <span style={{ fontSize: '1.2rem' }}>
+                            {getIcon(i18nInstance.language)}
+                        </span>
                     </IconButton>
                     <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-                        <MenuItem onClick={() => handleLanguageChange('de')}>🇩🇪 Deutsch</MenuItem>
-                        <MenuItem onClick={() => handleLanguageChange('en')}>🇬🇧 English</MenuItem>
+                        {availableLanguages.map((code: string) => (
+                            <MenuItem key={code} onClick={() => handleLanguageChange(code)}>
+                                {getIcon(code)}
+                            </MenuItem>
+                        ))}
                     </Menu>
 
                     <IconButton onClick={toggleTheme} color={"secondary"}>

@@ -1,0 +1,57 @@
+{
+  "menu": {
+    "dashboard": "Accueil",
+    "members": "Gestion des membres",
+    "finance": "Finances",
+    "settings": "Paramètres"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue sur Open Clubmanager",
+    "description": "L'application pour gérer facilement les membres, les finances et les données du club – directement sur votre ordinateur.",
+    "members": {
+      "title": "Gestion des membres",
+      "description": "Ajoutez, modifiez et gérez tous les membres de votre club, y compris les groupes, les rôles et les données SEPA."
+    },
+    "finance": {
+      "title": "Finances",
+      "description": "Gardez une vue d'ensemble des cotisations, des paiements et des prélèvements SEPA."
+    },
+    "settings": {
+      "title": "Paramètres",
+      "description": "Configurez Open Clubmanager selon vos besoins."
+    }
+  },
+  "members": {
+    "title": "Gestion des membres",
+    "search": "Rechercher un membre",
+    "create": "Ajouter un membre",
+    "table": {
+      "header": {
+        "id": "ID",
+        "number": "Numéro de membre",
+        "birthday": "Date de naissance",
+        "phone": "Téléphone",
+        "phoneMobile": "Mobile",
+        "comment": "Commentaire",
+        "entryDate": "Date d'inscription",
+        "exitDate": "Date de départ",
+        "street": "Rue",
+        "postalCode": "Code postal",
+        "city": "Ville",
+        "state": "Région",
+        "accountHolder": "Titulaire du compte",
+        "iban": "IBAN",
+        "bic": "BIC",
+        "bankName": "Banque",
+        "sepaMandateDate": "Date du mandat SEPA",
+        "roles": "Rôles",
+        "groups": "Groupes",
+        "sections": "Sections",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "E-mail",
+        "actions": "Actions"
+      }
+    }
+  }
+}
