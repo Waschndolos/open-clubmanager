@@ -30,7 +30,7 @@ jobs:
         run: npx prisma migrate deploy
 
       - name: Run tests or seed script
-        run: npm run seed
+        run: npm run prisma:seed
 
   frontend:
     runs-on: ubuntu-latest
