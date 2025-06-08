@@ -21,12 +21,19 @@
       "description": "Configure Open Clubmanager to suit your needs."
     }
   },
+  "buttons": {
+    "abort": "Abort",
+    "save": "Save"
+  },
   "members": {
+    "edit": {
+      "title": "Edit Member"
+    },
     "title": "Member Management",
     "search": "Search Member",
     "create": "Create Member",
     "table": {
-      "header": {
+      "description": "Select a member from the list and click the edit icon to modify their details.",      "header": {
         "id": "ID",
         "number": "Member Number",
         "birthday": "Birthday",

@@ -1,9 +1,9 @@
-import {Button, CircularProgress, TextField, Typography} from "@mui/material";
+import {Button, CircularProgress, IconButton, InputAdornment, TextField, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import {useTranslation} from "react-i18next";
 import MemberTable from "./MemberTable";
 import {Member} from "./types";
-import {Add} from "@mui/icons-material";
+import {Add, Clear} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 
 const mockMembers: Member[] = [
@@ -29,6 +29,10 @@ export default function Members() {
             return String(value ?? "").toLowerCase().includes(search.trim().toLowerCase());
         })
     );
+
+    const handleMemberUpdated = (updated: Member) => {
+        setMembers(prev => prev.map(m => m.id === updated.id ? updated : m));
+    };
 
 
     useEffect(() => {
@@ -57,12 +61,27 @@ export default function Members() {
                     size="small"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
+                    slotProps={{
+                        input: {
+                            endAdornment: search && (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setSearch("")}
+                                        aria-label="clear"
+                                        size="small"
+                                    >
+                                        <Clear fontSize="small"/>
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }
+                    }}
                 />
                 <Button variant="contained" startIcon={<Add/>}>
                     {t("members.create")}
                 </Button>
             </Box>
-            <MemberTable members={filtered}/>
+            <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated}/>
         </Box>
 
     )

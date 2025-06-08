@@ -21,11 +21,19 @@
       "description": "Konfiguriere dir Open Clubmanager so wie du es brauchst."
     }
   },
+  "buttons": {
+    "abort": "Abbrechen",
+    "save": "Speichern"
+  },
   "members": {
+    "edit": {
+      "title": "Mitglied editieren"
+    },
     "title": "Mitgliederverwaltung",
     "search": "Suche Mitglied",
     "create": "Mitglied hinzufügen",
     "table": {
+      "description": "Wähle ein Mitglied aus der Liste aus und klicke auf das Bearbeiten-Symbol, um es zu bearbeiten.",
       "header": {
         "id": "ID",
         "number": "Mitgliedsnummer",
