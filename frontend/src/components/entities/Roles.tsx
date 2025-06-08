@@ -1,20 +1,22 @@
 import {EntityManager} from "./EntityManager";
 import {useTranslation} from "react-i18next";
 import {Group} from "../api/types";
-import {createRole, fetchRoles} from "../api/roles";
+import {createRole, deleteRole, fetchRoles, updateRole} from "../api/roles";
 
 export function Roles() {
 
     const { t } = useTranslation();
     return (
         <EntityManager<Group>
-            title={t("entities.roles.title")}
+            description={t("entities.roles.description")}
             fetchFn={fetchRoles}
             createFn={createRole}
+            updateFn={updateRole}
+            deleteFn={deleteRole}
             labels={{
-                name: "Role name",
-                description: "Beschreibung",
-                createButton: "Neue Gruppe",
+                name: t("entities.roles.dialogs.name"),
+                description: t("entities.roles.dialogs.description"),
+                createButton:  t("entities.roles.dialogs.createButton"),
             }}
         />
     )

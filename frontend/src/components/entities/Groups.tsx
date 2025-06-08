@@ -1,20 +1,22 @@
 import {EntityManager} from "./EntityManager";
 import {useTranslation} from "react-i18next";
 import {Group} from "../api/types";
-import {createGroup, fetchGroups} from "../api/groups";
+import {createGroup, deleteGroup, fetchGroups, updateGroup} from "../api/groups";
 
 export function Groups() {
 
     const { t } = useTranslation();
     return (
         <EntityManager<Group>
-            title={t("entities.groups.title")}
+            description={t("entities.groups.description")}
             fetchFn={fetchGroups}
             createFn={createGroup}
+            deleteFn={deleteGroup}
+            updateFn={updateGroup}
             labels={{
-                name: "Gruppenname",
-                description: "Beschreibung",
-                createButton: "Neue Gruppe",
+                name: t("entities.groups.dialogs.name"),
+                description: t("entities.groups.dialogs.description"),
+                createButton:  t("entities.groups.dialogs.createButton"),
             }}
         />
     )

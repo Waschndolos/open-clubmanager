@@ -3,14 +3,15 @@
     "dashboard": "Accueil",
     "members": "Gestion des membres",
     "finance": "Finances",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "entities": "Gestion du club"
   },
   "dashboard": {
     "welcome": "Bienvenue sur Open Clubmanager",
-    "description": "L'application pour gérer facilement les membres, les finances et les données du club – directement sur votre ordinateur.",
+    "description": "L'application pour gérer facilement les membres, les finances et les données du club – directement sur votre PC.",
     "members": {
       "title": "Gestion des membres",
-      "description": "Ajoutez, modifiez et gérez tous les membres de votre club, y compris les groupes, les rôles et les données SEPA."
+      "description": "Créez, modifiez et gérez tous les membres de votre club, y compris les groupes, rôles et données SEPA."
     },
     "finance": {
       "title": "Finances",
@@ -25,15 +26,52 @@
     "abort": "Annuler",
     "save": "Enregistrer"
   },
+  "entities": {
+    "groups": {
+      "title": "Gestion des groupes",
+      "description": "Organisez les membres en groupes thématiques ou organisationnels, par exemple des équipes d'entraînement, des projets ou des tranches d'âge. Les groupes facilitent la gestion ciblée et reflètent la structure interne du club.",
+      "dialogs": {
+        "name": "Nom",
+        "description": "Description",
+        "createButton": "Créer un nouveau groupe"
+      }
+    },
+    "roles": {
+      "title": "Gestion des rôles",
+      "description": "Gérez les rôles et responsabilités des membres – par exemple, président, entraîneur ou trésorier. Les rôles permettent de définir les responsabilités et d’ajuster les droits d’accès.",
+      "dialogs": {
+        "name": "Nom",
+        "description": "Description",
+        "createButton": "Créer un nouveau rôle"
+      }
+    },
+    "sections": {
+      "title": "Gestion des sections",
+      "description": "Structurez votre club en sections, comme football, gymnastique ou musique. Les sections permettent de différencier les cotisations et d’organiser les activités de manière ciblée.",
+      "dialogs": {
+        "name": "Nom",
+        "description": "Description",
+        "createButton": "Créer une nouvelle section"
+      }
+    }
+  },
   "members": {
-    "edit": {
-      "title": "Modifier le membre"
+    "dialogs": {
+      "validation": {
+        "emailRequired": "L'adresse e-mail est obligatoire"
+      },
+      "edit": {
+        "title": "Modifier un membre"
+      },
+      "create": {
+        "title": "Créer un nouveau membre"
+      }
     },
     "title": "Gestion des membres",
     "search": "Rechercher un membre",
     "create": "Ajouter un membre",
     "table": {
-      "description": "Sélectionnez un membre dans la liste, puis cliquez sur l’icône de modification pour éditer ses informations.",
+      "description": "Sélectionnez un membre dans la liste et cliquez sur l'icône de modification pour le modifier.",
       "header": {
         "id": "ID",
         "number": "Numéro de membre",
@@ -41,8 +79,8 @@
         "phone": "Téléphone",
         "phoneMobile": "Mobile",
         "comment": "Commentaire",
-        "entryDate": "Date d'inscription",
-        "exitDate": "Date de départ",
+        "entryDate": "Date d'entrée",
+        "exitDate": "Date de sortie",
         "street": "Rue",
         "postalCode": "Code postal",
         "city": "Ville",

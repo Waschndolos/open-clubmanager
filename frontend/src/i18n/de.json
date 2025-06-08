@@ -27,20 +27,38 @@
     "save": "Speichern"
   },
   "entities": {
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
     "groups": {
-      "title": "Gruppenverwaltung"
+      "title": "Gruppenverwaltung",
+      "description": "Organisiere Mitglieder in thematische oder organisatorische Gruppen, z.B. Trainingsgruppen, Projektteams oder Altersklassen. Gruppen helfen dir, gezielt zu filtern, Beiträge zu verwalten oder interne Strukturen abzubilden.",
+      "dialogs": {
+        "name": "Name",
+        "description": "Beschreibung",
+        "createButton": "Neue Gruppe erstellen"
+      }
     },
     "roles": {
-      "title": "Rollenverwaltung"
+      "title": "Rollenverwaltung",
+      "description": "Verwalte die Funktionen und Aufgaben deiner Mitglieder – etwa als Vorstand, Trainer oder Kassenwart. Rollen ermöglichen eine klare Zuweisung von Zuständigkeiten und Sichtbarkeiten",
+      "dialogs": {
+        "name": "Name",
+        "description": "Beschreibung",
+        "createButton": "Neue Rolle erstellen"
+      }
     },
     "sections": {
-      "title": "Abteilungsverwaltun"
+      "title": "Abteilungsverwaltung",
+      "description": "Strukturiere deinen Verein in Abteilungen wie Fußball, Turnen oder Musik. Abteilungen helfen, Mitgliedsbeiträge zu differenzieren und Aktivitäten gezielt zu organisieren.",
+      "dialogs": {
+        "name": "Name",
+        "description": "Beschreibung",
+        "createButton": "Neue Abteilung erstellen"
+      }
     }
   },
-
-
   "members": {
-    "dialogs":  {
+    "dialogs": {
       "validation": {
         "emailRequired": "Email ist ein Pflichtfeld"
       },

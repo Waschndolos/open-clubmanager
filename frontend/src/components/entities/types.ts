@@ -4,9 +4,11 @@ export interface NamedEntity {
     description?: string;
 }
 export interface EntityManagerProps<T extends NamedEntity> {
-    title: string;
+    description: string;
     fetchFn: () => Promise<T[]>;
     createFn: (data: Omit<T, "id">) => Promise<T>;
+    updateFn: (data: T) => Promise<T>;
+    deleteFn: (data: T) => Promise<void>;
     labels?: {
         name?: string;
         description?: string;
