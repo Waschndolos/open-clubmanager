@@ -38,3 +38,7 @@ export type ClubSection = {
     id: number;
     name: string;
 };
+
+export type MemberTableProps = {
+    members: Member[];
+};

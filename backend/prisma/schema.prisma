@@ -28,7 +28,7 @@ model Member {
   bic             String?
   bankName        String?
   sepaMandateDate DateTime?
-  roles           Role[]        @relation("MemberRoles")
+  roles           Role[]       @relation("MemberRoles")
   groups          Group[]       @relation("MemberGroups")
   sections        ClubSection[] @relation("MemberSections")
 }

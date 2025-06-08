@@ -76,6 +76,7 @@ router.post('/', async (req, res) => {
 // update Member
 router.put('/:id', async (req, res) => {
     try {
+        console.log("Received update", req.body)
         const id = parseInt(req.params.id)
         const data = req.body
 
