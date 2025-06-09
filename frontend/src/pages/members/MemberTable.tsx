@@ -22,7 +22,10 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [editingMember, setEditingMember] = useState<Member | null>(null);
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
-
+    const keys = useMemo(() => {
+        if (!members || members.length === 0) return [];
+        return Object.keys(members[0]) as (keyof Member)[];
+    }, [members]);
 
     const columnDefs = useMemo(() => {
         if (!members || members.length === 0) return [];
@@ -39,6 +42,15 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
             hide: index >= 10 // show only first 10 initially
         }));
     }, [members, t]);
+
+    const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(() => {
+        const initial = {} as Record<string, boolean>;
+        keys.forEach(key => {
+            initial[key] = columnDefs.find(col => col.field === key)?.hide !== true;
+        });
+        return initial;
+    });
+
 
 
     const handleSelectionChanged = () => {
@@ -58,6 +70,12 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
         setAnchorEl(null);
     };
 
+    const handleColumnToggle = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const visible = event.target.checked;
+        setColumnVisibility(prev => ({ ...prev, [key]: visible }));
+        gridRef.current?.api.setColumnsVisible([key], visible);
+    };
+
     const handleSaveEdit = async (updated: Member) => {
         updateMember(updated).then((updatedMember: Member) => {
             onMemberUpdated(updatedMember);
@@ -67,10 +85,6 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
 
     const menuOpen = Boolean(anchorEl);
 
-    const keys = useMemo(() => {
-        if (!members || members.length === 0) return [];
-        return Object.keys(members[0]) as (keyof Member)[];
-    }, [members]);
 
     if (!members || members.length === 0) {
         return <Typography>No members found</Typography>;
@@ -96,12 +110,8 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        defaultChecked={
-                                            columnDefs.find((c) => c.field === key)?.hide === false
-                                        }
-                                        onChange={(e) =>
-                                            gridRef.current?.api.setColumnsVisible([key], e.target.checked)
-                                        }
+                                        checked={columnVisibility[key]}
+                                        onChange={handleColumnToggle(key)}
                                     />
                                 }
                                 label={t("members.table.header." + key)}
@@ -114,7 +124,10 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
                 <AgGridReact
                     ref={gridRef}
                     rowData={members}
-                    columnDefs={columnDefs}
+                    columnDefs={columnDefs.map((col) => ({
+                        ...col,
+                        hide: !columnVisibility[col.field ?? ""],
+                    }))}
                     theme={themeMaterial}
                     defaultColDef={{sortable: true, filter: true, resizable: true}}
                     pagination
