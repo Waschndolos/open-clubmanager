@@ -41,6 +41,15 @@ CREATE TABLE "ClubSection" (
 );
 
 -- CreateTable
+CREATE TABLE "UserPreference" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER NOT NULL,
+    "key" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "_MemberRoles" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL,

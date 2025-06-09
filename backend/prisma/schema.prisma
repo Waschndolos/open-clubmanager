@@ -50,3 +50,13 @@ model ClubSection {
   name    String   @unique
   members Member[] @relation("MemberSections")
 }
+
+model UserPreference {
+  id         Int     @id @default(autoincrement())
+  userId     Int
+  key        String
+  value      String
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, key])
+}
