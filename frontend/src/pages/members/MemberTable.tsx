@@ -9,6 +9,8 @@ import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
 import {updateMember} from "../../components/api/members";
 import {useUserPreference} from "../../hooks/useUserPreference";
+import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
+import {useThemeContext} from "../../theme/ThemeContext";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -28,19 +30,36 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
         if (!members || members.length === 0) return [];
         return Object.keys(members[0]) as (keyof Member)[];
     }, [members]);
+    const themeContext = useThemeContext();
 
     const columnDefs = useMemo(() => {
         if (!members || members.length === 0) return [];
 
         const keys = Object.keys(members[0]) as (keyof Member)[];
 
+        const getCellRenderer = (key: "id" | "number" | "firstName" | "lastName" | "email" | "birthday" | "phone" | "phoneMobile" | "comment" | "entryDate" | "exitDate" | "street" | "postalCode" | "city" | "state" | "accountHolder" | "iban" | "bic" | "bankName" | "sepaMandateDate" | "roles" | "groups" | "sections") => {
+            switch (key) {
+                case "entryDate":
+                case "exitDate":
+                case "birthday":
+                    return DateRenderer
+                case "roles":
+                case "groups":
+                case "sections":
+                    return MemberContainingNamedArtifactRenderer
+                default:
+                    return DefaultRenderer
+            }
+        };
         return keys.map((key, index) => ({
             field: key,
             headerName: t("members.table.header." + key),
             sortable: true,
             filter: false,
             resizable: true,
+            cellRenderer: getCellRenderer(key),
             flex: 1,
+            autoHeight: true,
             hide: index >= 10 // show only first 10 initially
         }));
     }, [members, t]);
@@ -107,10 +126,10 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
                 <Typography variant="body1">{t("members.table.description")}</Typography>
 
                 <Box display="flex" justifyContent="end">
-                    <IconButton onClick={handleEditMember} disabled={!selectedMember}>
+                    <IconButton onClick={handleEditMember} disabled={!selectedMember} color={"primary"}>
                         <EditIcon/>
                     </IconButton>
-                    <IconButton onClick={handleOpenMenu}>
+                    <IconButton onClick={handleOpenMenu} color={"primary"}>
                         <ViewColumn/>
                     </IconButton>
                 </Box>
@@ -131,9 +150,11 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
                     ))}
                 </Menu>
             </Box>
-            <div className="ag-theme-alpine" style={{height: "100%", width: "100%"}}>
+            <div style={{height: "100%", width: "100%"}}>
                 <AgGridReact
                     ref={gridRef}
+                    className={themeContext.mode == 'dark' ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'}
+                    suppressMovableColumns={true}
                     rowData={members}
                     columnDefs={columnDefs.map((col) => ({
                         ...col,
