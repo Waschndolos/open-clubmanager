@@ -12,6 +12,8 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    env:
+      DATABASE_URL: "file:./clubmanager.db"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
