@@ -1,3 +1,8 @@
+template: |
+  ## 🚀 What's New in this Release
+
+  $CHANGES
+
 name-template: 'Release v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 
