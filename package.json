@@ -5,6 +5,7 @@
   "description": "Open Clubmanager ",
   "main": "electron/dist/main.js",
   "scripts": {
+    "dev:browser": "concurrently -k -n FRONTEND,BACKEND -c yellow,cyan \"npm --prefix frontend run dev:frontend\" \"npm --prefix backend run dev:backend\"",
     "dev:electronapp": "concurrently -k -n FRONTEND,BACKEND,ELECTRON -c yellow,cyan,green \"npm --prefix frontend run dev:frontend\" \"npm --prefix backend run dev:backend\" \"wait-on http://localhost:5173 && tsc --project electron/tsconfig.json && electron .\"",
     "build": "npm run build:frontend && npm run build:backend && npm run build:electron",
     "build:frontend": "npm --prefix frontend run build",
