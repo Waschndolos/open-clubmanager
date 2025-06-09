@@ -7,6 +7,7 @@ import {AllCommunityModule, ModuleRegistry, themeMaterial} from "ag-grid-communi
 import {ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
+import {updateMember} from "../../components/api/members";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -58,24 +59,10 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
     };
 
     const handleSaveEdit = async (updated: Member) => {
-        try {
-            const response = await fetch(`http://localhost:3001/api/members/${updated.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updated),
-            });
-
-            if (!response.ok) {
-                throw new Error("Update failed");
-            }
-            const backendResponse = await response.json() as Member;
-            onMemberUpdated(backendResponse);
+        updateMember(updated).then((updatedMember: Member) => {
+            onMemberUpdated(updatedMember);
             setEditingMember(null);
-        } catch (error) {
-            console.error("Fehler beim Speichern:", error);
-        }
+        })
     };
 
     const menuOpen = Boolean(anchorEl);

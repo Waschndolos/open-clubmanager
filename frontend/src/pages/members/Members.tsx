@@ -6,6 +6,8 @@ import {Member} from "../../components/api/types";
 import {Add, Clear} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";
+import {createMember, fetchMembers} from "../../components/api/members";
+import log from "eslint-plugin-react/lib/util/log";
 
 const mockMembers: Member[] = [
     {id: 1, firstName: "Anna", lastName: "Müller", email: "anna@example.com"},
@@ -62,39 +64,26 @@ export default function Members() {
     );
 
     const handleMemberUpdated = (updated: Member) => {
-        setMembers(prev => prev.map(m => m.id === updated.id ? updated : m));
-    };
-
-    const fetchMembers = () => {
-        fetch("http://localhost:3001/api/members")
-            .then((res) => {
-                if (!res.ok) throw new Error("Error fetching members.");
-                return res.json();
-            })
-            .then((data: Member[]) => setMembers(data))
-            .catch((err) => setError(err.message))
-            .finally(() => setLoading(false));
+        if (members.find((member) => member.id === updated.id)) {
+            setMembers(prev => prev.map(m => m.id === updated.id ? updated : m));
+        } else {
+            setMembers([...members, updated])
+        }
     };
 
     useEffect(() => {
-        fetchMembers();
+        fetchMembers().then((members) => {
+            setLoading(false);
+            setMembers(members);
+        }).catch(setError);
     }, []);
 
     const handleMemberCreated = async (member: Member) => {
-        try {
-            const res = await fetch("http://localhost:3001/api/members", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(member),
-            });
-
-            if (!res.ok) throw new Error("Error creating member.");
-            fetchMembers();
-        } catch (err) {
-            console.error(err);
-        } finally {
+        createMember(member).then((member) => {
+            setLoading(false);
+            handleMemberUpdated(member);
             setNewMemberDialogOpen(false);
-        }
+        })
     };
 
     if (loading) return <CircularProgress/>;

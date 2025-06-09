@@ -1,47 +1,55 @@
-import { PrismaClient } from '@prisma/client';
-import { faker } from '@faker-js/faker';
+import {PrismaClient} from '@prisma/client';
+import {faker} from '@faker-js/faker';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+        datasources: {
+            db: {
+                url: process.env.DATABASE_URL
+            }
+        }
+    }
+);
+const nbMembers = 100;
 
 async function main() {
     console.log('⏳ Seeding data...');
 
-    // Bestehende Daten löschen
+    // Delete current data
     await prisma.member.deleteMany();
     await prisma.role.deleteMany();
     await prisma.group.deleteMany();
     await prisma.clubSection.deleteMany();
 
-    // Initiale Daten einfügen
+    // Create initial data
     await prisma.role.createMany({
-        data: [{ name: 'Trainer' }, { name: 'Mitglied' }, { name: 'Admin' }]
+        data: [{name: 'Trainer'}, {name: 'Member'}, {name: 'Admin'}]
     });
 
     await prisma.group.createMany({
-        data: [{ name: 'Jugend' }, { name: 'Erwachsene' }, { name: 'Senioren' }]
+        data: [{name: 'Youth'}, {name: 'Adults'}, {name: 'Seniors'}]
     });
 
     await prisma.clubSection.createMany({
-        data: [{ name: 'Fußball' }, { name: 'Tennis' }, { name: 'Schwimmen' }]
+        data: [{name: 'Soccer'}, {name: 'Tennis'}, {name: 'Swim'}]
     });
 
     const allRoles = await prisma.role.findMany();
     const allGroups = await prisma.group.findMany();
     const allSections = await prisma.clubSection.findMany();
 
-    // 100 Mitglieder anlegen
-    for (let i = 0; i < 100; i++) {
+    // Create members
+    for (let i = 0; i < nbMembers; i++) {
         await prisma.member.create({
             data: {
                 number: 1000 + i,
                 firstName: faker.person.firstName(),
                 lastName: faker.person.lastName(),
                 email: faker.internet.email(),
-                birthday: faker.date.birthdate({ min: 1950, max: 2010, mode: 'year' }).toISOString(),
+                birthday: faker.date.birthdate({min: 1950, max: 2010, mode: 'year'}).toISOString(),
                 phone: faker.phone.number(),
                 phoneMobile: faker.phone.number(),
                 comment: faker.lorem.sentence(),
-                entryDate: faker.date.past({ years: 5 }),
+                entryDate: faker.date.past({years: 5}),
                 exitDate: Math.random() < 0.1 ? faker.date.recent() : null,
                 street: faker.location.streetAddress(),
                 postalCode: faker.location.zipCode(),
@@ -53,13 +61,13 @@ async function main() {
                 bankName: faker.company.name(),
                 sepaMandateDate: faker.date.past(),
                 roles: {
-                    connect: [faker.helpers.arrayElement(allRoles)].map(r => ({ id: r.id }))
+                    connect: [faker.helpers.arrayElement(allRoles)].map(r => ({id: r.id}))
                 },
                 groups: {
-                    connect: [faker.helpers.arrayElement(allGroups)].map(g => ({ id: g.id }))
+                    connect: [faker.helpers.arrayElement(allGroups)].map(g => ({id: g.id}))
                 },
                 sections: {
-                    connect: [faker.helpers.arrayElement(allSections)].map(s => ({ id: s.id }))
+                    connect: [faker.helpers.arrayElement(allSections)].map(s => ({id: s.id}))
                 }
             }
         });

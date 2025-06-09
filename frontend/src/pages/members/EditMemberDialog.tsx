@@ -127,7 +127,15 @@ export function EditMemberDialog({ member, onClose, onSave, isNew }: Props) {
                     variant="contained"
                     onClick={() => {
                         if (!formData.email) return;
-                        onSave(formData);
+
+                        const payload = {
+                            ...formData,
+                            roleIds: formData.roles?.map(r => r.id),
+                            groupIds: formData.groups?.map(g => g.id),
+                            sectionIds: formData.sections?.map(s => s.id),
+                        };
+
+                        onSave(payload as Member);
                     }}
                 >
                     {t("buttons.save")}
