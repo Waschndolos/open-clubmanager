@@ -9,6 +9,27 @@ a TypeScript + SQLite backend powered by Prisma and Express. ClubManager is desi
 and suitable for small to medium-sized clubs or associations.
 
 ---
+## 💡 Idea of this project
+To contribute meaningfully to this project, it helps to understand the motivation behind it.
+
+In Germany — and likely many other places — small clubs or "Vereine" often manage their members, finances, and activities using Excel spreadsheets or Word documents. That works — until the club starts growing. Suddenly, more people are involved: a treasurer, a board, maybe a youth coordinator. Everyone needs access to the same information, and coordination becomes painful.
+
+Eventually, the club ends up maintaining dozens of separate lists and files — and the chaos begins. At that point, most clubs start looking for a centralized software solution. The problem? Most of those systems are proprietary and expensive — perfectly fine for large organizations, but a real hurdle for small clubs with limited budgets and no IT team.
+
+That's where Open ClubManager comes in.
+
+This project aims to provide a free, open source, and easy-to-use management tool for small to medium-sized clubs. It's designed to work out of the box — no cloud infrastructure, no complicated database setup.
+
+Instead, Open ClubManager uses a lightweight SQLite database, which can either:
+
+    be stored locally (ideal if you're managing the club on your own), or
+
+    placed on a shared network drive, so that multiple team members (e.g. treasurer, board, secretary) can access and update the same data.
+
+The goal is to reduce complexity and cost — and to empower small clubs to manage themselves better without needing tech expertise or subscriptions.
+
+Open ClubManager is built by volunteers for volunteers.
+---
 
 ## 🚀 Features
 
