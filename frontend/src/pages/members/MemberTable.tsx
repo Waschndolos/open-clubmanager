@@ -9,6 +9,7 @@ import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
 import {updateMember} from "../../components/api/members";
 import {useUserPreference} from "../../hooks/useUserPreference";
+import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -34,13 +35,29 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
 
         const keys = Object.keys(members[0]) as (keyof Member)[];
 
+        const getCellRenderer = (key: "id" | "number" | "firstName" | "lastName" | "email" | "birthday" | "phone" | "phoneMobile" | "comment" | "entryDate" | "exitDate" | "street" | "postalCode" | "city" | "state" | "accountHolder" | "iban" | "bic" | "bankName" | "sepaMandateDate" | "roles" | "groups" | "sections") => {
+            switch (key) {
+                case "entryDate":
+                case "exitDate":
+                case "birthday":
+                    return DateRenderer
+                case "roles":
+                case "groups":
+                case "sections":
+                    return MemberContainingNamedArtifactRenderer
+                default:
+                    return DefaultRenderer
+            }
+        };
         return keys.map((key, index) => ({
             field: key,
             headerName: t("members.table.header." + key),
             sortable: true,
             filter: false,
             resizable: true,
+            cellRenderer: getCellRenderer(key),
             flex: 1,
+            autoHeight: true,
             hide: index >= 10 // show only first 10 initially
         }));
     }, [members, t]);
