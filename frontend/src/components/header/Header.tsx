@@ -3,9 +3,11 @@ import {DarkMode, LightMode} from '@mui/icons-material'
 import {useThemeContext} from '../../theme/ThemeContext'
 import {useTranslation} from "react-i18next";
 import React, {useState} from "react";
+import NotificationBell from "./NotificationBell";
 
 export default function Header() {
     const {i18n: i18nInstance} = useTranslation()
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const {mode, toggleTheme} = useThemeContext()
 
@@ -33,13 +35,13 @@ export default function Header() {
     return (
         <AppBar position="static" color="primary">
             <Toolbar>
-                <Typography variant="h6" sx={{flexGrow: 1}}>
+                <Typography variant="h6" sx={{flexGrow: 1, paddingLeft: 2}}>
                     Open ClubManager
                 </Typography>
 
                 <Box display="flex" alignItems="center" gap={1}>
                     <IconButton onClick={handleLanguageClick} color={"secondary"}>
-                        <span style={{ fontSize: '1.2rem' }}>
+                        <span style={{fontSize: '1.2rem'}}>
                             {getIcon(i18nInstance.language)}
                         </span>
                     </IconButton>
@@ -54,6 +56,7 @@ export default function Header() {
                     <IconButton onClick={toggleTheme} color={"secondary"}>
                         {mode === 'light' ? <DarkMode/> : <LightMode/>}
                     </IconButton>
+                    <NotificationBell/>
                 </Box>
             </Toolbar>
         </AppBar>

@@ -1,4 +1,10 @@
 {
+  "header": {
+    "notifications": {
+      "none": "Keine Benachrichtigungen",
+      "deleteall": "Alle löschen"
+    }
+  },
   "menu": {
     "dashboard": "Startseite",
     "members": "Mitgliederverwaltung",
@@ -24,7 +30,8 @@
   },
   "buttons": {
     "abort": "Abbrechen",
-    "save": "Speichern"
+    "save": "Speichern",
+    "delete": "Löschen"
   },
   "entities": {
     "edit": "Bearbeiten",
@@ -58,6 +65,7 @@
     }
   },
   "members": {
+    "automatedDeletionNotice": "wurde automatisch gelöscht.",
     "dialogs": {
       "sections": {
         "personal": "Persönliche Informationen",
@@ -74,6 +82,10 @@
       },
       "create": {
         "title": "Neues Mitglied anlegen"
+      },
+      "delete": {
+        "title": "Mitglied löschen",
+        "description": "Willst du dieses Mitglied wirklich löschen?"
       }
     },
     "title": "Mitgliederverwaltung",

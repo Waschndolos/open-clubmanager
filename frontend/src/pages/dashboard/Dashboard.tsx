@@ -1,4 +1,4 @@
-import {Box, Typography, Paper, Divider} from '@mui/material';
+import {Box, Divider, Paper, Typography} from '@mui/material';
 import GroupsIcon from '@mui/icons-material/Groups';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import SettingsIcon from '@mui/icons-material/Settings';
