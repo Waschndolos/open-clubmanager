@@ -7,7 +7,6 @@ import {Add, Clear} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";
 import {createMember, fetchMembers} from "../../components/api/members";
-import log from "eslint-plugin-react/lib/util/log";
 
 const mockMembers: Member[] = [
     {id: 1, firstName: "Anna", lastName: "Müller", email: "anna@example.com"},
