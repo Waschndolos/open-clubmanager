@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "type": "module",
   "main": "src/server.ts",
   "scripts": {
@@ -13,7 +13,7 @@
     "prisma:studio": "prisma studio",
     "prisma:reset": "prisma migrate reset",
     "prisma:seed": "node --loader ts-node/esm prisma/seed.ts",
-    "licenses": "license-checker --production --markdown > THIRD_PARTY_LICENSES.md"
+    "licenses": "license-checker --production --markdown --excludePackages 'backend@0.0.0'  > THIRD_PARTY_LICENSES.md"
   },
   "keywords": [],
   "author": "",

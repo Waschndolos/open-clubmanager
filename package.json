@@ -9,7 +9,8 @@
     "build:backend": "npm --prefix backend run build",
     "build:electron": "tsc --project electron/tsconfig.json",
     "electron:dev": "electron .",
-    "dist": "npm run build && npx electron-builder --config electron-builder.json"
+    "dist": "npm run build && npx electron-builder --config electron-builder.json",
+    "licenses": "npm --prefix frontend run licenses && npm --prefix backend run licenses"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

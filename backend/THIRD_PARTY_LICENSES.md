@@ -1,3 +1,4 @@
+[@faker-js/faker@9.8.0](https://github.com/faker-js/faker) - MIT
 [@prisma/client@6.9.0](https://github.com/prisma/prisma) - Apache-2.0
 [@prisma/config@6.9.0](https://github.com/prisma/prisma) - Apache-2.0
 [@prisma/debug@6.9.0](https://github.com/prisma/prisma) - Apache-2.0
@@ -6,7 +7,6 @@
 [@prisma/fetch-engine@6.9.0](https://github.com/prisma/prisma) - Apache-2.0
 [@prisma/get-platform@6.9.0](https://github.com/prisma/prisma) - Apache-2.0
 [accepts@2.0.0](https://github.com/jshttp/accepts) - MIT
-[backend@1.0.0](undefined) - ISC
 [base64-js@1.5.1](https://github.com/beatgammit/base64-js) - MIT
 [better-sqlite3@11.10.0](https://github.com/WiseLibs/better-sqlite3) - MIT
 [bindings@1.5.0](https://github.com/TooTallNate/node-bindings) - MIT
@@ -27,6 +27,7 @@
 [deep-extend@0.6.0](https://github.com/unclechu/node-deep-extend) - MIT
 [depd@2.0.0](https://github.com/dougwilson/nodejs-depd) - MIT
 [detect-libc@2.0.4](https://github.com/lovell/detect-libc) - Apache-2.0
+[dotenv@16.5.0](https://github.com/motdotla/dotenv) - BSD-2-Clause
 [dunder-proto@1.0.1](https://github.com/es-shims/dunder-proto) - MIT
 [ee-first@1.1.1](https://github.com/jonathanong/ee-first) - MIT
 [encodeurl@2.0.0](https://github.com/pillarjs/encodeurl) - MIT
