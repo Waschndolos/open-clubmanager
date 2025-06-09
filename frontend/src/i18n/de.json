@@ -59,6 +59,13 @@
   },
   "members": {
     "dialogs": {
+      "sections": {
+        "personal": "Persönliche Informationen",
+        "adress": "Adresse",
+        "bank": "Bankinformationen",
+        "membership": "Mitgliedschaft",
+        "assignments": "Zugehörigkeiten"
+      },
       "validation": {
         "emailRequired": "Email ist ein Pflichtfeld"
       },

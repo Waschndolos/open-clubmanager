@@ -57,6 +57,13 @@
   },
   "members": {
     "dialogs": {
+      "sections": {
+        "personal": "Informations personnelles",
+        "adress": "Adresse",
+        "bank": "Informations bancaires",
+        "membership": "Adhésion",
+        "assignments": "Affectations"
+      },
       "validation": {
         "emailRequired": "L'adresse e-mail est obligatoire"
       },

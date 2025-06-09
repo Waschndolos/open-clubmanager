@@ -57,6 +57,13 @@
   },
   "members": {
     "dialogs": {
+      "sections": {
+        "personal": "Personal Information",
+        "adress": "Address",
+        "bank": "Bank Details",
+        "membership": "Membership",
+        "assignments": "Assignments"
+      },
       "validation": {
         "emailRequired": "Email is a required field"
       },
