@@ -1,3 +1,16 @@
+export interface Id {
+    id: number;
+}
+
+export interface NamedArtifact extends Id {
+    name: string;
+    description?: string;
+}
+
+export interface MemberContainingNamedArtifact extends NamedArtifact {
+    members: Member[];
+}
+
 export type Member = {
     id: number;
     number?: number;
@@ -24,21 +37,11 @@ export type Member = {
     sections?: ClubSection[];
 };
 
-export type Role = {
-    id: number;
-    name: string;
-};
+export interface Group extends MemberContainingNamedArtifact {
+}
 
-export type Group = {
-    id: number;
-    name: string;
-};
+export interface Role extends MemberContainingNamedArtifact {
+}
 
-export type ClubSection = {
-    id: number;
-    name: string;
-};
-
-export type MemberTableProps = {
-    members: Member[];
-};
+export interface ClubSection extends MemberContainingNamedArtifact{
+}

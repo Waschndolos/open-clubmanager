@@ -3,7 +3,8 @@
     "dashboard": "Dashboard",
     "members": "Member Management",
     "finance": "Finances",
-    "settings": "Settings"
+    "settings": "Settings",
+    "entities": "Club Entities"
   },
   "dashboard": {
     "welcome": "Welcome to Open Clubmanager",
@@ -13,8 +14,8 @@
       "description": "Record, edit, and manage all club members including groups, roles, and SEPA data."
     },
     "finance": {
-      "title": "Finances",
-      "description": "Keep track of membership fees, payment data, and SEPA direct debits."
+      "title": "Finance",
+      "description": "Keep track of membership fees, payment details, and SEPA direct debits."
     },
     "settings": {
       "title": "Settings",
@@ -22,18 +23,63 @@
     }
   },
   "buttons": {
-    "abort": "Abort",
+    "abort": "Cancel",
     "save": "Save"
   },
+  "entities": {
+    "groups": {
+      "title": "Group Management",
+      "description": "Organize members into thematic or organizational groups, such as training units, project teams, or age categories. Groups help you filter, manage fees, and reflect internal club structures.",
+      "dialogs": {
+        "name": "Name",
+        "description": "Description",
+        "createButton": "Create New Group"
+      }
+    },
+    "roles": {
+      "title": "Role Management",
+      "description": "Manage member roles and responsibilities – for example, as board members, coaches, or treasurers. Roles help define responsibilities and control visibility or permissions.",
+      "dialogs": {
+        "name": "Name",
+        "description": "Description",
+        "createButton": "Create New Role"
+      }
+    },
+    "sections": {
+      "title": "Section Management",
+      "description": "Structure your club into departments such as soccer, gymnastics, or music. Departments help differentiate fees and organize activities more effectively.",
+      "dialogs": {
+        "name": "Name",
+        "description": "Description",
+        "createButton": "Create New Section"
+      }
+    }
+  },
   "members": {
-    "edit": {
-      "title": "Edit Member"
+    "dialogs": {
+      "sections": {
+        "personal": "Personal Information",
+        "adress": "Address",
+        "bank": "Bank Details",
+        "membership": "Membership",
+        "assignments": "Assignments"
+      },
+      "validation": {
+        "emailRequired": "Email is a required field"
+      },
+      "edit": {
+        "title": "Edit Member"
+      },
+      "create": {
+        "title": "Create New Member"
+      }
     },
     "title": "Member Management",
     "search": "Search Member",
-    "create": "Create Member",
+    "create": "Add Member",
     "table": {
-      "description": "Select a member from the list and click the edit icon to modify their details.",      "header": {
+      "description": "Select a member from the list and click the edit icon to edit it.",
+      "header": {
         "id": "ID",
         "number": "Member Number",
         "birthday": "Birthday",
@@ -49,7 +95,7 @@
         "accountHolder": "Account Holder",
         "iban": "IBAN",
         "bic": "BIC",
-        "bankName": "Bank Name",
+        "bankName": "Bank",
         "sepaMandateDate": "SEPA Mandate Date",
         "roles": "Roles",
         "groups": "Groups",
@@ -59,7 +105,6 @@
         "email": "Email",
         "actions": "Actions"
       }
-
     }
   }
 }

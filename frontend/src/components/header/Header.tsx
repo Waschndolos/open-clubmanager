@@ -9,9 +9,6 @@ export default function Header() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const {mode, toggleTheme} = useThemeContext()
 
-    console.log(i18nInstance.options.resources)
-
-
     const handleLanguageClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget)
     }
@@ -22,7 +19,6 @@ export default function Header() {
     const availableLanguages = Object.keys(i18nInstance.options.resources ?? {});
 
     const getIcon = (lng: string) => {
-        console.log("Checking", lng)
         switch (lng) {
             case 'en':
                 return '🇬🇧'

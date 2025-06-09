@@ -2,8 +2,9 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "outDir": "dist",
     "rootDir": "src",

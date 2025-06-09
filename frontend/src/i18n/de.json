@@ -3,7 +3,8 @@
     "dashboard": "Startseite",
     "members": "Mitgliederverwaltung",
     "finance": "Finanzen",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "entities": "Vereinsverwaltung"
   },
   "dashboard": {
     "welcome": "Willkommen bei Open Clubmanager",
@@ -25,8 +26,46 @@
     "abort": "Abbrechen",
     "save": "Speichern"
   },
+  "entities": {
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "groups": {
+      "title": "Gruppenverwaltung",
+      "description": "Organisiere Mitglieder in thematische oder organisatorische Gruppen, z.B. Trainingsgruppen, Projektteams oder Altersklassen. Gruppen helfen dir, gezielt zu filtern, Beiträge zu verwalten oder interne Strukturen abzubilden.",
+      "dialogs": {
+        "name": "Name",
+        "description": "Beschreibung",
+        "createButton": "Neue Gruppe erstellen"
+      }
+    },
+    "roles": {
+      "title": "Rollenverwaltung",
+      "description": "Verwalte die Funktionen und Aufgaben deiner Mitglieder – etwa als Vorstand, Trainer oder Kassenwart. Rollen ermöglichen eine klare Zuweisung von Zuständigkeiten und Sichtbarkeiten",
+      "dialogs": {
+        "name": "Name",
+        "description": "Beschreibung",
+        "createButton": "Neue Rolle erstellen"
+      }
+    },
+    "sections": {
+      "title": "Abteilungsverwaltung",
+      "description": "Strukturiere deinen Verein in Abteilungen wie Fußball, Turnen oder Musik. Abteilungen helfen, Mitgliedsbeiträge zu differenzieren und Aktivitäten gezielt zu organisieren.",
+      "dialogs": {
+        "name": "Name",
+        "description": "Beschreibung",
+        "createButton": "Neue Abteilung erstellen"
+      }
+    }
+  },
   "members": {
-    "dialogs":  {
+    "dialogs": {
+      "sections": {
+        "personal": "Persönliche Informationen",
+        "adress": "Adresse",
+        "bank": "Bankinformationen",
+        "membership": "Mitgliedschaft",
+        "assignments": "Zugehörigkeiten"
+      },
       "validation": {
         "emailRequired": "Email ist ein Pflichtfeld"
       },
@@ -37,7 +76,6 @@
         "title": "Neues Mitglied anlegen"
       }
     },
-
     "title": "Mitgliederverwaltung",
     "search": "Suche Mitglied",
     "create": "Mitglied hinzufügen",

@@ -1,6 +1,9 @@
 import express, {Request, Response} from 'express'
 import cors from 'cors'
-import memberRoutes from './routes/member.js'
+import memberRoutes from './routes/member.ts'
+import roleRoutes from "./routes/role.ts";
+import groupRoutes from "./routes/group.ts";
+import sectionRoutes from "./routes/section.ts";
 
 
 const app = express()
@@ -13,6 +16,9 @@ app.use(express.json())
 console.log("Setup routes")
 // Routes
 app.use('/api/members', memberRoutes)
+app.use('/api/roles', roleRoutes);
+app.use('/api/groups', groupRoutes);
+app.use('/api/sections', sectionRoutes);
 
 // Error handling middleware
 app.use((err: unknown, _req: Request, res: Response) => {

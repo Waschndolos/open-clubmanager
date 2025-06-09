@@ -111,9 +111,13 @@ router.put('/:id', async (req, res) => {
                 sections: {
                     set: data.sectionIds?.map((id: number) => ({ id })) || []
                 }
-            }
+            },
+            include: {
+                roles: true,
+                groups: true,
+                sections: true,
+            },
         })
-
         res.json(updated)
     } catch (err) {
         console.error(err)
