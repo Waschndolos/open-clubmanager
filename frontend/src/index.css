@@ -21,3 +21,13 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+.ag-theme-alpine-dark .ag-header {
+  background-color: #948979;
+  color: white;
+}
+
+.ag-theme-alpine .ag-header {
+  background-color: #819A91;
+  color: white;
+}

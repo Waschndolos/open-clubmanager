@@ -14,9 +14,8 @@ export default function AppMenuItem({label, icon, link}: MenuItemProps) {
     const handleClick = () => {
         navigate(`${link}`)
     };
-
     return (
-        <ListItemButton onClick={handleClick}>
+        <ListItemButton onClick={handleClick} >
             {icon && (
                 <ListItemIcon>
                     {icon}
