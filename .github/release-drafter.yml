@@ -1,0 +1,22 @@
+name-template: 'Release v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
+categories:
+  - title: 🚀 Features
+    labels:
+      - feature
+  - title: 🐛 Bug Fixes
+    labels:
+      - bug
+  - title: 🧰 Maintenance
+    labels:
+      - chore
+
+change-template: '- $TITLE (#$NUMBER)'
+change-title-escapes: '\<*_&'
+
+include-issues: true
+only-issues-with-labels: true
+
+exclude-labels:
+  - chore
