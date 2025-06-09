@@ -6,7 +6,8 @@ import {Member} from "../../components/api/types";
 import {Add, Clear} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";
-import {createMember, fetchMembers} from "../../components/api/members";
+import {createMember, deleteMember, fetchMembers} from "../../components/api/members";
+import {useNotification} from "../../components/header/NotificationContext";
 
 const mockMembers: Member[] = [
     {id: 1, firstName: "Anna", lastName: "Müller", email: "anna@example.com"},
@@ -49,6 +50,9 @@ export default function Members() {
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState("");
     const [newMemberDialogOpen, setNewMemberDialogOpen] = useState(false);
+    const { addNotification } = useNotification();
+
+
 
     const filtered = members.filter((member) =>
         Object.values(member ?? {}).some((value) => {
@@ -70,12 +74,45 @@ export default function Members() {
         }
     };
 
+    const handleMemberDeleted = (deleted: Member) => {
+        setMembers((prevMembers) =>
+            prevMembers.filter((member) => member.id !== deleted.id)
+        );
+    }
+
     useEffect(() => {
         fetchMembers().then((members) => {
             setLoading(false);
             setMembers(members);
         }).catch(setError);
     }, []);
+
+    // Automatic member deletion
+    useEffect(() => {
+        const now = new Date();
+
+        setMembers((prev) => {
+            const stillActive: Member[] = [];
+
+            for (const member of prev) {
+                const expired =
+                    member.exitDate && new Date(member.exitDate) < now;
+
+                if (expired) {
+                    deleteMember(member).then( ()=> {
+                        addNotification(
+                            `${member.firstName} ${member.lastName} ${t('members.automatedDeletionNotice')}`
+                        );
+                    });
+
+                } else {
+                    stillActive.push(member);
+                }
+            }
+
+            return stillActive;
+        });
+    }, [t, addNotification, members.length]);
 
     const handleMemberCreated = async (member: Member) => {
         createMember(member).then((member) => {
@@ -120,7 +157,7 @@ export default function Members() {
                     {t("members.create")}
                 </Button>
             </Box>
-            <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated}/>
+            <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated} onMemberDeleted={handleMemberDeleted}/>
             {newMemberDialogOpen && (
                 <EditMemberDialog
                     member={createEmptyMember()}

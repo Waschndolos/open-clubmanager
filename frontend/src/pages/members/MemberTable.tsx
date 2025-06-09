@@ -4,26 +4,29 @@ import {AgGridReact} from "ag-grid-react";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {Member} from "../../components/api/types";
 import {AllCommunityModule, ModuleRegistry, themeMaterial} from "ag-grid-community";
-import {ViewColumn} from "@mui/icons-material";
+import {Delete, ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
-import {updateMember} from "../../components/api/members";
+import {deleteMember, updateMember} from "../../components/api/members";
 import {useUserPreference} from "../../hooks/useUserPreference";
 import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
 import {useThemeContext} from "../../theme/ThemeContext";
+import {DeletingMemberDialog} from "./DeletingMemberDialog";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 type MemberTableProps = {
     members: Member[];
     onMemberUpdated: (newMember: Member) => void;
+    onMemberDeleted: (deletedMember: Member) => void;
 };
 
-export default function MemberTable({members, onMemberUpdated}: MemberTableProps) {
+export default function MemberTable({members, onMemberUpdated, onMemberDeleted}: MemberTableProps) {
     const {t} = useTranslation();
     const gridRef = useRef<AgGridReact>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [editingMember, setEditingMember] = useState<Member | null>(null);
+    const [deletingMember, setDeletingMember] = useState<Member | null>(null);
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
     const { getPreference, setPreference } = useUserPreference();
     const keys = useMemo(() => {
@@ -91,8 +94,13 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleEditMember = () => {
         setEditingMember(selectedMember)
+    }
+
+    const handleDeleteMember = () => {
+        setDeletingMember(selectedMember);
     }
 
     const handleCloseMenu = () => {
@@ -115,7 +123,6 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
 
     const menuOpen = Boolean(anchorEl);
 
-
     if (!members || members.length === 0) {
         return <Typography>No members found</Typography>;
     }
@@ -128,6 +135,9 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
                 <Box display="flex" justifyContent="end">
                     <IconButton onClick={handleEditMember} disabled={!selectedMember} color={"primary"}>
                         <EditIcon/>
+                    </IconButton>
+                    <IconButton onClick={handleDeleteMember} disabled={!selectedMember} color={"primary"}>
+                        <Delete/>
                     </IconButton>
                     <IconButton onClick={handleOpenMenu} color={"primary"}>
                         <ViewColumn/>
@@ -176,6 +186,17 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
                         handleSaveEdit(update);
                     }}
                 />
+            )}
+            {deletingMember && (
+                <DeletingMemberDialog
+                    member={deletingMember!}
+                    onClose={() => setDeletingMember(null)}
+                    onDelete={(deleted: Member) => {
+                        deleteMember(deleted!).then(() => {
+                            onMemberDeleted(deleted!);
+                            setDeletingMember(null)
+                        })
+                    }}/>
             )}
         </Box>
     );

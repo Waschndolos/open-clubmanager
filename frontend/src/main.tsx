@@ -6,10 +6,13 @@ import '@fontsource/roboto/300.css';
 import {CssBaseline} from "@mui/material";
 import {ThemeProvider} from './theme/ThemeContext';
 import './i18n';
+import {NotificationProvider} from "./components/header/NotificationContext";
 
 createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
-        <CssBaseline />
-        <RouterProvider router={router} />
+        <NotificationProvider>
+            <CssBaseline/>
+            <RouterProvider router={router}/>
+        </NotificationProvider>
     </ThemeProvider>
 )

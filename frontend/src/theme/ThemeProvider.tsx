@@ -1,8 +1,10 @@
-import { PropsWithChildren, useMemo, useState } from 'react'
-import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material'
-import { lightTheme, darkTheme } from '.'
+import {PropsWithChildren, useMemo, useState} from 'react'
+import {ThemeProvider as MuiThemeProvider, CssBaseline} from '@mui/material'
+import {lightTheme, darkTheme} from '.'
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {LocalizationProvider} from "@mui/x-date-pickers";
 
-export default function ThemeProvider({ children }: PropsWithChildren) {
+export default function ThemeProvider({children}: PropsWithChildren) {
     const [mode, setMode] = useState<'light' | 'dark'>('light')
 
     const theme = useMemo(() => (mode === 'light' ? lightTheme : darkTheme), [mode])
@@ -10,13 +12,16 @@ export default function ThemeProvider({ children }: PropsWithChildren) {
     const toggleTheme = () => setMode((prev) => (prev === 'light' ? 'dark' : 'light'))
 
     return (
+
         <MuiThemeProvider theme={theme}>
-            <CssBaseline />
-            {/* 👇 Kontext oder Toggle später hier reinreichen */}
-            <div style={{ position: 'fixed', top: 10, right: 10 }}>
-                <button onClick={toggleTheme}>🌗</button>
-            </div>
-            {children}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <CssBaseline/>
+                <div style={{position: 'fixed', top: 10, right: 10}}>
+                    <button onClick={toggleTheme}>🌗</button>
+                </div>
+                {children}
+            </LocalizationProvider>
         </MuiThemeProvider>
+
     )
 }
