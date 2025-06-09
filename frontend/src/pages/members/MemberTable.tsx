@@ -1,13 +1,14 @@
 import {Box, Checkbox, FormControlLabel, IconButton, Menu, MenuItem, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {AgGridReact} from "ag-grid-react";
-import React, {useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {Member} from "../../components/api/types";
 import {AllCommunityModule, ModuleRegistry, themeMaterial} from "ag-grid-community";
 import {ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
 import {updateMember} from "../../components/api/members";
+import {useUserPreference} from "../../hooks/useUserPreference";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -22,6 +23,7 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [editingMember, setEditingMember] = useState<Member | null>(null);
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+    const { getPreference, setPreference } = useUserPreference();
     const keys = useMemo(() => {
         if (!members || members.length === 0) return [];
         return Object.keys(members[0]) as (keyof Member)[];
@@ -52,6 +54,14 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
     });
 
 
+    useEffect(() => {
+        if (!keys.length) return;
+        getPreference("memberTable.columns").then((stored) => {
+            const fallback = Object.fromEntries(keys.map((k, i) => [k, i < 10])); // default: first 10 true
+            setColumnVisibility(stored ?? fallback);
+        });
+    }, [getPreference, keys]);
+
 
     const handleSelectionChanged = () => {
         const selectedNodes = gridRef.current?.api.getSelectedNodes();
@@ -72,15 +82,16 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
 
     const handleColumnToggle = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const visible = event.target.checked;
-        setColumnVisibility(prev => ({ ...prev, [key]: visible }));
+        const newState = { ...columnVisibility, [key]: visible };
+        setColumnVisibility(newState);
         gridRef.current?.api.setColumnsVisible([key], visible);
+        setPreference("memberTable.columns", newState);
     };
 
     const handleSaveEdit = async (updated: Member) => {
-        updateMember(updated).then((updatedMember: Member) => {
-            onMemberUpdated(updatedMember);
-            setEditingMember(null);
-        })
+        const updatedMember = await updateMember(updated);
+        onMemberUpdated(updatedMember);
+        setEditingMember(null);
     };
 
     const menuOpen = Boolean(anchorEl);
@@ -132,7 +143,7 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
                     defaultColDef={{sortable: true, filter: true, resizable: true}}
                     pagination
                     paginationPageSize={20}
-                    rowSelection={"single"}
+                    rowSelection="single"
                     onSelectionChanged={handleSelectionChanged}
                 />
             </div>
@@ -147,5 +158,4 @@ export default function MemberTable({members, onMemberUpdated}: MemberTableProps
             )}
         </Box>
     );
-
 }
