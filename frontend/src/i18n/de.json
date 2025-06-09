@@ -1,4 +1,10 @@
 {
+  "header": {
+    "notifications": {
+      "none": "Keine Benachrichtigungen",
+      "deleteall": "Alle löschen"
+    }
+  },
   "menu": {
     "dashboard": "Startseite",
     "members": "Mitgliederverwaltung",
@@ -59,6 +65,7 @@
     }
   },
   "members": {
+    "automatedDeletionNotice": "wurde automatisch gelöscht.",
     "dialogs": {
       "sections": {
         "personal": "Persönliche Informationen",

@@ -3,11 +3,16 @@ import {DarkMode, LightMode} from '@mui/icons-material'
 import {useThemeContext} from '../../theme/ThemeContext'
 import {useTranslation} from "react-i18next";
 import React, {useState} from "react";
+import NotificationBell from "./NotificationBell";
+import {Notification} from "./NotificationBell";
 
 export default function Header() {
     const {i18n: i18nInstance} = useTranslation()
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const {mode, toggleTheme} = useThemeContext()
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const clearNotifications = () => setNotifications([]);
 
     const handleLanguageClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget)
@@ -54,6 +59,10 @@ export default function Header() {
                     <IconButton onClick={toggleTheme} color={"secondary"}>
                         {mode === 'light' ? <DarkMode/> : <LightMode/>}
                     </IconButton>
+                    <NotificationBell
+                        notifications={notifications}
+                        onClear={clearNotifications}
+                    />
                 </Box>
             </Toolbar>
         </AppBar>
