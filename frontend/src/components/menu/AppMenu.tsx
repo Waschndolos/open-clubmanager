@@ -2,7 +2,7 @@ import {Box, List, Typography} from "@mui/material";
 import AppMenuItem from "./AppMenuItem";
 import packageJson from '../../../package.json'
 import {useTranslation} from "react-i18next";
-import {Dashboard, Money, PermIdentity, Person2, PhonelinkSetup, Settings} from "@mui/icons-material";
+import {Dashboard, Money, PermIdentity, Person2, Settings} from "@mui/icons-material";
 
 
 export default function AppMenu() {
