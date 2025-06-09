@@ -24,7 +24,8 @@
   },
   "buttons": {
     "abort": "Abbrechen",
-    "save": "Speichern"
+    "save": "Speichern",
+    "delete": "Löschen"
   },
   "entities": {
     "edit": "Bearbeiten",
@@ -74,6 +75,10 @@
       },
       "create": {
         "title": "Neues Mitglied anlegen"
+      },
+      "delete": {
+        "title": "Mitglied löschen",
+        "description": "Willst du dieses Mitglied wirklich löschen?"
       }
     },
     "title": "Mitgliederverwaltung",

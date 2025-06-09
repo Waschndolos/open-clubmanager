@@ -70,6 +70,12 @@ export default function Members() {
         }
     };
 
+    const handleMemberDeleted = (deleted: Member) => {
+        setMembers((prevMembers) =>
+            prevMembers.filter((member) => member.id !== deleted.id)
+        );
+    }
+
     useEffect(() => {
         fetchMembers().then((members) => {
             setLoading(false);
@@ -120,7 +126,7 @@ export default function Members() {
                     {t("members.create")}
                 </Button>
             </Box>
-            <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated}/>
+            <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated} onMemberDeleted={handleMemberDeleted}/>
             {newMemberDialogOpen && (
                 <EditMemberDialog
                     member={createEmptyMember()}

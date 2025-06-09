@@ -24,7 +24,8 @@
   },
   "buttons": {
     "abort": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "delete": "Supprimer"
   },
   "entities": {
     "groups": {
@@ -72,6 +73,10 @@
       },
       "create": {
         "title": "Créer un nouveau membre"
+      },
+      "delete": {
+        "title": "Supprimer le membre",
+        "description": "Voulez-vous supprimer ce membre ?"
       }
     },
     "title": "Gestion des membres",
