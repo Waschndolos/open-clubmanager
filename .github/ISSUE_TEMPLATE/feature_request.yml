@@ -1,0 +1,49 @@
+name: 🚀 Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature] "
+labels: ["feature", "needs triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your suggestion! Please help us understand your idea clearly.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: A short and clear description of the feature
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Detailed Description
+      placeholder: Describe the feature, its purpose, and how it should behave
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why is this needed?
+      placeholder: Explain why this feature is useful or necessary
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or Workarounds
+      placeholder: Describe any workarounds you've tried or other options considered
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        🧭 This feature may be tracked in the project board:  
+        👉 [Open ClubManager Project Board](https://github.com/users/Waschndolos/projects/1)

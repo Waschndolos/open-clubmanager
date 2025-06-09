@@ -1,0 +1,33 @@
+name: 💬 General Question / Idea
+description: Ask a question or propose an open discussion
+title: "[Question] "
+labels: ["question", "discussion"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question, idea, or general topic to discuss? You're in the right place.
+
+  - type: input
+    id: title
+    attributes:
+      label: Topic
+      placeholder: A short title for your question or idea
+    validations:
+      required: true
+
+  - type: textarea
+    id: content
+    attributes:
+      label: Details
+      placeholder: Write your question, suggestion, or discussion topic here.
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        🧭 You can also track ideas in the project board:  
+        👉 [Open ClubManager Project Board](https://github.com/users/Waschndolos/projects/1)

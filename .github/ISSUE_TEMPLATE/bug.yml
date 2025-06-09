@@ -1,0 +1,81 @@
+name: 🐛 Bug Report
+description: Report an issue or unexpected behavior
+title: "[Bug] "
+labels: ["bug", "needs triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us reproduce and fix the problem.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Bug Summary
+      placeholder: A short and descriptive title
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      placeholder: What actually happened?
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: App Version
+      placeholder: e.g., v1.0.0, or "dev"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Operating System
+      options:
+        - Linux
+        - Windows
+        - macOS
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or Screenshots
+      placeholder: Paste logs here or add screenshots (use drag and drop)
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        🧭 This issue may be tracked in the project board:  
+        👉 [Open ClubManager Project Board](https://github.com/users/Waschndolos/projects/1)
