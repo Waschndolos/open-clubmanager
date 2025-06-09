@@ -55,14 +55,12 @@ function createWindow() {
         console.log(`Starting in dev mode`)
     }
 
-    const indexPath = isDev
-        ? path.join(__dirname, 'frontend', 'dist', 'index.html')
-        : path.join(__dirname, '..', '..', 'frontend', 'dist', 'index.html');
-
-
-    mainWindow.loadFile(indexPath).then(() =>console.log("Successfully loaded index.html")).catch(err => {
-        console.error('❌ Failed to load index.html:', err);
-    });
+    if (isDev) {
+        mainWindow.loadURL('http://localhost:5173');
+    } else {
+        const indexPath = path.join(__dirname, '..', '..', 'frontend', 'dist', 'index.html');
+        mainWindow.loadFile(indexPath);
+    }
 
 
     mainWindow.on('closed', () => {
