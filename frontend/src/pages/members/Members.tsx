@@ -9,11 +9,6 @@ import {EditMemberDialog} from "./EditMemberDialog";
 import {createMember, deleteMember, fetchMembers} from "../../components/api/members";
 import {useNotification} from "../../components/header/NotificationContext";
 
-const mockMembers: Member[] = [
-    {id: 1, firstName: "Anna", lastName: "Müller", email: "anna@example.com"},
-    {id: 2, firstName: "Max", lastName: "Meier", email: "max@example.com"},
-];
-
 export function createEmptyMember(): Member {
     return {
         id: 0,
@@ -45,7 +40,7 @@ export function createEmptyMember(): Member {
 
 export default function Members() {
     const {t} = useTranslation();
-    const [members, setMembers] = useState<Member[]>(mockMembers);
+    const [members, setMembers] = useState<Member[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState("");
