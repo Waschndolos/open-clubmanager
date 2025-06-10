@@ -1,10 +1,10 @@
-import {Box, Checkbox, FormControlLabel, IconButton, Menu, MenuItem, Typography} from "@mui/material";
+import {Box, Checkbox, FormControlLabel, IconButton, Menu, MenuItem, Tooltip, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {AgGridReact} from "ag-grid-react";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {Member} from "../../components/api/types";
 import {AllCommunityModule, ModuleRegistry, themeMaterial} from "ag-grid-community";
-import {Delete, ViewColumn} from "@mui/icons-material";
+import {Delete, FileDownload, ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
 import {deleteMember, updateMember} from "../../components/api/members";
@@ -12,6 +12,7 @@ import {useUserPreference} from "../../hooks/useUserPreference";
 import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
 import {useThemeContext} from "../../theme/ThemeContext";
 import {DeletingMemberDialog} from "./DeletingMemberDialog";
+import {ExportMembersDialog} from "./ExportMembersDialog";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -26,9 +27,10 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
     const gridRef = useRef<AgGridReact>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [editingMember, setEditingMember] = useState<Member | null>(null);
+    const [exportOpened, setExportOpened] = useState<boolean>(false);
     const [deletingMember, setDeletingMember] = useState<Member | null>(null);
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
-    const { getPreference, setPreference } = useUserPreference();
+    const {getPreference, setPreference} = useUserPreference();
     const keys = useMemo(() => {
         if (!members || members.length === 0) return [];
         return Object.keys(members[0]) as (keyof Member)[];
@@ -103,13 +105,17 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
         setDeletingMember(selectedMember);
     }
 
+    const handleExport = () => {
+        setExportOpened(true);
+    }
+
     const handleCloseMenu = () => {
         setAnchorEl(null);
     };
 
     const handleColumnToggle = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const visible = event.target.checked;
-        const newState = { ...columnVisibility, [key]: visible };
+        const newState = {...columnVisibility, [key]: visible};
         setColumnVisibility(newState);
         gridRef.current?.api.setColumnsVisible([key], visible);
         setPreference("memberTable.columns", newState);
@@ -133,28 +139,39 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                 <Typography variant="body1">{t("members.table.description")}</Typography>
 
                 <Box display="flex" justifyContent="end">
-                    <IconButton onClick={handleEditMember} disabled={!selectedMember} color={"primary"}>
-                        <EditIcon/>
-                    </IconButton>
-                    <IconButton onClick={handleDeleteMember} disabled={!selectedMember} color={"primary"}>
-                        <Delete/>
-                    </IconButton>
-                    <IconButton onClick={handleOpenMenu} color={"primary"}>
-                        <ViewColumn/>
-                    </IconButton>
+                    <Tooltip title={t("tooltips.edit")}>
+                        <IconButton onClick={handleEditMember} disabled={!selectedMember} color={"primary"}>
+                            <EditIcon/>
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t("tooltips.delete")}>
+                        <IconButton onClick={handleDeleteMember} disabled={!selectedMember} color={"primary"}>
+                            <Delete/>
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t("tooltips.export")}>
+                        <IconButton onClick={handleExport} color={"primary"}>
+                            <FileDownload/>
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t("tooltips.columnselection")}>
+                        <IconButton onClick={handleOpenMenu} color={"primary"}>
+                            <ViewColumn/>
+                        </IconButton>
+                    </Tooltip>
                 </Box>
 
                 <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleCloseMenu} sx={{height: "50%"}}>
                     {keys.map((key) => (
                         <MenuItem key={key} dense disableGutters>
                             <FormControlLabel sx={{paddingLeft: 1.5}}
-                                control={
-                                    <Checkbox
-                                        checked={columnVisibility[key]}
-                                        onChange={handleColumnToggle(key)}
-                                    />
-                                }
-                                label={t("members.table.header." + key)}
+                                              control={
+                                                  <Checkbox
+                                                      checked={columnVisibility[key]}
+                                                      onChange={handleColumnToggle(key)}
+                                                  />
+                                              }
+                                              label={t("members.table.header." + key)}
                             />
                         </MenuItem>
                     ))}
@@ -197,6 +214,9 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                             setDeletingMember(null)
                         })
                     }}/>
+            )}
+            {exportOpened && (
+                <ExportMembersDialog members={members} onClose={() => setExportOpened(false)}/>
             )}
         </Box>
     );
