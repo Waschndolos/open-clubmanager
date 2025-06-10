@@ -147,7 +147,7 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                 <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleCloseMenu} sx={{height: "50%"}}>
                     {keys.map((key) => (
                         <MenuItem key={key} dense disableGutters>
-                            <FormControlLabel
+                            <FormControlLabel sx={{paddingLeft: 1.5}}
                                 control={
                                     <Checkbox
                                         checked={columnVisibility[key]}
