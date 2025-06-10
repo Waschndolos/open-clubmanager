@@ -1,12 +1,28 @@
-import {app, BrowserWindow} from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import Store from 'electron-store';
+import { fileURLToPath } from 'url';
 import * as path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const isDev = !app.isPackaged;
 const iconPath = isDev
     ? path.join(__dirname, '..', '..', 'assets', 'clubmanager-icon.ico')
     : path.join(process.resourcesPath, 'assets', 'clubmanager-icon.ico');
 
+const preloadPath = path.join(__dirname, 'preload.cjs');
+
 let mainWindow: BrowserWindow | null = null;
+
+const store = new Store();
+
+ipcMain.on('electron-store-get', async (event, val) => {
+  event.returnValue = store.get(val);
+});
+ipcMain.on('electron-store-set', async (event, key, val) => {
+  store.set(key, val);
+});
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -47,6 +63,7 @@ function createWindow() {
         icon: iconPath,
         webPreferences: {
             contextIsolation: true,
+            preload: preloadPath
         },
     });
 
@@ -58,7 +75,7 @@ function createWindow() {
     if (isDev) {
         mainWindow.loadURL('http://localhost:5173');
     } else {
-        const indexPath = path.join(__dirname, '..', '..', 'frontend', 'dist', 'index.html');
+        const indexPath = path.join(__dirname, '..', '..', '..', 'frontend', 'dist', 'index.html');
         mainWindow.loadFile(indexPath);
     }
 
