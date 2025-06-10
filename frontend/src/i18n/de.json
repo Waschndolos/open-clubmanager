@@ -28,10 +28,17 @@
       "description": "Konfiguriere dir Open Clubmanager so wie du es brauchst."
     }
   },
+  "tooltips": {
+    "edit": "Editieren",
+    "delete": "Löschen",
+    "export": "Exportieren",
+    "columnselection": "Spaltenauswahl"
+  },
   "buttons": {
     "abort": "Abbrechen",
     "save": "Speichern",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "export": "Exportieren"
   },
   "entities": {
     "edit": "Bearbeiten",
@@ -67,6 +74,10 @@
   "members": {
     "automatedDeletionNotice": "wurde automatisch gelöscht.",
     "dialogs": {
+      "export": {
+        "title": "Mitgliederliste exportieren",
+        "description": "Hier kann die Mitgliederliste als Excel Liste exportiert werden."
+      },
       "sections": {
         "personal": "Persönliche Informationen",
         "adress": "Adresse",

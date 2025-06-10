@@ -25,7 +25,14 @@
   "buttons": {
     "abort": "Cancel",
     "save": "Save",
-    "delete": "Delete"
+    "delete": "Delete",
+    "export": "Export"
+  },
+  "tooltips": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "export": "Export",
+    "columnselection": "Column selection"
   },
   "entities": {
     "groups": {
@@ -58,6 +65,10 @@
   },
   "members": {
     "dialogs": {
+      "export": {
+        "title": "Export member list",
+        "description": "You can export the member list as an Excel file here."
+      },
       "sections": {
         "personal": "Personal Information",
         "adress": "Address",
