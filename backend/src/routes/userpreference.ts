@@ -1,22 +1,58 @@
 import express from 'express';
-import dotenv from 'dotenv'
-import { PrismaClient } from '@prisma/client';
-dotenv.config()
+import { prisma } from '../prismaClient.ts';
+import fs from 'fs/promises';
+import { fileURLToPath } from 'url';
+import * as path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const configFilePath = path.join(__dirname, '..', '..', 'app-settings.json');
 
 const router = express.Router();
-const prisma = new PrismaClient({
-    datasources: {
-        db: {
-            url: process.env.DATABASE_URL
-        }
-    }
-})
+
+const getConfig = async () => {
+    
+    const configContent = await fs.readFile(configFilePath, 'utf8');
+    const config = JSON.parse(configContent);
+
+    return config;
+}
 
 //GET /api/preferences
 router.get('/', async (_, res) => {
     const sections = await prisma.userPreference.findMany();
     res.json(sections);
 });
+
+//GET /api/preferences/app
+router.get('/app', async (req, res, next) => {
+    try {
+        const config = await getConfig();
+
+        res.json(config);
+    } catch (err) {
+        console.error('Error loading preferences', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// GET /api/preferences/app/:key
+router.get('/app/:key', async (req, res) => {
+    try {
+        const key = req.params.key;
+        const config = await getConfig();
+
+        if (!config.hasOwnProperty(key)) {
+            res.status(404).json({ error: 'Key not found in app preferences' });
+            return;
+        }
+
+        res.json({ [key]: config[key] });
+    } catch (err) {
+        console.error('Error loading app preferences', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
 
 //GET /api/preferences/:key
 router.get('/:key', async (_req, res) => {
@@ -39,7 +75,6 @@ router.get('/:key', async (_req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 //POST /api/preferences
 router.post('/', async (req, res) => {
@@ -70,6 +105,29 @@ router.post('/', async (req, res) => {
     }
 })
 
+//PUT /api/preferences/app/:key
+router.put('/app/:key', async (req, res) => {
+    try {
+        const key = req.params.key;
+        const value = req.body.value;
+
+        const config = await getConfig();
+
+        if (!config.hasOwnProperty(key)) {
+            res.status(404).json({ error: 'Key not found in app preferences' });
+            return;
+        }
+
+        config[key] = value;
+        await fs.writeFile(configFilePath, JSON.stringify(config, null, 2), 'utf8');
+
+        res.json({ message: 'app preferences updated', [key]: value });
+    } catch (err) {
+        console.error('Error updating ', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { key, value  } = req.body;
@@ -83,7 +141,6 @@ router.put('/:id', async (req, res) => {
         res.status(400).json({ error: 'Could not update section' });
     }
 });
-
 
 export default router;
 

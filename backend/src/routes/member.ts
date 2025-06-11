@@ -1,14 +1,6 @@
 import express from 'express'
-import { PrismaClient } from '@prisma/client'
-import dotenv from 'dotenv'
-dotenv.config()
-const prisma = new PrismaClient({
-    datasources: {
-        db: {
-            url: process.env.DATABASE_URL
-        }
-    }
-})
+import { prisma } from '../prismaClient.ts';
+
 const router = express.Router()
 
 // GET /api/members – List all members

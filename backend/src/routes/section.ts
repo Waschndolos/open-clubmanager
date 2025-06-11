@@ -1,16 +1,8 @@
 import express from 'express';
-import dotenv from 'dotenv'
-import { PrismaClient } from '@prisma/client';
-dotenv.config()
+import { prisma } from '../prismaClient.ts';
 
 const router = express.Router();
-const prisma = new PrismaClient({
-    datasources: {
-        db: {
-            url: process.env.DATABASE_URL
-        }
-    }
-})
+
 router.get('/', async (_, res) => {
     const sections = await prisma.clubSection.findMany();
     res.json(sections);
