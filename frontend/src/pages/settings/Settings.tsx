@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -15,10 +16,10 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-export const Settings = () => {
+export function Settings() {
   const { t, i18n } = useTranslation();
 
-  const [dbPath, setDbPath] = useState<string>('');
+  const [dbPath, setDbPath] = useState<string>(window.apppreference.get('DATABASE_URL') || '');
   const [loading, setLoading] = useState<boolean>(false);
   const [language, setLanguage] = useState<string>('en');
   const [snackBarState, setsnackBarState] = useState<{open: boolean, message:string}>({
@@ -30,12 +31,8 @@ export const Settings = () => {
     return Object.keys(i18n.services.resourceStore.data);
   }
 
-  const fetchPreference = () => {
-
-  }
-
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('language');
+    const savedLanguage = window.userpreference?.get('1', 'language') || 'de'; // TODO: use userID as soon as we have auth
 
     if (savedLanguage) {
       setLanguage(savedLanguage);
@@ -44,8 +41,9 @@ export const Settings = () => {
   }, [i18n]);
 
   const saveSettings = () => {
-    localStorage.setItem('language', language);
+    window.userpreference?.set('1', 'language', language); // TODO: use userID as soon as we have auth
     i18n.changeLanguage(language);
+   + window.apppreference.set('DATABASE_URL', dbPath)
 
     setsnackBarState({
       open: true,
