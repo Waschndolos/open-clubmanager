@@ -17,11 +17,35 @@ let mainWindow: BrowserWindow | null = null;
 
 const store = new Store();
 
-ipcMain.on('electron-store-get', async (event, val) => {
-  event.returnValue = store.get(val);
+ipcMain.on('userpreference-get', async (event, userId, key) => {
+  event.returnValue = store.get(`${key}-${userId}`);
 });
-ipcMain.on('electron-store-set', async (event, key, val) => {
-  store.set(key, val);
+
+ipcMain.on('userpreference-set', async (event, userId, key, value) => {
+  store.set(`${key}-${userId}`, value);
+});
+
+ipcMain.on('userpreference-delete', async (event, userId, key, value) => {
+  store.set(`${key}-${userId}`, value);
+});
+
+ipcMain.on('apppreference-get', async (event, key) => {
+  const res = await fetch(`http://localhost:3001/api/preference/app/${key}`);
+  const data = await res.json();
+  
+  event.returnValue = data[key];
+});
+
+ipcMain.on('apppreference-set', async (event, key, value) => {
+
+  const response = await fetch(`http://localhost:3001/api/preference/app/${key}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ value })
+  });
+
 });
 
 const gotTheLock = app.requestSingleInstanceLock();
