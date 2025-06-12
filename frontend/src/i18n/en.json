@@ -32,6 +32,7 @@
     "edit": "Edit",
     "delete": "Delete",
     "export": "Export",
+    "import": "Import",
     "columnselection": "Column selection"
   },
   "entities": {
