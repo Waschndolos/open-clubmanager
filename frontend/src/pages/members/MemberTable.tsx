@@ -4,7 +4,7 @@ import {AgGridReact} from "ag-grid-react";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {Member} from "../../components/api/types";
 import {AllCommunityModule, ModuleRegistry, themeMaterial} from "ag-grid-community";
-import {Delete, FileDownload, ViewColumn} from "@mui/icons-material";
+import {Delete, FileDownload, FileUpload, ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
 import {deleteMember, updateMember} from "../../components/api/members";
@@ -13,6 +13,7 @@ import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} fr
 import {useThemeContext} from "../../theme/ThemeContext";
 import {DeletingMemberDialog} from "./DeletingMemberDialog";
 import {ExportMembersDialog} from "./ExportMembersDialog";
+import ImportMembersWizard from "./ImportMembersWizard";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -31,6 +32,8 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
     const [deletingMember, setDeletingMember] = useState<Member | null>(null);
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
     const {getPreference, setPreference} = useUserPreference();
+    const [importWizardOpen, setImportWizardOpen] = useState(false);
+
     const keys = useMemo(() => {
         if (!members || members.length === 0) return [];
         return Object.keys(members[0]) as (keyof Member)[];
@@ -154,6 +157,20 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                             <FileDownload/>
                         </IconButton>
                     </Tooltip>
+                    <Tooltip title={t("tooltips.import")}>
+                        <IconButton onClick={() => setImportWizardOpen(true)} color={"primary"}>
+                            <FileUpload />
+                        </IconButton>
+                    </Tooltip>
+
+                    {importWizardOpen && (
+                        <ImportMembersWizard
+                            onClose={() => setImportWizardOpen(false)}
+                            onImport={(imported: Member[]) => {
+                                imported.forEach(onMemberUpdated);
+                            }}
+                        />
+                    )}
                     <Tooltip title={t("tooltips.columnselection")}>
                         <IconButton onClick={handleOpenMenu} color={"primary"}>
                             <ViewColumn/>
