@@ -89,7 +89,7 @@ export function Settings() {
           <Select
             labelId="language-select-label"
             value={language}
-            label={t("settings.labels.dbPath")}
+            label={t("settings.labels.language")}
             onChange={(e) => {
               const lng = e.target.value;
               setLanguage(lng);
