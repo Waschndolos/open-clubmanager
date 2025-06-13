@@ -10,7 +10,6 @@ import {
   Paper,
   Fade,
   Box,
-  CircularProgress,
   Snackbar
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
