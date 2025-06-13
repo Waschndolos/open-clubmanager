@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container,
   Typography,
   TextField,
   Select,
@@ -20,7 +19,6 @@ export function Settings() {
   const { t, i18n } = useTranslation();
 
   const [dbPath, setDbPath] = useState<string>(window.apppreference.get('DATABASE_URL') || '');
-  const [loading, setLoading] = useState<boolean>(false);
   const [language, setLanguage] = useState<string>('en');
   const [snackBarState, setsnackBarState] = useState<{open: boolean, message:string}>({
     open: false,
@@ -50,19 +48,6 @@ export function Settings() {
       message: t("settings.labels.saveSuccess")
     });
   };
-
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <Box sx={{ p: 4 }}>
