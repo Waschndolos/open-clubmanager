@@ -4,6 +4,7 @@
   "author": "Waschndolos",
   "description": "Open Clubmanager ",
   "main": "electron/dist/main.js",
+  "type": "module",
   "scripts": {
     "dev:browser": "concurrently -k -n FRONTEND,BACKEND -c yellow,cyan \"npm --prefix frontend run dev:frontend\" \"npm --prefix backend run dev:backend\"",
     "dev:electronapp": "concurrently -k -n FRONTEND,BACKEND,ELECTRON -c yellow,cyan,green \"npm --prefix frontend run dev:frontend\" \"npm --prefix backend run dev:backend\" \"wait-on http://localhost:5173 && tsc --project electron/tsconfig.json && electron .\"",
@@ -21,5 +22,9 @@
     "electron": "^29.4.6",
     "electron-builder": "^24.13.3",
     "wait-on": "^8.0.3"
+  },
+  "dependencies": {
+    "conf": "^14.0.0",
+    "electron-store": "^10.0.1"
   }
 }

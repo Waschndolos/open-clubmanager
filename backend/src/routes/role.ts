@@ -1,16 +1,8 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
-import dotenv from 'dotenv'
-dotenv.config()
+import { prisma } from '../prismaClient.ts';
 
 const router = express.Router();
-const prisma = new PrismaClient({
-    datasources: {
-        db: {
-            url: process.env.DATABASE_URL
-        }
-    }
-})
+
 router.get('/', async (_, res) => {
     const roles = await prisma.role.findMany();
     res.json(roles);
