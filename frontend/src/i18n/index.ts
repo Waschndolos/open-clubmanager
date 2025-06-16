@@ -13,10 +13,14 @@ i18n
             en: { translation: en },
             fr: { translation: fr },
         },
-        lng: 'de',
+        lng: window.userpreference?.get('1', 'language') || 'de',
         fallbackLng: 'en',
         interpolation: {
             escapeValue: false,
+        },
+        detection: {
+          order: ['localStorage', 'navigator'],
+          caches: ['localStorage'],
         },
     });
 

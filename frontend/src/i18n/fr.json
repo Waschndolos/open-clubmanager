@@ -122,5 +122,21 @@
         "actions": "Actions"
       }
     }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "description": "Configurez Open Clubmanager selon vos besoins.",
+    "languages": {
+      "de": "Allemand",
+      "en": "Anglais",
+      "fr": "Français"
+    },
+    "labels": {
+      "language": "Langue",
+      "dbPath": "Chemin de la base de données",
+      "save": "Enregistrer",
+      "saveSuccess": "Paramètres enregistrés avec succès !",
+      "saveFails": "Échec de l'enregistrement des paramètres !"
+    }
   }
 }

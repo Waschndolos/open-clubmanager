@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
+    "moduleResolution": "bundler",
+    "module": "es2020",
+    "target": "es2020",
     "outDir": "dist",
     "rootDir": ".",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "moduleDetection": "force"
   },
-  "include": ["main.ts", "preload.ts"]
+  "include": ["main.ts", "preload.cts"],
+  "exclude": ["dist", "node_modules"]
 }
