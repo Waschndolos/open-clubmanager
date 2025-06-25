@@ -4,8 +4,14 @@ import {useThemeContext} from '../../theme/ThemeContext'
 import {useTranslation} from "react-i18next";
 import React, {useState} from "react";
 import NotificationBell from "./NotificationBell";
+import MenuIcon from "@mui/icons-material/Menu";
 
-export default function Header() {
+type HeaderProps = {
+    sidebarCollapsed: boolean;
+    onToggleSidebar: () => void;
+};
+
+export default function Header({ sidebarCollapsed, onToggleSidebar }: HeaderProps) {
     const {i18n: i18nInstance} = useTranslation()
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -35,6 +41,15 @@ export default function Header() {
     return (
         <AppBar position="static" color="primary">
             <Toolbar>
+                <IconButton
+                    color="inherit"
+                    edge="start"
+                    onClick={onToggleSidebar}
+                    sx={{ mr: 2 }}
+                    aria-label="toggle sidebar"
+                >
+                    <MenuIcon />
+                </IconButton>
                 <Typography variant="h6" sx={{flexGrow: 1, paddingLeft: 2}}>
                     Open ClubManager
                 </Typography>
