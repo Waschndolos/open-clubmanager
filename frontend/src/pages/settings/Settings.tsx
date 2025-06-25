@@ -13,11 +13,13 @@ import {
   Snackbar
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { apppreference, userpreference} from "../../lib/preferences";
 
 export function Settings() {
   const { t, i18n } = useTranslation();
 
-  const [dbPath, setDbPath] = useState<string>(window.apppreference.get('DATABASE_URL') || '');
+  const raw = apppreference.get('DATABASE_URL');
+  const [dbPath, setDbPath] = useState<string>(typeof raw == 'string' ? raw : '');
   const [language, setLanguage] = useState<string>('en');
   const [snackBarState, setsnackBarState] = useState<{open: boolean, message:string}>({
     open: false,
@@ -29,18 +31,17 @@ export function Settings() {
   }
 
   useEffect(() => {
-    const savedLanguage = window.userpreference?.get('1', 'language') || 'de'; // TODO: use userID as soon as we have auth
+      const raw = userpreference?.get('1', 'language');
+      const savedLanguage = typeof raw === 'string' ? raw : 'de';
 
-    if (savedLanguage) {
       setLanguage(savedLanguage);
       i18n.changeLanguage(savedLanguage);
-    }
   }, [i18n]);
 
   const saveSettings = () => {
-    window.userpreference?.set('1', 'language', language); // TODO: use userID as soon as we have auth
+    userpreference?.set('1', 'language', language); // TODO: use userID as soon as we have auth
     i18n.changeLanguage(language);
-   + window.apppreference.set('DATABASE_URL', dbPath)
+   + apppreference.set('DATABASE_URL', dbPath)
 
     setsnackBarState({
       open: true,
