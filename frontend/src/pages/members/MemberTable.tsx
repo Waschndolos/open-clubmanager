@@ -177,24 +177,26 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                     ))}
                 </Menu>
             </Box>
-            <div style={{height: "100%", width: "100%"}}>
-                <AgGridReact
-                    ref={gridRef}
-                    className={themeContext.mode == 'dark' ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'}
-                    suppressMovableColumns={true}
-                    rowData={members}
-                    columnDefs={columnDefs.map((col) => ({
-                        ...col,
-                        hide: !columnVisibility[col.field ?? ""],
-                    }))}
-                    theme={themeMaterial}
-                    defaultColDef={{sortable: true, filter: true, resizable: true}}
-                    pagination
-                    paginationPageSize={20}
-                    rowSelection="single"
-                    onSelectionChanged={handleSelectionChanged}
-                />
-            </div>
+            <Box sx={{height: "calc(100vh - 300px)", width: "100%", overflowX: "auto"}}>
+                <div style={{minWidth: "1000px", height: "100%"}}>
+                    <AgGridReact
+                        ref={gridRef}
+                        className={themeContext.mode == 'dark' ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'}
+                        suppressMovableColumns={true}
+                        rowData={members}
+                        columnDefs={columnDefs.map((col) => ({
+                            ...col,
+                            hide: !columnVisibility[col.field ?? ""],
+                        }))}
+                        theme={themeMaterial}
+                        defaultColDef={{sortable: true, filter: true, resizable: true, minWidth: 150}}
+                        pagination
+                        paginationPageSize={20}
+                        rowSelection="single"
+                        onSelectionChanged={handleSelectionChanged}
+                    />
+                </div>
+            </Box>
             {editingMember && (
                 <EditMemberDialog
                     member={editingMember!}
