@@ -29,10 +29,22 @@ export default function AppMenu({ collapsed }: Props) {
                 <AppMenuItem label={t("menu.settings")} icon={<Settings />} link="settings" collapsed={collapsed} />
             </List>
 
-            <Box sx={{ marginTop: "auto", textAlign: "center" }}>
-                <Typography variant="body2" color="text.secondary" noWrap>
-                    {collapsed ? packageJson.version : `Version ${packageJson.version}`}
-                </Typography>
+            <Box sx={{ marginTop: "auto", textAlign: "center", py: 1 }}>
+                {collapsed ? (
+                    <Box>
+                        {packageJson.version.split("").map((char, index) => (
+                            <Typography key={index} variant="caption" color="text.secondary">
+                                {char}
+                            </Typography>
+                        ))}
+                    </Box>
+                ) : (
+                    <Typography variant="body2" color="text.secondary" noWrap>
+                        Version {packageJson.version}
+                    </Typography>
+                )}
+
+
             </Box>
         </Box>
     );
