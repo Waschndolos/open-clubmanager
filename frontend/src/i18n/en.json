@@ -71,10 +71,11 @@
       },
       "sections": {
         "personal": "Personal Information",
-        "adress": "Address",
+        "address": "Address",
         "bank": "Bank Details",
         "membership": "Membership",
-        "assignments": "Assignments"
+        "assignments": "Assignments",
+        "entities": "Club Entities"
       },
       "validation": {
         "emailRequired": "Email is a required field"

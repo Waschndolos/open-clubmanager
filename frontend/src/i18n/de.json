@@ -80,10 +80,11 @@
       },
       "sections": {
         "personal": "Persönliche Informationen",
-        "adress": "Adresse",
+        "address": "Adresse",
         "bank": "Bankinformationen",
         "membership": "Mitgliedschaft",
-        "assignments": "Zugehörigkeiten"
+        "assignments": "Zugehörigkeiten",
+        "entities": "Vereinsverwaltung"
       },
       "validation": {
         "emailRequired": "Email ist ein Pflichtfeld"
