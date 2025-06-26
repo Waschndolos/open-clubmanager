@@ -20,7 +20,7 @@ export default function MainLayout() {
                         width: sidebarCollapsed ? 60 : "20%",
                         minWidth: sidebarCollapsed ? 60 : "20%",
                         borderRight: "1px solid #ddd",
-                        transition: "width 0.3s",
+                        transition: "width 0.3s, min-width 0.3s",
                         overflowY: "auto",
                         bgcolor: "background.paper",
                     }}
