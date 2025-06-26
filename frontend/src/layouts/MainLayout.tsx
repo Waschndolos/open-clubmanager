@@ -17,8 +17,8 @@ export default function MainLayout() {
             <Box sx={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
                 <Box
                     sx={{
-                        width: sidebarCollapsed ? 60 : "30%",
-                        minWidth: sidebarCollapsed ? 60 : 200,
+                        width: sidebarCollapsed ? 60 : "20%",
+                        minWidth: sidebarCollapsed ? 60 : "20%",
                         borderRight: "1px solid #ddd",
                         transition: "width 0.3s",
                         overflowY: "auto",
