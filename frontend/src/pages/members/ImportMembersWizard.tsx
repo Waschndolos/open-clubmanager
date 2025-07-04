@@ -1,6 +1,6 @@
-import {useState} from "react";
-import {Member} from "../../components/api/types";
-import * as XLSX from 'xlsx';
+import { useState } from "react";
+import { Member } from "../../components/api/types";
+import * as XLSX from "xlsx";
 import {
     Alert,
     Box,
@@ -11,9 +11,9 @@ import {
     DialogTitle,
     MenuItem,
     Select,
-    Typography
+    Typography,
 } from "@mui/material";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     onClose: () => void;
@@ -42,25 +42,25 @@ const memberFields: (keyof Member)[] = [
     "roles",
     "groups",
     "sections",
-    "comment"
+    "comment",
 ];
 
-export default function ImportMembersWizard({onClose, onImport}: Props) {
+export default function ImportMembersWizard({ onClose, onImport }: Props) {
     const [step, setStep] = useState(0);
-    const [file, setFile] = useState<File | null>(null);
     const [headers, setHeaders] = useState<string[]>([]);
     const [rows, setRows] = useState<(string | number | null)[][]>([]);
-    const [mapping, setMapping] = useState<Record<string, keyof Member>>({});
-    const {t} = useTranslation();
+    // mapping erlaubt jetzt auch "", um "Ignorieren" abzubilden
+    const [mapping, setMapping] = useState<Record<string, keyof Member | "">>({});
+    const { t } = useTranslation();
 
     const handleFileUpload = (f: File) => {
         const reader = new FileReader();
         reader.onload = (e) => {
             const data = new Uint8Array(e.target?.result as ArrayBuffer);
-            const workbook = XLSX.read(data, {type: "array"});
+            const workbook = XLSX.read(data, { type: "array" });
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(sheet, {header: 1}) as any[][];
-            setHeaders(json[0]);
+            const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
+            setHeaders(json[0].map(String));
             setRows(json.slice(1));
             setStep(1);
         };
@@ -71,7 +71,7 @@ export default function ImportMembersWizard({onClose, onImport}: Props) {
         const entry: Partial<Member> = {};
         headers.forEach((header, i) => {
             const key = mapping[header];
-            if (key) entry[key] = row[i] as any;
+            if (key && key !== "") entry[key] = row[i] as any;
         });
         return entry;
     });
@@ -79,27 +79,25 @@ export default function ImportMembersWizard({onClose, onImport}: Props) {
     const isMappingValid = Object.values(mapping).includes("email");
 
     const hasDuplicateEmails = (() => {
+        const emailIndex = headers.findIndex((h) => mapping[h] === "email");
+        if (emailIndex === -1) return false;
         const emails = rows
-            .map((row) => {
-                const i = headers.findIndex((h) => mapping[h] === "email");
-                return i >= 0 ? row[i] : null;
-            })
+            .map((row) => row[emailIndex])
             .filter((email): email is string => !!email);
-
         return new Set(emails).size !== emails.length;
     })();
 
     return (
         <Dialog open onClose={onClose} maxWidth="md" fullWidth>
-                <DialogTitle>
+            <DialogTitle>
                 {t(
                     step === 0
                         ? "members.dialogs.import.1.title"
                         : step === 1
-                        ? "members.dialogs.import.2.title"
-                        : "members.dialogs.import.3.title"
+                            ? "members.dialogs.import.2.title"
+                            : "members.dialogs.import.3.title"
                 )}
-                </DialogTitle>
+            </DialogTitle>
 
             <DialogContent>
                 {step === 0 && (
@@ -118,28 +116,39 @@ export default function ImportMembersWizard({onClose, onImport}: Props) {
                 {step === 1 && (
                     <Box>
                         <Typography>{t("members.dialogs.import.2.description")}</Typography>
-                        {headers.map((h) => (
-                            <Box key={h} display="flex" gap={2} mt={1}>
-                                <Typography sx={{width: 150}}>{h}</Typography>
-                                <Select
-                                    fullWidth
-                                    value={mapping[h] || ""}
-                                    onChange={(e) =>
-                                        setMapping((prev) => ({
-                                            ...prev,
-                                            [h]: e.target.value as keyof Member
-                                        }))
-                                    }
-                                >
-                                    <MenuItem value="">{t("members.dialogs.import.2.ignore")}</MenuItem>
-                                    {memberFields.map((k) => (
-                                        <MenuItem key={k} value={k}>
-                                            {k}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </Box>
-                        ))}
+                        {headers.map((h) => {
+                            // Alle aktuell gewählten Felder außer dem für das aktuelle Header h
+                            const selectedFields = Object.entries(mapping)
+                                .filter(([key]) => key !== h) // andere Header
+                                .map(([, value]) => value)
+                                .filter((v) => v !== "" && v !== undefined);
+
+                            return (
+                                <Box key={h} display="flex" gap={2} mt={1} alignItems="center">
+                                    <Typography sx={{ width: 150 }}>{h}</Typography>
+                                    <Select
+                                        fullWidth
+                                        value={mapping[h] || ""}
+                                        onChange={(e) =>
+                                            setMapping((prev) => ({
+                                                ...prev,
+                                                [h]: e.target.value as keyof Member | "",
+                                            }))
+                                        }
+                                    >
+                                        <MenuItem value="">{t("members.dialogs.import.2.ignore")}</MenuItem>
+                                        {memberFields
+                                            .filter((k) => !selectedFields.includes(k)) // nur Felder die noch nicht gewählt sind
+                                            .map((k) => (
+                                                <MenuItem key={k} value={k}>
+                                                    {k}
+                                                </MenuItem>
+                                            ))}
+                                    </Select>
+                                </Box>
+                            );
+                        })}
+
                     </Box>
                 )}
 
@@ -151,7 +160,9 @@ export default function ImportMembersWizard({onClose, onImport}: Props) {
                             </Alert>
                         )}
                         <Typography>{t("members.dialogs.import.3.title")}</Typography>
-                        <pre>{JSON.stringify(mappedPreview, null, 2)}</pre>
+                        <pre style={{ maxHeight: 300, overflow: "auto" }}>
+              {JSON.stringify(mappedPreview, null, 2)}
+            </pre>
                     </Box>
                 )}
             </DialogContent>
@@ -179,7 +190,7 @@ export default function ImportMembersWizard({onClose, onImport}: Props) {
                                 const entry: Partial<Member> = {};
                                 headers.forEach((h, i) => {
                                     const k = mapping[h];
-                                    if (k) entry[k] = row[i] as any;
+                                    if (k && k !== "") entry[k] = row[i] as any;
                                 });
                                 return entry as Member;
                             });
