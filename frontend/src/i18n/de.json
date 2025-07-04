@@ -39,7 +39,10 @@
     "abort": "Abbrechen",
     "save": "Speichern",
     "delete": "Löschen",
-    "export": "Exportieren"
+    "export": "Exportieren",
+    "import": "Importieren",
+    "back": "Zurück",
+    "next": "Weiter"
   },
   "entities": {
     "edit": "Bearbeiten",
@@ -78,6 +81,19 @@
       "export": {
         "title": "Mitgliederliste exportieren",
         "description": "Hier kann die Mitgliederliste als Excel Liste exportiert werden."
+      },
+      "import": {
+        "1": {
+          "title": "Mitglieder importieren",
+          "select": "Excel-Datei auswählen"
+        },
+        "2": {
+          "title": "Spalten zuordnen",
+          "description": "Ordne die Excel Spalten zu dem Open ClubManager Modell zu."
+        },
+        "3": {
+          "title": "Vorschau"
+        }
       },
       "sections": {
         "personal": "Persönliche Informationen",
