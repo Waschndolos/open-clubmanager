@@ -89,7 +89,8 @@
         },
         "2": {
           "title": "Spalten zuordnen",
-          "description": "Ordne die Excel Spalten zu dem Open ClubManager Modell zu."
+          "description": "Ordne die Excel Spalten zu dem Open ClubManager Modell zu.",
+          "ignore": "--- Ignorieren ---"
         },
         "3": {
           "title": "Vorschau"

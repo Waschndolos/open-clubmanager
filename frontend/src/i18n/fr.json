@@ -89,7 +89,8 @@
         },
         "2": {
           "title": "Attribuer les colonnes",
-          "description": "Attribuez les colonnes au modèle d’Open Clubmanager."
+          "description": "Attribuez les colonnes au modèle d’Open Clubmanager.",
+          "ignore": "--- Ignorer ---"
         },
         "3": {
           "title": "Aperçu"

@@ -89,7 +89,8 @@
         },
         "2": {
           "title": "Assign Columns",
-          "description": "Assign columns to the Open ClubManager model."
+          "description": "Assign columns to the Open ClubManager model.",
+          "ignore": "--- Ignore ---"
         },
         "3": {
           "title": "Preview"
