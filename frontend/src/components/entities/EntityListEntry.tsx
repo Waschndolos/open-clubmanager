@@ -60,6 +60,14 @@ export function EntityListEntry<T extends Entity>({
                         </IconButton>
                     </Box>
                 }
+                sx={{
+                    backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#fff',
+                    borderRadius: 2,
+                    mb: 1,
+                    boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 2px 8px 0 rgba(142,202,230,0.08)' : '0 1px 4px 0 rgba(0,0,0,0.04)',
+                    border: (theme) => theme.palette.mode === 'dark' ? '1px solid #31324b' : '1px solid #e0e7ef',
+                    transition: 'background 0.3s, box-shadow 0.3s',
+                }}
             >
                 <ListItemText
                     primary={item.name}

@@ -69,7 +69,13 @@ export function EntityManager<T extends NamedEntity>({
                 </Button>
             </Box>
 
-            <List>
+            <List sx={{
+                backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#181926' : '#f4f6f8',
+                borderRadius: 3,
+                boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 2px 12px 0 rgba(142,202,230,0.10)' : '0 1px 4px 0 rgba(0,0,0,0.04)',
+                p: 2,
+                transition: 'background 0.3s',
+            }}>
                 {entities.map(e => (
                     <EntityListEntry
                         key={e.id}
@@ -80,7 +86,16 @@ export function EntityManager<T extends NamedEntity>({
                 ))}
             </List>
 
-            <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+            <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth
+                PaperProps={{
+                    sx: {
+                        backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#fff',
+                        borderRadius: 4,
+                        boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 4px 24px 0 rgba(142,202,230,0.15)' : '0 2px 8px 0 rgba(0,0,0,0.10)',
+                        transition: 'background 0.3s',
+                    }
+                }}
+            >
                 <DialogTitle>{labels.createButton ?? t("entities.create")}</DialogTitle>
                 <DialogContent sx={{ pt: 2 }}>
                     <TextField
