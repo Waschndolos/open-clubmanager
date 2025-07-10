@@ -95,14 +95,16 @@ export function Settings() {
         onClick={saveSettings}
         sx={{ mt: 2 }}
       >
-        Save Settings
+          {t("buttons.save")}
       </Button>
 
       <Snackbar
         open={snackBarState.open}
         color="primary"
         onClose={() => setsnackBarState({ ...snackBarState, open: false })}
-        TransitionComponent={Fade}
+        slots={{
+          transition: Fade
+        }}
         message={snackBarState.message}
         autoHideDuration={3000}
       />
