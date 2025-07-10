@@ -1,4 +1,10 @@
 {
+  "header": {
+    "notifications": {
+      "none": "No Notifications",
+      "deleteall": "Delete all"
+    }
+  },
   "menu": {
     "dashboard": "Dashboard",
     "members": "Member Management",
@@ -22,19 +28,25 @@
       "description": "Configure Open Clubmanager to suit your needs."
     }
   },
-  "buttons": {
-    "abort": "Cancel",
-    "save": "Save",
-    "delete": "Delete",
-    "export": "Export"
-  },
   "tooltips": {
     "edit": "Edit",
     "delete": "Delete",
     "export": "Export",
+    "import": "Import",
     "columnselection": "Column selection"
   },
+  "buttons": {
+    "abort": "Abort",
+    "save": "Save",
+    "delete": "Delete",
+    "export": "Export",
+    "import": "Import",
+    "back": "Back",
+    "next": "Next"
+  },
   "entities": {
+    "edit": "Edit",
+    "create": "Create",
     "groups": {
       "title": "Group Management",
       "description": "Organize members into thematic or organizational groups, such as training units, project teams, or age categories. Groups help you filter, manage fees, and reflect internal club structures.",
@@ -64,10 +76,25 @@
     }
   },
   "members": {
+    "automatedDeletionNotice": "was automatically deleted.",
     "dialogs": {
       "export": {
         "title": "Export member list",
         "description": "You can export the member list as an Excel file here."
+      },
+      "import": {
+        "1": {
+          "title": "Import Members",
+          "select": "Select Excel-File"
+        },
+        "2": {
+          "title": "Assign Columns",
+          "description": "Assign columns to the Open ClubManager model.",
+          "ignore": "--- Ignore ---"
+        },
+        "3": {
+          "title": "Preview"
+        }
       },
       "sections": {
         "personal": "Personal Information",
@@ -96,6 +123,7 @@
     "create": "Add Member",
     "table": {
       "description": "Select a member from the list and click the edit icon to edit it.",
+      "importInProgress": "Member import in progress...",
       "header": {
         "id": "ID",
         "number": "Member Number",
@@ -133,11 +161,11 @@
       "fr": "Français"
     },
     "labels": {
-      "language" : "Language",
-      "dbPath" : "Database Path",
-      "save" : "Database Path",
-      "saveSuccess" : "Settings saved successfully!",
-      "saveFails" : "Failed to save settings!"
+      "language": "Language",
+      "dbPath": "Database Path",
+      "save": "Database Path",
+      "saveSuccess": "Settings saved successfully!",
+      "saveFails": "Failed to save settings!"
     }
   }
 }

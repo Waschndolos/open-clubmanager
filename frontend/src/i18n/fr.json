@@ -1,21 +1,27 @@
 {
+  "header": {
+    "notifications": {
+      "none": "Aucune notification",
+      "deleteall": "Tout supprimer"
+    }
+  },
   "menu": {
-    "dashboard": "Accueil",
+    "dashboard": "Tableau de bord",
     "members": "Gestion des membres",
     "finance": "Finances",
     "settings": "Paramètres",
-    "entities": "Gestion du club"
+    "entities": "Entités du club"
   },
   "dashboard": {
-    "welcome": "Bienvenue sur Open Clubmanager",
+    "welcome": "Bienvenue dans Open Clubmanager",
     "description": "L'application pour gérer facilement les membres, les finances et les données du club – directement sur votre PC.",
     "members": {
       "title": "Gestion des membres",
-      "description": "Créez, modifiez et gérez tous les membres de votre club, y compris les groupes, rôles et données SEPA."
+      "description": "Enregistrez, modifiez et gérez tous les membres du club, y compris les groupes, rôles et données SEPA."
     },
     "finance": {
       "title": "Finances",
-      "description": "Gardez une vue d'ensemble des cotisations, des paiements et des prélèvements SEPA."
+      "description": "Gardez une vue d'ensemble sur les cotisations, les paiements et les prélèvements SEPA."
     },
     "settings": {
       "title": "Paramètres",
@@ -23,21 +29,27 @@
     }
   },
   "tooltips": {
-    "edit": "Éditer",
+    "edit": "Modifier",
     "delete": "Supprimer",
     "export": "Exporter",
+    "import": "Importer",
     "columnselection": "Sélection des colonnes"
   },
   "buttons": {
     "abort": "Annuler",
     "save": "Enregistrer",
     "delete": "Supprimer",
-    "export": "Exporter"
+    "export": "Exporter",
+    "import": "Importer",
+    "back": "Retour",
+    "next": "Suivant"
   },
   "entities": {
+    "edit": "Modifier",
+    "create": "Créer",
     "groups": {
       "title": "Gestion des groupes",
-      "description": "Organisez les membres en groupes thématiques ou organisationnels, par exemple des équipes d'entraînement, des projets ou des tranches d'âge. Les groupes facilitent la gestion ciblée et reflètent la structure interne du club.",
+      "description": "Organisez les membres en groupes thématiques ou organisationnels, tels que des unités d'entraînement, des équipes projet ou des catégories d'âge. Les groupes aident à filtrer, gérer les cotisations et refléter la structure interne du club.",
       "dialogs": {
         "name": "Nom",
         "description": "Description",
@@ -46,7 +58,7 @@
     },
     "roles": {
       "title": "Gestion des rôles",
-      "description": "Gérez les rôles et responsabilités des membres – par exemple, président, entraîneur ou trésorier. Les rôles permettent de définir les responsabilités et d’ajuster les droits d’accès.",
+      "description": "Gérez les rôles et responsabilités des membres – par exemple en tant que membres du bureau, entraîneurs ou trésoriers. Les rôles permettent de définir les responsabilités et de contrôler la visibilité ou les autorisations.",
       "dialogs": {
         "name": "Nom",
         "description": "Description",
@@ -55,7 +67,7 @@
     },
     "sections": {
       "title": "Gestion des sections",
-      "description": "Structurez votre club en sections, comme football, gymnastique ou musique. Les sections permettent de différencier les cotisations et d’organiser les activités de manière ciblée.",
+      "description": "Structurez votre club en départements comme le football, la gymnastique ou la musique. Les départements permettent de différencier les cotisations et d'organiser plus efficacement les activités.",
       "dialogs": {
         "name": "Nom",
         "description": "Description",
@@ -64,21 +76,36 @@
     }
   },
   "members": {
+    "automatedDeletionNotice": "a été supprimé automatiquement.",
     "dialogs": {
       "export": {
         "title": "Exporter la liste des membres",
-        "description": "Vous pouvez exporter ici la liste des membres au format Excel."
+        "description": "Vous pouvez exporter la liste des membres au format Excel ici."
+      },
+      "import": {
+        "1": {
+          "title": "Importer des membres",
+          "select": "Sélectionner un fichier Excel"
+        },
+        "2": {
+          "title": "Attribuer les colonnes",
+          "description": "Attribuez les colonnes au modèle d’Open Clubmanager.",
+          "ignore": "--- Ignorer ---"
+        },
+        "3": {
+          "title": "Aperçu"
+        }
       },
       "sections": {
         "personal": "Informations personnelles",
         "address": "Adresse",
-        "bank": "Informations bancaires",
+        "bank": "Coordonnées bancaires",
         "membership": "Adhésion",
         "assignments": "Affectations",
-        "entities": "Gestion du club"
+        "entities": "Entités du club"
       },
       "validation": {
-        "emailRequired": "L'adresse e-mail est obligatoire"
+        "emailRequired": "L'e-mail est un champ obligatoire"
       },
       "edit": {
         "title": "Modifier un membre"
@@ -95,15 +122,16 @@
     "search": "Rechercher un membre",
     "create": "Ajouter un membre",
     "table": {
-      "description": "Sélectionnez un membre dans la liste et cliquez sur l'icône de modification pour le modifier.",
+      "description": "Sélectionnez un membre dans la liste et cliquez sur l’icône de modification pour le modifier.",
+      "importInProgress": "Member import in progress...",
       "header": {
         "id": "ID",
         "number": "Numéro de membre",
         "birthday": "Date de naissance",
         "phone": "Téléphone",
-        "phoneMobile": "Mobile",
+        "phoneMobile": "Portable",
         "comment": "Commentaire",
-        "entryDate": "Date d'entrée",
+        "entryDate": "Date d’entrée",
         "exitDate": "Date de sortie",
         "street": "Rue",
         "postalCode": "Code postal",
@@ -135,9 +163,9 @@
     "labels": {
       "language": "Langue",
       "dbPath": "Chemin de la base de données",
-      "save": "Enregistrer",
+      "save": "Chemin de la base de données",
       "saveSuccess": "Paramètres enregistrés avec succès !",
-      "saveFails": "Échec de l'enregistrement des paramètres !"
+      "saveFails": "Échec de l’enregistrement des paramètres !"
     }
   }
 }
