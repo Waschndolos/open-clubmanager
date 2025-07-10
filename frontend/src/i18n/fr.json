@@ -123,6 +123,7 @@
     "create": "Ajouter un membre",
     "table": {
       "description": "Sélectionnez un membre dans la liste et cliquez sur l’icône de modification pour le modifier.",
+      "importInProgress": "Member import in progress...",
       "header": {
         "id": "ID",
         "number": "Numéro de membre",

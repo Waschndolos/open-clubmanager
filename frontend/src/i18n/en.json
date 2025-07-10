@@ -123,6 +123,7 @@
     "create": "Add Member",
     "table": {
       "description": "Select a member from the list and click the edit icon to edit it.",
+      "importInProgress": "Member import in progress...",
       "header": {
         "id": "ID",
         "number": "Member Number",

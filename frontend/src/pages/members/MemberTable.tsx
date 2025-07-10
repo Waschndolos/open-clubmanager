@@ -1,4 +1,15 @@
-import {Box, Checkbox, FormControlLabel, IconButton, Menu, MenuItem, Tooltip, Typography} from "@mui/material";
+import {
+    Backdrop,
+    Box,
+    Checkbox, CircularProgress,
+    FormControlLabel,
+    IconButton,
+    LinearProgress,
+    Menu,
+    MenuItem,
+    Tooltip,
+    Typography
+} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {AgGridReact} from "ag-grid-react";
 import React, {useEffect, useMemo, useRef, useState} from "react";
@@ -7,7 +18,7 @@ import {AllCommunityModule, ModuleRegistry, themeMaterial} from "ag-grid-communi
 import {Delete, FileDownload, FileUpload, ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
-import {deleteMember, updateMember} from "../../components/api/members";
+import {createMember, deleteMember, updateMember} from "../../components/api/members";
 import {useUserPreference} from "../../hooks/useUserPreference";
 import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
 import {useThemeContext} from "../../theme/ThemeContext";
@@ -33,6 +44,8 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
     const {getPreference, setPreference} = useUserPreference();
     const [importWizardOpen, setImportWizardOpen] = useState(false);
+    const [importInProgress, setImportInProgress] = useState(false);
+    const [importProgress, setImportProgress] = useState(0);
 
     const keys = useMemo(() => {
         if (!members || members.length === 0) return [];
@@ -136,8 +149,37 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
         return <Typography>No members found</Typography>;
     }
 
+    async function upsertImportedMembers(imported: Member[]) {
+        const existingMap = new Map(members.map(m => [m.email.toLowerCase(), m]));
+
+        setImportInProgress(true);
+
+        let i = 0;
+        const max = imported.length;
+        for (const member of imported) {
+            const progress = Math.round((i++ / max) * 100);
+            setImportProgress(progress);
+            const emailKey = member.email.toLowerCase();
+            if (existingMap.has(emailKey)) {
+                // Existierendes Member updaten
+                const existing = existingMap.get(emailKey)!;
+                const updated = {...existing, ...member, id: existing.id};
+                const saved = await updateMember(updated);
+                onMemberUpdated(saved);
+            } else {
+                // Neu erstellen
+                const saved = await createMember(member);
+                onMemberUpdated(saved);
+            }
+        }
+        setImportInProgress(false);
+    }
+
+
     return (
         <Box sx={{height: "calc(100vh - 300px)", width: "100%"}}>
+
+
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                 <Typography variant="body1">{t("members.table.description")}</Typography>
 
@@ -159,15 +201,16 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                     </Tooltip>
                     <Tooltip title={t("tooltips.import")}>
                         <IconButton onClick={() => setImportWizardOpen(true)} color={"primary"}>
-                            <FileUpload />
+                            <FileUpload/>
                         </IconButton>
                     </Tooltip>
 
                     {importWizardOpen && (
                         <ImportMembersWizard
                             onClose={() => setImportWizardOpen(false)}
-                            onImport={(imported: Member[]) => {
-                                imported.forEach(onMemberUpdated);
+                            onImport={async (imported: Member[]) => {
+                                setImportWizardOpen(false);
+                                await upsertImportedMembers(imported);
                             }}
                         />
                     )}
@@ -177,7 +220,6 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                         </IconButton>
                     </Tooltip>
                 </Box>
-
                 <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleCloseMenu} sx={{height: "50%"}}>
                     {keys.map((key) => (
                         <MenuItem key={key} dense disableGutters>
@@ -237,6 +279,18 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
             {exportOpened && (
                 <ExportMembersDialog members={members} onClose={() => setExportOpened(false)}/>
             )}
+            <Backdrop
+                sx={{
+                    color: '#fff',
+                    zIndex: (theme) => theme.zIndex.drawer + 1
+                }}
+                open={importInProgress}
+            >
+                <Box textAlign="center">
+                    <CircularProgress color="inherit"/>
+                    <Typography sx={{mt: 2}}>{t("members.table.importInProgress")} ({importProgress}%)</Typography>
+                </Box>
+            </Backdrop>
         </Box>
     );
 }

@@ -59,19 +59,30 @@ export default function ImportMembersWizard({ onClose, onImport }: Props) {
             const data = new Uint8Array(e.target?.result as ArrayBuffer);
             const workbook = XLSX.read(data, { type: "array" });
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
-            setHeaders(json[0].map(String));
+            const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as (string | number | null)[][];
+            const headers = json[0].map(String);
+
+            const initialMapping: Record<string, keyof Member | ""> = {};
+            headers.forEach((header) => {
+                initialMapping[header] = guessMapping(header);
+            });
+
+            setHeaders(headers);
             setRows(json.slice(1));
+            setMapping(initialMapping);
             setStep(1);
         };
         reader.readAsArrayBuffer(f);
     };
 
+
     const mappedPreview = rows.slice(0, 5).map((row) => {
         const entry: Partial<Member> = {};
         headers.forEach((header, i) => {
             const key = mapping[header];
-            if (key && key !== "") entry[key] = row[i] as any;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            if (key && key !== "") entry[key] = row[i] as never;
         });
         return entry;
     });
@@ -86,6 +97,24 @@ export default function ImportMembersWizard({ onClose, onImport }: Props) {
             .filter((email): email is string => !!email);
         return new Set(emails).size !== emails.length;
     })();
+
+    function normalize(s: string): string {
+        return s
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "")
+            .trim();
+    }
+
+    function guessMapping(header: string): keyof Member | "" {
+        const normalizedHeader = normalize(header);
+        for (const field of memberFields) {
+            if (normalizedHeader.includes(normalize(field))) {
+                return field;
+            }
+        }
+        return "";
+    }
+
 
     return (
         <Dialog open onClose={onClose} maxWidth="md" fullWidth>
@@ -190,10 +219,13 @@ export default function ImportMembersWizard({ onClose, onImport }: Props) {
                                 const entry: Partial<Member> = {};
                                 headers.forEach((h, i) => {
                                     const k = mapping[h];
-                                    if (k && k !== "") entry[k] = row[i] as any;
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    // @ts-expect-error
+                                    if (k && k !== "") entry[k] = row[i] as never;
                                 });
                                 return entry as Member;
                             });
+                            console.log("Imported:", imported)
                             onImport(imported);
                             onClose();
                         }}

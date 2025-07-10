@@ -6,7 +6,7 @@ import {Member} from "../../components/api/types";
 import {Add, Clear} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";
-import {createMember, deleteMember, fetchMembers} from "../../components/api/members";
+import {createMember, deleteMember, fetchMembers } from "../../components/api/members";
 import {useNotification} from "../../components/header/NotificationContext";
 
 export function createEmptyMember(): Member {
@@ -62,8 +62,8 @@ export default function Members() {
     );
 
     const handleMemberUpdated = (updated: Member) => {
-        if (members.find((member) => member.id === updated.id)) {
-            setMembers(prev => prev.map(m => m.id === updated.id ? updated : m));
+        if (members.find((member) => member.email === updated.email)) {
+            setMembers(prev => prev.map(m => m.email === updated.email ? updated : m));
         } else {
             setMembers([...members, updated])
         }
