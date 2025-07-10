@@ -160,8 +160,16 @@
       "en": "Englisch",
       "fr": "Französisch"
     },
-    "errors": {
-      "dbPathEmpty": "Der Datenbankpfad darf nicht leer sein."
+    "validatíon": {
+      "error": {
+        "nosqllitedb": "Der Pfad zeigt auf keine valide SQLite Datenbank.",
+        "cannotcreate": "An dem angegebenen Pfad kann keine Datenbank erstellt werden.",
+        "required": "Der Datenbankpfad ist erforderlich."
+      },
+      "success": {
+        "newdb": "Der Datenkbankpfad ist gültig und eine neue Datenbank wird erstellt - Sie verlieren jedoch alle Daten wenn Sie auf Speichern klicken!",
+        "valid": "Der Datenbankpfad ist gültig."
+      }
     },
     "labels": {
       "language": "Sprache",

@@ -52,7 +52,7 @@ export function Settings() {
         });
     };
 
-    async function validateDbPath(path: string): Promise<{ valid: boolean, error?: string }> {
+    async function validateDbPath(path: string): Promise<{ valid: boolean, i18nToken?: string }> {
         return await validatePath(path);
     }
 
@@ -94,8 +94,8 @@ export function Settings() {
                                 const response = await validateDbPath(dbPath);
                                 setValidationMessage(
                                     response.valid
-                                        ? t("settings.validation.success")
-                                        : t(`settings.validatíon.${response.error}`)
+                                        ? t(`settings.validatíon.${response.i18nToken}`)
+                                        : t(`settings.validatíon.${response.i18nToken}`)
                                 );
                             }}
                             sx={{mt: 1}}

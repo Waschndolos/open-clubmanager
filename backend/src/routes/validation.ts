@@ -6,9 +6,9 @@ const router = express.Router();
 router.post('/check-db-path', async (req, res) => {
     const {path} = req.body;
     console.log("Received path:", path);
-    let responseBody = {valid: true, error: ''};
+    let responseBody = {valid: true, i18nToken: ''};
     if (!path) {
-        responseBody = {valid: false, error: 'error.required'};
+        responseBody = {valid: false, i18nToken: 'error.required'};
         res.status(400).json(responseBody);
     } else {
         fs.stat(path, () => {
@@ -36,11 +36,11 @@ router.post('/check-db-path', async (req, res) => {
                     return fs.open(path, 'w', (err) => {
                         if (err) {
                             console.log("Error creating file:", err);
-                            responseBody = {valid: false, error: 'error.cannotcreate'};
+                            responseBody = {valid: false, i18nToken: 'error.cannotcreate'};
                             return res.json(responseBody);
                         } else {
                             console.log("File created successfully.");
-                            responseBody = {valid: true, error: ''};
+                            responseBody = {valid: true, i18nToken: 'success.newdb'};
                             return res.json(responseBody);
                         }
                     });
@@ -49,10 +49,10 @@ router.post('/check-db-path', async (req, res) => {
                     return checkSqlite(path, (isSqlite) => {
                         if (!isSqlite) {
                             console.log("File is not a SQLite database.");
-                            responseBody = {valid: false, error: 'error.nosqllitedb'};
+                            responseBody = {valid: false, i18nToken: 'error.nosqllitedb'};
                             return res.json(responseBody);
                         } else {
-                            responseBody = {valid: true, error: ''};
+                            responseBody = {valid: true, i18nToken: 'success.valid'};
                             return res.json(responseBody);
                         }
                     });

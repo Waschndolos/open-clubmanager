@@ -1,6 +1,6 @@
 const BASE_URL = "http://localhost:3001/api/validation";
 
-export async function validatePath(path: string): Promise<{valid: boolean, error?: string}> {
+export async function validatePath(path: string): Promise<{valid: boolean, i18nToken?: string}> {
     const res = await fetch(BASE_URL + "/check-db-path",  {
         method: 'POST',
         headers: {
