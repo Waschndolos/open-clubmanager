@@ -1,20 +1,22 @@
 import {AppBar, Box, IconButton, Toolbar, Typography} from '@mui/material'
-import {DarkMode, LightMode} from '@mui/icons-material'
-import {useThemeContext} from '../../theme/ThemeContext'
 import React from "react";
 import NotificationBell from "./NotificationBell";
 import MenuIcon from "@mui/icons-material/Menu";
+import ThemeToggle from "./ThemeToggle"; // Import the new ThemeToggle
 
+// HeaderProps type
 type HeaderProps = {
     sidebarCollapsed: boolean;
     onToggleSidebar: () => void;
 };
 
 export default function Header({onToggleSidebar }: HeaderProps) {
-    const {mode, toggleTheme} = useThemeContext()
-
     return (
-        <AppBar position="static" color="primary">
+        <AppBar position="static" color="primary" sx={{
+            backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : theme.palette.primary.main,
+            boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 2px 8px 0 rgba(142,202,230,0.10)' : '0 2px 8px 0 rgba(0,0,0,0.10)',
+            transition: 'background 0.3s',
+        }}>
             <Toolbar>
                 <IconButton
                     color="inherit"
@@ -30,10 +32,9 @@ export default function Header({onToggleSidebar }: HeaderProps) {
                 </Typography>
 
                 <Box display="flex" alignItems="center" gap={1}>
-
-                    <IconButton onClick={toggleTheme} color={"secondary"}>
-                        {mode === 'light' ? <DarkMode/> : <LightMode/>}
-                    </IconButton>
+                    {/* Theme toggle button (sun/moon) */}
+                    <ThemeToggle />
+                    {/* Notification bell */}
                     <NotificationBell/>
                 </Box>
             </Toolbar>

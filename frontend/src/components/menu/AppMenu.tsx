@@ -12,6 +12,7 @@ export default function AppMenu({ collapsed }: Props) {
     const { t } = useTranslation();
     return (
         <Box
+            className="bg-white dark:bg-dark-100 shadow-md dark:shadow-soft-dark rounded-xl transition-colors duration-500"
             sx={{
                 display: "flex",
                 flexDirection: "column",
