@@ -1,20 +1,21 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-    Typography,
-    TextField,
-    Select,
-    MenuItem,
+    Box,
     Button,
+    Fade,
     FormControl,
     InputLabel,
+    MenuItem,
     Paper,
-    Fade,
-    Box,
-    Snackbar
+    Select,
+    Snackbar,
+    TextField,
+    Typography
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
 import SettingsIcon from "@mui/icons-material/Settings";
+import {validatePath} from "../../components/api/validation";
 
 export function Settings() {
     const {t, i18n} = useTranslation();
@@ -22,7 +23,8 @@ export function Settings() {
     const raw = apppreference.get('DATABASE_URL');
     const [dbPath, setDbPath] = useState<string>(typeof raw == 'string' ? raw : '');
     const [language, setLanguage] = useState<string>('en');
-    const [snackBarState, setsnackBarState] = useState<{ open: boolean, message: string }>({
+    const [validationMessage, setValidationMessage] = useState<string>("");
+    const [snackBarState, setSnackBarState] = useState<{ open: boolean, message: string }>({
         open: false,
         message: ""
     });
@@ -44,11 +46,15 @@ export function Settings() {
         i18n.changeLanguage(language);
         +apppreference.set('DATABASE_URL', dbPath)
 
-        setsnackBarState({
+        setSnackBarState({
             open: true,
             message: t("settings.labels.saveSuccess")
         });
     };
+
+    async function validateDbPath(path: string): Promise<{ valid: boolean, error?: string }> {
+        return await validatePath(path);
+    }
 
     return (
         <Box sx={{p: 4}}>
@@ -60,16 +66,43 @@ export function Settings() {
                 p: 3,
             }}>
                 <SettingsIcon fontSize="large" color="primary"/>
-                <FormControl fullWidth margin="normal">
-                    <TextField
-                        label={t("settings.labels.dbPath")}
-                        variant="outlined"
-                        value={dbPath}
-                        fullWidth
-                        onChange={(e) => setDbPath(e.target.value)}
-                        placeholder="/path/to/database.db"
-                        margin="normal"
-                    />
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            label={t("settings.labels.dbPath")}
+                            variant="outlined"
+                            value={dbPath}
+                            fullWidth
+                            error={dbPath.length === 0 || /[<>:"|?*]/.test(dbPath)}
+                            helperText={
+                                dbPath.length === 0
+                                    ? t("settings.errors.dbPathEmpty")
+                                    : /[<>:"|?*]/.test(dbPath)
+                                        ? t("settings.errors.dbPathInvalid")
+                                        : validationMessage
+                            }
+                            onChange={(e) => {
+                                setDbPath(e.target.value);
+                                setValidationMessage(""); // Reset message on input change
+                            }}
+                            placeholder="/path/to/database.db"
+                            margin="normal"
+                        />
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={async () => {
+                                const response = await validateDbPath(dbPath);
+                                setValidationMessage(
+                                    response.valid
+                                        ? t("settings.validation.success")
+                                        : t(`settings.validatíon.${response.error}`)
+                                );
+                            }}
+                            sx={{mt: 1}}
+                        >
+                            {t("buttons.validate")}
+                        </Button>
+                    </FormControl>
                 </FormControl>
 
                 <FormControl fullWidth margin="normal">
@@ -104,7 +137,7 @@ export function Settings() {
             <Snackbar
                 open={snackBarState.open}
                 color="primary"
-                onClose={() => setsnackBarState({...snackBarState, open: false})}
+                onClose={() => setSnackBarState({...snackBarState, open: false})}
                 slots={{
                     transition: Fade
                 }}

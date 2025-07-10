@@ -160,6 +160,9 @@
       "en": "Englisch",
       "fr": "Französisch"
     },
+    "errors": {
+      "dbPathEmpty": "Der Datenbankpfad darf nicht leer sein."
+    },
     "labels": {
       "language": "Sprache",
       "dbPath": "Datenbankpfad",

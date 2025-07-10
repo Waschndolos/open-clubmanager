@@ -5,6 +5,7 @@ import roleRoutes from "./routes/role.ts";
 import groupRoutes from "./routes/group.ts";
 import sectionRoutes from "./routes/section.ts";
 import preferenceRoutes from "./routes/userpreference.ts";
+import validationRoutes from "./routes/validation.ts";
 
 
 const app = express()
@@ -21,6 +22,7 @@ app.use('/api/roles', roleRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/sections', sectionRoutes);
 app.use('/api/preference', preferenceRoutes);
+app.use('/api/validation', validationRoutes);
 
 // Error handling middleware
 app.use((err: unknown, _req: Request, res: Response) => {
