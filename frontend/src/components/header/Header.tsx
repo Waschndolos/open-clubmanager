@@ -14,8 +14,10 @@ export default function Header({onToggleSidebar }: HeaderProps) {
     return (
         <AppBar position="static" color="primary" sx={{
             backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : theme.palette.primary.main,
-            boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 2px 8px 0 rgba(142,202,230,0.10)' : '0 2px 8px 0 rgba(0,0,0,0.10)',
-            transition: 'background 0.3s',
+            boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 4px 24px 0 rgba(142,202,230,0.10)' : '0 2px 8px 0 rgba(0,0,0,0.10)',
+            borderBottom: (theme) => theme.palette.mode === 'dark' ? '1.5px solid #31324b' : '1.5px solid #e0e7ef',
+            zIndex: 1201,
+            transition: 'background 0.3s, border-bottom 0.3s',
         }}>
             <Toolbar>
                 <IconButton
