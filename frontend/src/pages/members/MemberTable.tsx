@@ -4,7 +4,6 @@ import {
     Checkbox, CircularProgress,
     FormControlLabel,
     IconButton,
-    LinearProgress,
     Menu,
     MenuItem,
     Tooltip,
