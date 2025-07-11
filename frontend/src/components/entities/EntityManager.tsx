@@ -5,14 +5,14 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    List,
+    List, Paper,
     TextField,
     Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { EntityManagerProps, NamedEntity } from "./types";
-import { useTranslation } from "react-i18next";
-import { EntityListEntry } from "./EntityListEntry";
+import {useEffect, useState} from "react";
+import {EntityManagerProps, NamedEntity} from "./types";
+import {useTranslation} from "react-i18next";
+import {EntityListEntry} from "./EntityListEntry";
 
 export function EntityManager<T extends NamedEntity>({
                                                          description,
@@ -22,7 +22,7 @@ export function EntityManager<T extends NamedEntity>({
                                                          deleteFn,
                                                          labels = {},
                                                      }: EntityManagerProps<T>) {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [entities, setEntities] = useState<T[]>([]);
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
@@ -33,7 +33,7 @@ export function EntityManager<T extends NamedEntity>({
     }, [fetchFn]);
 
     const handleCreate = async () => {
-        const newItem = await createFn({ name, description: entityDescription } as Omit<T, "id">);
+        const newItem = await createFn({name, description: entityDescription} as Omit<T, "id">);
         setEntities(prev => [...prev, newItem]);
         setName("");
         setEntityDescription("");
@@ -69,12 +69,8 @@ export function EntityManager<T extends NamedEntity>({
                 </Button>
             </Box>
 
-            <List sx={{
-                backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#181926' : '#f4f6f8',
-                borderRadius: 3,
-                boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 2px 12px 0 rgba(142,202,230,0.10)' : '0 1px 4px 0 rgba(0,0,0,0.04)',
+            <Paper sx={{
                 p: 2,
-                transition: 'background 0.3s',
             }}>
                 {entities.map(e => (
                     <EntityListEntry
@@ -84,26 +80,28 @@ export function EntityManager<T extends NamedEntity>({
                         onDelete={handleDelete}
                     />
                 ))}
-            </List>
+            </Paper>
 
             <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth
-                PaperProps={{
-                    sx: {
-                        backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#fff',
-                        borderRadius: 4,
-                        boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 4px 24px 0 rgba(142,202,230,0.15)' : '0 2px 8px 0 rgba(0,0,0,0.10)',
-                        transition: 'background 0.3s',
-                    }
-                }}
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                borderRadius: 4,
+                                boxShadow: (theme) => theme.custom.boxShadow,
+                                transition: 'background 0.3s',
+                            }
+                        }
+                    }}
+
             >
                 <DialogTitle>{labels.createButton ?? t("entities.create")}</DialogTitle>
-                <DialogContent sx={{ pt: 2 }}>
+                <DialogContent sx={{pt: 2}}>
                     <TextField
                         fullWidth
                         label={labels.name ?? "Name"}
                         value={name}
                         onChange={e => setName(e.target.value)}
-                        sx={{ mb: 2 }}
+                        sx={{mb: 2}}
                     />
                     <TextField
                         fullWidth

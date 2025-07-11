@@ -4,23 +4,15 @@ const darkTheme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            main: '#8ecae6', // Accent blue
-            contrastText: '#1a1a2e',
+            main: '#819A91',
         },
         secondary: {
-            main: '#ffb703', // Accent yellow
-            contrastText: '#1a1a2e',
+            main: '#f50057',
         },
         background: {
-            default: '#181926', // Main background
-            paper: '#23243a',  // Cards and menus
+            default: '#1E1F22',
         },
-        text: {
-            primary: '#f4f6fb',
-            secondary: '#b0b3c6',
-            disabled: '#6c6f7e',
-        },
-        divider: '#31324b',
+        divider: "rgba(255, 255, 255, 0.12)"
     },
     shape: {
         borderRadius: 14,
@@ -29,42 +21,20 @@ const darkTheme = createTheme({
         MuiPaper: {
             styleOverrides: {
                 root: {
-                    backgroundImage: 'none',
-                    boxShadow: '0 4px 24px 0 rgba(0,0,0,0.25)',
-                },
-            },
-        },
-        MuiAppBar: {
-            styleOverrides: {
-                colorPrimary: {
-                    backgroundColor: '#23243a',
-                    boxShadow: '0 2px 8px 0 rgba(0,0,0,0.18)',
-                },
-            },
-        },
-        MuiListItem: {
-            styleOverrides: {
-                root: {
-                    borderRadius: 8,
-                    marginBottom: 2,
+                    backgroundColor: '#2B2D30',
+                    color: '#fff',
+                    borderRadius: 14,
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    boxShadow: '0 1px 6px 0 rgba(255, 255, 255, 0.12)',
                     transition: 'background 0.2s',
-                    '&.Mui-selected, &.Mui-selected:hover': {
-                        backgroundColor: '#23243a',
-                        color: '#8ecae6',
-                    },
-                },
-            },
-        },
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    borderRadius: 8,
-                    textTransform: 'none',
-                    fontWeight: 500,
-                },
-            },
-        },
+                }
+            }
+        }
     },
+    custom: {
+        border: "1px solid rgba(255, 255, 255, 0.12)",
+        boxShadow: '0 1px 6px 0 rgba(255, 255, 255, 0.12)'
+    }
 })
 
 export default darkTheme

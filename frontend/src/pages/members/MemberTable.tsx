@@ -13,17 +13,17 @@ import {useTranslation} from "react-i18next";
 import {AgGridReact} from "ag-grid-react";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {Member} from "../../components/api/types";
-import {AllCommunityModule, ModuleRegistry, themeMaterial} from "ag-grid-community";
+import {AllCommunityModule, ModuleRegistry} from "ag-grid-community";
 import {Delete, FileDownload, FileUpload, ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
 import {createMember, deleteMember, updateMember} from "../../components/api/members";
 import {useUserPreference} from "../../hooks/useUserPreference";
 import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
-import {useThemeContext} from "../../theme/ThemeContext";
 import {DeletingMemberDialog} from "./DeletingMemberDialog";
 import {ExportMembersDialog} from "./ExportMembersDialog";
 import ImportMembersWizard from "./ImportMembersWizard";
+import { useTheme } from '@mui/material/styles';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -50,7 +50,7 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
         if (!members || members.length === 0) return [];
         return Object.keys(members[0]) as (keyof Member)[];
     }, [members]);
-    const themeContext = useThemeContext();
+    const theme = useTheme();
 
     const columnDefs = useMemo(() => {
         if (!members || members.length === 0) return [];
@@ -174,6 +174,10 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
         setImportInProgress(false);
     }
 
+    const agGridThemeClass =
+        theme.palette.mode === 'dark'
+            ? 'ag-theme-clubmanager-dark'
+            : 'ag-theme-clubmanager-light';
 
     return (
         <Box sx={{height: "calc(100vh - 300px)", width: "100%"}}>
@@ -236,17 +240,17 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                 </Menu>
             </Box>
             <Box sx={{height: "calc(100vh - 300px)", width: "100%", overflowX: "auto"}}>
-                <div style={{minWidth: "1000px", height: "100%"}}>
+                <div style={{minWidth: "1000px", height: "100%"}} className={agGridThemeClass}>
                     <AgGridReact
+                        headerHeight={100}
+                        // className={themeContext.mode === 'dark' ? 'ag-theme-balham-dark' : 'ag-theme-balham'}
                         ref={gridRef}
-                        className={themeContext.mode == 'dark' ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'}
                         suppressMovableColumns={true}
                         rowData={members}
                         columnDefs={columnDefs.map((col) => ({
                             ...col,
                             hide: !columnVisibility[col.field ?? ""],
                         }))}
-                        theme={themeMaterial}
                         defaultColDef={{sortable: true, filter: true, resizable: true, minWidth: 150}}
                         pagination
                         paginationPageSize={20}

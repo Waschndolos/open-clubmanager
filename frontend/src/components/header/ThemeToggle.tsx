@@ -24,7 +24,7 @@ const ThemeToggle: React.FC = () => {
           boxShadow: 'none',
           '&:hover': {
             background: 'none',
-            color: mode === 'dark' ? '#ffb703' : '#8ecae6',
+              color: mode === 'dark' ? "#819A91" : '#fff',
           },
         }}
         aria-label="Toggle theme"
@@ -34,7 +34,7 @@ const ThemeToggle: React.FC = () => {
             display: 'inline-flex',
             transition: 'transform 0.5s cubic-bezier(.68,-0.55,.27,1.55)',
             transform: mode === 'dark' ? 'rotate(-40deg) scale(1.15)' : 'rotate(0deg) scale(1)',
-            color: mode === 'dark' ? '#8ecae6' : '#ffb703',
+             color: mode === 'dark' ? "#819A91" : '#fff',
             filter: 'none',
           }}
         >

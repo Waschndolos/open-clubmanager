@@ -18,14 +18,14 @@ export default function AppMenuItem({label, icon, link, collapsed}: MenuItemProp
                 justifyContent: collapsed ? "center" : "flex-start",
                 borderRadius: 2,
                 transition: 'background 0.2s, color 0.2s',
-                '&:hover': {
-                    backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#f4f6f8',
-                    color: (theme) => theme.palette.mode === 'dark' ? '#ffb703' : '#8ecae6',
-                },
-                '&.Mui-selected, &.Mui-selected:hover': {
-                    backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#e0e7ef',
-                    color: (theme) => theme.palette.mode === 'dark' ? '#8ecae6' : '#819A91',
-                },
+                // '&:hover': {
+                //     backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#f4f6f8',
+                //     color: (theme) => theme.palette.mode === 'dark' ? '#ffb703' : '#819A91',
+                // },
+                // '&.Mui-selected, &.Mui-selected:hover': {
+                //     backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#e0e7ef',
+                //     color: (theme) => theme.palette.mode === 'dark' ? '#8ecae6' : '#819A91',
+                // },
             }}
         >
             <Tooltip title={collapsed ? label : ""} placement="right">

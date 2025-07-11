@@ -12,14 +12,13 @@ export default function AppMenu({ collapsed }: Props) {
     const { t } = useTranslation();
     return (
         <Box
-            className="bg-white dark:bg-dark-100 shadow-md dark:shadow-soft-dark rounded-xl transition-colors duration-500"
             sx={{
                 display: "flex",
                 flexDirection: "column",
                 height: "100%",
                 width: "100%",
                 padding: 2,
-                boxShadow: 2,
+                boxShadow: (theme) => theme.custom.boxShadow,
             }}
         >
             <List sx={{ flexGrow: 1 }}>

@@ -8,8 +8,8 @@ export default function Content() {
             flexDirection: 'column',
             height: '100%',
             padding: 4,
-            boxShadow: 1,
-            backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#fff',
+            boxShadow: (theme) => theme.custom.boxShadow,
+            // backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#fff',
             borderRadius: 0,
             transition: 'background 0.4s',
         }}>
