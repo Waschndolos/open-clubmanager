@@ -1,4 +1,6 @@
 // src/theme.d.ts
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ThemeOptions, Theme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {

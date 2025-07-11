@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
-import GroupsIcon from "@mui/icons-material/Groups";
 import SettingsIcon from "@mui/icons-material/Settings";
 
 export function Settings() {

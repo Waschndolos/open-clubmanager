@@ -5,7 +5,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    List, Paper,
+    Paper,
     TextField,
     Typography,
 } from "@mui/material";
