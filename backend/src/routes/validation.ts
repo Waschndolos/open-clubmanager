@@ -39,9 +39,10 @@ router.post('/check-db-path', async (req, res) => {
                             responseBody = {valid: false, i18nToken: 'error.cannotcreate'};
                             return res.json(responseBody);
                         } else {
-                            console.log("File created successfully.");
-                            responseBody = {valid: true, i18nToken: 'success.newdb'};
-                            return res.json(responseBody);
+                            fs.unlink(path, () => {
+                                responseBody = {valid: true, i18nToken: 'success.newdb'};
+                                return res.json(responseBody);
+                            });
                         }
                     });
                 } else {
