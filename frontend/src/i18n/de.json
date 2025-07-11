@@ -167,7 +167,7 @@
         "required": "Der Datenbankpfad ist erforderlich."
       },
       "success": {
-        "newdb": "Der Datenkbankpfad ist gültig und eine neue Datenbank wird erstellt - Sie verlieren jedoch alle Daten wenn Sie auf Speichern klicken!",
+        "newdb": "Der Datenkbankpfad ist potentiell gültig. Kopieren Sie die clubmanager.db an diese Stelle wenn sie diese Stelle nutzen möchten",
         "valid": "Der Datenbankpfad ist gültig."
       }
     },

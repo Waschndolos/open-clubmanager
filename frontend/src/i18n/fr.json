@@ -160,6 +160,17 @@
       "en": "Anglais",
       "fr": "Français"
     },
+    "validatíon": {
+      "error": {
+        "nosqllitedb": "Le chemin ne pointe pas vers une base de données SQLite valide.",
+        "cannotcreate": "Impossible de créer une base de données à l'emplacement indiqué.",
+        "required": "Le chemin de la base de données est requis."
+      },
+      "success": {
+        "newdb": "Le chemin de la base de données est potentiellement valide. Copiez clubmanager.db à cet emplacement si vous souhaitez l'utiliser.",
+        "valid": "Le chemin de la base de données est valide.+"
+      }
+    },
     "labels": {
       "language": "Langue",
       "dbPath": "Chemin de la base de données",

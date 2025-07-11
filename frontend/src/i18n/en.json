@@ -160,6 +160,17 @@
       "en": "English",
       "fr": "Français"
     },
+    "validatíon": {
+      "error": {
+        "nosqllitedb": "The path does not point to a valid SQLite database.",
+        "cannotcreate": "A database cannot be created at the specified path.",
+        "required": "The database path is required."
+      },
+      "success": {
+        "newdb": "The database path is potentially valid. Copy clubmanager.db to this location if you want to use it.",
+        "valid": "The database path is valid."
+      }
+    },
     "labels": {
       "language": "Language",
       "dbPath": "Database Path",
