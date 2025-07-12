@@ -1,9 +1,10 @@
 import express from 'express';
-import { prisma } from '../prismaClient.ts';
+import {getClient} from "../db.ts";
 
 const router = express.Router();
 
 router.get('/', async (_, res) => {
+    const prisma = await getClient();
     const sections = await prisma.clubSection.findMany();
     res.json(sections);
 });
@@ -11,6 +12,7 @@ router.get('/', async (_, res) => {
 router.post('/', async (req, res) => {
     const { name } = req.body;
     try {
+        const prisma = await getClient();
         const section = await prisma.clubSection.create({ data: { name } });
         res.status(201).json(section);
     } catch (e) {
@@ -22,6 +24,7 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
     try {
+        const prisma = await getClient();
         const section = await prisma.clubSection.update({
             where: { id: Number(id) },
             data: { name },
@@ -35,6 +38,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
+        const prisma = await getClient();
         await prisma.clubSection.delete({ where: { id: Number(id) } });
         res.sendStatus(204);
     } catch (e) {

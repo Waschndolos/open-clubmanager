@@ -16,6 +16,7 @@ import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {validatePath} from "../../components/api/validation";
+import {saveDbPath} from "../../components/api/settings";
 
 export function Settings() {
     const {t, i18n} = useTranslation();
@@ -44,12 +45,19 @@ export function Settings() {
     const saveSettings = () => {
         userpreference?.set('1', 'language', language); // TODO: use userID as soon as we have auth
         i18n.changeLanguage(language);
-        +apppreference.set('DATABASE_URL', `file:${dbPath}`);
-
-        setSnackBarState({
-            open: true,
-            message: t("settings.labels.saveSuccess")
+        +apppreference.set('DATABASE_URL', dbPath);
+        saveDbPath(dbPath).then(() => {
+            setSnackBarState({
+                open: true,
+                message: t("settings.labels.saveSuccess")
+            });
+        }, () => {
+            setSnackBarState({
+                open: true,
+                message: t("settings.labels.saveFails")
+            })
         });
+
     };
 
     async function validateDbPath(path: string): Promise<{ valid: boolean, i18nToken?: string }> {

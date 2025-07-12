@@ -7,6 +7,7 @@
     "dev:backend": "tsx src/server.ts",
     "build": "tsc",
     "postinstall": "prisma generate",
+    "prisma:setup:dev:database": "prisma migrate dev && node --loader ts-node/esm prisma/seed.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate:reset": "prisma migrate reset",
     "prisma:migrate": "prisma migrate dev",

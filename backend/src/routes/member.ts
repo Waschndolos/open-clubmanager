@@ -1,11 +1,12 @@
 import express from 'express'
-import { prisma } from '../prismaClient.ts';
+import {getClient} from "../db.ts";
 
 const router = express.Router()
 
 // GET /api/members – List all members
 router.get('/', async (_req, res) => {
     try {
+        const prisma = await getClient();
         const members = await prisma.member.findMany({
             include: {
                 roles: true,
@@ -24,7 +25,7 @@ router.get('/', async (_req, res) => {
 router.post('/', async (req, res) => {
     try {
         const data = req.body
-
+        const prisma = await getClient();
         const newMember = await prisma.member.create({
             data: {
                 number: data.number,
@@ -71,7 +72,7 @@ router.put('/:id', async (req, res) => {
         console.log("Received update", req.body)
         const id = parseInt(req.params.id)
         const data = req.body
-
+        const prisma = await getClient();
         const updated = await prisma.member.update({
             where: { id },
             data: {
@@ -121,7 +122,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-
+        const prisma = await getClient();
         await prisma.member.delete({
             where: { id }
         })
