@@ -1,6 +1,6 @@
 import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,} from "@mui/material";
 import {useTranslation} from "react-i18next";
-import {Member} from "../../components/api/types";
+import {Member} from "../../api/types";
 import * as XLSX from 'xlsx';
 
 type Props = {

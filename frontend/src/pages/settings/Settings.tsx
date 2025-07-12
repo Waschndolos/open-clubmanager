@@ -15,8 +15,8 @@ import {
 import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {validatePath} from "../../components/api/validation";
-import {getDbPath, saveDbPath} from "../../components/api/settings";
+import {validatePath} from "../../api/validation";
+import {getDbPath, saveDbPath} from "../../api/settings";
 
 export function Settings() {
     const {t, i18n} = useTranslation();

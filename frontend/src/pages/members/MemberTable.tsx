@@ -12,12 +12,12 @@ import {
 import {useTranslation} from "react-i18next";
 import {AgGridReact} from "ag-grid-react";
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import {Member} from "../../components/api/types";
+import {Member} from "../../api/types";
 import {AllCommunityModule, ModuleRegistry} from "ag-grid-community";
 import {Delete, FileDownload, FileUpload, ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
-import {createMember, deleteMember, updateMember} from "../../components/api/members";
+import {createMember, deleteMember, updateMember} from "../../api/members";
 import {useUserPreference} from "../../hooks/useUserPreference";
 import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
 import {DeletingMemberDialog} from "./DeletingMemberDialog";

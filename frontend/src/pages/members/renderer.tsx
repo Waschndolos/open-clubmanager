@@ -1,6 +1,6 @@
 import React from 'react';
 import {ICellRendererParams} from "ag-grid-community";
-import {MemberContainingNamedArtifact} from "../../components/api/types";
+import {MemberContainingNamedArtifact} from "../../api/types";
 import {Chip} from "@mui/material";
 
 export function DateRenderer(props: ICellRendererParams) {

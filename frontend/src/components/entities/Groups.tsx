@@ -1,7 +1,7 @@
 import {EntityManager} from "./EntityManager";
 import {useTranslation} from "react-i18next";
-import {Group} from "../api/types";
-import {createGroup, deleteGroup, fetchGroups, updateGroup} from "../api/groups";
+import {Group} from "../../api/types";
+import {createGroup, deleteGroup, fetchGroups, updateGroup} from "../../api/groups";
 
 export function Groups() {
 

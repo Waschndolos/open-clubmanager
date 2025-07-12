@@ -15,10 +15,10 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useTranslation} from "react-i18next";
 import React, {useEffect, useState} from "react";
-import {Member, Role, Group, ClubSection} from "../../components/api/types";
-import {fetchRoles} from "../../components/api/roles";
-import {fetchGroups} from "../../components/api/groups";
-import {fetchSections} from "../../components/api/sections";
+import {Member, Role, Group, ClubSection} from "../../api/types";
+import {fetchRoles} from "../../api/roles";
+import {fetchGroups} from "../../api/groups";
+import {fetchSections} from "../../api/sections";
 import dayjs from "dayjs";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";

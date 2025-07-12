@@ -2,11 +2,11 @@ import {Button, CircularProgress, IconButton, InputAdornment, TextField, Typogra
 import Box from "@mui/material/Box";
 import {useTranslation} from "react-i18next";
 import MemberTable from "./MemberTable";
-import {Member} from "../../components/api/types";
+import {Member} from "../../api/types";
 import {Add, Clear} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";
-import {createMember, deleteMember, fetchMembers } from "../../components/api/members";
+import {createMember, deleteMember, fetchMembers } from "../../api/members";
 import {useNotification} from "../../components/header/NotificationContext";
 
 export function createEmptyMember(): Member {

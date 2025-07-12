@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Member } from "../../components/api/types";
+import { Member } from "../../api/types";
 import * as XLSX from "xlsx";
 import {
     Alert,

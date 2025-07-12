@@ -1,7 +1,7 @@
 import {EntityManager} from "./EntityManager";
 import {useTranslation} from "react-i18next";
-import {ClubSection} from "../api/types";
-import {createSection, deleteSection, fetchSections, updateSection} from "../api/sections";
+import {ClubSection} from "../../api/types";
+import {createSection, deleteSection, fetchSections, updateSection} from "../../api/sections";
 
 export function Sections() {
 

@@ -1,7 +1,7 @@
 import {EntityManager} from "./EntityManager";
 import {useTranslation} from "react-i18next";
-import {Group} from "../api/types";
-import {createRole, deleteRole, fetchRoles, updateRole} from "../api/roles";
+import {Group} from "../../api/types";
+import {createRole, deleteRole, fetchRoles, updateRole} from "../../api/roles";
 
 export function Roles() {
 
