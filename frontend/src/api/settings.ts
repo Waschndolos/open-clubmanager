@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:3001/api/settings";
+import {BACKEND_URL} from "./api";
+
+const BASE_URL = `${BACKEND_URL}/api/settings`;
 
 export async function saveDbPath(dbPath: string) {
     const res = await fetch(`${BASE_URL}/set-db-path`, {

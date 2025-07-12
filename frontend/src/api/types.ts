@@ -17,12 +17,12 @@ export type Member = {
     firstName?: string;
     lastName?: string;
     email: string;
-    birthday?: string;
+    birthday?: Date;
     phone?: string;
     phoneMobile?: string;
     comment?: string;
-    entryDate?: string; // ISO string, weil aus JSON
-    exitDate?: string;
+    entryDate?: Date;
+    exitDate?: Date;
     street?: string;
     postalCode?: string;
     city?: string;
@@ -31,7 +31,7 @@ export type Member = {
     iban?: string;
     bic?: string;
     bankName?: string;
-    sepaMandateDate?: string;
+    sepaMandateDate?: Date;
     roles?: Role[];
     groups?: Group[];
     sections?: ClubSection[];

@@ -1,6 +1,7 @@
 import {Group, Role} from "./types";
+import {BACKEND_URL} from "./api";
 
-const BASE_URL = "http://localhost:3001/api/roles";
+const BASE_URL = `${BACKEND_URL}/roles`;
 
 export async function fetchRoles(): Promise<Role[]> {
     const res = await fetch(BASE_URL);

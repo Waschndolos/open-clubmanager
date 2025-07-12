@@ -1,6 +1,7 @@
 import { Member } from "./types";
+import {BACKEND_URL} from "./api";
 
-const BASE_URL = "http://localhost:3001/api/members";
+const BASE_URL = `${BACKEND_URL}/members`;
 
 export async function fetchMembers(): Promise<Member[]> {
     const res = await fetch(BASE_URL);

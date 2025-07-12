@@ -5,7 +5,7 @@ CREATE TABLE "Member" (
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "birthday" TEXT,
+    "birthday" DATETIME,
     "phone" TEXT,
     "phoneMobile" TEXT,
     "comment" TEXT,
@@ -84,6 +84,9 @@ CREATE UNIQUE INDEX "Group_name_key" ON "Group"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ClubSection_name_key" ON "ClubSection"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserPreference_userId_key_key" ON "UserPreference"("userId", "key");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_MemberRoles_AB_unique" ON "_MemberRoles"("A", "B");

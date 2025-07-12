@@ -112,7 +112,7 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
     };
 
     const handleEditMember = () => {
-        if (selectedMembers?.length === 0) {
+        if (selectedMembers?.length === 1) {
             setEditingMember(selectedMembers[0])
         }
     }

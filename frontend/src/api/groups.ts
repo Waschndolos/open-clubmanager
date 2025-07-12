@@ -1,6 +1,7 @@
 import { Group } from "./types";
+import {BACKEND_URL} from "./api";
 
-const BASE_URL = "http://localhost:3001/api/groups";
+const BASE_URL = `${BACKEND_URL}/groups`;
 
 export async function fetchGroups(): Promise<Group[]> {
     const res = await fetch(BASE_URL);

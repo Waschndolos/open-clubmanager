@@ -13,20 +13,9 @@
     "entities": "Entités du club"
   },
   "dashboard": {
-    "welcome": "Bienvenue dans Open Clubmanager",
-    "description": "L'application pour gérer facilement les membres, les finances et les données du club – directement sur votre PC.",
-    "members": {
-      "title": "Gestion des membres",
-      "description": "Enregistrez, modifiez et gérez tous les membres du club, y compris les groupes, rôles et données SEPA."
-    },
-    "finance": {
-      "title": "Finances",
-      "description": "Gardez une vue d'ensemble sur les cotisations, les paiements et les prélèvements SEPA."
-    },
-    "settings": {
-      "title": "Paramètres",
-      "description": "Configurez Open Clubmanager selon vos besoins."
-    }
+    "membercount": "Nombre de membres",
+    "upcommingBirthdays": "Anniversaires à venir",
+    "membersExitingThisYear": "Membres quittant cette année"
   },
   "tooltips": {
     "edit": "Modifier",
