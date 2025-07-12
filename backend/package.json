@@ -4,7 +4,7 @@
   "type": "module",
   "main": "src/server.ts",
   "scripts": {
-    "dev:backend": "node --loader ts-node/esm src/server.ts",
+    "dev:backend": "node --trace-warnings --trace-deprecation --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/server.ts",
     "build": "tsc",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
@@ -20,14 +20,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@faker-js/faker": "^9.8.0",
-    "@prisma/client": "^6.9.0",
-    "better-sqlite3": "^11.10.0",
+    "@prisma/client": "^6.11.1",
+    "better-sqlite3": "^12.2.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
+    "dotenv": "^17.2.0",
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.8.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
