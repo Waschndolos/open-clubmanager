@@ -1,6 +1,7 @@
 import {ClubSection} from "./types";
+import {BACKEND_URL} from "./api";
 
-const BASE_URL = "http://localhost:3001/api/sections";
+const BASE_URL = `${BACKEND_URL}/sections`;
 
 export async function fetchSections(): Promise<ClubSection[]> {
     const res = await fetch(BASE_URL);
