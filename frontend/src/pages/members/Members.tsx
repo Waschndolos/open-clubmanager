@@ -6,7 +6,7 @@ import {Member} from "../../api/types";
 import {Add, Clear} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";
-import {createMember, deleteMember, fetchMembers } from "../../api/members";
+import {createMember, deleteMembers, fetchMembers} from "../../api/members";
 import {useNotification} from "../../components/header/NotificationContext";
 
 export function createEmptyMember(): Member {
@@ -69,10 +69,12 @@ export default function Members() {
         }
     };
 
-    const handleMemberDeleted = (deleted: Member) => {
-        setMembers((prevMembers) =>
-            prevMembers.filter((member) => member.id !== deleted.id)
-        );
+    const handleMemberDeleted = (deleted: Member[]) => {
+        for(const m of deleted) {
+            setMembers((prevMembers) =>
+                prevMembers.filter((member) => member.id !== m.id)
+            );
+        }
     }
 
     useEffect(() => {
@@ -94,7 +96,7 @@ export default function Members() {
                     member.exitDate && new Date(member.exitDate) < now;
 
                 if (expired) {
-                    deleteMember(member).then( ()=> {
+                    deleteMembers([member]).then( ()=> {
                         addNotification(
                             `${member.firstName} ${member.lastName} ${t('members.automatedDeletionNotice')}`
                         );
@@ -152,7 +154,7 @@ export default function Members() {
                     {t("members.create")}
                 </Button>
             </Box>
-            <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated} onMemberDeleted={handleMemberDeleted}/>
+            <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated} onMembersDeleted={handleMemberDeleted}/>
             {newMemberDialogOpen && (
                 <EditMemberDialog
                     member={createEmptyMember()}

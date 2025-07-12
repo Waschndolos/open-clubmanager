@@ -115,7 +115,9 @@
       },
       "delete": {
         "title": "Supprimer le membre",
-        "description": "Voulez-vous supprimer ce membre ?"
+        "titleMultiple": "Supprimer des membres",
+        "description": "Voulez-vous supprimer ce membre ?",
+        "descriptionMultiple": "Voulez-vous vraiment supprimer les membres sélectionnés ?"
       }
     },
     "title": "Gestion des membres",

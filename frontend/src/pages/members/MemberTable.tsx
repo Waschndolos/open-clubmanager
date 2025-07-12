@@ -17,7 +17,7 @@ import {AllCommunityModule, ModuleRegistry} from "ag-grid-community";
 import {Delete, FileDownload, FileUpload, ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
-import {createMember, deleteMember, updateMember} from "../../api/members";
+import {createMember, deleteMembers, updateMember} from "../../api/members";
 import {useUserPreference} from "../../hooks/useUserPreference";
 import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
 import {DeletingMemberDialog} from "./DeletingMemberDialog";
@@ -30,17 +30,17 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 type MemberTableProps = {
     members: Member[];
     onMemberUpdated: (newMember: Member) => void;
-    onMemberDeleted: (deletedMember: Member) => void;
+    onMembersDeleted: (deletedMember: Member[]) => void;
 };
 
-export default function MemberTable({members, onMemberUpdated, onMemberDeleted}: MemberTableProps) {
+export default function MemberTable({members, onMemberUpdated, onMembersDeleted}: MemberTableProps) {
     const {t} = useTranslation();
     const gridRef = useRef<AgGridReact>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [editingMember, setEditingMember] = useState<Member | null>(null);
     const [exportOpened, setExportOpened] = useState<boolean>(false);
-    const [deletingMember, setDeletingMember] = useState<Member | null>(null);
-    const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+    const [deletingMembers, setDeletingMembers] = useState<Member[] | null>(null);
+    const [selectedMembers, setSelectedMembers] = useState<Member[] | null>(null);
     const {getPreference, setPreference} = useUserPreference();
     const [importWizardOpen, setImportWizardOpen] = useState(false);
     const [importInProgress, setImportInProgress] = useState(false);
@@ -103,9 +103,8 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
 
 
     const handleSelectionChanged = () => {
-        const selectedNodes = gridRef.current?.api.getSelectedNodes();
-        const selectedData = selectedNodes?.[0]?.data;
-        setSelectedMember(selectedData || null);
+        const selectedNodes = gridRef.current?.api.getSelectedNodes().map((node) => node.data) || null;
+        setSelectedMembers(selectedNodes);
     };
 
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -113,11 +112,13 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
     };
 
     const handleEditMember = () => {
-        setEditingMember(selectedMember)
+        if (selectedMembers?.length === 0) {
+            setEditingMember(selectedMembers[0])
+        }
     }
 
-    const handleDeleteMember = () => {
-        setDeletingMember(selectedMember);
+    const handleDeleteMembers = () => {
+        setDeletingMembers(selectedMembers);
     }
 
     const handleExport = () => {
@@ -144,10 +145,6 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
 
     const menuOpen = Boolean(anchorEl);
 
-    if (!members || members.length === 0) {
-        return <Typography>No members found</Typography>;
-    }
-
     async function upsertImportedMembers(imported: Member[]) {
         const existingMap = new Map(members.map(m => [m.email.toLowerCase(), m]));
 
@@ -160,13 +157,13 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
             setImportProgress(progress);
             const emailKey = member.email.toLowerCase();
             if (existingMap.has(emailKey)) {
-                // Existierendes Member updaten
+                // Update existing member
                 const existing = existingMap.get(emailKey)!;
                 const updated = {...existing, ...member, id: existing.id};
                 const saved = await updateMember(updated);
                 onMemberUpdated(saved);
             } else {
-                // Neu erstellen
+                // create new member
                 const saved = await createMember(member);
                 onMemberUpdated(saved);
             }
@@ -188,12 +185,12 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
 
                 <Box display="flex" justifyContent="end">
                     <Tooltip title={t("tooltips.edit")}>
-                        <IconButton onClick={handleEditMember} disabled={!selectedMember} color={"primary"}>
+                        <IconButton onClick={handleEditMember} disabled={selectedMembers?.length !== 1} color={"primary"}>
                             <EditIcon/>
                         </IconButton>
                     </Tooltip>
                     <Tooltip title={t("tooltips.delete")}>
-                        <IconButton onClick={handleDeleteMember} disabled={!selectedMember} color={"primary"}>
+                        <IconButton onClick={handleDeleteMembers} disabled={!selectedMembers} color={"primary"}>
                             <Delete/>
                         </IconButton>
                     </Tooltip>
@@ -243,7 +240,6 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                 <div style={{minWidth: "1000px", height: "100%"}} className={agGridThemeClass}>
                     <AgGridReact
                         headerHeight={100}
-                        // className={themeContext.mode === 'dark' ? 'ag-theme-balham-dark' : 'ag-theme-balham'}
                         ref={gridRef}
                         suppressMovableColumns={true}
                         rowData={members}
@@ -254,7 +250,7 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                         defaultColDef={{sortable: true, filter: true, resizable: true, minWidth: 150}}
                         pagination
                         paginationPageSize={20}
-                        rowSelection="single"
+                        rowSelection="multiple"
                         onSelectionChanged={handleSelectionChanged}
                     />
                 </div>
@@ -268,14 +264,14 @@ export default function MemberTable({members, onMemberUpdated, onMemberDeleted}:
                     }}
                 />
             )}
-            {deletingMember && (
+            {deletingMembers && (
                 <DeletingMemberDialog
-                    member={deletingMember!}
-                    onClose={() => setDeletingMember(null)}
-                    onDelete={(deleted: Member) => {
-                        deleteMember(deleted!).then(() => {
-                            onMemberDeleted(deleted!);
-                            setDeletingMember(null)
+                    members={deletingMembers!}
+                    onClose={() => setDeletingMembers(null)}
+                    onDelete={(deleted: Member[]) => {
+                        deleteMembers(deleted!).then(() => {
+                            onMembersDeleted(deleted!);
+                            setDeletingMembers(null)
                         })
                     }}/>
             )}
