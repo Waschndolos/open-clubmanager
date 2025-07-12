@@ -3,29 +3,41 @@ import {useTranslation} from "react-i18next";
 import {Member} from "../../api/types";
 
 type Props = {
-    member: Member;
+    members: Member[];
     onClose: () => void;
-    onDelete: (deleted: Member) => void;
+    onDelete: (deleted: Member[]) => void;
 };
 
-export function DeletingMemberDialog({ member, onClose, onDelete }: Props) {
+export function DeletingMemberDialog({ members, onClose, onDelete }: Props) {
     const { t } = useTranslation();
 
     return (
         <Dialog open onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
-                {t("members.dialogs.delete.title")}
+                {members.length === 1
+                    ? t("members.dialogs.delete.title")
+                    : t("members.dialogs.delete.titleMultiple")}
             </DialogTitle>
             <DialogContent>
-             <DialogContentText>{t("members.dialogs.delete.description")}</DialogContentText>
+            <DialogContentText>
+                {members.length === 1
+                    ? t("members.dialogs.delete.description")
+                    : t("members.dialogs.delete.descriptionMultiple")}
+            </DialogContentText>
+                <ul>
+                    {members.map((member) => (
+                        <li key={member.id}>
+                            {member.firstName} {member.lastName} ({member.email})
+                        </li>
+                    ))}
+                </ul>
             </DialogContent>
-
             <DialogActions>
                 <Button onClick={onClose}>{t("buttons.abort")}</Button>
                 <Button
                     variant="contained"
                     onClick={() => {
-                        onDelete(member);
+                        onDelete(members);
                     }}
                 >
                     {t("buttons.delete")}

@@ -8,13 +8,16 @@ export async function fetchMembers(): Promise<Member[]> {
     return res.json();
 }
 
-export async function deleteMember(data: Member): Promise<void> {
-    const res = await fetch(BASE_URL + "/" + data.id, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error("Error fetching members.");
+export async function deleteMembers(data: Member[]): Promise<void> {
+
+    for (const member of data) {
+        const res = await fetch(BASE_URL + "/" + member.id, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error("Error fetching members.");
+    }
     return;
 }
 
