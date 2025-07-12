@@ -1,8 +1,9 @@
 import express from 'express';
-import { prisma } from '../prismaClient.ts';
 import fs from 'fs/promises';
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
 import * as path from 'path';
+import { getClient } from '../db';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,13 +14,12 @@ const router = express.Router();
 const getConfig = async () => {
     
     const configContent = await fs.readFile(configFilePath, 'utf8');
-    const config = JSON.parse(configContent);
-
-    return config;
+    return JSON.parse(configContent);
 }
 
 //GET /api/preferences
 router.get('/', async (_, res) => {
+    const prisma = await getClient();
     const sections = await prisma.userPreference.findMany();
     res.json(sections);
 });
@@ -59,6 +59,7 @@ router.get('/:key', async (_req, res) => {
     try {
         const key = _req.params.key
         const userId = 1; // TODO: add once auth is there
+        const prisma = await getClient();
         const preferences = await prisma.userPreference.findMany({
             where: { userId }
         });
@@ -80,6 +81,7 @@ router.get('/:key', async (_req, res) => {
 router.post('/', async (req, res) => {
     const { key, value } = req.body;
     try {
+        const prisma = await getClient();
         const section = await prisma.userPreference.upsert({
             where: {
                 id: 1 // TODO: use userID as soon as we have auth
@@ -132,6 +134,7 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { key, value  } = req.body;
     try {
+        const prisma = await getClient();
         const section = await prisma.userPreference.update({
             where: { id: Number(id) },
             data: { key: key, value: value, updatedAt: new Date() },

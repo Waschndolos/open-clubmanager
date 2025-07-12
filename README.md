@@ -75,15 +75,25 @@ Open ClubManager is built by volunteers for volunteers.
 
 ### Prerequisites
 
-* Node.js >= 18
-* npm or pnpm
+* Node.js 20
+* npm
 
 ### Backend Setup
+
+Create a file named `.env` in the `backend` directory with the following content:
+```plaintext
+# The url where the backend will find the SQLite database
+DATABASE_URL="file:/home/myUser/clubmanager.db"
+
+# Alternatively, for users who use "Please Reboot OS" you can use:
+# DATABASE_URL="file:C:\\Users\\myUser\\clubmanager.db"
+```
+
 
 ```bash
 cd backend
 npm install
-npx prisma migrate dev --name init
+npm run prisma:setup:dev:database
 npm run seed
 npm run dev
 ```
@@ -94,6 +104,15 @@ npm run dev
 cd frontend
 npm install
 npm run dev
+```
+
+### Start Frontend and Backend in Dev mode
+```bash
+cd <rootProject>
+# Start the frontend and backend in browser
+npm run dev:browser
+# or start the frontend and backend in electron
+npm run dev:electron
 ```
 
 ---

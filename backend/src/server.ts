@@ -5,8 +5,16 @@ import roleRoutes from "./routes/role.ts";
 import groupRoutes from "./routes/group.ts";
 import sectionRoutes from "./routes/section.ts";
 import preferenceRoutes from "./routes/userpreference.ts";
+import validationRoutes from "./routes/validation.ts";
+import settingRoutes from "./routes/settings.ts";
 
-
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+    });
+});
 const app = express()
 
 console.log("Setup middlewares")
@@ -21,6 +29,8 @@ app.use('/api/roles', roleRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/sections', sectionRoutes);
 app.use('/api/preference', preferenceRoutes);
+app.use('/api/validation', validationRoutes);
+app.use('/api/settings', settingRoutes);
 
 // Error handling middleware
 app.use((err: unknown, _req: Request, res: Response) => {

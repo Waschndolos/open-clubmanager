@@ -160,6 +160,17 @@
       "en": "Englisch",
       "fr": "Französisch"
     },
+    "validatíon": {
+      "error": {
+        "nosqllitedb": "Der Pfad zeigt auf keine valide SQLite Datenbank.",
+        "cannotcreate": "An dem angegebenen Pfad kann keine Datenbank erstellt werden.",
+        "required": "Der Datenbankpfad ist erforderlich."
+      },
+      "success": {
+        "newdb": "Der Datenkbankpfad ist potentiell gültig. Kopieren Sie die clubmanager.db an diese Stelle wenn sie diese Stelle nutzen möchten",
+        "valid": "Der Datenbankpfad ist gültig."
+      }
+    },
     "labels": {
       "language": "Sprache",
       "dbPath": "Datenbankpfad",

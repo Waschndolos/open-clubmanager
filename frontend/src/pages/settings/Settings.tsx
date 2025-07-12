@@ -1,20 +1,22 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-    Typography,
-    TextField,
-    Select,
-    MenuItem,
+    Box,
     Button,
+    Fade,
     FormControl,
     InputLabel,
+    MenuItem,
     Paper,
-    Fade,
-    Box,
-    Snackbar
+    Select,
+    Snackbar,
+    TextField,
+    Typography
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
 import SettingsIcon from "@mui/icons-material/Settings";
+import {validatePath} from "../../components/api/validation";
+import {getDbPath, saveDbPath} from "../../components/api/settings";
 
 export function Settings() {
     const {t, i18n} = useTranslation();
@@ -22,7 +24,8 @@ export function Settings() {
     const raw = apppreference.get('DATABASE_URL');
     const [dbPath, setDbPath] = useState<string>(typeof raw == 'string' ? raw : '');
     const [language, setLanguage] = useState<string>('en');
-    const [snackBarState, setsnackBarState] = useState<{ open: boolean, message: string }>({
+    const [validationMessage, setValidationMessage] = useState<string>("");
+    const [snackBarState, setSnackBarState] = useState<{ open: boolean, message: string }>({
         open: false,
         message: ""
     });
@@ -39,16 +42,34 @@ export function Settings() {
         i18n.changeLanguage(savedLanguage);
     }, [i18n]);
 
+    useEffect(() => {
+        getDbPath().then((dbPath) => {
+            setDbPath(dbPath)
+        })
+
+    }, []);
+
     const saveSettings = () => {
         userpreference?.set('1', 'language', language); // TODO: use userID as soon as we have auth
         i18n.changeLanguage(language);
-        +apppreference.set('DATABASE_URL', dbPath)
-
-        setsnackBarState({
-            open: true,
-            message: t("settings.labels.saveSuccess")
+        +apppreference.set('DATABASE_URL', dbPath);
+        saveDbPath(dbPath).then(() => {
+            setSnackBarState({
+                open: true,
+                message: t("settings.labels.saveSuccess")
+            });
+        }, () => {
+            setSnackBarState({
+                open: true,
+                message: t("settings.labels.saveFails")
+            })
         });
+
     };
+
+    async function validateDbPath(path: string): Promise<{ valid: boolean, i18nToken?: string }> {
+        return await validatePath(path);
+    }
 
     return (
         <Box sx={{p: 4}}>
@@ -66,14 +87,30 @@ export function Settings() {
                         variant="outlined"
                         value={dbPath}
                         fullWidth
-                        onChange={(e) => setDbPath(e.target.value)}
+                        error={dbPath.length === 0 || /[<>:"|?*]/.test(dbPath)}
+                        helperText={dbPath.length === 0
+                            ? t("settings.validatíon.error.required")
+                            : /[<>:"|?*]/.test(dbPath)
+                                ? t("settings.validatíon.error.required")
+                                : validationMessage}
+                        onChange={(e) => {
+                            setDbPath(e.target.value);
+                            setValidationMessage(""); // Reset message on input change
+                        }}
+                        onBlur={async () => {
+                            const response = await validateDbPath(dbPath);
+                            setValidationMessage(
+                                response.valid
+                                    ? t(`settings.validatíon.${response.i18nToken}`)
+                                    : t(`settings.validatíon.${response.i18nToken}`)
+                            );
+                        }}
                         placeholder="/path/to/database.db"
-                        margin="normal"
-                    />
+                        margin="normal"/>
                 </FormControl>
 
                 <FormControl fullWidth margin="normal">
-                    <InputLabel id="language-select-label">{t("settings.labels.dbPath")}</InputLabel>
+                    <InputLabel id="language-select-label">{t("settings.labels.language")}</InputLabel>
                     <Select
                         labelId="language-select-label"
                         value={language}
@@ -100,18 +137,16 @@ export function Settings() {
             >
                 {t("buttons.save")}
             </Button>
-
             <Snackbar
                 open={snackBarState.open}
                 color="primary"
-                onClose={() => setsnackBarState({...snackBarState, open: false})}
+                onClose={() => setSnackBarState({...snackBarState, open: false})}
                 slots={{
                     transition: Fade
                 }}
                 message={snackBarState.message}
-                autoHideDuration={3000}
-            />
+                autoHideDuration={3000}/>
 
         </Box>
-    );
+    )
 };
