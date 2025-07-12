@@ -4,7 +4,7 @@
   "type": "module",
   "main": "src/server.ts",
   "scripts": {
-    "dev:backend": "node --trace-warnings --trace-deprecation --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/server.ts",
+    "dev:backend": "tsx src/server.ts",
     "build": "tsc",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
@@ -42,6 +42,7 @@
     "prettier": "^3.5.3",
     "prisma": "^6.9.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }
