@@ -5,6 +5,7 @@ import fs from "fs";
 
 const clientCache = new Map<string, PrismaClient>();
 let currentClient: PrismaClient | null = null;
+let currentDbPath: string | undefined = process.env.DATABASE_URL;
 
 export async function setActiveDb(path: string|undefined) {
     if (!path) {
@@ -14,6 +15,11 @@ export async function setActiveDb(path: string|undefined) {
         await currentClient.$disconnect();
     }
     currentClient = await createPrismaClientForPath(path);
+    currentDbPath = path;
+}
+
+export function getCurrentDbPath(): string | undefined {
+    return currentDbPath;
 }
 
 export async function getClient(): Promise<PrismaClient> {

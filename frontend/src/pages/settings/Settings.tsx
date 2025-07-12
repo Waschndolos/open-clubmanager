@@ -16,7 +16,7 @@ import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {validatePath} from "../../components/api/validation";
-import {saveDbPath} from "../../components/api/settings";
+import {getDbPath, saveDbPath} from "../../components/api/settings";
 
 export function Settings() {
     const {t, i18n} = useTranslation();
@@ -41,6 +41,13 @@ export function Settings() {
         setLanguage(savedLanguage);
         i18n.changeLanguage(savedLanguage);
     }, [i18n]);
+
+    useEffect(() => {
+        getDbPath().then((dbPath) => {
+            setDbPath(dbPath)
+        })
+
+    }, []);
 
     const saveSettings = () => {
         userpreference?.set('1', 'language', language); // TODO: use userID as soon as we have auth
