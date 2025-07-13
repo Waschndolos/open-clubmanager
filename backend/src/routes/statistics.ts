@@ -41,7 +41,13 @@ function buildUpcomingBirthdaysStat(members: Member[]) {
     return {
         id: 2,
         value: upcoming.length,
-        details: upcoming.map(m => `${m.firstName} ${m.lastName} (${formatDate(m.birthday)})`),
+        details: upcoming.sort((a, b) => {
+            const today = new Date();
+            const thisYear = today.getFullYear();
+            const aDate = new Date(thisYear, a.birthday!.getMonth(), a.birthday!.getDate());
+            const bDate = new Date(thisYear, b.birthday!.getMonth(), b.birthday!.getDate());
+            return aDate.getTime() - bDate.getTime();
+        }).map(m => `${m.firstName} ${m.lastName} (${formatDate(m.birthday)})`),
     };
 }
 
