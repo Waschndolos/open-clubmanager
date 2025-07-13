@@ -115,6 +115,12 @@ npm run dev:browser
 npm run dev:electron
 ```
 
+The initial user for the development mode is:
+```plaintext
+Email:      admin@admin.com
+Password:   admin
+```
+
 ---
 
 ## 🌱 Development Mode

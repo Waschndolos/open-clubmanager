@@ -2,7 +2,8 @@ import {AppBar, Box, IconButton, Toolbar, Typography} from '@mui/material'
 import React from "react";
 import NotificationBell from "./NotificationBell";
 import MenuIcon from "@mui/icons-material/Menu";
-import ThemeToggle from "./ThemeToggle"; // Import the new ThemeToggle
+import ThemeToggle from "./ThemeToggle";
+import LogoutButton from "./LogoutButton"; // Import the new ThemeToggle
 
 // HeaderProps type
 type HeaderProps = {
@@ -34,6 +35,7 @@ export default function Header({onToggleSidebar }: HeaderProps) {
                     <ThemeToggle />
                     {/* Notification bell */}
                     <NotificationBell/>
+                    <LogoutButton/>
                 </Box>
             </Toolbar>
         </AppBar>

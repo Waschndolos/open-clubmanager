@@ -1,5 +1,6 @@
 import {PrismaClient} from '@prisma/client';
 import {faker} from '@faker-js/faker';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient({
         datasources: {
@@ -19,12 +20,16 @@ async function main() {
     await prisma.role.deleteMany();
     await prisma.group.deleteMany();
     await prisma.clubSection.deleteMany();
+    await prisma.user.deleteMany();
+
 
     // Create initial data
     await prisma.role.createMany({
-        data: [{name: 'Trainer'}, {name: 'Member'}, {name: 'Admin'}]
+        data: [{name: 'Admin', id: 0}, {name: 'Trainer', id: 1}, {name: 'Member', id: 2}]
     });
 
+
+    // Create groups and sections
     await prisma.group.createMany({
         data: [{name: 'Youth'}, {name: 'Adults'}, {name: 'Seniors'}]
     });
@@ -36,6 +41,21 @@ async function main() {
     const allRoles = await prisma.role.findMany();
     const allGroups = await prisma.group.findMany();
     const allSections = await prisma.clubSection.findMany();
+
+    const hashedPassword = await bcrypt.hash('admin', 10);
+    // Create initial user with Admin role
+    await prisma.user.create({
+        data:
+            {
+                name: 'admin',
+                password: hashedPassword,
+                email: 'admin@admin.com',
+                roles: {
+                    connect: {id: 0}
+                }
+            },
+
+    })
 
     // Create members
     for (let i = 0; i < nbMembers; i++) {

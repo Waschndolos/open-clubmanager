@@ -8,6 +8,7 @@ import preferenceRoutes from "./routes/userpreference.ts";
 import validationRoutes from "./routes/validation.ts";
 import settingRoutes from "./routes/settings.ts";
 import statisticRoutes from "./routes/statistics.ts";
+import authRoutes from "./routes/auth.ts";
 
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', {
@@ -33,6 +34,7 @@ app.use('/api/preference', preferenceRoutes);
 app.use('/api/validation', validationRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/statistics', statisticRoutes);
+app.use('/api/auth', authRoutes);
 
 // Error handling middleware
 app.use((err: unknown, _req: Request, res: Response) => {
