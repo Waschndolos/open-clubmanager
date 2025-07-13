@@ -1,4 +1,4 @@
-import {createBrowserRouter, Navigate} from "react-router";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import NotFound from "../pages/NotFound";
 import MainLayout from "../layouts/MainLayout";
 import Dashboard from "../pages/dashboard/Dashboard";
@@ -6,40 +6,66 @@ import Members from "../pages/members/Members";
 import {Finance} from "../pages/finance/Finance";
 import { Settings } from "../pages/settings/Settings";
 import {EntitiesPage} from "../pages/entities/EntitiesPage";
+import Login from "../pages/login/Login";
+import { RequireAuth } from "../guards/RequireAuth";
 
 export const router = createBrowserRouter([
     {
+    path: "/login",
+    element: <Login />,
+  },
+  {
         path: "/",
-        Component: MainLayout,
+        element: <MainLayout />,
         children: [
             {
-                path: "",
-                Component: () => <Navigate to="/dashboard" replace />
+                index: true,
+                element: <Navigate to="/dashboard" replace />,
             },
             {
-                path: "/dashboard",
-                Component: Dashboard,
+        path: "dashboard",
+        element: (
+          <RequireAuth>
+            <Dashboard />
+          </RequireAuth>
+        ),
             },
             {
-                path: "/members",
-                Component: Members
+        path: "members",
+        element: (
+          <RequireAuth>
+            <Members />
+          </RequireAuth>
+        ),
             },
             {
-                path: "/finance",
-                Component: Finance
+        path: "finance",
+        element: (
+          <RequireAuth>
+            <Finance />
+          </RequireAuth>
+        ),
             },
             {
-                path: "/settings",
-                Component: Settings
+        path: "settings",
+        element: (
+          <RequireAuth>
+            <Settings />
+          </RequireAuth>
+        ),
             },
             {
-                path: "/entities",
-                Component: EntitiesPage
+        path: "entities",
+        element: (
+          <RequireAuth>
+            <EntitiesPage />
+          </RequireAuth>
+        ),
             },
             {
                 path: "*",
-                Component: NotFound
-            }
-        ]
-    }
-])
+        element: <NotFound />,
+      },
+    ],
+  },
+]);
