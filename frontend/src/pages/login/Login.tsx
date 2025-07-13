@@ -1,20 +1,15 @@
 import React, {useState} from 'react';
-import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    TextField,
-    Typography,
-    InputAdornment,
-    IconButton,
-} from '@mui/material';
+import {Box, Button, Card, CardContent, IconButton, InputAdornment, TextField, Typography,} from '@mui/material';
 import {Visibility, VisibilityOff} from '@mui/icons-material';
 import {useAuth} from '../../context/AuthContext';
 import {useNavigate} from 'react-router-dom';
 import {login} from '../../api/authentication';
+import {useTranslation} from "react-i18next";
+import {useThemeContext} from "../../theme/ThemeContext";
 
 const Login: React.FC = () => {
+    const { mode } = useThemeContext();
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -49,27 +44,50 @@ const Login: React.FC = () => {
             <Card sx={{width: '100%', maxWidth: 400, p: 2}} elevation={6}>
                 <CardContent>
                     <Typography variant="h5" component="h1" gutterBottom align="center">
-                        Anmelden
+                        {t('login.title')}
                     </Typography>
 
                     <Box display="flex" flexDirection="column" gap={2} mt={2} alignItems={"center"}>
                         <TextField
-                            label="E-Mail"
+                            label={t('login.email')}
                             variant="outlined"
                             fullWidth
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            slotProps={{
+                                input: {
+                                    sx: {
+                                        '& input': {
+                                            transition: 'background-color 5000s ease-in-out 0s',
+                                            backgroundColor: 'transparent',
+                                            WebkitTextFillColor: mode === 'dark' ? 'white': 'black',
+                                            MozTextFillColor: mode === 'dark' ? 'white': 'black',
+                                            color: mode === 'dark' ? 'white': 'black',
+                                        },
+                                    },
+                                },
+                            }}
                         />
 
                         <TextField
-                            label="Passwort"
+                            label={t('login.password')}
                             variant="outlined"
                             fullWidth
                             type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+
                             slotProps={{
                                 input: {
+                                    sx: {
+                                        '& input': {
+                                            transition: 'background-color 5000s ease-in-out 0s',
+                                            backgroundColor: 'transparent',
+                                            WebkitTextFillColor: mode === 'dark' ? 'white': 'black',
+                                            MozTextFillColor: mode === 'dark' ? 'white': 'black',
+                                            color: mode === 'dark' ? 'white': 'black',
+                                        },
+                                    },
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton
@@ -97,7 +115,7 @@ const Login: React.FC = () => {
                             onClick={handleLogin}
                             disabled={!email || !password}
                         >
-                            Einloggen
+                            {t('login.loginButton')}
                         </Button>
                     </Box>
                 </CardContent>

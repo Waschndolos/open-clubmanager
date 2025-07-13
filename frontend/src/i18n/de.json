@@ -5,6 +5,16 @@
       "deleteall": "Alle löschen"
     }
   },
+  "logout": {
+    "tooltip": "Abmelden"
+  },
+  "login": {
+    "title": "Anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "loginButton": "Anmelden"
+  },
+
   "menu": {
     "dashboard": "Startseite",
     "members": "Mitgliederverwaltung",
