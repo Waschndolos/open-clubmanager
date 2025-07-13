@@ -13,7 +13,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:reset": "prisma migrate reset",
-    "prisma:seed": "node --loader ts-node/esm prisma/seed.ts",
+    "prisma:seed": "tsx prisma/seed.ts",
     "licenses": "license-checker --production --markdown --excludePackages 'backend@0.0.0'  > THIRD_PARTY_LICENSES.md"
   },
   "keywords": [],
@@ -22,6 +22,7 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.11.1",
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
