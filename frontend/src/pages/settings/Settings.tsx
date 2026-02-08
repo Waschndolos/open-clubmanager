@@ -52,7 +52,7 @@ export function Settings() {
     const saveSettings = () => {
         userpreference?.set('1', 'language', language); // TODO: use userID as soon as we have auth
         i18n.changeLanguage(language);
-        +apppreference.set('DATABASE_URL', dbPath);
+        apppreference.set('DATABASE_URL', dbPath);
         saveDbPath(dbPath).then(() => {
             setSnackBarState({
                 open: true,
