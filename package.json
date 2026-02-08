@@ -19,8 +19,8 @@
   "devDependencies": {
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
-    "electron": "^29.4.6",
-    "electron-builder": "^24.13.3",
+    "electron": "^40.2.1",
+    "electron-builder": "^26.7.0",
     "wait-on": "^8.0.3"
   },
   "dependencies": {
