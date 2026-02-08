@@ -6,6 +6,7 @@ import {useNavigate} from 'react-router-dom';
 import {login} from '../../api/authentication';
 import {useTranslation} from "react-i18next";
 import {useThemeContext} from "../../theme/ThemeContext";
+import {setAccessToken} from "../../api/api";
 
 const Login: React.FC = () => {
     const { mode } = useThemeContext();
@@ -15,7 +16,7 @@ const Login: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const {setAccessToken} = useAuth();
+    const {setAccessToken: setAuthAccessToken} = useAuth();
     const navigate = useNavigate();
 
     const handleLogin = async () => {
@@ -23,6 +24,7 @@ const Login: React.FC = () => {
         try {
             const {accessToken} = await login(email, password);
             setAccessToken(accessToken);
+            setAuthAccessToken(accessToken);
             navigate('/dashboard', {replace: true});
         } catch (e) {
             setError('Login fehlgeschlagen. Bitte überprüfe deine Eingaben.');
