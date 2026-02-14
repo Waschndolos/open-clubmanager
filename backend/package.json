@@ -6,14 +6,6 @@
   "scripts": {
     "dev:backend": "tsx src/server.ts",
     "build": "tsc",
-    "postinstall": "prisma generate",
-    "prisma:setup:dev:database": "prisma migrate dev && node --loader ts-node/esm prisma/seed.ts",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate:reset": "prisma migrate reset",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio",
-    "prisma:reset": "prisma migrate reset",
-    "prisma:seed": "node --loader ts-node/esm prisma/seed.ts",
     "licenses": "license-checker --production --markdown --excludePackages 'backend@0.0.0'  > THIRD_PARTY_LICENSES.md"
   },
   "keywords": [],
@@ -21,11 +13,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.11.1",
-    "better-sqlite3": "^12.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.0",
-    "express": "^5.1.0"
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",

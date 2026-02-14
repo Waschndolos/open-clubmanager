@@ -1,49 +1,42 @@
-import express from 'express';
-import {getClient} from "../db.ts";
+import { Router, Request, Response } from 'express';
+import { RoleRepository } from '../repositories/role.repository.ts';
+import { Role } from '../models/models';
 
-const router = express.Router();
+const router = Router();
+const repo = new RoleRepository();
 
-router.get('/', async (_, res) => {
-    const prisma = await getClient();
-    const roles = await prisma.role.findMany();
+/* GET /roles/:id */
+router.get(
+    '/:id',
+    async (req: Request, res: Response): Promise<void> => {
+        const role = await repo.findById(req.params.id);
+        if (!role) {
+            res.status(404).json({ error: 'Role not found' });
+            return;
+        }
+        res.json(role);
+    }
+);
+
+/* GET /roles – optional filtering */
+router.get('/', async (req: Request, res: Response) => {
+    const filter: Partial<Role> = {};
+    if (req.query.name) filter.name = String(req.query.name);
+    const roles = await repo.findAll(filter);
     res.json(roles);
 });
 
-router.post('/', async (req, res) => {
-    const { name } = req.body;
-    try {
-        const prisma = await getClient();
-        const role = await prisma.role.create({ data: { name } });
-        res.status(201).json(role);
-    } catch (e) {
-        res.status(400).json({ error: 'Could not create role' });
-    }
+/* POST /roles – upsert */
+router.post('/', async (req: Request, res: Response) => {
+    const payload = req.body as Role;
+    const saved = await repo.upsert(payload);
+    res.status(201).json(saved);
 });
 
-router.put('/:id', async (req, res) => {
-    const { id } = req.params;
-    const { name } = req.body;
-    try {
-        const prisma = await getClient();
-        const role = await prisma.role.update({
-            where: { id: Number(id) },
-            data: { name },
-        });
-        res.json(role);
-    } catch (e) {
-        res.status(400).json({ error: 'Could not update role' });
-    }
-});
-
-router.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const prisma = await getClient();
-        await prisma.role.delete({ where: { id: Number(id) } });
-        res.sendStatus(204);
-    } catch (e) {
-        res.status(400).json({ error: 'Could not delete role' });
-    }
+/* DELETE /roles/:id */
+router.delete('/:id', async (req: Request, res: Response) => {
+    await repo.delete(req.params.id);
+    res.status(204).end();
 });
 
 export default router;

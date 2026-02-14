@@ -1,29 +1,40 @@
-import express from 'express';
-import {getCurrentDbPath, setActiveDb} from "../db.ts";
+import {FileStorage} from '../services/filestorage';
 
+export interface Settings {
+    defaultCurrency: 'usd' | 'eur' | 'gbp' | 'chf';
+    showWelcomeBanner: boolean;
+    itemsPerPage: number;
+    [extra: string]: unknown;
+}
 
-const router = express.Router();
+class SettingsService {
+    private readonly storage = new FileStorage<Settings>('data/settings');
+    private cache: Settings | null = null;
 
+    /** Load settings from disk (cached after first read) */
+    async get(): Promise<Settings> {
+        if (this.cache) return this.cache;
 
-router.post("/set-db-path", async (req, res) => {
-    const {dbPath} = req.body;
-    try {
-        await setActiveDb(dbPath);
-        res.json({status: "ok", dbPath});
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({error: "Failed to set database path"});
+        const persisted = await this.storage.read('global');
+        // If the file does not exist yet we fall back to sensible defaults
+        this.cache = persisted ?? {
+            defaultCurrency: 'eur',
+            showWelcomeBanner: true,
+            itemsPerPage: 25,
+        };
+        return this.cache;
     }
-});
 
-router.get('/db-path', async (req, res) => {
-    try {
-        const dbPath = getCurrentDbPath();
-        res.json({dbPath});
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({error: "Failed to get database path"});
+    async set(newSettings: Settings): Promise<void> {
+        this.cache = newSettings;
+        await this.storage.write('global', newSettings);
     }
-})
 
-export default router;
+    async update<K extends keyof Settings>(key: K, value: Settings[K]): Promise<void> {
+        const current = await this.get();
+        current[key] = value;
+        await this.set(current);
+    }
+}
+
+export const settings = new SettingsService();

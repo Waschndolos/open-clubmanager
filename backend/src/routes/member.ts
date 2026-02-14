@@ -1,138 +1,44 @@
-import express from 'express'
-import {getClient} from "../db.ts";
+import {Request, Response, Router} from 'express';
+import {MemberRepository} from '../repositories/member.repository';
+import {Member} from '../models/models';
 
-const router = express.Router()
+const router = Router();
+const repo = new MemberRepository();
 
-// GET /api/members – List all members
-router.get('/', async (_req, res) => {
-    try {
-        const prisma = await getClient();
-        const members = await prisma.member.findMany({
-            include: {
-                roles: true,
-                groups: true,
-                sections: true
-            }
-        })
-        res.json(members)
-    } catch (err) {
-        console.error(err)
-        res.status(500).json({ error: 'Error loading members' })
+/* GET /members/:id – retrieve a single member */
+router.get(
+    '/:id',
+    async (req: Request, res: Response): Promise<void> => {
+        const member = await repo.findById(req.params.id);
+        if (!member) {
+            res.status(404).json({error: 'Member not found'});
+            return; // stop execution – no value returned
+        }
+        res.json(member);
     }
-})
+);
 
-// POST /api/members – Create new member
-router.post('/', async (req, res) => {
-    try {
-        const data = req.body
-        const prisma = await getClient();
-        const newMember = await prisma.member.create({
-            data: {
-                number: data.number,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                email: data.email,
-                birthday: data.birthday,
-                phone: data.phone,
-                phoneMobile: data.phoneMobile,
-                comment: data.comment,
-                entryDate: data.entryDate,
-                exitDate: data.exitDate,
-                street: data.street,
-                postalCode: data.postalCode,
-                city: data.city,
-                state: data.state,
-                accountHolder: data.accountHolder,
-                iban: data.iban,
-                bic: data.bic,
-                bankName: data.bankName,
-                sepaMandateDate: data.sepaMandateDate,
-                roles: {
-                    connect: data.roleIds?.map((id: number) => ({ id })) || []
-                },
-                groups: {
-                    connect: data.groupIds?.map((id: number) => ({ id })) || []
-                },
-                sections: {
-                    connect: data.sectionIds?.map((id: number) => ({ id })) || []
-                }
-            }
-        })
+/* GET /members – list members, optional filtering via query parameters */
+router.get('/', async (req: Request, res: Response) => {
+    const filter: Partial<Member> = {};
+    if (req.query.email) filter.email = String(req.query.email);
+    if (req.query.firstName) filter.firstName = String(req.query.firstName);
+    // Add more filters as needed
+    const members = await repo.findAll(filter);
+    res.json(members);
+});
 
-        res.json(newMember)
-    } catch (err) {
-        console.error(err)
-        res.status(500).json({ error: 'Error creating member' })
-    }
-})
+/* POST /members – create or update (upsert) a member */
+router.post('/', async (req: Request, res: Response) => {
+    const payload = req.body as Member;
+    const saved = await repo.upsert(payload);
+    res.status(201).json(saved);
+});
 
-// update Member
-router.put('/:id', async (req, res) => {
-    try {
-        console.log("Received update", req.body)
-        const id = parseInt(req.params.id)
-        const data = req.body
-        const prisma = await getClient();
-        const updated = await prisma.member.update({
-            where: { id },
-            data: {
-                number: data.number,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                email: data.email,
-                birthday: data.birthday,
-                phone: data.phone,
-                phoneMobile: data.phoneMobile,
-                comment: data.comment,
-                entryDate: data.entryDate,
-                exitDate: data.exitDate,
-                street: data.street,
-                postalCode: data.postalCode,
-                city: data.city,
-                state: data.state,
-                accountHolder: data.accountHolder,
-                iban: data.iban,
-                bic: data.bic,
-                bankName: data.bankName,
-                sepaMandateDate: data.sepaMandateDate,
-                roles: {
-                    set: data.roleIds?.map((id: number) => ({ id })) || []
-                },
-                groups: {
-                    set: data.groupIds?.map((id: number) => ({ id })) || []
-                },
-                sections: {
-                    set: data.sectionIds?.map((id: number) => ({ id })) || []
-                }
-            },
-            include: {
-                roles: true,
-                groups: true,
-                sections: true,
-            },
-        })
-        res.json(updated)
-    } catch (err) {
-        console.error(err)
-        res.status(500).json({ error: 'Error updating members' })
-    }
-})
+/* DELETE /members/:id */
+router.delete('/:id', async (req: Request, res: Response) => {
+    await repo.delete(req.params.id);
+    res.status(204).end();
+});
 
-// delete members
-router.delete('/:id', async (req, res) => {
-    try {
-        const id = parseInt(req.params.id)
-        const prisma = await getClient();
-        await prisma.member.delete({
-            where: { id }
-        })
-
-        res.json({ success: true })
-    } catch (err) {
-        console.error(err)
-        res.status(500).json({ error: 'Error deleting members' })
-    }
-})
-
-
-export default router
+export default router;

@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();   // <-- this reads .env and populates process.env
+
 import express, {Request, Response} from 'express'
 import cors from 'cors'
 import memberRoutes from './routes/member.ts'
@@ -5,9 +8,6 @@ import roleRoutes from "./routes/role.ts";
 import groupRoutes from "./routes/group.ts";
 import sectionRoutes from "./routes/section.ts";
 import preferenceRoutes from "./routes/userpreference.ts";
-import validationRoutes from "./routes/validation.ts";
-import settingRoutes from "./routes/settings.ts";
-import statisticRoutes from "./routes/statistics.ts";
 
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', {
@@ -30,9 +30,8 @@ app.use('/api/roles', roleRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/sections', sectionRoutes);
 app.use('/api/preference', preferenceRoutes);
-app.use('/api/validation', validationRoutes);
-app.use('/api/settings', settingRoutes);
-app.use('/api/statistics', statisticRoutes);
+// app.use('/api/settings', settingRoutes);
+// app.use('/api/statistics', statisticRoutes);
 
 // Error handling middleware
 app.use((err: unknown, _req: Request, res: Response) => {
