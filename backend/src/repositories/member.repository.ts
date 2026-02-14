@@ -1,6 +1,6 @@
-import {Member} from "../models/models.ts";
-import {FileStorage} from "../services/filestorage.ts";
-import {Repository} from "./repository.ts";
+import {Member} from "../models/models";
+import {FileStorage} from "../services/filestorage";
+import {Repository} from "./repository";
 
 export class MemberRepository implements Repository<Member, string> {
 

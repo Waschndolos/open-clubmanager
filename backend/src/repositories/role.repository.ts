@@ -1,6 +1,6 @@
-import {Repository} from "./repository.ts";
-import {Role} from "../models/models.ts";
-import {FileStorage} from "../services/filestorage.ts";
+import {Repository} from "./repository";
+import {Role} from "../models/models";
+import {FileStorage} from "../services/filestorage";
 
 export class RoleRepository implements Repository<Role, string> {
     private readonly storage = new FileStorage<Role>('data/roles');

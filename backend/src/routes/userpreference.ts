@@ -1,4 +1,4 @@
-// src/routes/userPreference.ts
+// src/routes/userPreference
 import {Request, Response, Router} from 'express';
 import {UserPreferenceRepository} from '../repositories/userPreference.repository';
 import {UserPreference} from '../models/models';

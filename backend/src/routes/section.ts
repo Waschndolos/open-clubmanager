@@ -1,4 +1,4 @@
-// src/routes/clubSection.ts
+// src/routes/clubSection
 import { Router, Request, Response } from 'express';
 import { ClubSectionRepository } from '../repositories/clubSection.repository';
 import { ClubSection } from '../models/models';

@@ -1,6 +1,6 @@
-import {Group} from "../models/models.ts";
-import {Repository} from "./repository.ts";
-import {FileStorage} from "../services/filestorage.ts";
+import {Group} from "../models/models";
+import {Repository} from "./repository";
+import {FileStorage} from "../services/filestorage";
 
 export class GroupRepository implements Repository<Group, string> {
     private readonly storage = new FileStorage<Group>('data/groups');

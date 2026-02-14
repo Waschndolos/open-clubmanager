@@ -1,6 +1,6 @@
-import {ClubSection} from "../models/models.ts";
-import {FileStorage} from "../services/filestorage.ts";
-import {Repository} from "./repository.ts";
+import {ClubSection} from "../models/models";
+import {FileStorage} from "../services/filestorage";
+import {Repository} from "./repository";
 
 export class ClubSectionRepository implements Repository<ClubSection, string> {
     private readonly storage = new FileStorage<ClubSection>('data/sections');

@@ -14,7 +14,7 @@ export class FileStorage<T = unknown> {
 
     constructor(storageDir: string) {
         this.dir = storageDir;
-        const pass = process.env.ENCRYPTION_KEY;
+        const pass = process.env.ENCRYPTION_KEY || "dummy";
         if (!pass) {
             throw new Error('ENCRYPTION_KEY env variable not set');
         }

@@ -1,13 +1,10 @@
-import * as dotenv from 'dotenv';
-dotenv.config();   // <-- this reads .env and populates process.env
-
 import express, {Request, Response} from 'express'
 import cors from 'cors'
-import memberRoutes from './routes/member.ts'
-import roleRoutes from "./routes/role.ts";
-import groupRoutes from "./routes/group.ts";
-import sectionRoutes from "./routes/section.ts";
-import preferenceRoutes from "./routes/userpreference.ts";
+import memberRoutes from './routes/member'
+import roleRoutes from "./routes/role";
+import groupRoutes from "./routes/group";
+import sectionRoutes from "./routes/section";
+import preferenceRoutes from "./routes/userpreference";
 
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', {

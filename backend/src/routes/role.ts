@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { RoleRepository } from '../repositories/role.repository.ts';
+import { RoleRepository } from '../repositories/role.repository';
 import { Role } from '../models/models';
 
 const router = Router();

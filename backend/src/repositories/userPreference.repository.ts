@@ -1,6 +1,6 @@
-import {UserPreference} from "../models/models.ts";
-import {Repository} from "./repository.ts";
-import {FileStorage} from "../services/filestorage.ts";
+import {UserPreference} from "../models/models";
+import {Repository} from "./repository";
+import {FileStorage} from "../services/filestorage";
 
 export class UserPreferenceRepository
     implements Repository<UserPreference, string>
