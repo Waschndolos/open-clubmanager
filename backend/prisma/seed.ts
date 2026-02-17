@@ -1,6 +1,6 @@
 import {PrismaClient} from '@prisma/client';
 import {faker} from '@faker-js/faker';
-import bcrypt from 'bcrypt';
+import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient({
         datasources: {
@@ -28,7 +28,6 @@ async function main() {
         data: [{name: 'Admin', id: 0}, {name: 'Trainer', id: 1}, {name: 'Member', id: 2}]
     });
 
-
     // Create groups and sections
     await prisma.group.createMany({
         data: [{name: 'Youth'}, {name: 'Adults'}, {name: 'Seniors'}]
@@ -43,7 +42,7 @@ async function main() {
     const allSections = await prisma.clubSection.findMany();
 
     const hashedPassword = await bcrypt.hash('admin', 10);
-    // Create initial user with Admin role
+    // Create an initial user with an Admin role
     await prisma.user.create({
         data:
             {
