@@ -27,6 +27,7 @@ const Login: React.FC = () => {
             setAuthAccessToken(accessToken);
             navigate('/dashboard', {replace: true});
         } catch (e) {
+            console.log('Login error', e);
             setError('Login fehlgeschlagen. Bitte überprüfe deine Eingaben.');
         }
     };

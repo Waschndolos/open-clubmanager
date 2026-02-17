@@ -1,46 +1,71 @@
-
-import axios from "axios";
+import axios, {
+    AxiosError,
+    AxiosInstance,
+    InternalAxiosRequestConfig,
+} from "axios";
 import { refreshAccessToken } from "./authentication";
 
 export const BACKEND_URL = "http://localhost:3001/api";
 
-const api = axios.create({
+interface RetryAxiosRequestConfig extends InternalAxiosRequestConfig {
+    _retry?: boolean;
+}
+
+const api: AxiosInstance = axios.create({
     baseURL: BACKEND_URL,
     withCredentials: true,
 });
 
 let accessToken: string | null = null;
 let isRefreshing = false;
-let failedQueue: any[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+type QueuePromise = {
+    resolve: (token: string | null) => void;
+    reject: (error: unknown) => void;
+};
+
+let failedQueue: QueuePromise[] = [];
+
+const processQueue = (error: unknown, token: string | null = null): void => {
     failedQueue.forEach(({ resolve, reject }) => {
-        if (error) reject(error);
-        else resolve(token);
+        if (error) {
+            reject(error);
+        } else {
+            resolve(token);
+        }
     });
+
     failedQueue = [];
 };
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
     if (accessToken) {
-        config.headers = config.headers || {};
+            config.headers = config.headers ?? {};
         config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
-});
+    }
+);
 
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
-        const originalRequest = error.config;
+    async (error: AxiosError) => {
+        const originalRequest = error.config as RetryAxiosRequestConfig;
+
+        if (!originalRequest) {
+            return Promise.reject(error);
+        }
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             if (isRefreshing) {
-                return new Promise((resolve, reject) => {
+                return new Promise<string | null>((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 })
                     .then((token) => {
+                        if (token) {
                         originalRequest.headers.Authorization = `Bearer ${token}`;
+                        }
                         return api(originalRequest);
                     })
                     .catch((err) => Promise.reject(err));
@@ -49,27 +74,30 @@ api.interceptors.response.use(
             originalRequest._retry = true;
             isRefreshing = true;
 
-            return new Promise(async (resolve, reject) => {
                 try {
                     const data = await refreshAccessToken();
                     accessToken = data.accessToken;
+
                     processQueue(null, accessToken);
+
+                if (accessToken) {
                     originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-                    resolve(api(originalRequest));
+                }
+
+                return api(originalRequest);
                 } catch (err) {
                     processQueue(err, null);
-                    reject(err);
+                return Promise.reject(err);
                 } finally {
                     isRefreshing = false;
                 }
-            });
         }
 
         return Promise.reject(error);
     }
 );
 
-export const setAccessToken = (token: string | null) => {
+export const setAccessToken = (token: string | null): void => {
     accessToken = token;
 };
 
