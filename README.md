@@ -98,6 +98,8 @@ npm run seed
 npm run dev
 ```
 
+An admin user "admin@admin.com" with the password "admin" is created.
+
 ### Frontend Setup
 
 ```bash
