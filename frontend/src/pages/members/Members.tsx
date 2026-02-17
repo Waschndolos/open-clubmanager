@@ -16,7 +16,7 @@ export function createEmptyMember(): Member {
         number: 0,
         firstName: "",
         lastName: "",
-        birthday: "",
+        birthday: new Date(),
         phone: "",
         phoneMobile: "",
         comment: "",

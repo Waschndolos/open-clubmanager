@@ -1,20 +1,32 @@
 import {NextFunction, Request, Response} from "express";
-import jwt from "jsonwebtoken";
+import jwt, {JwtPayload} from "jsonwebtoken";
 
 
 export interface AuthRequest extends Request {
     user?: string;
 }
 
-export function verifyToken(req: AuthRequest, res: Response, next: NextFunction) {
+export function verifyToken(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+): void {
     const authHeader = req.headers.authorization;
-    if (!authHeader) return res.sendStatus(401);
+
+    if (!authHeader) {
+        res.sendStatus(401);
+        return;
+    }
 
     const token = authHeader.split(" ")[1];
 
-    jwt.verify(token, "SECRET", (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = (user as any).email;
+    try {
+        const decoded = jwt.verify(token, "SECRET") as JwtPayload;
+
+        req.user = decoded.email as string;
         next();
-    });
+    } catch {
+        res.sendStatus(403);
+    }
 }
+
