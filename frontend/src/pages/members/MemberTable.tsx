@@ -1,7 +1,8 @@
 import {
     Backdrop,
     Box,
-    Checkbox, CircularProgress,
+    Checkbox,
+    CircularProgress,
     FormControlLabel,
     IconButton,
     Menu,
@@ -10,10 +11,8 @@ import {
     Typography
 } from "@mui/material";
 import {useTranslation} from "react-i18next";
-import {AgGridReact} from "ag-grid-react";
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {Member} from "../../api/types";
-import {AllCommunityModule, ModuleRegistry} from "ag-grid-community";
 import {Delete, FileDownload, FileUpload, ViewColumn} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,9 +22,9 @@ import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} fr
 import {DeletingMemberDialog} from "./DeletingMemberDialog";
 import {ExportMembersDialog} from "./ExportMembersDialog";
 import ImportMembersWizard from "./ImportMembersWizard";
-import { useTheme } from '@mui/material/styles';
+import {useTheme} from '@mui/material/styles';
+import {DataGrid, GridColumnVisibilityModel, GridRowSelectionModel} from '@mui/x-data-grid';
 
-ModuleRegistry.registerModules([AllCommunityModule]);
 
 type MemberTableProps = {
     members: Member[];
@@ -35,7 +34,6 @@ type MemberTableProps = {
 
 export default function MemberTable({members, onMemberUpdated, onMembersDeleted}: MemberTableProps) {
     const {t} = useTranslation();
-    const gridRef = useRef<AgGridReact>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [editingMember, setEditingMember] = useState<Member | null>(null);
     const [exportOpened, setExportOpened] = useState<boolean>(false);
@@ -84,13 +82,15 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
         }));
     }, [members, t]);
 
-    const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(() => {
-        const initial = {} as Record<string, boolean>;
-        keys.forEach(key => {
-            initial[key] = columnDefs.find(col => col.field === key)?.hide !== true;
+    const [columnVisibility, setColumnVisibility] = useState<GridColumnVisibilityModel>(() => {
+        const initial: GridColumnVisibilityModel = {};
+        keys.forEach((key) => {
+            // Wenn die Spalte in columnDefs `hide: true` hat → false, sonst true
+            initial[key] = columnDefs.find((col) => col.field === key)?.hide !== true;
         });
         return initial;
     });
+
 
 
     useEffect(() => {
@@ -102,11 +102,17 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
     }, [getPreference, keys]);
 
 
-    const handleSelectionChanged = () => {
-        const selectedNodes = gridRef.current?.api.getSelectedNodes().map((node) => node.data) || null;
-        setSelectedMembers(selectedNodes);
-    };
+    const handleSelectionChanged = (selectionModel: GridRowSelectionModel) => {
 
+        const selectedIds : number[] =
+            Array.isArray(selectionModel) ? selectionModel : [];
+
+        const selected = members.filter((member) =>
+            selectedIds.includes(member.id)
+        );
+
+        setSelectedMembers(selected);
+    };
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -129,13 +135,14 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
         setAnchorEl(null);
     };
 
-    const handleColumnToggle = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const visible = event.target.checked;
-        const newState = {...columnVisibility, [key]: visible};
-        setColumnVisibility(newState);
-        gridRef.current?.api.setColumnsVisible([key], visible);
-        setPreference("memberTable.columns", newState);
-    };
+    const handleColumnToggle =
+        (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+            const visible = event.target.checked;
+            const newState = { ...columnVisibility, [key]: visible };
+            setColumnVisibility(newState);
+            setPreference("memberTable.columns", newState);
+        };
+
 
     const handleSaveEdit = async (updated: Member) => {
         const updatedMember = await updateMember(updated);
@@ -238,21 +245,24 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
             </Box>
             <Box sx={{height: "calc(100vh - 300px)", width: "100%", overflowX: "auto"}}>
                 <div style={{minWidth: "1000px", height: "100%"}} className={agGridThemeClass}>
-                    <AgGridReact
-                        headerHeight={100}
-                        ref={gridRef}
-                        suppressMovableColumns={true}
-                        rowData={members}
-                        columnDefs={columnDefs.map((col) => ({
+
+                    <DataGrid
+                        autoHeight
+                        rows={members}
+                        columns={columnDefs.map((col) => ({
                             ...col,
                             hide: !columnVisibility[col.field ?? ""],
+                            sortable: true,
+                            filterable: true,
+                            minWidth: 150,
                         }))}
-                        defaultColDef={{sortable: true, filter: true, resizable: true, minWidth: 150}}
-                        pagination
-                        paginationPageSize={20}
-                        rowSelection="multiple"
-                        onSelectionChanged={handleSelectionChanged}
-                    />
+                        pageSizeOptions={[5, 10, 25]}
+                        onRowSelectionModelChange={(selectionModel: GridRowSelectionModel) => {
+                            // selectionModel ist jetzt Array von rowIds (Strings oder Numbers)
+                            handleSelectionChanged(selectionModel);
+                        }}
+                        checkboxSelection />
+
                 </div>
             </Box>
             {editingMember && (
