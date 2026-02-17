@@ -5,6 +5,15 @@
       "deleteall": "Delete all"
     }
   },
+  "logout": {
+    "tooltip": "Logout"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Login"
+  },
   "menu": {
     "dashboard": "Dashboard",
     "members": "Member Management",

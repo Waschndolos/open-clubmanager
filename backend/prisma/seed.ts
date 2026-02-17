@@ -1,5 +1,6 @@
 import {PrismaClient} from '@prisma/client';
 import {faker} from '@faker-js/faker';
+import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient({
         datasources: {
@@ -15,16 +16,23 @@ async function main() {
     console.log('⏳ Seeding data...');
 
     // Delete current data
-    await prisma.member.deleteMany();
+    await prisma.refreshToken.deleteMany();
+    await prisma.userPreference.deleteMany();
+
+    await prisma.user.deleteMany();
+
     await prisma.role.deleteMany();
     await prisma.group.deleteMany();
     await prisma.clubSection.deleteMany();
+    await prisma.member.deleteMany();
+
 
     // Create initial data
     await prisma.role.createMany({
-        data: [{name: 'Trainer'}, {name: 'Member'}, {name: 'Admin'}]
+        data: [{name: 'Admin', id: 0}, {name: 'Trainer', id: 1}, {name: 'Member', id: 2}]
     });
 
+    // Create groups and sections
     await prisma.group.createMany({
         data: [{name: 'Youth'}, {name: 'Adults'}, {name: 'Seniors'}]
     });
@@ -36,6 +44,20 @@ async function main() {
     const allRoles = await prisma.role.findMany();
     const allGroups = await prisma.group.findMany();
     const allSections = await prisma.clubSection.findMany();
+
+    const hashedPassword = await bcrypt.hash('admin', 10);
+    // Create an initial user with an Admin role
+    await prisma.user.create({
+        data:
+            {
+                password: hashedPassword,
+                email: 'admin@admin.com',
+                roles: {
+                    connect: {id: 0}
+                }
+            },
+
+    })
 
     // Create members
     for (let i = 0; i < nbMembers; i++) {

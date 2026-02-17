@@ -98,6 +98,8 @@ npm run seed
 npm run dev
 ```
 
+An admin user "admin@admin.com" with the password "admin" is created.
+
 ### Frontend Setup
 
 ```bash
@@ -113,6 +115,12 @@ cd <rootProject>
 npm run dev:browser
 # or start the frontend and backend in electron
 npm run dev:electron
+```
+
+The initial user for the development mode is:
+```plaintext
+Email:      admin@admin.com
+Password:   admin
 ```
 
 ---

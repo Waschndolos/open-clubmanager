@@ -5,6 +5,15 @@
       "deleteall": "Tout supprimer"
     }
   },
+  "logout": {
+    "tooltip": "Déconnexion"
+  },
+  "login": {
+    "title": "Connexion",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "loginButton": "Connexion"
+  },
   "menu": {
     "dashboard": "Tableau de bord",
     "members": "Gestion des membres",

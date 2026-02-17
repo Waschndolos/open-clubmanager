@@ -13,7 +13,7 @@ i18n
             en: { translation: en },
             fr: { translation: fr },
         },
-        lng: window.userpreference?.get('1', 'language') || 'de',
+        lng: (window.userpreference?.get('1', 'language') as string) || 'de',
         fallbackLng: 'en',
         interpolation: {
             escapeValue: false,

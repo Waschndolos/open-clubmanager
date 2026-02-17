@@ -13,7 +13,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:reset": "prisma migrate reset",
-    "prisma:seed": "node --loader ts-node/esm prisma/seed.ts",
+    "prisma:seed": "tsx prisma/seed.ts",
     "licenses": "license-checker --production --markdown --excludePackages 'backend@0.0.0'  > THIRD_PARTY_LICENSES.md"
   },
   "keywords": [],
@@ -22,16 +22,22 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.11.1",
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.2.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/better-sqlite3": "^7.6.13",
+    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.15.30",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
