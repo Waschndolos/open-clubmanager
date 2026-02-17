@@ -15,6 +15,7 @@ model User {
   updatedAt DateTime @updatedAt
   roles     Role[]   @relation("UserRoles")
   refreshTokens RefreshToken[]
+  preferences UserPreference[]
 }
 
 model RefreshToken {
@@ -28,7 +29,7 @@ model RefreshToken {
 
 model Member {
   id              Int           @id @default(autoincrement())
-  number          Int
+  number          Int           @unique
   firstName       String
   lastName        String
   email           String        @unique
@@ -73,6 +74,7 @@ model ClubSection {
 
 model UserPreference {
   id         Int     @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
   key        String
   value      String

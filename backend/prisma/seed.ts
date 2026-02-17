@@ -16,11 +16,15 @@ async function main() {
     console.log('⏳ Seeding data...');
 
     // Delete current data
-    await prisma.member.deleteMany();
+    await prisma.refreshToken.deleteMany();
+    await prisma.userPreference.deleteMany();
+
+    await prisma.user.deleteMany();
+
     await prisma.role.deleteMany();
     await prisma.group.deleteMany();
     await prisma.clubSection.deleteMany();
-    await prisma.user.deleteMany();
+    await prisma.member.deleteMany();
 
 
     // Create initial data
