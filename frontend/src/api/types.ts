@@ -37,11 +37,8 @@ export type Member = {
     sections?: ClubSection[];
 };
 
-export interface Group extends MemberContainingNamedArtifact {
-}
+export type Group = MemberContainingNamedArtifact
 
-export interface Role extends MemberContainingNamedArtifact {
-}
+export type Role = MemberContainingNamedArtifact
 
-export interface ClubSection extends MemberContainingNamedArtifact{
-}
+export type ClubSection = MemberContainingNamedArtifact
