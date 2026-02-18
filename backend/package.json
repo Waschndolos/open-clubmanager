@@ -21,7 +21,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.11.1",
+    "@prisma/adapter-better-sqlite3": "^7.4.0",
+    "@prisma/client": "^7.4.0",
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.2.0",
     "cookie-parser": "^1.4.7",
@@ -47,7 +48,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "prettier": "^3.5.3",
-    "prisma": "^6.9.0",
+    "prisma": "^7.4.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
