@@ -1,19 +1,8 @@
-import {
-    Backdrop,
-    Box,
-    Checkbox,
-    CircularProgress,
-    FormControlLabel,
-    IconButton,
-    Menu,
-    MenuItem,
-    Tooltip,
-    Typography
-} from "@mui/material";
+import {Backdrop, Box, CircularProgress, IconButton, Tooltip, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import React, {useEffect, useMemo, useState} from "react";
 import {Member} from "../../api/types";
-import {Delete, FileDownload, FileUpload, ViewColumn} from "@mui/icons-material";
+import {Delete, FileDownload, FileUpload} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
 import {createMember, deleteMembers, updateMember} from "../../api/members";
@@ -23,7 +12,8 @@ import {DeletingMemberDialog} from "./DeletingMemberDialog";
 import {ExportMembersDialog} from "./ExportMembersDialog";
 import ImportMembersWizard from "./ImportMembersWizard";
 import {useTheme} from '@mui/material/styles';
-import {DataGrid, GridColumnVisibilityModel, GridRowSelectionModel} from '@mui/x-data-grid';
+import {DataGrid, GridColDef, GridColumnVisibilityModel, GridRowSelectionModel} from '@mui/x-data-grid';
+import type {GridRenderCellParams} from "@mui/x-data-grid/models/params/gridCellParams";
 
 
 type MemberTableProps = {
@@ -34,7 +24,6 @@ type MemberTableProps = {
 
 export default function MemberTable({members, onMemberUpdated, onMembersDeleted}: MemberTableProps) {
     const {t} = useTranslation();
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [editingMember, setEditingMember] = useState<Member | null>(null);
     const [exportOpened, setExportOpened] = useState<boolean>(false);
     const [deletingMembers, setDeletingMembers] = useState<Member[] | null>(null);
@@ -43,6 +32,7 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
     const [importWizardOpen, setImportWizardOpen] = useState(false);
     const [importInProgress, setImportInProgress] = useState(false);
     const [importProgress, setImportProgress] = useState(0);
+    const [columnVisibility, setColumnVisibility] = useState<GridColumnVisibilityModel>({});
 
     const keys = useMemo(() => {
         if (!members || members.length === 0) return [];
@@ -50,71 +40,60 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
     }, [members]);
     const theme = useTheme();
 
-    const columnDefs = useMemo(() => {
+    const columnDefs: GridColDef[] = useMemo(() => {
         if (!members || members.length === 0) return [];
 
         const keys = Object.keys(members[0]) as (keyof Member)[];
 
-        const getCellRenderer = (key: "id" | "number" | "firstName" | "lastName" | "email" | "birthday" | "phone" | "phoneMobile" | "comment" | "entryDate" | "exitDate" | "street" | "postalCode" | "city" | "state" | "accountHolder" | "iban" | "bic" | "bankName" | "sepaMandateDate" | "roles" | "groups" | "sections") => {
+        const getCellRenderer = (key: keyof Member) => {
             switch (key) {
                 case "entryDate":
                 case "exitDate":
                 case "birthday":
-                    return DateRenderer
+                    return DateRenderer;
                 case "roles":
                 case "groups":
                 case "sections":
-                    return MemberContainingNamedArtifactRenderer
+                    return MemberContainingNamedArtifactRenderer;
                 default:
-                    return DefaultRenderer
+                    return DefaultRenderer;
             }
         };
-        return keys.map((key, index) => ({
+
+        return keys.map((key) => ({
             field: key,
             headerName: t("members.table.header." + key),
-            sortable: true,
-            filter: false,
-            resizable: true,
-            cellRenderer: getCellRenderer(key),
             flex: 1,
-            autoHeight: true,
-            hide: index >= 10 // show only first 10 initially
+            minWidth: 150,
+            sortable: true,
+            renderCell: (params: GridRenderCellParams) => {
+                const Renderer = getCellRenderer(key);
+                return <Renderer value={params.value} row={params.row} />;
+            }
         }));
     }, [members, t]);
-
-    const [columnVisibility, setColumnVisibility] = useState<GridColumnVisibilityModel>(() => {
-        const initial: GridColumnVisibilityModel = {};
-        keys.forEach((key) => {
-            // Wenn die Spalte in columnDefs `hide: true` hat → false, sonst true
-            initial[key] = columnDefs.find((col) => col.field === key)?.hide !== true;
-        });
-        return initial;
-    });
-
 
 
     useEffect(() => {
         if (!keys.length) return;
-        getPreference("memberTable.columns").then((stored) => {
-            const fallback = Object.fromEntries(keys.map((k, i) => [k, i < 10])); // default: first 10 true
-            setColumnVisibility(stored ?? fallback);
+        getPreference("memberTableColumns").then((stored) => {
+            const fallback = Object.fromEntries(keys.map((k, i) => [k, i < 10]));
+            const merged = { ...fallback, ...(stored || {}) };
+            setColumnVisibility(merged);
         });
     }, [getPreference, keys]);
 
-
     const handleSelectionChanged = (selectionModel: GridRowSelectionModel) => {
-
-        const selectedIds : number[] =
-            Array.isArray(selectionModel) ? selectionModel : [];
-
-        const selected = members.filter((member) =>
-            selectedIds.includes(member.id)
+        const selected = members.filter(member =>
+            selectionModel.ids.has(member.id)
         );
 
-        setSelectedMembers(selected);
+        setSelectedMembers(selected.length ? selected : null);
     };
-    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+
+    const handleColumnToggle = (visibilityModel: GridColumnVisibilityModel) => {
+        setColumnVisibility(visibilityModel);
+        setPreference("memberTableColumns", visibilityModel);
     };
 
     const handleEditMember = () => {
@@ -131,50 +110,35 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
         setExportOpened(true);
     }
 
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
-    };
-
-    const handleColumnToggle =
-        (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-            const visible = event.target.checked;
-            const newState = { ...columnVisibility, [key]: visible };
-            setColumnVisibility(newState);
-            setPreference("memberTable.columns", newState);
-        };
-
-
     const handleSaveEdit = async (updated: Member) => {
         const updatedMember = await updateMember(updated);
         onMemberUpdated(updatedMember);
         setEditingMember(null);
     };
 
-    const menuOpen = Boolean(anchorEl);
-
     async function upsertImportedMembers(imported: Member[]) {
         const existingMap = new Map(members.map(m => [m.email.toLowerCase(), m]));
-
         setImportInProgress(true);
-
         let i = 0;
         const max = imported.length;
+
         for (const member of imported) {
-            const progress = Math.round((i++ / max) * 100);
-            setImportProgress(progress);
             const emailKey = member.email.toLowerCase();
+            const progress = Math.round((i / max) * 100);
+            setImportProgress(progress);
+            i++;
+
             if (existingMap.has(emailKey)) {
-                // Update existing member
                 const existing = existingMap.get(emailKey)!;
                 const updated = {...existing, ...member, id: existing.id};
                 const saved = await updateMember(updated);
                 onMemberUpdated(saved);
             } else {
-                // create new member
                 const saved = await createMember(member);
                 onMemberUpdated(saved);
             }
         }
+        setImportProgress(100);
         setImportInProgress(false);
     }
 
@@ -197,7 +161,7 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
                         </IconButton>
                     </Tooltip>
                     <Tooltip title={t("tooltips.delete")}>
-                        <IconButton onClick={handleDeleteMembers} disabled={!selectedMembers} color={"primary"}>
+                        <IconButton onClick={handleDeleteMembers} disabled={!selectedMembers?.length} color="primary">
                             <Delete/>
                         </IconButton>
                     </Tooltip>
@@ -221,27 +185,7 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
                             }}
                         />
                     )}
-                    <Tooltip title={t("tooltips.columnselection")}>
-                        <IconButton onClick={handleOpenMenu} color={"primary"}>
-                            <ViewColumn/>
-                        </IconButton>
-                    </Tooltip>
                 </Box>
-                <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleCloseMenu} sx={{height: "50%"}}>
-                    {keys.map((key) => (
-                        <MenuItem key={key} dense disableGutters>
-                            <FormControlLabel sx={{paddingLeft: 1.5}}
-                                              control={
-                                                  <Checkbox
-                                                      checked={columnVisibility[key]}
-                                                      onChange={handleColumnToggle(key)}
-                                                  />
-                                              }
-                                              label={t("members.table.header." + key)}
-                            />
-                        </MenuItem>
-                    ))}
-                </Menu>
             </Box>
             <Box sx={{height: "calc(100vh - 300px)", width: "100%", overflowX: "auto"}}>
                 <div style={{minWidth: "1000px", height: "100%"}} className={agGridThemeClass}>
@@ -251,15 +195,17 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
                         rows={members}
                         columns={columnDefs.map((col) => ({
                             ...col,
-                            hide: !columnVisibility[col.field ?? ""],
                             sortable: true,
                             filterable: true,
                             minWidth: 150,
                         }))}
+                        columnVisibilityModel={columnVisibility}
                         pageSizeOptions={[5, 10, 25]}
                         onRowSelectionModelChange={(selectionModel: GridRowSelectionModel) => {
-                            // selectionModel ist jetzt Array von rowIds (Strings oder Numbers)
                             handleSelectionChanged(selectionModel);
+                        }}
+                        onColumnVisibilityModelChange={(visibilityModel: GridColumnVisibilityModel) => {
+                            handleColumnToggle(visibilityModel)
                         }}
                         checkboxSelection />
 

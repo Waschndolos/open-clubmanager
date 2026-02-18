@@ -43,7 +43,7 @@ app.use('/api/members', memberRoutes)
 app.use('/api/roles', roleRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/sections', sectionRoutes);
-app.use('/api/preference', preferenceRoutes);
+app.use('/api/preferences', preferenceRoutes);
 app.use('/api/validation', validationRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/statistics', statisticRoutes);
@@ -51,9 +51,9 @@ app.use('/api/auth', authRoutes);
 
 // Error handling middleware
 app.use((err: unknown, _req: Request, res: Response) => {
-    console.error(err)
-    res.status(500).json({ error: 'Internal server error' })
-})
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+});
 
 // Start server
 const PORT = process.env.PORT || 3001
