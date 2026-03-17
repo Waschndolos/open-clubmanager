@@ -2,7 +2,7 @@ import {Grid} from '@mui/material';
 import StatisticCard from '../../components/dashboard/StatisticsCard';
 import {useStatistics} from '../../hooks/statistics';
 import PageHeader from '../../components/common/PageHeader';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import GridViewIcon from '@mui/icons-material/GridView';
 import {useTranslation} from 'react-i18next';
 
 export default function Dashboard() {
@@ -13,7 +13,7 @@ export default function Dashboard() {
         <>
             <PageHeader
                 title={t('menu.dashboard')}
-                icon={<DashboardIcon fontSize="small" />}
+                icon={<GridViewIcon fontSize="small" />}
             />
             <Grid container spacing={3}>
                 {statistics.map(stat => (

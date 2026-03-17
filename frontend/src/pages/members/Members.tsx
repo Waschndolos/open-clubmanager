@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import {useTranslation} from "react-i18next";
 import MemberTable from "./MemberTable";
 import {Member} from "../../api/types";
-import {Add, Clear, Person} from "@mui/icons-material";
+import {Add, Clear, ManageAccounts} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";
 import {createMember, deleteMembers, fetchMembers} from "../../api/members";
@@ -127,7 +127,7 @@ export default function Members() {
         <Box p={3}>
             <PageHeader
                 title={t("members.title")}
-                icon={<Person fontSize="small" />}
+                icon={<ManageAccounts fontSize="small" />}
                 actions={
                     <Button variant="contained" startIcon={<Add/>} onClick={() => setNewMemberDialogOpen(true)}>
                         {t("members.create")}

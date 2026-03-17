@@ -1,9 +1,9 @@
 import {Box, Paper, Typography} from '@mui/material';
 import React from 'react';
-import CakeIcon from '@mui/icons-material/Cake';
-import GroupIcon from '@mui/icons-material/Group';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import {useTranslation} from "react-i18next";
 import { alpha } from '@mui/material/styles';
 
@@ -26,11 +26,11 @@ export default function StatisticCard({id, value, details}: StatisticCardProps) 
     function getIcon() {
         switch (id) {
             case 1:
-                return <GroupIcon sx={{ fontSize: 22 }} />;
+                return <PeopleAltIcon sx={{ fontSize: 22 }} />;
             case 2:
-                return <CakeIcon sx={{ fontSize: 22 }} />;
+                return <EventNoteIcon sx={{ fontSize: 22 }} />;
             case 3:
-                return <ExitToAppIcon sx={{ fontSize: 22 }} />;
+                return <PersonRemoveIcon sx={{ fontSize: 22 }} />;
             default:
                 return <HelpOutlineIcon sx={{ fontSize: 22 }} />;
         }
