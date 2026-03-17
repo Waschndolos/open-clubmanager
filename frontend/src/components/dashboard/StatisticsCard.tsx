@@ -1,11 +1,11 @@
 import {Box, Paper, Typography} from '@mui/material';
 import React from 'react';
-import CakeIcon from '@mui/icons-material/Cake';
-import GroupIcon from '@mui/icons-material/Group';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import {useTranslation} from "react-i18next";
-
+import { alpha } from '@mui/material/styles';
 
 interface StatisticCardProps {
     id: number;
@@ -13,19 +13,26 @@ interface StatisticCardProps {
     details?: string[];
 }
 
+const CARD_ACCENTS: Record<number, { color: string }> = {
+    1: { color: '#4F6AF5' },
+    2: { color: '#F59E0B' },
+    3: { color: '#EF4444' },
+};
+
 export default function StatisticCard({id, value, details}: StatisticCardProps) {
     const {t} = useTranslation();
+    const accent = CARD_ACCENTS[id] ?? { color: '#4F6AF5' };
 
     function getIcon() {
         switch (id) {
             case 1:
-                return <GroupIcon fontSize="large"/>;
+                return <PeopleAltIcon sx={{ fontSize: 22 }} />;
             case 2:
-                return <CakeIcon fontSize="large"/>;
+                return <EventNoteIcon sx={{ fontSize: 22 }} />;
             case 3:
-                return <ExitToAppIcon fontSize="large"/>;
+                return <PersonRemoveIcon sx={{ fontSize: 22 }} />;
             default:
-                return <HelpOutlineIcon fontSize="large"/>;
+                return <HelpOutlineIcon sx={{ fontSize: 22 }} />;
         }
     }
 
@@ -45,27 +52,46 @@ export default function StatisticCard({id, value, details}: StatisticCardProps) 
     return (
         <Paper sx={{
             p: 3,
-            position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'start',
             height: '100%',
         }}>
-            <Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
-                {getIcon()}
-                <Typography variant="h6" sx={{ml: 2}}>{getTitle()}</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
+                <Box>
+                    <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        fontWeight={500}
+                        sx={{ fontSize: '0.75rem', mb: 1 }}
+                    >
+                        {getTitle()}
+                    </Typography>
+                    <Typography variant="h3" fontWeight={700} lineHeight={1}>
+                        {value}
+                    </Typography>
+                </Box>
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 2,
+                    bgcolor: alpha(accent.color, 0.1),
+                    color: accent.color,
+                    flexShrink: 0,
+                }}>
+                    {getIcon()}
+                </Box>
             </Box>
-            <Typography variant="h4">{value}</Typography>
+
             {details && details.length > 0 && (
-                <Box sx={{mt: 2}}>
-                    <Typography variant="subtitle1">Details:</Typography>
-                    <ul>
-                        {details.map((detail, index) => (
-                            <li key={index}>
-                                <Typography variant="body2">{detail}</Typography>
-                            </li>
-                        ))}
-                    </ul>
+                <Box sx={{ mt: 'auto', pt: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
+                    {details.map((detail, index) => (
+                        <Typography key={index} variant="body2" color="text.secondary">
+                            {detail}
+                        </Typography>
+                    ))}
                 </Box>
             )}
         </Paper>

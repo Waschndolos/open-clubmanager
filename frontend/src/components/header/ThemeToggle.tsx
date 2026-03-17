@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import { useThemeContext } from '../../theme/ThemeContext';
-import { Brightness4, Brightness7 } from '@mui/icons-material';
+import {Brightness4, Brightness7} from '@mui/icons-material';
 
 /**
  * ThemeToggle component
@@ -24,7 +24,7 @@ const ThemeToggle: React.FC = () => {
           boxShadow: 'none',
           '&:hover': {
             background: 'none',
-              color: mode === 'dark' ? "#819A91" : '#fff',
+            color: mode === 'dark' ? "#819A91" : '#000',
           },
         }}
         aria-label="Toggle theme"
@@ -34,7 +34,7 @@ const ThemeToggle: React.FC = () => {
             display: 'inline-flex',
             transition: 'transform 0.5s cubic-bezier(.68,-0.55,.27,1.55)',
             transform: mode === 'dark' ? 'rotate(-40deg) scale(1.15)' : 'rotate(0deg) scale(1)',
-             color: mode === 'dark' ? "#819A91" : '#fff',
+             color: mode === 'dark' ? "#819A91" : '#000',
             filter: 'none',
           }}
         >
