@@ -1,18 +1,19 @@
 import React from 'react';
-import {ICellRendererParams} from "ag-grid-community";
 import {MemberContainingNamedArtifact} from "../../api/types";
 import {Chip} from "@mui/material";
 
-export function DateRenderer(props: ICellRendererParams) {
-    const value = props.value ? new Date(props.value).toLocaleDateString() : '';
+type CellRendererProps = { value: unknown; row?: unknown };
+
+export function DateRenderer(props: CellRendererProps) {
+    const value = props.value ? new Date(props.value as string).toLocaleDateString() : '';
     return <span>{value}</span>;
 }
 
-export function DefaultRenderer(props: ICellRendererParams) {
-    return <span>{props.value ?? ""}</span>;
+export function DefaultRenderer(props: CellRendererProps) {
+    return <span>{(props.value as string) ?? ""}</span>;
 }
 
-export function MemberContainingNamedArtifactRenderer(props: ICellRendererParams) {
+export function MemberContainingNamedArtifactRenderer(props: CellRendererProps) {
     const roles = props.value as MemberContainingNamedArtifact[];
 
     if (!Array.isArray(roles)) return null;
