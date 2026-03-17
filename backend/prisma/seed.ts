@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import {PrismaClient} from '../src/generated/prisma/client';
 import {faker} from '@faker-js/faker';
-import * as bcrypt from "bcrypt";
 const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) throw new Error("DATABASE_URL is not set in .env");
 
@@ -43,20 +42,6 @@ async function main() {
     const allRoles = await prisma.role.findMany();
     const allGroups = await prisma.group.findMany();
     const allSections = await prisma.clubSection.findMany();
-
-    const hashedPassword = await bcrypt.hash('admin', 10);
-    // Create an initial user with an Admin role
-    await prisma.user.create({
-        data:
-            {
-                password: hashedPassword,
-                email: 'admin@admin.com',
-                roles: {
-                    connect: {id: 0}
-                }
-            },
-
-    })
 
     // Create members
     for (let i = 0; i < nbMembers; i++) {

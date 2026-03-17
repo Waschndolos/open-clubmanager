@@ -7,12 +7,17 @@ import {Finance} from "../pages/finance/Finance";
 import { Settings } from "../pages/settings/Settings";
 import {EntitiesPage} from "../pages/entities/EntitiesPage";
 import Login from "../pages/login/Login";
+import Setup from "../pages/setup/Setup";
 import { RequireAuth } from "../guards/RequireAuth";
 
 export const router = createBrowserRouter([
     {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/setup",
+    element: <Setup />,
   },
   {
         path: "/",
