@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import { useThemeContext } from '../../theme/ThemeContext';
-import {Brightness1, Brightness4, Brightness7, Brightness7Outlined} from '@mui/icons-material';
+import {Brightness4, Brightness7} from '@mui/icons-material';
 
 /**
  * ThemeToggle component
