@@ -178,7 +178,7 @@ export function getCurrentDbPath(): string | undefined {
 }
 
 export function isDbConfigured(): boolean {
-    return currentClient !== null;
+    return currentClient !== null || !!process.env.DATABASE_URL;
 }
 
 export async function getClient(): Promise<PrismaClient> {
