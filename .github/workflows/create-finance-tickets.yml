@@ -1,0 +1,85 @@
+name: Create Finance Feature Tickets
+
+on:
+  push:
+    branches:
+      - copilot/create-club-finance-tickets
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  create-tickets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create finance label and tickets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BODY1: IyMjIFN1bW1hcnkKCkFkZCBhIGBUcmFuc2FjdGlvbmAgbW9kZWwgdG8gdGhlIFByaXNtYSBzY2hlbWEgdG8gc3RvcmUgY2x1YiBpbmNvbWUgYW5kIGV4cGVuc2UgZW50cmllcy4KCiMjIyBEZXRhaWxlZCBEZXNjcmlwdGlvbgoKQ3JlYXRlIGEgbmV3IGBUcmFuc2FjdGlvbmAgbW9kZWwgaW4gYGJhY2tlbmQvcHJpc21hL3NjaGVtYS5wcmlzbWFgIHdpdGggdGhlIGZvbGxvd2luZyBmaWVsZHM6Ci0gYGlkYCDigJMgYXV0by1pbmNyZW1lbnQgcHJpbWFyeSBrZXkKLSBgZGF0ZWAg4oCTIGRhdGUgb2YgdGhlIHRyYW5zYWN0aW9uCi0gYGRlc2NyaXB0aW9uYCDigJMgc2hvcnQgdGV4dCBkZXNjcmliaW5nIHRoZSB0cmFuc2FjdGlvbgotIGBhbW91bnRgIOKAkyBkZWNpbWFsIHZhbHVlIChwb3NpdGl2ZSA9IGluY29tZSwgbmVnYXRpdmUgPSBleHBlbnNlKQotIGBjYXRlZ29yeUlkYCDigJMgb3B0aW9uYWwgRksgdG8gYSBgVHJhbnNhY3Rpb25DYXRlZ29yeWAgbW9kZWwgKHNlZSBzZXBhcmF0ZSB0aWNrZXQpCi0gYG1lbWJlcklkYCDigJMgb3B0aW9uYWwgRksgdG8gYE1lbWJlcmAgZm9yIGZlZSBwYXltZW50cwotIGBjcmVhdGVkQXRgIC8gYHVwZGF0ZWRBdGAg4oCTIHRpbWVzdGFtcHMKClJ1biBhIFByaXNtYSBtaWdyYXRpb24gdG8gYXBwbHkgdGhlIHNjaGVtYSBjaGFuZ2UuCgojIyMgV2h5IGlzIHRoaXMgbmVlZGVkPwoKVGhlIGZpbmFuY2UgcGFnZSBjdXJyZW50bHkgc2hvd3Mgb25seSBhIHBsYWNlaG9sZGVyLiBBIGRhdGFiYXNlIG1vZGVsIGlzIHRoZSBmb3VuZGF0aW9uIGZvciBhbnkgdHJhbnNhY3Rpb24gdHJhY2tpbmcuCgojIyMgQWx0ZXJuYXRpdmVzIG9yIFdvcmthcm91bmRzCgpfTm8gcmVzcG9uc2Vf
+          BODY2: IyMjIFN1bW1hcnkKCkltcGxlbWVudCBhbiBFeHByZXNzIHJvdXRlciB3aXRoIGZ1bGwgQ1JVRCBlbmRwb2ludHMgZm9yIHRyYW5zYWN0aW9ucy4KCiMjIyBEZXRhaWxlZCBEZXNjcmlwdGlvbgoKQ3JlYXRlIGBiYWNrZW5kL3NyYy9yb3V0ZXMvdHJhbnNhY3Rpb25zLnRzYCB3aXRoIHRoZSBmb2xsb3dpbmcgUkVTVCBlbmRwb2ludHM6Ci0gYEdFVCAvYXBpL3RyYW5zYWN0aW9uc2Ag4oCTIGxpc3QgYWxsIHRyYW5zYWN0aW9ucyAoc3VwcG9ydCBmaWx0ZXJpbmcgYnkgZGF0ZSByYW5nZSwgY2F0ZWdvcnkpCi0gYFBPU1QgL2FwaS90cmFuc2FjdGlvbnNgIOKAkyBjcmVhdGUgYSBuZXcgdHJhbnNhY3Rpb24KLSBgUFVUIC9hcGkvdHJhbnNhY3Rpb25zLzppZGAg4oCTIHVwZGF0ZSBhbiBleGlzdGluZyB0cmFuc2FjdGlvbgotIGBERUxFVEUgL2FwaS90cmFuc2FjdGlvbnMvOmlkYCDigJMgZGVsZXRlIGEgdHJhbnNhY3Rpb24KClJlZ2lzdGVyIHRoZSByb3V0ZXIgaW4gYGJhY2tlbmQvc3JjL2luZGV4LnRzYC4gVXNlIFByaXNtYSBjbGllbnQgZm9yIGFsbCBkYXRhYmFzZSBvcGVyYXRpb25zLiBBcHBseSB0aGUgZXhpc3RpbmcgYXV0aCBtaWRkbGV3YXJlIHRvIHByb3RlY3QgZXZlcnkgcm91dGUuCgojIyMgV2h5IGlzIHRoaXMgbmVlZGVkPwoKVGhlIGZyb250ZW5kIG5lZWRzIEFQSSBlbmRwb2ludHMgdG8gbWFuYWdlIHRyYW5zYWN0aW9uIGRhdGEuCgojIyMgQWx0ZXJuYXRpdmVzIG9yIFdvcmthcm91bmRzCgpfTm8gcmVzcG9uc2Vf
+          BODY3: IyMjIFN1bW1hcnkKClJlcGxhY2UgdGhlIEZpbmFuY2UgcGFnZSBwbGFjZWhvbGRlciB3aXRoIGEgTVVJIERhdGFHcmlkIHNob3dpbmcgYWxsIHRyYW5zYWN0aW9ucy4KCiMjIyBEZXRhaWxlZCBEZXNjcmlwdGlvbgoKVXBkYXRlIGBmcm9udGVuZC9zcmMvcGFnZXMvZmluYW5jZS9GaW5hbmNlLnRzeGAgdG86Ci0gRmV0Y2ggdHJhbnNhY3Rpb25zIGZyb20gYEdFVCAvYXBpL3RyYW5zYWN0aW9uc2AKLSBEaXNwbGF5IHRoZW0gaW4gYSBgPERhdGFHcmlkPmAgKHNhbWUgcGF0dGVybiBhcyB0aGUgTWVtYmVycyBwYWdlKQotIENvbHVtbnM6IERhdGUsIERlc2NyaXB0aW9uLCBDYXRlZ29yeSwgQW1vdW50LCBNZW1iZXIgKG9wdGlvbmFsKQotIFNob3cgaW5jb21lIGFtb3VudHMgaW4gZ3JlZW4gYW5kIGV4cGVuc2VzIGluIHJlZAotIEFkZCBhIGxvYWRpbmcgc3RhdGUgd2hpbGUgZmV0Y2hpbmcKCiMjIyBXaHkgaXMgdGhpcyBuZWVkZWQ/CgpUaGUgZmluYW5jZSBwYWdlIGN1cnJlbnRseSBzaG93cyBvbmx5IHRoZSB0ZXh0ICJmaW5hbmNlIi4gQSB0cmFuc2FjdGlvbiBsaXN0IGlzIHRoZSBjb3JlIHZpZXcgb2YgdGhlIGZpbmFuY2Ugc2VjdGlvbi4KCiMjIyBBbHRlcm5hdGl2ZXMgb3IgV29ya2Fyb3VuZHMKCl9ObyByZXNwb25zZV8=
+          BODY4: IyMjIFN1bW1hcnkKCkFkZCBhIGRpYWxvZyBmb3JtIHRvIGNyZWF0ZSBhbmQgZWRpdCB0cmFuc2FjdGlvbnMgb24gdGhlIEZpbmFuY2UgcGFnZS4KCiMjIyBEZXRhaWxlZCBEZXNjcmlwdGlvbgoKQ3JlYXRlIGEgYFRyYW5zYWN0aW9uRGlhbG9nYCBjb21wb25lbnQgKHNpbWlsYXIgdG8gdGhlIG1lbWJlciBlZGl0IGRpYWxvZykgd2l0aDoKLSBEYXRlIHBpY2tlciAoTVVJIERhdGVQaWNrZXIpCi0gRGVzY3JpcHRpb24gdGV4dCBmaWVsZAotIEFtb3VudCBmaWVsZCAobnVtYmVyIGlucHV0OyBwb3NpdGl2ZSBmb3IgaW5jb21lLCBuZWdhdGl2ZSBmb3IgZXhwZW5zZSkKLSBDYXRlZ29yeSBkcm9wZG93biAobG9hZGVkIGZyb20gYC9hcGkvZmluYW5jZS9jYXRlZ29yaWVzYCkKLSBPcHRpb25hbCBtZW1iZXIgc2VsZWN0b3IgKGF1dG9jb21wbGV0ZSkKLSBTYXZlIC8gQ2FuY2VsIGJ1dHRvbnMgdGhhdCBjYWxsIHRoZSBiYWNrZW5kIEFQSQoKVGhlIGRpYWxvZyBzaG91bGQgb3BlbiBmb3IgYm90aCBuZXcgdHJhbnNhY3Rpb25zICh0b29sYmFyICJBZGQiIGJ1dHRvbikgYW5kIGVkaXRpbmcgZXhpc3Rpbmcgb25lcyAocm93IGFjdGlvbikuCgojIyMgV2h5IGlzIHRoaXMgbmVlZGVkPwoKVXNlcnMgbmVlZCBhIHdheSB0byBhZGQgYW5kIHVwZGF0ZSB0cmFuc2FjdGlvbiByZWNvcmRzLgoKIyMjIEFsdGVybmF0aXZlcyBvciBXb3JrYXJvdW5kcwoKX05vIHJlc3BvbnNlXw==
+          BODY5: IyMjIFN1bW1hcnkKCkFsbG93IHNpbmdsZSBhbmQgYnVsayBkZWxldGlvbiBvZiB0cmFuc2FjdGlvbnMgb24gdGhlIEZpbmFuY2UgcGFnZS4KCiMjIyBEZXRhaWxlZCBEZXNjcmlwdGlvbgoKLSBBZGQgYSBkZWxldGUgYWN0aW9uIGJ1dHRvbiB0byBlYWNoIHJvdyBpbiB0aGUgdHJhbnNhY3Rpb24gRGF0YUdyaWQKLSBTdXBwb3J0IG11bHRpLXNlbGVjdCBkZWxldGlvbiB2aWEgYSB0b29sYmFyIGJ1dHRvbiAoc2FtZSBwYXR0ZXJuIGFzIHRoZSBNZW1iZXJzIHBhZ2UgbXVsdGktZGVsZXRlKQotIFNob3cgYSBjb25maXJtYXRpb24gZGlhbG9nIGJlZm9yZSBkZWxldGluZwotIENhbGwgYERFTEVURSAvYXBpL3RyYW5zYWN0aW9ucy86aWRgIGFuZCByZWZyZXNoIHRoZSBsaXN0IGFmdGVyIGRlbGV0aW9uCgojIyMgV2h5IGlzIHRoaXMgbmVlZGVkPwoKVXNlcnMgbXVzdCBiZSBhYmxlIHRvIHJlbW92ZSBpbmNvcnJlY3Qgb3IgZHVwbGljYXRlIHRyYW5zYWN0aW9uIGVudHJpZXMuCgojIyMgQWx0ZXJuYXRpdmVzIG9yIFdvcmthcm91bmRzCgpfTm8gcmVzcG9uc2Vf
+          BODY6: IyMjIFN1bW1hcnkKCkFkZCBzdW1tYXJ5IHN0YXRpc3RpYyBjYXJkcyBhdCB0aGUgdG9wIG9mIHRoZSBGaW5hbmNlIHBhZ2Ugc2hvd2luZyB0b3RhbCBpbmNvbWUsIHRvdGFsIGV4cGVuc2VzLCBhbmQgY3VycmVudCBiYWxhbmNlLgoKIyMjIERldGFpbGVkIERlc2NyaXB0aW9uCgpBZGQgYSBuZXcgYmFja2VuZCBlbmRwb2ludCBgR0VUIC9hcGkvdHJhbnNhY3Rpb25zL3N1bW1hcnlgIHRoYXQgcmV0dXJuczoKLSBgdG90YWxJbmNvbWVgOiBzdW0gb2YgYWxsIHBvc2l0aXZlIHRyYW5zYWN0aW9uIGFtb3VudHMKLSBgdG90YWxFeHBlbnNlc2A6IHN1bSBvZiBhbGwgbmVnYXRpdmUgYW1vdW50cyAoYWJzb2x1dGUgdmFsdWUpCi0gYGJhbGFuY2VgOiB0b3RhbEluY29tZSDiiJIgdG90YWxFeHBlbnNlcwoKT24gdGhlIEZpbmFuY2UgcGFnZSwgZGlzcGxheSB0aHJlZSBNVUkgYENhcmRgIGNvbXBvbmVudHMgKHNpbWlsYXIgdG8gdGhlIERhc2hib2FyZCBzdGF0cykgc2hvd2luZyB0aGVzZSB2YWx1ZXMgZm9ybWF0dGVkIGFzIGN1cnJlbmN5LgoKIyMjIFdoeSBpcyB0aGlzIG5lZWRlZD8KCkEgcXVpY2sgZmluYW5jaWFsIG92ZXJ2aWV3IGlzIHRoZSBtb3N0IHVzZWZ1bCBpbmZvcm1hdGlvbiBmb3IgYSBjbHViIHRyZWFzdXJlciBhdCBhIGdsYW5jZS4KCiMjIyBBbHRlcm5hdGl2ZXMgb3IgV29ya2Fyb3VuZHMKCl9ObyByZXNwb25zZV8=
+          BODY7: IyMjIFN1bW1hcnkKCkFsbG93IHRyYW5zYWN0aW9ucyB0byBiZSBhc3NvY2lhdGVkIHdpdGggYSBzcGVjaWZpYyBjbHViIG1lbWJlciBmb3IgbWVtYmVyc2hpcCBmZWUgdHJhY2tpbmcuCgojIyMgRGV0YWlsZWQgRGVzY3JpcHRpb24KCi0gVGhlIGBUcmFuc2FjdGlvbmAgc2NoZW1hIGhhcyBhbiBvcHRpb25hbCBgbWVtYmVySWRgIGZvcmVpZ24ga2V5IChzZWUgdGhlIHNjaGVtYSB0aWNrZXQpCi0gSW4gdGhlIGFkZC9lZGl0IHRyYW5zYWN0aW9uIGRpYWxvZywgYWRkIGFuIG9wdGlvbmFsIG1lbWJlciBzZWxlY3RvciBhdXRvY29tcGxldGUgZmllbGQKLSBBZGQgYSAiTWVtYmVyIFBheW1lbnRzIiB0YWIgb3IgZmlsdGVyIG9uIHRoZSBGaW5hbmNlIHBhZ2UgdGhhdCBzaG93cyB3aGljaCBtZW1iZXJzIGhhdmUgcGFpZCB0aGVpciBmZWVzIHRoaXMgeWVhciBhbmQgd2hpY2ggaGF2ZSBub3QKLSBUaGUgdmlldyBncm91cHMgdHJhbnNhY3Rpb25zIGJ5IG1lbWJlciBhbmQgYWxsb3dzIGZpbHRlcmluZyBieSB5ZWFyCgojIyMgV2h5IGlzIHRoaXMgbmVlZGVkPwoKQ2x1YiB0cmVhc3VyZXJzIG5lZWQgdG8gdHJhY2sgd2hpY2ggbWVtYmVycyBoYXZlIHBhaWQgdGhlaXIgYW5udWFsIG1lbWJlcnNoaXAgZmVlcy4KCiMjIyBBbHRlcm5hdGl2ZXMgb3IgV29ya2Fyb3VuZHMKCl9ObyByZXNwb25zZV8=
+          BODY8: IyMjIFN1bW1hcnkKCkFkZCBhIGBUcmFuc2FjdGlvbkNhdGVnb3J5YCBtb2RlbCBhbmQgYSBVSSB0byBtYW5hZ2UgaW5jb21lIGFuZCBleHBlbnNlIGNhdGVnb3JpZXMuCgojIyMgRGV0YWlsZWQgRGVzY3JpcHRpb24KCi0gQWRkIGBUcmFuc2FjdGlvbkNhdGVnb3J5YCBtb2RlbCB0byBQcmlzbWEgc2NoZW1hIHdpdGggZmllbGRzOiBgaWRgLCBgbmFtZWAsIGB0eXBlYCAoSU5DT01FIC8gRVhQRU5TRSksIGBjb2xvcmAgKG9wdGlvbmFsIGhleCBzdHJpbmcpCi0gQ3JlYXRlIGJhY2tlbmQgQ1JVRCBlbmRwb2ludHMgYXQgYC9hcGkvZmluYW5jZS9jYXRlZ29yaWVzYAotIEFkZCBhICJDYXRlZ29yaWVzIiB0YWIgdG8gdGhlIEZpbmFuY2UgcGFnZSAoc2ltaWxhciB0byB0aGUgRW50aXRpZXMgcGFnZSB0YWJzKSBsaXN0aW5nIGNhdGVnb3JpZXMgd2l0aCBhZGQgLyBlZGl0IC8gZGVsZXRlIGFjdGlvbnMKLSBVc2UgY2F0ZWdvcmllcyBhcyBhIGZpbHRlciBvbiB0aGUgdHJhbnNhY3Rpb24gbGlzdAoKIyMjIFdoeSBpcyB0aGlzIG5lZWRlZD8KCkNhdGVnb3JpemluZyB0cmFuc2FjdGlvbnMgKGUuZy4gTWVtYmVyc2hpcCBGZWVzLCBFcXVpcG1lbnQsIEV2ZW50cykgZ2l2ZXMgYSBzdHJ1Y3R1cmVkIHZpZXcgb2YgY2x1YiBmaW5hbmNlcy4KCiMjIyBBbHRlcm5hdGl2ZXMgb3IgV29ya2Fyb3VuZHMKCl9ObyByZXNwb25zZV8=
+          BODY9: IyMjIFN1bW1hcnkKCkFsbG93IHRoZSB1c2VyIHRvIGV4cG9ydCB0aGUgY3VycmVudCB0cmFuc2FjdGlvbiBsaXN0IHRvIGFuIEV4Y2VsIG9yIENTViBmaWxlLgoKIyMjIERldGFpbGVkIERlc2NyaXB0aW9uCgpSZXVzZSB0aGUgZXhpc3RpbmcgWExTWCBleHBvcnQgcGF0dGVybiBmcm9tIHRoZSBNZW1iZXJzIHBhZ2U6Ci0gQWRkIGFuICJFeHBvcnQiIHRvb2xiYXIgYnV0dG9uIHRvIHRoZSBGaW5hbmNlIERhdGFHcmlkCi0gRXhwb3J0IHZpc2libGUgY29sdW1ucyBhbmQgcm93cyAocmVzcGVjdGluZyBjdXJyZW50IGZpbHRlcnMgYW5kIGRhdGUgcmFuZ2UpCi0gRmlsZSBuYW1lIGZvcm1hdDogYHRyYW5zYWN0aW9uc19ZWVlZLU1NLURELnhsc3hgCgojIyMgV2h5IGlzIHRoaXMgbmVlZGVkPwoKQ2x1YiB0cmVhc3VyZXJzIG9mdGVuIG5lZWQgdG8gc2hhcmUgZmluYW5jaWFsIGRhdGEgd2l0aCBhdWRpdG9ycyBvciB0aGUgYm9hcmQgaW4gYSBzdGFuZGFyZCBzcHJlYWRzaGVldCBmb3JtYXQuCgojIyMgQWx0ZXJuYXRpdmVzIG9yIFdvcmthcm91bmRzCgpfTm8gcmVzcG9uc2Vf
+          BODY10: IyMjIFN1bW1hcnkKCkdlbmVyYXRlIGEgU0VQQSBwYWluLjAwOCBYTUwgZmlsZSBmb3IgYmF0Y2ggbWVtYmVyc2hpcCBmZWUgY29sbGVjdGlvbiB1c2luZyB0aGUgSUJBTiBkYXRhIGFscmVhZHkgc3RvcmVkIG9uIG1lbWJlciByZWNvcmRzLgoKIyMjIERldGFpbGVkIERlc2NyaXB0aW9uCgotIEFkZCBhbiAiRXhwb3J0IFNFUEEgWE1MIiBidXR0b24gdG8gdGhlIEZpbmFuY2UgcGFnZQotIFRoZSB1c2VyIHNlbGVjdHMgdGhlIG1lbWJlcnMgdG8gaW5jbHVkZSBhbmQgZW50ZXJzIHRoZSBkZWJpdCBhbW91bnQgYW5kIGV4ZWN1dGlvbiBkYXRlCi0gVGhlIGJhY2tlbmQgZ2VuZXJhdGVzIGEgdmFsaWQgU0VQQSBwYWluLjAwOCBYTUwgZmlsZSB1c2luZyB0aGUgbWVtYmVyJ3MgYGliYW5gLCBgYmljYCwgYGFjY291bnRIb2xkZXJgLCBhbmQgYHNlcGFNYW5kYXRlRGF0ZWAgZmllbGRzIGFscmVhZHkgaW4gdGhlIGBNZW1iZXJgIG1vZGVsCi0gUmV0dXJuIHRoZSBYTUwgZmlsZSBhcyBhIGRvd25sb2FkYWJsZSBhdHRhY2htZW50CgpDb25zaWRlciB1c2luZyBhIGxpZ2h0d2VpZ2h0IFNFUEEgWE1MIGxpYnJhcnkgb3IgZ2VuZXJhdGluZyBpdCBmcm9tIGEgdGVtcGxhdGUuCgojIyMgV2h5IGlzIHRoaXMgbmVlZGVkPwoKTWFueSBHZXJtYW4gY2x1YnMgY29sbGVjdCBtZW1iZXJzaGlwIGZlZXMgdmlhIFNFUEEgZGlyZWN0IGRlYml0LiBHZW5lcmF0aW5nIHRoZSBYTUwgZmlsZSBtYW51YWxseSBpcyBlcnJvci1wcm9uZSBhbmQgdGltZS1jb25zdW1pbmcuCgojIyMgQWx0ZXJuYXRpdmVzIG9yIFdvcmthcm91bmRzCgpfTm8gcmVzcG9uc2Vf
+        run: |
+          set -euo pipefail
+
+          # Ensure the finance label exists (idempotent)
+          gh label create "finance" --color "0075ca" --description "Finance feature" --repo "$REPO" 2>/dev/null || true
+
+          # Guard: skip if the first ticket already exists
+          EXISTING=$(gh issue list --repo "$REPO" \
+            --search "[Finance] Add Transaction database schema in:title" \
+            --json number --jq length)
+          if [ "$EXISTING" != "0" ]; then
+            echo "Finance tickets already exist – skipping."
+            exit 0
+          fi
+
+          create_issue() {
+            local title="$1" labels="$2" body_var="$3"
+            echo "${!body_var}" | base64 -d | gh issue create \
+              --title "$title" \
+              --label "$labels" \
+              --body-file - \
+              --repo "$REPO"
+          }
+
+          create_issue "[Finance] Add Transaction database schema" \
+            "feature,finance" BODY1
+
+          create_issue "[Finance] Backend CRUD API for transactions" \
+            "feature,finance" BODY2
+
+          create_issue "[Finance] Finance page: display transaction list" \
+            "feature,finance,good first issue" BODY3
+
+          create_issue "[Finance] Finance page: add/edit transaction dialog" \
+            "feature,finance,good first issue" BODY4
+
+          create_issue "[Finance] Finance page: delete transaction(s)" \
+            "feature,finance,good first issue" BODY5
+
+          create_issue "[Finance] Finance overview: summary statistics cards" \
+            "feature,finance" BODY6
+
+          create_issue "[Finance] Link transactions to members for fee tracking" \
+            "feature,finance" BODY7
+
+          create_issue "[Finance] Transaction category management" \
+            "feature,finance" BODY8
+
+          create_issue "[Finance] Export transactions to Excel/CSV" \
+            "feature,finance,good first issue" BODY9
+
+          create_issue "[Finance] SEPA direct debit XML export" \
+            "feature,finance" BODY10
+
+          echo "All 10 finance tickets created successfully."
