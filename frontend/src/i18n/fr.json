@@ -12,7 +12,29 @@
     "title": "Connexion",
     "email": "E-mail",
     "password": "Mot de passe",
-    "loginButton": "Connexion"
+    "loginButton": "Connexion",
+    "setupComplete": "Configuration terminée ! Veuillez vous connecter avec votre nouveau compte administrateur."
+  },
+  "setup": {
+    "title": "Bienvenue dans Open ClubManager",
+    "description": "Aucun compte administrateur n'existe encore. Créez votre premier compte administrateur pour commencer.",
+    "steps": {
+      "createAdmin": "Créer un compte admin",
+      "login": "Se connecter"
+    },
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "createButton": "Créer un compte admin",
+    "creating": "Création en cours...",
+    "validation": {
+      "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
+      "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas."
+    },
+    "error": {
+      "generic": "Une erreur s'est produite. Veuillez réessayer."
+    }
   },
   "menu": {
     "dashboard": "Tableau de bord",

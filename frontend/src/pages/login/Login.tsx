@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
-import {Box, Button, Card, CardContent, IconButton, InputAdornment, TextField, Typography,} from '@mui/material';
+import React, {useState, useEffect} from 'react';
+import {Alert, Box, Button, Card, CardContent, IconButton, InputAdornment, TextField, Typography,} from '@mui/material';
 import {Visibility, VisibilityOff} from '@mui/icons-material';
 import {useAuth} from '../../context/AuthContext';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 import {login} from '../../api/authentication';
+import {getSetupStatus} from '../../api/setup';
 import {useTranslation} from "react-i18next";
 import {useThemeContext} from "../../theme/ThemeContext";
 import {setAccessToken} from "../../api/api";
@@ -18,6 +19,21 @@ const Login: React.FC = () => {
 
     const {setAccessToken: setAuthAccessToken} = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        getSetupStatus()
+            .then(({ setupRequired }) => {
+                if (setupRequired) {
+                    navigate('/setup', { replace: true });
+                }
+            })
+            .catch(() => {
+                // If setup status cannot be fetched, allow login page to render normally
+            });
+    }, [navigate]);
+
+    const setupComplete = (location.state as { setupComplete?: boolean } | null)?.setupComplete;
 
     const handleLogin = async () => {
         setError(null);
@@ -51,6 +67,11 @@ const Login: React.FC = () => {
                     </Typography>
 
                     <Box display="flex" flexDirection="column" gap={2} mt={2} alignItems={"center"}>
+                        {setupComplete && (
+                            <Alert severity="success" variant="outlined" sx={{ width: '100%' }}>
+                                {t('login.setupComplete')}
+                            </Alert>
+                        )}
                         <TextField
                             label={t('login.email')}
                             variant="outlined"
