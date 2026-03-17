@@ -4,36 +4,49 @@ const darkTheme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            main: '#819A91',
+            main: '#7C8EF8',
+            light: '#A5B2FB',
+            dark: '#4F6AF5',
+            contrastText: '#ffffff',
         },
         secondary: {
-            main: '#f50057',
+            main: '#A78BFA',
         },
         background: {
-            default: '#1E1F22',
+            default: '#0F1117',
+            paper: '#1A1D27',
         },
-        divider: "rgba(255, 255, 255, 0.12)"
+        divider: "rgba(255, 255, 255, 0.08)"
     },
     shape: {
-        borderRadius: 14,
+        borderRadius: 12,
     },
     components: {
         MuiPaper: {
             styleOverrides: {
                 root: {
-                    backgroundColor: '#2B2D30',
-                    color: '#fff',
-                    borderRadius: 14,
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                    boxShadow: '0 1px 6px 0 rgba(255, 255, 255, 0.12)',
+                    backgroundColor: '#1A1D27',
+                    color: '#E2E8F0',
+                    borderRadius: 12,
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    boxShadow: 'none',
                     transition: 'background 0.2s',
                 }
             }
-        }
+        },
+        MuiAppBar: {
+            styleOverrides: {
+                root: {
+                    boxShadow: '0 1px 0 rgba(255,255,255,0.08)',
+                    backgroundColor: '#1A1D27',
+                    color: '#E2E8F0',
+                },
+            },
+        },
     },
     custom: {
-        border: "1px solid rgba(255, 255, 255, 0.12)",
-        boxShadow: '0 1px 6px 0 rgba(255, 255, 255, 0.12)'
+        border: "1px solid rgba(255, 255, 255, 0.08)",
+        boxShadow: 'none'
     }
 })
 

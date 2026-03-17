@@ -30,12 +30,9 @@ export default function PageHeader({ title, subtitle, icon, actions }: PageHeade
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            width: 44,
-                            height: 44,
-                            borderRadius: 2,
-                            bgcolor: "primary.main",
-                            color: "primary.contrastText",
+                            color: "primary.main",
                             flexShrink: 0,
+                            '& .MuiSvgIcon-root': { fontSize: '1.75rem' },
                         }}
                     >
                         {icon}

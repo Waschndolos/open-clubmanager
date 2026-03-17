@@ -32,8 +32,8 @@ export default function AppMenuItem({label, icon, link, collapsed}: MenuItemProp
                 '&.Mui-selected': {
                     backgroundColor: (theme) =>
                         theme.palette.mode === 'dark'
-                            ? 'rgba(129,154,145,0.2)'
-                            : 'rgba(129,154,145,0.15)',
+                            ? `rgba(124,142,248,0.15)`
+                            : `rgba(79,106,245,0.1)`,
                     color: 'primary.main',
                     '& .MuiListItemIcon-root': {
                         color: 'primary.main',
@@ -42,8 +42,8 @@ export default function AppMenuItem({label, icon, link, collapsed}: MenuItemProp
                 '&.Mui-selected:hover': {
                     backgroundColor: (theme) =>
                         theme.palette.mode === 'dark'
-                            ? 'rgba(129,154,145,0.28)'
-                            : 'rgba(129,154,145,0.22)',
+                            ? `rgba(124,142,248,0.22)`
+                            : `rgba(79,106,245,0.15)`,
                 },
             }}
         >
