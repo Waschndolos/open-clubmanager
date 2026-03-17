@@ -3,11 +3,12 @@ import Box from "@mui/material/Box";
 import {useTranslation} from "react-i18next";
 import MemberTable from "./MemberTable";
 import {Member} from "../../api/types";
-import {Add, Clear} from "@mui/icons-material";
+import {Add, Clear, ManageAccounts} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";
 import {createMember, deleteMembers, fetchMembers} from "../../api/members";
 import {useNotification} from "../../components/header/NotificationContext";
+import PageHeader from "../../components/common/PageHeader";
 
 export function createEmptyMember(): Member {
     return {
@@ -124,10 +125,16 @@ export default function Members() {
 
     return (
         <Box p={3}>
-            <Typography variant="h4" gutterBottom>
-                {t("members.title")}
-            </Typography>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <PageHeader
+                title={t("members.title")}
+                icon={<ManageAccounts fontSize="small" />}
+                actions={
+                    <Button variant="contained" startIcon={<Add/>} onClick={() => setNewMemberDialogOpen(true)}>
+                        {t("members.create")}
+                    </Button>
+                }
+            />
+            <Box display="flex" justifyContent="flex-start" alignItems="center" mb={2}>
                 <TextField
                     label={t("members.search")}
                     variant="outlined"
@@ -150,9 +157,6 @@ export default function Members() {
                         }
                     }}
                 />
-                <Button variant="contained" startIcon={<Add/>} onClick={() => setNewMemberDialogOpen(true)}>
-                    {t("members.create")}
-                </Button>
             </Box>
             <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated} onMembersDeleted={handleMemberDeleted}/>
             {newMemberDialogOpen && (

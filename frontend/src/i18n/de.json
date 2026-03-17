@@ -41,7 +41,8 @@
         "members": "Mitgliederverwaltung",
         "finance": "Finanzen",
         "settings": "Einstellungen",
-        "entities": "Vereinsverwaltung"
+        "entities": "Vereinsverwaltung",
+        "profile": "Profil"
     },
     "dashboard": {
         "membercount": "Anzahl Mitglieder",
@@ -213,5 +214,8 @@
         "error": {
             "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
         }
+    },
+    "profile": {
+        "role": "Administrator"
     }
 }

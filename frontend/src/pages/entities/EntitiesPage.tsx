@@ -4,6 +4,8 @@ import React, {useState} from "react";
 import { Groups } from "../../components/entities/Groups";
 import {Roles} from "../../components/entities/Roles";
 import {Sections} from "../../components/entities/Sections";
+import PageHeader from "../../components/common/PageHeader";
+import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 
 
 function a11yProps(index: number) {
@@ -45,6 +47,10 @@ export function EntitiesPage() {
 
     return (
         <Box sx={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%'}}>
+            <PageHeader
+                title={t("menu.entities")}
+                icon={<PermIdentityIcon fontSize="small" />}
+            />
             <Tabs value={value} onChange={handleChange} variant={"fullWidth"}>
                 <Tab label={t("entities.groups.title")} {...a11yProps(0)} />
                 <Tab label={t("entities.roles.title")} {...a11yProps(1)} />

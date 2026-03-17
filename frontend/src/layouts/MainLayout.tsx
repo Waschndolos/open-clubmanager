@@ -21,7 +21,9 @@ export default function MainLayout() {
                     sx={{
                         width: sidebarCollapsed ? 60 : "20%",
                         minWidth: sidebarCollapsed ? 60 : "20%",
-                        borderRight: "1px solid #ddd",
+                        borderRight: (theme) => theme.custom.border,
+                        bgcolor: (theme) =>
+                            theme.palette.mode === 'dark' ? '#14161F' : '#ffffff',
                         transition: "width 0.3s, min-width 0.3s",
                         overflowY: "auto",
                     }}

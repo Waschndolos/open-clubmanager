@@ -10,13 +10,13 @@ import {
     Select,
     Snackbar,
     TextField,
-    Typography
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {validatePath} from "../../api/validation";
 import {getDbPath, saveDbPath} from "../../api/settings";
+import PageHeader from "../../components/common/PageHeader";
 
 export function Settings() {
     const {t, i18n} = useTranslation();
@@ -73,14 +73,14 @@ export function Settings() {
 
     return (
         <Box sx={{p: 4}}>
-            <Typography variant="h4" gutterBottom>
-                {t("settings.title")}
-            </Typography>
+            <PageHeader
+                title={t("settings.title")}
+                icon={<SettingsIcon fontSize="small" />}
+            />
 
             <Paper sx={{
                 p: 3,
             }}>
-                <SettingsIcon fontSize="large" color="primary"/>
                 <FormControl fullWidth margin="normal">
                     <TextField
                         label={t("settings.labels.dbPath")}

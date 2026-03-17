@@ -41,7 +41,8 @@
         "members": "Gestion des membres",
         "finance": "Finances",
         "settings": "Paramètres",
-        "entities": "Entités du club"
+        "entities": "Entités du club",
+        "profile": "Profil"
     },
     "dashboard": {
         "membercount": "Nombre de membres",
@@ -213,5 +214,8 @@
         "error": {
             "generic": "Une erreur s'est produite. Veuillez réessayer."
         }
+    },
+    "profile": {
+        "role": "Administrateur"
     }
 }
