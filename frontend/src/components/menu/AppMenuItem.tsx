@@ -1,5 +1,5 @@
 import {ListItemButton, ListItemIcon, ListItemText, Tooltip} from "@mui/material";
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useMatch} from 'react-router-dom';
 import {ReactElement} from "react";
 
 type MenuItemProps = {
@@ -11,21 +11,40 @@ type MenuItemProps = {
 
 export default function AppMenuItem({label, icon, link, collapsed}: MenuItemProps) {
     const navigate = useNavigate();
+    const match = useMatch({ path: link ?? "", end: false });
+    const isActive = Boolean(match);
 
     return (
-        <ListItemButton onClick={() => link && navigate(link)}
+        <ListItemButton
+            onClick={() => link && navigate(link)}
+            selected={isActive}
             sx={{
                 justifyContent: collapsed ? "center" : "flex-start",
                 borderRadius: 2,
+                mb: 0.5,
                 transition: 'background 0.2s, color 0.2s',
-                // '&:hover': {
-                //     backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#f4f6f8',
-                //     color: (theme) => theme.palette.mode === 'dark' ? '#ffb703' : '#819A91',
-                // },
-                // '&.Mui-selected, &.Mui-selected:hover': {
-                //     backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#23243a' : '#e0e7ef',
-                //     color: (theme) => theme.palette.mode === 'dark' ? '#8ecae6' : '#819A91',
-                // },
+                '&:hover': {
+                    backgroundColor: (theme) =>
+                        theme.palette.mode === 'dark'
+                            ? 'rgba(255,255,255,0.08)'
+                            : 'rgba(0,0,0,0.06)',
+                },
+                '&.Mui-selected': {
+                    backgroundColor: (theme) =>
+                        theme.palette.mode === 'dark'
+                            ? 'rgba(129,154,145,0.2)'
+                            : 'rgba(129,154,145,0.15)',
+                    color: 'primary.main',
+                    '& .MuiListItemIcon-root': {
+                        color: 'primary.main',
+                    },
+                },
+                '&.Mui-selected:hover': {
+                    backgroundColor: (theme) =>
+                        theme.palette.mode === 'dark'
+                            ? 'rgba(129,154,145,0.28)'
+                            : 'rgba(129,154,145,0.22)',
+                },
             }}
         >
             <Tooltip title={collapsed ? label : ""} placement="right">
@@ -41,6 +60,7 @@ export default function AppMenuItem({label, icon, link, collapsed}: MenuItemProp
                         wordBreak: "break-word",
                         ml: 2,
                     }}
+                    primaryTypographyProps={{ sx: { fontWeight: isActive ? 600 : 400 } }}
                 />
             )}
         </ListItemButton>

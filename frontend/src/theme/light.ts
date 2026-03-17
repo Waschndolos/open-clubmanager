@@ -10,8 +10,8 @@ const lightTheme = createTheme({
             main: '#f50057',
         },
         background: {
-            default: '#fff',
-            paper: '#fff',
+            default: '#f0f2f5',
+            paper: '#ffffff',
         },
     },
     shape: {
@@ -19,7 +19,16 @@ const lightTheme = createTheme({
     },
     custom: {
         border: '1px solid #e0e7ef',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+    },
+    components: {
+        MuiAppBar: {
+            styleOverrides: {
+                root: {
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                },
+            },
+        },
     },
 })
 
