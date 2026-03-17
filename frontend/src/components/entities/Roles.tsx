@@ -1,13 +1,13 @@
 import {EntityManager} from "./EntityManager";
 import {useTranslation} from "react-i18next";
-import {Group} from "../../api/types";
+import {Role} from "../../api/types";
 import {createRole, deleteRole, fetchRoles, updateRole} from "../../api/roles";
 
 export function Roles() {
 
     const { t } = useTranslation();
     return (
-        <EntityManager<Group>
+        <EntityManager<Role>
             description={t("entities.roles.description")}
             fetchFn={fetchRoles}
             createFn={createRole}
