@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import 'dotenv/config';  // lädt automatisch .env
 import path from "path";
 import fs from "fs";
+import {PrismaClient} from "./generated/prisma/client.ts";
+import {PrismaBetterSqlite3} from "@prisma/adapter-better-sqlite3";
 
-
-const clientCache = new Map<string, PrismaClient>();
 let currentClient: PrismaClient | null = null;
 let currentDbPath: string | undefined = process.env.DATABASE_URL;
 
@@ -35,38 +35,26 @@ export async function getClient(): Promise<PrismaClient> {
 }
 
 async function createPrismaClientForPath(dbPath: string): Promise<PrismaClient> {
-    if (!dbPath) {
-        throw new Error("Database path is not defined. Please provide a valid database path.");
-    }
     if (dbPath.startsWith("file:")) {
-        // If the path starts with "file:", we assume it's already an absolute path
-        dbPath = dbPath.replace("file:", "").replace(/^\/\//, ""); // Remove "file:" and leading slashes
+        dbPath = dbPath.replace("file:", "").replace(/^\/\//, "");
     }
 
     const absolutePath = path.resolve(dbPath);
 
-    console.log("Creating Prisma client for database path:", absolutePath);
-    if (clientCache.has(absolutePath)) {
-        return clientCache.get(absolutePath)!;
-    }
-
     if (!fs.existsSync(absolutePath)) {
-        fs.writeFileSync(absolutePath, '');
+        fs.writeFileSync(absolutePath, "");
     }
 
-    const dbUrl = `file:${absolutePath}`;
+    const adapter = new PrismaBetterSqlite3({
+        url: `file:${absolutePath}`,
+    });
 
-    console.log("dbUrl:", dbUrl);
     const client = new PrismaClient({
-        datasources: {
-            db: {
-                url: dbUrl,
-            },
-        },
+        adapter,
     });
 
     await client.$connect();
-    clientCache.set(absolutePath, client);
 
     return client;
 }
+

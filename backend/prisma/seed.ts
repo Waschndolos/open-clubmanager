@@ -1,15 +1,14 @@
-import {PrismaClient} from '@prisma/client';
+import 'dotenv/config';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import {PrismaClient} from '../src/generated/prisma/client';
 import {faker} from '@faker-js/faker';
 import * as bcrypt from "bcrypt";
+const dbUrl = process.env.DATABASE_URL;
+if (!dbUrl) throw new Error("DATABASE_URL is not set in .env");
 
-const prisma = new PrismaClient({
-        datasources: {
-            db: {
-                url: process.env.DATABASE_URL
-            }
-        }
-    }
-);
+const adapter = new PrismaBetterSqlite3({ url: dbUrl });
+const prisma = new PrismaClient({ adapter });
+
 const nbMembers = 100;
 
 async function main() {

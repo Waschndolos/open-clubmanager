@@ -55,57 +55,71 @@ router.get('/app/:key', async (req, res) => {
 })
 
 //GET /api/preferences/:key
-router.get('/:key', async (_req, res) => {
+router.get('/:key', async (req, res) => {
     try {
-        const key = _req.params.key
-        const userId = 1; // TODO: add once auth is there
+        const { key } = req.params;
+        const userId = 1;
+
         const prisma = await getClient();
-        const preferences = await prisma.userPreference.findMany({
-            where: { userId }
+
+        const preference = await prisma.userPreference.findFirst({
+            where: {
+                userId,
+                key
+            }
         });
 
-        const parsed = preferences.map((pref) => ({
-            key: key,
-            value: JSON.parse(pref.value),
-            updatedAt: pref.updatedAt,
-        }));
+        if (!preference) {
+            res.status(404).json({ error: 'Preference not found' });
+            return;
+        }
 
-        res.json(parsed[0]);
+        res.json({
+            key: preference.key,
+            value: JSON.parse(preference.value),
+            updatedAt: preference.updatedAt
+        });
+
     } catch (err) {
-        console.error('Error loading preferences', err);
+        console.error('Error loading preference', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
+
 //POST /api/preferences
 router.post('/', async (req, res) => {
     const { key, value } = req.body;
+    const userId = 1; // später aus Auth
+
     try {
         const prisma = await getClient();
-        const section = await prisma.userPreference.upsert({
+
+        const preference = await prisma.userPreference.upsert({
             where: {
-                id: 1 // TODO: use userID as soon as we have auth
+                userId_key: {
+                    userId,
+                    key
+                }
             },
             update: {
-                userId: 1, // TODO: use userID as soon as we have auth
-                key: key,
-                value: JSON.stringify(value),
-                updatedAt: new Date()
+                value: JSON.stringify(value)
+                // updatedAt wird automatisch gesetzt wegen @updatedAt
             },
             create: {
-                userId: 1, // TODO: use userID as soon as we have auth
-                key: key,
-                value: JSON.stringify(value),
-                updatedAt: new Date()
+                userId,
+                key,
+                value: JSON.stringify(value)
             }
         });
-        console.log("Successfully stored", section);
-        res.status(201).json(section);
-    } catch (e) {
-        console.log("Error storing key", e);
-        res.status(400).json({ error: 'Could not create section' });
+
+        res.status(201).json(preference);
+    } catch (err) {
+        console.error("Error storing preference", err);
+        res.status(400).json({ error: "Could not store preference" });
     }
-})
+});
+
 
 //PUT /api/preferences/app/:key
 router.put('/app/:key', async (req, res) => {
