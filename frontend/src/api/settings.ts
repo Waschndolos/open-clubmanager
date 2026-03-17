@@ -1,6 +1,6 @@
 import {BACKEND_URL} from "./api";
 
-const BASE_URL = `${BACKEND_URL}/api/settings`;
+const BASE_URL = `${BACKEND_URL}/settings`;
 
 export async function saveDbPath(dbPath: string) {
     const res = await fetch(`${BASE_URL}/set-db-path`, {
@@ -19,6 +19,12 @@ export async function getDbPath(): Promise<string> {
     const data = await res.json();
     console.log("Current database path:", data.dbPath);
     return stripFilePrefix(data.dbPath);
+}
+
+export async function getDbStatus(): Promise<{ configured: boolean; dbPath: string | null }> {
+    const res = await fetch(`${BASE_URL}/db-status`);
+    if (!res.ok) throw new Error("Failed to fetch database status");
+    return res.json();
 }
 
 function stripFilePrefix(path: string): string {

@@ -1,5 +1,5 @@
 import express from 'express';
-import {getCurrentDbPath, setActiveDb} from "../db.ts";
+import {getCurrentDbPath, isDbConfigured, setActiveDb} from "../db.ts";
 
 
 const router = express.Router();
@@ -24,6 +24,12 @@ router.get('/db-path', async (req, res) => {
         console.error(err);
         res.status(500).json({error: "Failed to get database path"});
     }
-})
+});
+
+router.get('/db-status', (_req, res) => {
+    const configured = isDbConfigured();
+    const dbPath = getCurrentDbPath();
+    res.json({configured, dbPath: configured ? dbPath : null});
+});
 
 export default router;

@@ -8,6 +8,7 @@ import { Settings } from "../pages/settings/Settings";
 import {EntitiesPage} from "../pages/entities/EntitiesPage";
 import Login from "../pages/login/Login";
 import Setup from "../pages/setup/Setup";
+import DbSetup from "../pages/dbsetup/DbSetup";
 import { RequireAuth } from "../guards/RequireAuth";
 
 export const router = createBrowserRouter([
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
   {
     path: "/setup",
     element: <Setup />,
+  },
+  {
+    path: "/db-setup",
+    element: <DbSetup />,
   },
   {
         path: "/",

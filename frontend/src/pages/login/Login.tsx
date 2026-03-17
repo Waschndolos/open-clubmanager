@@ -5,6 +5,7 @@ import {useAuth} from '../../context/AuthContext';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {login} from '../../api/authentication';
 import {getSetupStatus} from '../../api/setup';
+import {getDbStatus} from '../../api/settings';
 import {useTranslation} from "react-i18next";
 import {useThemeContext} from "../../theme/ThemeContext";
 import {setAccessToken} from "../../api/api";
@@ -22,15 +23,25 @@ const Login: React.FC = () => {
     const location = useLocation();
 
     useEffect(() => {
-        getSetupStatus()
-            .then(({ setupRequired }) => {
+        (async () => {
+            try {
+                const { configured } = await getDbStatus();
+                if (!configured) {
+                    navigate('/db-setup', { replace: true });
+                    return;
+                }
+            } catch {
+                // If status cannot be fetched, allow login page to render normally
+            }
+            try {
+                const { setupRequired } = await getSetupStatus();
                 if (setupRequired) {
                     navigate('/setup', { replace: true });
                 }
-            })
-            .catch(() => {
+            } catch {
                 // If setup status cannot be fetched, allow login page to render normally
-            });
+            }
+        })();
     }, [navigate]);
 
     const setupComplete = (location.state as { setupComplete?: boolean } | null)?.setupComplete;

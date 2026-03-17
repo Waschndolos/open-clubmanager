@@ -14,5 +14,11 @@ declare global {
             get<T = unknown>(userId: string, key: string): T;
             set(userId: string, key: string, value: unknown): void;
         };
+        electronDialog?: {
+            selectDbDirectory(): Promise<string | null>;
+            selectDbFile(): Promise<string | null>;
+            getStoredDbPath(): string | null;
+            storeDbPath(dbPath: string): void;
+        };
     }
 }

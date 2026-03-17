@@ -19,3 +19,18 @@ contextBridge.exposeInMainWorld('apppreference', {
     ipcRenderer.send('apppreference-set', key, value);
   }
 });
+
+contextBridge.exposeInMainWorld('electronDialog', {
+  selectDbDirectory(): Promise<string | null> {
+    return ipcRenderer.invoke('dialog:select-db-directory');
+  },
+  selectDbFile(): Promise<string | null> {
+    return ipcRenderer.invoke('dialog:select-db-file');
+  },
+  getStoredDbPath(): string | null {
+    return ipcRenderer.sendSync('db-path-get');
+  },
+  storeDbPath(dbPath: string): void {
+    ipcRenderer.send('db-path-set', dbPath);
+  },
+});

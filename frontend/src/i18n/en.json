@@ -1,204 +1,217 @@
 {
-  "header": {
-    "notifications": {
-      "none": "No Notifications",
-      "deleteall": "Delete all"
-    }
-  },
-  "logout": {
-    "tooltip": "Logout"
-  },
-  "login": {
-    "title": "Login",
-    "email": "Email",
-    "password": "Password",
-    "loginButton": "Login",
-    "setupComplete": "Setup complete! Please log in with your new admin account."
-  },
-  "setup": {
-    "title": "Welcome to Open ClubManager",
-    "description": "No admin account exists yet. Create your initial administrator account to get started.",
-    "steps": {
-      "createAdmin": "Create Admin Account",
-      "login": "Sign In"
-    },
-    "email": "Email",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "createButton": "Create Admin Account",
-    "creating": "Creating...",
-    "validation": {
-      "invalidEmail": "Please enter a valid email address.",
-      "passwordTooShort": "Password must be at least 8 characters long.",
-      "passwordMismatch": "Passwords do not match."
-    },
-    "error": {
-      "generic": "An error occurred. Please try again."
-    }
-  },
-  "menu": {
-    "dashboard": "Dashboard",
-    "members": "Member Management",
-    "finance": "Finances",
-    "settings": "Settings",
-    "entities": "Club Entities"
-  },
-  "dashboard": {
-    "membercount": "Member Count",
-    "upcommingBirthdays": "Upcomming Birthdays",
-    "membersExitingThisYear": "Members Exiting This Year"
-  },
-  "tooltips": {
-    "edit": "Edit",
-    "delete": "Delete",
-    "export": "Export",
-    "import": "Import",
-    "columnselection": "Column selection"
-  },
-  "buttons": {
-    "abort": "Abort",
-    "save": "Save",
-    "delete": "Delete",
-    "export": "Export",
-    "import": "Import",
-    "back": "Back",
-    "next": "Next"
-  },
-  "entities": {
-    "edit": "Edit",
-    "create": "Create",
-    "groups": {
-      "title": "Group Management",
-      "description": "Organize members into thematic or organizational groups, such as training units, project teams, or age categories. Groups help you filter, manage fees, and reflect internal club structures.",
-      "dialogs": {
-        "name": "Name",
-        "description": "Description",
-        "createButton": "Create New Group"
-      }
-    },
-    "roles": {
-      "title": "Role Management",
-      "description": "Manage member roles and responsibilities – for example, as board members, coaches, or treasurers. Roles help define responsibilities and control visibility or permissions.",
-      "dialogs": {
-        "name": "Name",
-        "description": "Description",
-        "createButton": "Create New Role"
-      }
-    },
-    "sections": {
-      "title": "Section Management",
-      "description": "Structure your club into departments such as soccer, gymnastics, or music. Departments help differentiate fees and organize activities more effectively.",
-      "dialogs": {
-        "name": "Name",
-        "description": "Description",
-        "createButton": "Create New Section"
-      }
-    }
-  },
-  "members": {
-    "automatedDeletionNotice": "was automatically deleted.",
-    "dialogs": {
-      "export": {
-        "title": "Export member list",
-        "description": "You can export the member list as an Excel file here."
-      },
-      "import": {
-        "1": {
-          "title": "Import Members",
-          "select": "Select Excel-File"
-        },
-        "2": {
-          "title": "Assign Columns",
-          "description": "Assign columns to the Open ClubManager model.",
-          "ignore": "--- Ignore ---"
-        },
-        "3": {
-          "title": "Preview"
+    "header": {
+        "notifications": {
+            "none": "No Notifications",
+            "deleteall": "Delete all"
         }
-      },
-      "sections": {
-        "personal": "Personal Information",
-        "address": "Address",
-        "bank": "Bank Details",
-        "membership": "Membership",
-        "assignments": "Assignments",
-        "entities": "Club Entities"
-      },
-      "validation": {
-        "emailRequired": "Email is a required field"
-      },
-      "edit": {
-        "title": "Edit Member"
-      },
-      "create": {
-        "title": "Create New Member"
-      },
-      "delete": {
-        "title": "Delete member",
-        "titleMultiple": "Delete members",
-        "description": "Do you want to delete this member?",
-        "descriptionMultiple": "Do you really want to delete the selected members?"
-      }
     },
-    "title": "Member Management",
-    "search": "Search Member",
-    "create": "Add Member",
-    "table": {
-      "description": "Select a member from the list and click the edit icon to edit it.",
-      "importInProgress": "Member import in progress...",
-      "header": {
-        "id": "ID",
-        "number": "Member Number",
-        "birthday": "Birthday",
-        "phone": "Phone",
-        "phoneMobile": "Mobile",
-        "comment": "Comment",
-        "entryDate": "Entry Date",
-        "exitDate": "Exit Date",
-        "street": "Street",
-        "postalCode": "Postal Code",
-        "city": "City",
-        "state": "State",
-        "accountHolder": "Account Holder",
-        "iban": "IBAN",
-        "bic": "BIC",
-        "bankName": "Bank",
-        "sepaMandateDate": "SEPA Mandate Date",
-        "roles": "Roles",
-        "groups": "Groups",
-        "sections": "Sections",
-        "firstName": "First Name",
-        "lastName": "Last Name",
+    "logout": {
+        "tooltip": "Logout"
+    },
+    "login": {
+        "title": "Login",
         "email": "Email",
-        "actions": "Actions"
-      }
-    }
-  },
-  "settings": {
-    "title": "Settings",
-    "description": "Configure Open Clubmanager to suit your needs.",
-    "languages": {
-      "de": "Deutsch",
-      "en": "English",
-      "fr": "Français"
+        "password": "Password",
+        "loginButton": "Login",
+        "setupComplete": "Setup complete! Please log in with your new admin account."
     },
-    "validatíon": {
-      "error": {
-        "nosqllitedb": "The path does not point to a valid SQLite database.",
-        "cannotcreate": "A database cannot be created at the specified path.",
-        "required": "The database path is required."
-      },
-      "success": {
-        "newdb": "The database path is potentially valid. Copy clubmanager.db to this location if you want to use it.",
-        "valid": "The database path is valid."
-      }
+    "setup": {
+        "title": "Welcome to Open ClubManager",
+        "description": "No admin account exists yet. Create your initial administrator account to get started.",
+        "steps": {
+            "createAdmin": "Create Admin Account",
+            "login": "Sign In"
+        },
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "createButton": "Create Admin Account",
+        "creating": "Creating...",
+        "validation": {
+            "invalidEmail": "Please enter a valid email address.",
+            "passwordTooShort": "Password must be at least 8 characters long.",
+            "passwordMismatch": "Passwords do not match."
+        },
+        "error": {
+            "generic": "An error occurred. Please try again."
+        }
     },
-    "labels": {
-      "language": "Language",
-      "dbPath": "Database Path",
-      "save": "Database Path",
-      "saveSuccess": "Settings saved successfully!",
-      "saveFails": "Failed to save settings!"
+    "menu": {
+        "dashboard": "Dashboard",
+        "members": "Member Management",
+        "finance": "Finances",
+        "settings": "Settings",
+        "entities": "Club Entities"
+    },
+    "dashboard": {
+        "membercount": "Member Count",
+        "upcommingBirthdays": "Upcomming Birthdays",
+        "membersExitingThisYear": "Members Exiting This Year"
+    },
+    "tooltips": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "export": "Export",
+        "import": "Import",
+        "columnselection": "Column selection"
+    },
+    "buttons": {
+        "abort": "Abort",
+        "save": "Save",
+        "delete": "Delete",
+        "export": "Export",
+        "import": "Import",
+        "back": "Back",
+        "next": "Next"
+    },
+    "entities": {
+        "edit": "Edit",
+        "create": "Create",
+        "groups": {
+            "title": "Group Management",
+            "description": "Organize members into thematic or organizational groups, such as training units, project teams, or age categories. Groups help you filter, manage fees, and reflect internal club structures.",
+            "dialogs": {
+                "name": "Name",
+                "description": "Description",
+                "createButton": "Create New Group"
+            }
+        },
+        "roles": {
+            "title": "Role Management",
+            "description": "Manage member roles and responsibilities – for example, as board members, coaches, or treasurers. Roles help define responsibilities and control visibility or permissions.",
+            "dialogs": {
+                "name": "Name",
+                "description": "Description",
+                "createButton": "Create New Role"
+            }
+        },
+        "sections": {
+            "title": "Section Management",
+            "description": "Structure your club into departments such as soccer, gymnastics, or music. Departments help differentiate fees and organize activities more effectively.",
+            "dialogs": {
+                "name": "Name",
+                "description": "Description",
+                "createButton": "Create New Section"
+            }
+        }
+    },
+    "members": {
+        "automatedDeletionNotice": "was automatically deleted.",
+        "dialogs": {
+            "export": {
+                "title": "Export member list",
+                "description": "You can export the member list as an Excel file here."
+            },
+            "import": {
+                "1": {
+                    "title": "Import Members",
+                    "select": "Select Excel-File"
+                },
+                "2": {
+                    "title": "Assign Columns",
+                    "description": "Assign columns to the Open ClubManager model.",
+                    "ignore": "--- Ignore ---"
+                },
+                "3": {
+                    "title": "Preview"
+                }
+            },
+            "sections": {
+                "personal": "Personal Information",
+                "address": "Address",
+                "bank": "Bank Details",
+                "membership": "Membership",
+                "assignments": "Assignments",
+                "entities": "Club Entities"
+            },
+            "validation": {
+                "emailRequired": "Email is a required field"
+            },
+            "edit": {
+                "title": "Edit Member"
+            },
+            "create": {
+                "title": "Create New Member"
+            },
+            "delete": {
+                "title": "Delete member",
+                "titleMultiple": "Delete members",
+                "description": "Do you want to delete this member?",
+                "descriptionMultiple": "Do you really want to delete the selected members?"
+            }
+        },
+        "title": "Member Management",
+        "search": "Search Member",
+        "create": "Add Member",
+        "table": {
+            "description": "Select a member from the list and click the edit icon to edit it.",
+            "importInProgress": "Member import in progress...",
+            "header": {
+                "id": "ID",
+                "number": "Member Number",
+                "birthday": "Birthday",
+                "phone": "Phone",
+                "phoneMobile": "Mobile",
+                "comment": "Comment",
+                "entryDate": "Entry Date",
+                "exitDate": "Exit Date",
+                "street": "Street",
+                "postalCode": "Postal Code",
+                "city": "City",
+                "state": "State",
+                "accountHolder": "Account Holder",
+                "iban": "IBAN",
+                "bic": "BIC",
+                "bankName": "Bank",
+                "sepaMandateDate": "SEPA Mandate Date",
+                "roles": "Roles",
+                "groups": "Groups",
+                "sections": "Sections",
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "email": "Email",
+                "actions": "Actions"
+            }
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "description": "Configure Open Clubmanager to suit your needs.",
+        "languages": {
+            "de": "Deutsch",
+            "en": "English",
+            "fr": "Français"
+        },
+        "validatíon": {
+            "error": {
+                "nosqllitedb": "The path does not point to a valid SQLite database.",
+                "cannotcreate": "A database cannot be created at the specified path.",
+                "required": "The database path is required."
+            },
+            "success": {
+                "newdb": "The database path is potentially valid. Copy clubmanager.db to this location if you want to use it.",
+                "valid": "The database path is valid."
+            }
+        },
+        "labels": {
+            "language": "Language",
+            "dbPath": "Database Path",
+            "save": "Database Path",
+            "saveSuccess": "Settings saved successfully!",
+            "saveFails": "Failed to save settings!"
+        }
+    },
+    "dbSetup": {
+        "title": "Database Setup",
+        "description": "Choose where your club data will be stored. You can create a new database or use an existing one.",
+        "createNew": "Create new database",
+        "useExisting": "Use existing database",
+        "or": "or",
+        "manualPathLabel": "Enter the full file path to the database (e.g. /home/user/clubmanager.db)",
+        "pathPlaceholder": "Database file path",
+        "confirmPath": "Connect",
+        "error": {
+            "generic": "An error occurred. Please try again."
+        }
     }
-  }
 }

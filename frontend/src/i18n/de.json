@@ -1,205 +1,217 @@
 {
-  "header": {
-    "notifications": {
-      "none": "Keine Benachrichtigungen",
-      "deleteall": "Alle löschen"
-    }
-  },
-  "logout": {
-    "tooltip": "Abmelden"
-  },
-  "login": {
-    "title": "Anmelden",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "loginButton": "Anmelden",
-    "setupComplete": "Einrichtung abgeschlossen! Bitte melden Sie sich mit Ihrem neuen Admin-Konto an."
-  },
-  "setup": {
-    "title": "Willkommen bei Open ClubManager",
-    "description": "Es existiert noch kein Admin-Konto. Erstellen Sie Ihr erstes Administratorkonto, um zu beginnen.",
-    "steps": {
-      "createAdmin": "Admin-Konto erstellen",
-      "login": "Anmelden"
-    },
-    "email": "E-Mail",
-    "password": "Passwort",
-    "confirmPassword": "Passwort bestätigen",
-    "createButton": "Admin-Konto erstellen",
-    "creating": "Wird erstellt...",
-    "validation": {
-      "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
-      "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
-      "passwordMismatch": "Die Passwörter stimmen nicht überein."
-    },
-    "error": {
-      "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
-    }
-  },
-
-  "menu": {
-    "dashboard": "Startseite",
-    "members": "Mitgliederverwaltung",
-    "finance": "Finanzen",
-    "settings": "Einstellungen",
-    "entities": "Vereinsverwaltung"
-  },
-  "dashboard": {
-    "membercount": "Anzahl Mitglieder",
-    "upcommingBirthdays": "Anstehende Geburtstage",
-    "membersExitingThisYear": "Austritte in diesem Jahr"
-  },
-  "tooltips": {
-    "edit": "Editieren",
-    "delete": "Löschen",
-    "export": "Exportieren",
-    "import": "Importieren",
-    "columnselection": "Spaltenauswahl"
-  },
-  "buttons": {
-    "abort": "Abbrechen",
-    "save": "Speichern",
-    "delete": "Löschen",
-    "export": "Exportieren",
-    "import": "Importieren",
-    "back": "Zurück",
-    "next": "Weiter"
-  },
-  "entities": {
-    "edit": "Bearbeiten",
-    "create": "Erstellen",
-    "groups": {
-      "title": "Gruppenverwaltung",
-      "description": "Organisiere Mitglieder in thematische oder organisatorische Gruppen, z.B. Trainingsgruppen, Projektteams oder Altersklassen. Gruppen helfen dir, gezielt zu filtern, Beiträge zu verwalten oder interne Strukturen abzubilden.",
-      "dialogs": {
-        "name": "Name",
-        "description": "Beschreibung",
-        "createButton": "Neue Gruppe erstellen"
-      }
-    },
-    "roles": {
-      "title": "Rollenverwaltung",
-      "description": "Verwalte die Funktionen und Aufgaben deiner Mitglieder – etwa als Vorstand, Trainer oder Kassenwart. Rollen ermöglichen eine klare Zuweisung von Zuständigkeiten und Sichtbarkeiten",
-      "dialogs": {
-        "name": "Name",
-        "description": "Beschreibung",
-        "createButton": "Neue Rolle erstellen"
-      }
-    },
-    "sections": {
-      "title": "Abteilungsverwaltung",
-      "description": "Strukturiere deinen Verein in Abteilungen wie Fußball, Turnen oder Musik. Abteilungen helfen, Mitgliedsbeiträge zu differenzieren und Aktivitäten gezielt zu organisieren.",
-      "dialogs": {
-        "name": "Name",
-        "description": "Beschreibung",
-        "createButton": "Neue Abteilung erstellen"
-      }
-    }
-  },
-  "members": {
-    "automatedDeletionNotice": "wurde automatisch gelöscht.",
-    "dialogs": {
-      "export": {
-        "title": "Mitgliederliste exportieren",
-        "description": "Hier kann die Mitgliederliste als Excel Liste exportiert werden."
-      },
-      "import": {
-        "1": {
-          "title": "Mitglieder importieren",
-          "select": "Excel-Datei auswählen"
-        },
-        "2": {
-          "title": "Spalten zuordnen",
-          "description": "Ordne die Excel Spalten zu dem Open ClubManager Modell zu.",
-          "ignore": "--- Ignorieren ---"
-        },
-        "3": {
-          "title": "Vorschau"
+    "header": {
+        "notifications": {
+            "none": "Keine Benachrichtigungen",
+            "deleteall": "Alle löschen"
         }
-      },
-      "sections": {
-        "personal": "Persönliche Informationen",
-        "address": "Adresse",
-        "bank": "Bankinformationen",
-        "membership": "Mitgliedschaft",
-        "assignments": "Zugehörigkeiten",
-        "entities": "Vereinsverwaltung"
-      },
-      "validation": {
-        "emailRequired": "Email ist ein Pflichtfeld"
-      },
-      "edit": {
-        "title": "Mitglied editieren"
-      },
-      "create": {
-        "title": "Neues Mitglied anlegen"
-      },
-      "delete": {
-        "title": "Mitglied löschen",
-        "titleMultiple": "Mitglieder löschen",
-        "description": "Willst du dieses Mitglied wirklich löschen?",
-        "descriptionMultiple": "Willst du die ausgewählten Mitglieder wirklich löschen?"
-      }
     },
-    "title": "Mitgliederverwaltung",
-    "search": "Suche Mitglied",
-    "create": "Mitglied hinzufügen",
-    "table": {
-      "description": "Wähle ein Mitglied aus der Liste aus und klicke auf das Bearbeiten-Symbol, um es zu bearbeiten.",
-      "importInProgress": "Mitgliederimport läuft...",
-      "header": {
-        "id": "ID",
-        "number": "Mitgliedsnummer",
-        "birthday": "Geburtstag",
-        "phone": "Telefon",
-        "phoneMobile": "Mobil",
-        "comment": "Kommentar",
-        "entryDate": "Anmeldedatum",
-        "exitDate": "Austrittsdatum",
-        "street": "Straße",
-        "postalCode": "PLZ",
-        "city": "Stadt",
-        "state": "Bundesland",
-        "accountHolder": "Kontoinhaber",
-        "iban": "IBAN",
-        "bic": "BIC",
-        "bankName": "Bank",
-        "sepaMandateDate": "SEPA Mandat Datum",
-        "roles": "Rollen",
-        "groups": "Gruppen",
-        "sections": "Abteilungen",
-        "firstName": "Vorname",
-        "lastName": "Nachname",
+    "logout": {
+        "tooltip": "Abmelden"
+    },
+    "login": {
+        "title": "Anmelden",
         "email": "E-Mail",
-        "actions": "Aktionen"
-      }
-    }
-  },
-  "settings": {
-    "title": "Einstellungen",
-    "description": "Konfigurieren Sie Open Clubmanager nach Ihren Bedürfnissen.",
-    "languages": {
-      "de": "Deutsch",
-      "en": "Englisch",
-      "fr": "Französisch"
+        "password": "Passwort",
+        "loginButton": "Anmelden",
+        "setupComplete": "Einrichtung abgeschlossen! Bitte melden Sie sich mit Ihrem neuen Admin-Konto an."
     },
-    "validatíon": {
-      "error": {
-        "nosqllitedb": "Der Pfad zeigt auf keine valide SQLite Datenbank.",
-        "cannotcreate": "An dem angegebenen Pfad kann keine Datenbank erstellt werden.",
-        "required": "Der Datenbankpfad ist erforderlich."
-      },
-      "success": {
-        "newdb": "Der Datenkbankpfad ist potentiell gültig. Kopieren Sie die clubmanager.db an diese Stelle wenn sie diese Stelle nutzen möchten",
-        "valid": "Der Datenbankpfad ist gültig."
-      }
+    "setup": {
+        "title": "Willkommen bei Open ClubManager",
+        "description": "Es existiert noch kein Admin-Konto. Erstellen Sie Ihr erstes Administratorkonto, um zu beginnen.",
+        "steps": {
+            "createAdmin": "Admin-Konto erstellen",
+            "login": "Anmelden"
+        },
+        "email": "E-Mail",
+        "password": "Passwort",
+        "confirmPassword": "Passwort bestätigen",
+        "createButton": "Admin-Konto erstellen",
+        "creating": "Wird erstellt...",
+        "validation": {
+            "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+            "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+            "passwordMismatch": "Die Passwörter stimmen nicht überein."
+        },
+        "error": {
+            "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+        }
     },
-    "labels": {
-      "language": "Sprache",
-      "dbPath": "Datenbankpfad",
-      "save": "Speichern",
-      "saveSuccess": "Einstellungen erfolgreich gespeichert!",
-      "saveFails": "Fehler beim Speichern der Einstellungen!"
+    "menu": {
+        "dashboard": "Startseite",
+        "members": "Mitgliederverwaltung",
+        "finance": "Finanzen",
+        "settings": "Einstellungen",
+        "entities": "Vereinsverwaltung"
+    },
+    "dashboard": {
+        "membercount": "Anzahl Mitglieder",
+        "upcommingBirthdays": "Anstehende Geburtstage",
+        "membersExitingThisYear": "Austritte in diesem Jahr"
+    },
+    "tooltips": {
+        "edit": "Editieren",
+        "delete": "Löschen",
+        "export": "Exportieren",
+        "import": "Importieren",
+        "columnselection": "Spaltenauswahl"
+    },
+    "buttons": {
+        "abort": "Abbrechen",
+        "save": "Speichern",
+        "delete": "Löschen",
+        "export": "Exportieren",
+        "import": "Importieren",
+        "back": "Zurück",
+        "next": "Weiter"
+    },
+    "entities": {
+        "edit": "Bearbeiten",
+        "create": "Erstellen",
+        "groups": {
+            "title": "Gruppenverwaltung",
+            "description": "Organisiere Mitglieder in thematische oder organisatorische Gruppen, z.B. Trainingsgruppen, Projektteams oder Altersklassen. Gruppen helfen dir, gezielt zu filtern, Beiträge zu verwalten oder interne Strukturen abzubilden.",
+            "dialogs": {
+                "name": "Name",
+                "description": "Beschreibung",
+                "createButton": "Neue Gruppe erstellen"
+            }
+        },
+        "roles": {
+            "title": "Rollenverwaltung",
+            "description": "Verwalte die Funktionen und Aufgaben deiner Mitglieder – etwa als Vorstand, Trainer oder Kassenwart. Rollen ermöglichen eine klare Zuweisung von Zuständigkeiten und Sichtbarkeiten",
+            "dialogs": {
+                "name": "Name",
+                "description": "Beschreibung",
+                "createButton": "Neue Rolle erstellen"
+            }
+        },
+        "sections": {
+            "title": "Abteilungsverwaltung",
+            "description": "Strukturiere deinen Verein in Abteilungen wie Fußball, Turnen oder Musik. Abteilungen helfen, Mitgliedsbeiträge zu differenzieren und Aktivitäten gezielt zu organisieren.",
+            "dialogs": {
+                "name": "Name",
+                "description": "Beschreibung",
+                "createButton": "Neue Abteilung erstellen"
+            }
+        }
+    },
+    "members": {
+        "automatedDeletionNotice": "wurde automatisch gelöscht.",
+        "dialogs": {
+            "export": {
+                "title": "Mitgliederliste exportieren",
+                "description": "Hier kann die Mitgliederliste als Excel Liste exportiert werden."
+            },
+            "import": {
+                "1": {
+                    "title": "Mitglieder importieren",
+                    "select": "Excel-Datei auswählen"
+                },
+                "2": {
+                    "title": "Spalten zuordnen",
+                    "description": "Ordne die Excel Spalten zu dem Open ClubManager Modell zu.",
+                    "ignore": "--- Ignorieren ---"
+                },
+                "3": {
+                    "title": "Vorschau"
+                }
+            },
+            "sections": {
+                "personal": "Persönliche Informationen",
+                "address": "Adresse",
+                "bank": "Bankinformationen",
+                "membership": "Mitgliedschaft",
+                "assignments": "Zugehörigkeiten",
+                "entities": "Vereinsverwaltung"
+            },
+            "validation": {
+                "emailRequired": "Email ist ein Pflichtfeld"
+            },
+            "edit": {
+                "title": "Mitglied editieren"
+            },
+            "create": {
+                "title": "Neues Mitglied anlegen"
+            },
+            "delete": {
+                "title": "Mitglied löschen",
+                "titleMultiple": "Mitglieder löschen",
+                "description": "Willst du dieses Mitglied wirklich löschen?",
+                "descriptionMultiple": "Willst du die ausgewählten Mitglieder wirklich löschen?"
+            }
+        },
+        "title": "Mitgliederverwaltung",
+        "search": "Suche Mitglied",
+        "create": "Mitglied hinzufügen",
+        "table": {
+            "description": "Wähle ein Mitglied aus der Liste aus und klicke auf das Bearbeiten-Symbol, um es zu bearbeiten.",
+            "importInProgress": "Mitgliederimport läuft...",
+            "header": {
+                "id": "ID",
+                "number": "Mitgliedsnummer",
+                "birthday": "Geburtstag",
+                "phone": "Telefon",
+                "phoneMobile": "Mobil",
+                "comment": "Kommentar",
+                "entryDate": "Anmeldedatum",
+                "exitDate": "Austrittsdatum",
+                "street": "Straße",
+                "postalCode": "PLZ",
+                "city": "Stadt",
+                "state": "Bundesland",
+                "accountHolder": "Kontoinhaber",
+                "iban": "IBAN",
+                "bic": "BIC",
+                "bankName": "Bank",
+                "sepaMandateDate": "SEPA Mandat Datum",
+                "roles": "Rollen",
+                "groups": "Gruppen",
+                "sections": "Abteilungen",
+                "firstName": "Vorname",
+                "lastName": "Nachname",
+                "email": "E-Mail",
+                "actions": "Aktionen"
+            }
+        }
+    },
+    "settings": {
+        "title": "Einstellungen",
+        "description": "Konfigurieren Sie Open Clubmanager nach Ihren Bedürfnissen.",
+        "languages": {
+            "de": "Deutsch",
+            "en": "Englisch",
+            "fr": "Französisch"
+        },
+        "validatíon": {
+            "error": {
+                "nosqllitedb": "Der Pfad zeigt auf keine valide SQLite Datenbank.",
+                "cannotcreate": "An dem angegebenen Pfad kann keine Datenbank erstellt werden.",
+                "required": "Der Datenbankpfad ist erforderlich."
+            },
+            "success": {
+                "newdb": "Der Datenbankpfad ist potentiell gültig. Kopieren Sie die clubmanager.db an diese Stelle wenn sie diese Stelle nutzen möchten",
+                "valid": "Der Datenbankpfad ist gültig."
+            }
+        },
+        "labels": {
+            "language": "Sprache",
+            "dbPath": "Datenbankpfad",
+            "save": "Speichern",
+            "saveSuccess": "Einstellungen erfolgreich gespeichert!",
+            "saveFails": "Fehler beim Speichern der Einstellungen!"
+        }
+    },
+    "dbSetup": {
+        "title": "Datenbank-Einrichtung",
+        "description": "Wählen Sie, wo Ihre Vereinsdaten gespeichert werden sollen. Sie können eine neue Datenbank erstellen oder eine vorhandene verwenden.",
+        "createNew": "Neue Datenbank erstellen",
+        "useExisting": "Vorhandene Datenbank verwenden",
+        "or": "oder",
+        "manualPathLabel": "Geben Sie den vollständigen Dateipfad zur Datenbank ein (z. B. /home/benutzer/clubmanager.db)",
+        "pathPlaceholder": "Datenbankpfad",
+        "confirmPath": "Verbinden",
+        "error": {
+            "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+        }
     }
-  }
 }
