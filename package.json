@@ -6,14 +6,19 @@
   "main": "electron/dist/main.js",
   "type": "module",
   "scripts": {
+    "install:all": "npm install && npm --prefix frontend install && npm --prefix backend install",
+    "setup": "npm run install:all && npm --prefix backend run setup",
     "dev:browser": "concurrently -k -n FRONTEND,BACKEND -c yellow,cyan \"npm --prefix frontend run dev:frontend\" \"npm --prefix backend run dev:backend\"",
-    "dev:electronapp": "concurrently -k -n FRONTEND,BACKEND,ELECTRON -c yellow,cyan,green \"npm --prefix frontend run dev:frontend\" \"npm --prefix backend run dev:backend\" \"wait-on http://localhost:5173 && tsc --project electron/tsconfig.json && electron .\"",
+    "dev:electron": "concurrently -k -n FRONTEND,BACKEND,ELECTRON -c yellow,cyan,green \"npm --prefix frontend run dev:frontend\" \"npm --prefix backend run dev:backend\" \"wait-on http://localhost:5173 && tsc --project electron/tsconfig.json && electron .\"",
     "build": "npm run build:frontend && npm run build:backend && npm run build:electron",
     "build:frontend": "npm --prefix frontend run build",
     "build:backend": "npm --prefix backend run build",
     "build:electron": "tsc --project electron/tsconfig.json",
-    "electron:dev": "electron .",
     "dist": "npm run build && npx electron-builder --config electron-builder.json",
+    "lint": "npm --prefix frontend run lint && npm --prefix backend run lint",
+    "prisma:studio": "npm --prefix backend run prisma:studio",
+    "prisma:seed": "npm --prefix backend run prisma:seed",
+    "prisma:reset": "npm --prefix backend run prisma:migrate:reset",
     "licenses": "npm --prefix frontend run licenses && npm --prefix backend run licenses"
   },
   "devDependencies": {

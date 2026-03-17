@@ -16,22 +16,37 @@ We welcome contributions of all kinds, including bug reports, feature requests, 
 
 ## 🧪 Running the App Locally
 
-### Backend
+### Quick Setup
+
+From the project root, run a single command to install everything and set up the database:
+
+```bash
+npm run setup
+```
+
+Then start the dev servers:
+
+```bash
+npm run dev:browser
+```
+
+### Manual Setup
+
+#### Backend
 
 ```bash
 cd backend
 npm install
-npx prisma migrate dev --name init
-npm run seed
-npm run dev
+npm run setup      # runs Prisma migrations and seeds the database
+npm run dev        # start the backend server
 ```
 
-### Frontend
+#### Frontend
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev        # start the Vite dev server
 ```
 
 Backend will be available at `http://localhost:3001`, and frontend at `http://localhost:5173`.

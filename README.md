@@ -78,7 +78,49 @@ Open ClubManager is built by volunteers for volunteers.
 * Node.js 20
 * npm
 
-### Backend Setup
+### ⚡ Quick Setup (recommended)
+
+> **One-command setup** – installs all dependencies and initialises the development database in one step.
+
+First, create a file named `.env` in the `backend` directory with the following content:
+```plaintext
+# The url where the backend will find the SQLite database
+DATABASE_URL="file:/home/myUser/clubmanager.db"
+
+# Alternatively, for users who use "Please Reboot OS" you can use:
+# DATABASE_URL="file:C:\\Users\\myUser\\clubmanager.db"
+```
+
+Then, from the project root run:
+
+```bash
+npm run setup
+```
+
+This will:
+1. Install all dependencies (root, frontend, backend)
+2. Run Prisma migrations
+3. Seed the database with demo data
+
+An admin user `admin@admin.com` / `admin` is created automatically.
+
+Once setup is complete, start the development servers:
+
+```bash
+# Start frontend + backend in the browser
+npm run dev:browser
+
+# or start frontend + backend + Electron
+npm run dev:electron
+```
+
+---
+
+### Manual Setup
+
+If you prefer to set up each part individually:
+
+#### Backend
 
 Create a file named `.env` in the `backend` directory with the following content:
 ```plaintext
@@ -89,23 +131,19 @@ DATABASE_URL="file:/home/myUser/clubmanager.db"
 # DATABASE_URL="file:C:\\Users\\myUser\\clubmanager.db"
 ```
 
-
 ```bash
 cd backend
 npm install
-npm run prisma:setup:dev:database
-npm run seed
-npm run dev
+npm run setup      # runs migrations + seeds the database
+npm run dev        # start the backend server
 ```
 
-An admin user "admin@admin.com" with the password "admin" is created.
-
-### Frontend Setup
+#### Frontend
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev        # start the Vite dev server
 ```
 
 ### Start Frontend and Backend in Dev mode
@@ -132,6 +170,26 @@ simulate real-world use cases.
 
 ---
 
+## 📋 Available npm Scripts
+
+All scripts below can be run from the **project root**.
+
+| Script | Description |
+|---|---|
+| `npm run setup` | Install all dependencies and initialise the dev database (first-time setup) |
+| `npm run install:all` | Install dependencies for root, frontend, and backend |
+| `npm run dev:browser` | Start frontend + backend in browser dev mode |
+| `npm run dev:electron` | Start frontend + backend + Electron in dev mode |
+| `npm run build` | Build frontend, backend, and Electron |
+| `npm run lint` | Lint frontend and backend source code |
+| `npm run prisma:studio` | Open Prisma Studio (database GUI) |
+| `npm run prisma:seed` | Re-seed the development database |
+| `npm run prisma:reset` | Reset and re-run all migrations |
+| `npm run dist` | Create a distributable Electron package |
+| `npm run licenses` | Regenerate third-party licence files |
+
+---
+
 ## 🧪 Testing
 
 You can use Postman or any REST client to test:
@@ -144,6 +202,10 @@ You can use Postman or any REST client to test:
 Prisma Studio is available via:
 
 ```bash
+# From the project root
+npm run prisma:studio
+
+# or from the backend directory
 npx prisma studio
 ```
 
