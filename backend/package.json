@@ -14,6 +14,7 @@
     "prisma:studio": "prisma studio",
     "prisma:reset": "prisma migrate reset",
     "prisma:seed": "tsx prisma/seed.ts",
+    "lint": "eslint src --ext .ts",
     "licenses": "license-checker --production --markdown --excludePackages 'backend@0.0.0'  > THIRD_PARTY_LICENSES.md"
   },
   "keywords": [],

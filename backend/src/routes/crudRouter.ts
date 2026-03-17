@@ -27,7 +27,7 @@ export function createCrudRouter(
             const prisma = await getClient();
             const item = await getDelegate(prisma).create({ data: { name } });
             res.status(201).json(item);
-        } catch (e) {
+        } catch (_e) {
             res.status(400).json({ error: `Could not create ${entityName}` });
         }
     });
@@ -42,7 +42,7 @@ export function createCrudRouter(
                 data: { name },
             });
             res.json(item);
-        } catch (e) {
+        } catch (_e) {
             res.status(400).json({ error: `Could not update ${entityName}` });
         }
     });
@@ -53,7 +53,7 @@ export function createCrudRouter(
             const prisma = await getClient();
             await getDelegate(prisma).delete({ where: { id: Number(id) } });
             res.sendStatus(204);
-        } catch (e) {
+        } catch (_e) {
             res.status(400).json({ error: `Could not delete ${entityName}` });
         }
     });

@@ -25,7 +25,7 @@ router.get('/', async (_, res) => {
 });
 
 //GET /api/preferences/app
-router.get('/app', async (req, res, next) => {
+router.get('/app', async (req, res, _next) => {
     try {
         const config = await getConfig();
 
@@ -154,7 +154,7 @@ router.put('/:id', async (req, res) => {
             data: { key: key, value: value, updatedAt: new Date() },
         });
         res.json(section);
-    } catch (e) {
+    } catch (_e) {
         res.status(400).json({ error: 'Could not update section' });
     }
 });
