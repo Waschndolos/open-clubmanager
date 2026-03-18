@@ -343,6 +343,7 @@ export type MemberWhereInput = {
   roles?: Prisma.RoleListRelationFilter
   groups?: Prisma.GroupListRelationFilter
   sections?: Prisma.ClubSectionListRelationFilter
+  fees?: Prisma.MemberFeeListRelationFilter
 }
 
 export type MemberOrderByWithRelationInput = {
@@ -369,6 +370,7 @@ export type MemberOrderByWithRelationInput = {
   roles?: Prisma.RoleOrderByRelationAggregateInput
   groups?: Prisma.GroupOrderByRelationAggregateInput
   sections?: Prisma.ClubSectionOrderByRelationAggregateInput
+  fees?: Prisma.MemberFeeOrderByRelationAggregateInput
 }
 
 export type MemberWhereUniqueInput = Prisma.AtLeast<{
@@ -398,6 +400,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   roles?: Prisma.RoleListRelationFilter
   groups?: Prisma.GroupListRelationFilter
   sections?: Prisma.ClubSectionListRelationFilter
+  fees?: Prisma.MemberFeeListRelationFilter
 }, "id" | "number" | "email">
 
 export type MemberOrderByWithAggregationInput = {
@@ -477,6 +480,7 @@ export type MemberCreateInput = {
   roles?: Prisma.RoleCreateNestedManyWithoutMembersInput
   groups?: Prisma.GroupCreateNestedManyWithoutMembersInput
   sections?: Prisma.ClubSectionCreateNestedManyWithoutMembersInput
+  fees?: Prisma.MemberFeeCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateInput = {
@@ -503,6 +507,7 @@ export type MemberUncheckedCreateInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutMembersInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutMembersInput
   sections?: Prisma.ClubSectionUncheckedCreateNestedManyWithoutMembersInput
+  fees?: Prisma.MemberFeeUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUpdateInput = {
@@ -528,6 +533,7 @@ export type MemberUpdateInput = {
   roles?: Prisma.RoleUpdateManyWithoutMembersNestedInput
   groups?: Prisma.GroupUpdateManyWithoutMembersNestedInput
   sections?: Prisma.ClubSectionUpdateManyWithoutMembersNestedInput
+  fees?: Prisma.MemberFeeUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateInput = {
@@ -554,6 +560,7 @@ export type MemberUncheckedUpdateInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutMembersNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutMembersNestedInput
   sections?: Prisma.ClubSectionUncheckedUpdateManyWithoutMembersNestedInput
+  fees?: Prisma.MemberFeeUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateManyInput = {
@@ -713,6 +720,11 @@ export type MemberOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type MemberScalarRelationFilter = {
+  is?: Prisma.MemberWhereInput
+  isNot?: Prisma.MemberWhereInput
+}
+
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
@@ -835,6 +847,20 @@ export type MemberUncheckedUpdateManyWithoutSectionsNestedInput = {
   deleteMany?: Prisma.MemberScalarWhereInput | Prisma.MemberScalarWhereInput[]
 }
 
+export type MemberCreateNestedOneWithoutFeesInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutFeesInput, Prisma.MemberUncheckedCreateWithoutFeesInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutFeesInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneRequiredWithoutFeesNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutFeesInput, Prisma.MemberUncheckedCreateWithoutFeesInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutFeesInput
+  upsert?: Prisma.MemberUpsertWithoutFeesInput
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutFeesInput, Prisma.MemberUpdateWithoutFeesInput>, Prisma.MemberUncheckedUpdateWithoutFeesInput>
+}
+
 export type MemberCreateWithoutRolesInput = {
   number: number
   firstName: string
@@ -857,6 +883,7 @@ export type MemberCreateWithoutRolesInput = {
   sepaMandateDate?: Date | string | null
   groups?: Prisma.GroupCreateNestedManyWithoutMembersInput
   sections?: Prisma.ClubSectionCreateNestedManyWithoutMembersInput
+  fees?: Prisma.MemberFeeCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutRolesInput = {
@@ -882,6 +909,7 @@ export type MemberUncheckedCreateWithoutRolesInput = {
   sepaMandateDate?: Date | string | null
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutMembersInput
   sections?: Prisma.ClubSectionUncheckedCreateNestedManyWithoutMembersInput
+  fees?: Prisma.MemberFeeUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutRolesInput = {
@@ -953,6 +981,7 @@ export type MemberCreateWithoutGroupsInput = {
   sepaMandateDate?: Date | string | null
   roles?: Prisma.RoleCreateNestedManyWithoutMembersInput
   sections?: Prisma.ClubSectionCreateNestedManyWithoutMembersInput
+  fees?: Prisma.MemberFeeCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutGroupsInput = {
@@ -978,6 +1007,7 @@ export type MemberUncheckedCreateWithoutGroupsInput = {
   sepaMandateDate?: Date | string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutMembersInput
   sections?: Prisma.ClubSectionUncheckedCreateNestedManyWithoutMembersInput
+  fees?: Prisma.MemberFeeUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutGroupsInput = {
@@ -1023,6 +1053,7 @@ export type MemberCreateWithoutSectionsInput = {
   sepaMandateDate?: Date | string | null
   roles?: Prisma.RoleCreateNestedManyWithoutMembersInput
   groups?: Prisma.GroupCreateNestedManyWithoutMembersInput
+  fees?: Prisma.MemberFeeCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutSectionsInput = {
@@ -1048,6 +1079,7 @@ export type MemberUncheckedCreateWithoutSectionsInput = {
   sepaMandateDate?: Date | string | null
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutMembersInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutMembersInput
+  fees?: Prisma.MemberFeeUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutSectionsInput = {
@@ -1069,6 +1101,124 @@ export type MemberUpdateWithWhereUniqueWithoutSectionsInput = {
 export type MemberUpdateManyWithWhereWithoutSectionsInput = {
   where: Prisma.MemberScalarWhereInput
   data: Prisma.XOR<Prisma.MemberUpdateManyMutationInput, Prisma.MemberUncheckedUpdateManyWithoutSectionsInput>
+}
+
+export type MemberCreateWithoutFeesInput = {
+  number: number
+  firstName: string
+  lastName: string
+  email: string
+  birthday?: Date | string | null
+  phone?: string | null
+  phoneMobile?: string | null
+  comment?: string | null
+  entryDate?: Date | string | null
+  exitDate?: Date | string | null
+  street?: string | null
+  postalCode?: string | null
+  city?: string | null
+  state?: string | null
+  accountHolder?: string | null
+  iban?: string | null
+  bic?: string | null
+  bankName?: string | null
+  sepaMandateDate?: Date | string | null
+  roles?: Prisma.RoleCreateNestedManyWithoutMembersInput
+  groups?: Prisma.GroupCreateNestedManyWithoutMembersInput
+  sections?: Prisma.ClubSectionCreateNestedManyWithoutMembersInput
+}
+
+export type MemberUncheckedCreateWithoutFeesInput = {
+  id?: number
+  number: number
+  firstName: string
+  lastName: string
+  email: string
+  birthday?: Date | string | null
+  phone?: string | null
+  phoneMobile?: string | null
+  comment?: string | null
+  entryDate?: Date | string | null
+  exitDate?: Date | string | null
+  street?: string | null
+  postalCode?: string | null
+  city?: string | null
+  state?: string | null
+  accountHolder?: string | null
+  iban?: string | null
+  bic?: string | null
+  bankName?: string | null
+  sepaMandateDate?: Date | string | null
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutMembersInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutMembersInput
+  sections?: Prisma.ClubSectionUncheckedCreateNestedManyWithoutMembersInput
+}
+
+export type MemberCreateOrConnectWithoutFeesInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutFeesInput, Prisma.MemberUncheckedCreateWithoutFeesInput>
+}
+
+export type MemberUpsertWithoutFeesInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutFeesInput, Prisma.MemberUncheckedUpdateWithoutFeesInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutFeesInput, Prisma.MemberUncheckedCreateWithoutFeesInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutFeesInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutFeesInput, Prisma.MemberUncheckedUpdateWithoutFeesInput>
+}
+
+export type MemberUpdateWithoutFeesInput = {
+  number?: Prisma.IntFieldUpdateOperationsInput | number
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneMobile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  exitDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountHolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sepaMandateDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.RoleUpdateManyWithoutMembersNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutMembersNestedInput
+  sections?: Prisma.ClubSectionUpdateManyWithoutMembersNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutFeesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  number?: Prisma.IntFieldUpdateOperationsInput | number
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneMobile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  exitDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountHolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sepaMandateDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutMembersNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutMembersNestedInput
+  sections?: Prisma.ClubSectionUncheckedUpdateManyWithoutMembersNestedInput
 }
 
 export type MemberUpdateWithoutRolesInput = {
@@ -1093,6 +1243,7 @@ export type MemberUpdateWithoutRolesInput = {
   sepaMandateDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   groups?: Prisma.GroupUpdateManyWithoutMembersNestedInput
   sections?: Prisma.ClubSectionUpdateManyWithoutMembersNestedInput
+  fees?: Prisma.MemberFeeUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutRolesInput = {
@@ -1118,6 +1269,7 @@ export type MemberUncheckedUpdateWithoutRolesInput = {
   sepaMandateDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   groups?: Prisma.GroupUncheckedUpdateManyWithoutMembersNestedInput
   sections?: Prisma.ClubSectionUncheckedUpdateManyWithoutMembersNestedInput
+  fees?: Prisma.MemberFeeUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutRolesInput = {
@@ -1165,6 +1317,7 @@ export type MemberUpdateWithoutGroupsInput = {
   sepaMandateDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roles?: Prisma.RoleUpdateManyWithoutMembersNestedInput
   sections?: Prisma.ClubSectionUpdateManyWithoutMembersNestedInput
+  fees?: Prisma.MemberFeeUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutGroupsInput = {
@@ -1190,6 +1343,7 @@ export type MemberUncheckedUpdateWithoutGroupsInput = {
   sepaMandateDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutMembersNestedInput
   sections?: Prisma.ClubSectionUncheckedUpdateManyWithoutMembersNestedInput
+  fees?: Prisma.MemberFeeUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutGroupsInput = {
@@ -1237,6 +1391,7 @@ export type MemberUpdateWithoutSectionsInput = {
   sepaMandateDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roles?: Prisma.RoleUpdateManyWithoutMembersNestedInput
   groups?: Prisma.GroupUpdateManyWithoutMembersNestedInput
+  fees?: Prisma.MemberFeeUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutSectionsInput = {
@@ -1262,6 +1417,7 @@ export type MemberUncheckedUpdateWithoutSectionsInput = {
   sepaMandateDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roles?: Prisma.RoleUncheckedUpdateManyWithoutMembersNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutMembersNestedInput
+  fees?: Prisma.MemberFeeUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutSectionsInput = {
@@ -1296,12 +1452,14 @@ export type MemberCountOutputType = {
   roles: number
   groups: number
   sections: number
+  fees: number
 }
 
 export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roles?: boolean | MemberCountOutputTypeCountRolesArgs
   groups?: boolean | MemberCountOutputTypeCountGroupsArgs
   sections?: boolean | MemberCountOutputTypeCountSectionsArgs
+  fees?: boolean | MemberCountOutputTypeCountFeesArgs
 }
 
 /**
@@ -1335,6 +1493,13 @@ export type MemberCountOutputTypeCountSectionsArgs<ExtArgs extends runtime.Types
   where?: Prisma.ClubSectionWhereInput
 }
 
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountFeesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MemberFeeWhereInput
+}
+
 
 export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1360,6 +1525,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   roles?: boolean | Prisma.Member$rolesArgs<ExtArgs>
   groups?: boolean | Prisma.Member$groupsArgs<ExtArgs>
   sections?: boolean | Prisma.Member$sectionsArgs<ExtArgs>
+  fees?: boolean | Prisma.Member$feesArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["member"]>
 
@@ -1437,6 +1603,7 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   roles?: boolean | Prisma.Member$rolesArgs<ExtArgs>
   groups?: boolean | Prisma.Member$groupsArgs<ExtArgs>
   sections?: boolean | Prisma.Member$sectionsArgs<ExtArgs>
+  fees?: boolean | Prisma.Member$feesArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1448,6 +1615,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     roles: Prisma.$RolePayload<ExtArgs>[]
     groups: Prisma.$GroupPayload<ExtArgs>[]
     sections: Prisma.$ClubSectionPayload<ExtArgs>[]
+    fees: Prisma.$MemberFeePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1867,6 +2035,7 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   roles<T extends Prisma.Member$rolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   groups<T extends Prisma.Member$groupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$groupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sections<T extends Prisma.Member$sectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$sectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClubSectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  fees<T extends Prisma.Member$feesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$feesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberFeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2371,6 +2540,30 @@ export type Member$sectionsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.ClubSectionScalarFieldEnum | Prisma.ClubSectionScalarFieldEnum[]
+}
+
+/**
+ * Member.fees
+ */
+export type Member$feesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MemberFee
+   */
+  select?: Prisma.MemberFeeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MemberFee
+   */
+  omit?: Prisma.MemberFeeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemberFeeInclude<ExtArgs> | null
+  where?: Prisma.MemberFeeWhereInput
+  orderBy?: Prisma.MemberFeeOrderByWithRelationInput | Prisma.MemberFeeOrderByWithRelationInput[]
+  cursor?: Prisma.MemberFeeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MemberFeeScalarFieldEnum | Prisma.MemberFeeScalarFieldEnum[]
 }
 
 /**

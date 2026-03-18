@@ -204,5 +204,53 @@
     },
     "profile": {
         "role": "Administrator"
+    },
+    "finance": {
+        "title": "Finance",
+        "tabs": {
+            "transactions": "Cashbook",
+            "memberfees": "Member Fees"
+        },
+        "summary": {
+            "balance": "Balance",
+            "totalIncome": "Total Income",
+            "totalExpense": "Total Expenses",
+            "feesOutstanding": "Outstanding Fees"
+        },
+        "transactions": {
+            "create": "Add Transaction",
+            "fields": {
+                "date": "Date",
+                "description": "Description",
+                "amount": "Amount (€)",
+                "type": "Type",
+                "category": "Category",
+                "notes": "Notes"
+            },
+            "types": {
+                "income": "Income",
+                "expense": "Expense"
+            },
+            "dialog": {
+                "titleCreate": "New Transaction",
+                "titleEdit": "Edit Transaction"
+            }
+        },
+        "memberfees": {
+            "create": "Add Member Fee",
+            "unpaid": "Unpaid",
+            "fields": {
+                "member": "Member",
+                "amount": "Amount (€)",
+                "year": "Year",
+                "dueDate": "Due Date",
+                "paidDate": "Paid Date",
+                "description": "Description"
+            },
+            "dialog": {
+                "titleCreate": "New Member Fee",
+                "titleEdit": "Edit Member Fee"
+            }
+        }
     }
 }

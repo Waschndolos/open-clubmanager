@@ -204,5 +204,53 @@
     },
     "profile": {
         "role": "Administrator"
+    },
+    "finance": {
+        "title": "Finanzen",
+        "tabs": {
+            "transactions": "Kassenbuch",
+            "memberfees": "Mitgliedsbeiträge"
+        },
+        "summary": {
+            "balance": "Kontostand",
+            "totalIncome": "Gesamteinnahmen",
+            "totalExpense": "Gesamtausgaben",
+            "feesOutstanding": "Offene Beiträge"
+        },
+        "transactions": {
+            "create": "Buchung hinzufügen",
+            "fields": {
+                "date": "Datum",
+                "description": "Beschreibung",
+                "amount": "Betrag (€)",
+                "type": "Typ",
+                "category": "Kategorie",
+                "notes": "Notizen"
+            },
+            "types": {
+                "income": "Einnahme",
+                "expense": "Ausgabe"
+            },
+            "dialog": {
+                "titleCreate": "Neue Buchung",
+                "titleEdit": "Buchung bearbeiten"
+            }
+        },
+        "memberfees": {
+            "create": "Beitrag hinzufügen",
+            "unpaid": "Ausstehend",
+            "fields": {
+                "member": "Mitglied",
+                "amount": "Betrag (€)",
+                "year": "Jahr",
+                "dueDate": "Fälligkeitsdatum",
+                "paidDate": "Bezahlt am",
+                "description": "Beschreibung"
+            },
+            "dialog": {
+                "titleCreate": "Neuer Mitgliedsbeitrag",
+                "titleEdit": "Mitgliedsbeitrag bearbeiten"
+            }
+        }
     }
 }

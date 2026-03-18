@@ -204,5 +204,53 @@
     },
     "profile": {
         "role": "Administrateur"
+    },
+    "finance": {
+        "title": "Finances",
+        "tabs": {
+            "transactions": "Livre de caisse",
+            "memberfees": "Cotisations"
+        },
+        "summary": {
+            "balance": "Solde",
+            "totalIncome": "Total des recettes",
+            "totalExpense": "Total des dépenses",
+            "feesOutstanding": "Cotisations impayées"
+        },
+        "transactions": {
+            "create": "Ajouter une transaction",
+            "fields": {
+                "date": "Date",
+                "description": "Description",
+                "amount": "Montant (€)",
+                "type": "Type",
+                "category": "Catégorie",
+                "notes": "Notes"
+            },
+            "types": {
+                "income": "Recette",
+                "expense": "Dépense"
+            },
+            "dialog": {
+                "titleCreate": "Nouvelle transaction",
+                "titleEdit": "Modifier la transaction"
+            }
+        },
+        "memberfees": {
+            "create": "Ajouter une cotisation",
+            "unpaid": "Impayé",
+            "fields": {
+                "member": "Membre",
+                "amount": "Montant (€)",
+                "year": "Année",
+                "dueDate": "Date d'échéance",
+                "paidDate": "Date de paiement",
+                "description": "Description"
+            },
+            "dialog": {
+                "titleCreate": "Nouvelle cotisation",
+                "titleEdit": "Modifier la cotisation"
+            }
+        }
     }
 }
