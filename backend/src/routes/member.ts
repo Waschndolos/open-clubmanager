@@ -1,5 +1,7 @@
 import express from 'express'
 import {getClient} from "../db.ts";
+import { verifyToken, AuthRequest } from '../middlewares/auth.ts';
+import { createAuditLog } from './history.ts';
 
 const router = express.Router()
 
@@ -22,7 +24,7 @@ router.get('/', async (_req, res) => {
 })
 
 // POST /api/members – Create new member
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req: AuthRequest, res) => {
     try {
         const data = req.body
         const prisma = await getClient();
@@ -59,6 +61,7 @@ router.post('/', async (req, res) => {
             }
         })
 
+        await createAuditLog(prisma, 'CREATE', 'Member', newMember.id, req.user!, { firstName: newMember.firstName, lastName: newMember.lastName, email: newMember.email });
         res.json(newMember)
     } catch (err) {
         console.error(err)
@@ -67,10 +70,10 @@ router.post('/', async (req, res) => {
 })
 
 // update Member
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req: AuthRequest, res) => {
     try {
         console.log("Received update", req.body)
-        const id = parseInt(req.params.id)
+        const id = parseInt(String(req.params.id))
         const data = req.body
         const prisma = await getClient();
         const updated = await prisma.member.update({
@@ -111,6 +114,8 @@ router.put('/:id', async (req, res) => {
                 sections: true,
             },
         })
+
+        await createAuditLog(prisma, 'UPDATE', 'Member', updated.id, req.user!, { firstName: updated.firstName, lastName: updated.lastName, email: updated.email });
         res.json(updated)
     } catch (err) {
         console.error(err)
@@ -119,14 +124,15 @@ router.put('/:id', async (req, res) => {
 })
 
 // delete members
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req: AuthRequest, res) => {
     try {
-        const id = parseInt(req.params.id)
+        const id = parseInt(String(req.params.id))
         const prisma = await getClient();
         await prisma.member.delete({
             where: { id }
         })
 
+        await createAuditLog(prisma, 'DELETE', 'Member', id, req.user!);
         res.json({ success: true })
     } catch (err) {
         console.error(err)

@@ -1,6 +1,7 @@
 import express from 'express';
 import { getClient } from '../db.ts';
-import { verifyToken } from '../middlewares/auth.ts';
+import { verifyToken, AuthRequest } from '../middlewares/auth.ts';
+import { createAuditLog } from './history.ts';
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.get('/transactions', verifyToken, async (_req, res) => {
     }
 });
 
-router.post('/transactions', verifyToken, async (req, res) => {
+router.post('/transactions', verifyToken, async (req: AuthRequest, res) => {
     try {
         const { date, description, amount, type, category, notes } = req.body;
         if (!date || !description || amount === undefined || !type) {
@@ -30,6 +31,7 @@ router.post('/transactions', verifyToken, async (req, res) => {
         const transaction = await prisma.financeTransaction.create({
             data: { date: new Date(date), description, amount: Number(amount), type, category, notes },
         });
+        await createAuditLog(prisma, 'CREATE', 'FinanceTransaction', transaction.id, req.user!, { description, amount, type });
         res.status(201).json(transaction);
     } catch (err) {
         console.error(err);
@@ -37,7 +39,7 @@ router.post('/transactions', verifyToken, async (req, res) => {
     }
 });
 
-router.put('/transactions/:id', verifyToken, async (req, res) => {
+router.put('/transactions/:id', verifyToken, async (req: AuthRequest, res) => {
     try {
         const id = parseInt(String(req.params.id));
         const { date, description, amount, type, category, notes } = req.body;
@@ -53,6 +55,7 @@ router.put('/transactions/:id', verifyToken, async (req, res) => {
                 notes,
             },
         });
+        await createAuditLog(prisma, 'UPDATE', 'FinanceTransaction', transaction.id, req.user!, { description, amount, type });
         res.json(transaction);
     } catch (err) {
         console.error(err);
@@ -60,11 +63,12 @@ router.put('/transactions/:id', verifyToken, async (req, res) => {
     }
 });
 
-router.delete('/transactions/:id', verifyToken, async (req, res) => {
+router.delete('/transactions/:id', verifyToken, async (req: AuthRequest, res) => {
     try {
         const id = parseInt(String(req.params.id));
         const prisma = await getClient();
         await prisma.financeTransaction.delete({ where: { id } });
+        await createAuditLog(prisma, 'DELETE', 'FinanceTransaction', id, req.user!);
         res.sendStatus(204);
     } catch (err) {
         console.error(err);
@@ -88,7 +92,7 @@ router.get('/memberfees', verifyToken, async (_req, res) => {
     }
 });
 
-router.post('/memberfees', verifyToken, async (req, res) => {
+router.post('/memberfees', verifyToken, async (req: AuthRequest, res) => {
     try {
         const { memberId, amount, dueDate, paidDate, description, year } = req.body;
         if (!memberId || amount === undefined || !dueDate || !year) {
@@ -107,6 +111,7 @@ router.post('/memberfees', verifyToken, async (req, res) => {
             },
             include: { member: { select: { id: true, firstName: true, lastName: true, number: true } } },
         });
+        await createAuditLog(prisma, 'CREATE', 'MemberFee', fee.id, req.user!, { memberId, amount, year });
         res.status(201).json(fee);
     } catch (err) {
         console.error(err);
@@ -114,7 +119,7 @@ router.post('/memberfees', verifyToken, async (req, res) => {
     }
 });
 
-router.put('/memberfees/:id', verifyToken, async (req, res) => {
+router.put('/memberfees/:id', verifyToken, async (req: AuthRequest, res) => {
     try {
         const id = parseInt(String(req.params.id));
         const { memberId, amount, dueDate, paidDate, description, year } = req.body;
@@ -131,6 +136,7 @@ router.put('/memberfees/:id', verifyToken, async (req, res) => {
             },
             include: { member: { select: { id: true, firstName: true, lastName: true, number: true } } },
         });
+        await createAuditLog(prisma, 'UPDATE', 'MemberFee', fee.id, req.user!, { memberId, amount, year });
         res.json(fee);
     } catch (err) {
         console.error(err);
@@ -138,11 +144,12 @@ router.put('/memberfees/:id', verifyToken, async (req, res) => {
     }
 });
 
-router.delete('/memberfees/:id', verifyToken, async (req, res) => {
+router.delete('/memberfees/:id', verifyToken, async (req: AuthRequest, res) => {
     try {
         const id = parseInt(String(req.params.id));
         const prisma = await getClient();
         await prisma.memberFee.delete({ where: { id } });
+        await createAuditLog(prisma, 'DELETE', 'MemberFee', id, req.user!);
         res.sendStatus(204);
     } catch (err) {
         console.error(err);

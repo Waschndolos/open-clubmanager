@@ -1,6 +1,8 @@
 import express from 'express';
 import { getClient } from '../db.ts';
 import { PrismaClient } from '../generated/prisma/client.ts';
+import { verifyToken, AuthRequest } from '../middlewares/auth.ts';
+import { createAuditLog } from './history.ts';
 
 type ModelDelegate = {
     findMany: () => Promise<unknown[]>;
@@ -21,18 +23,19 @@ export function createCrudRouter(
         res.json(items);
     });
 
-    router.post('/', async (req, res) => {
+    router.post('/', verifyToken, async (req: AuthRequest, res) => {
         const { name } = req.body;
         try {
             const prisma = await getClient();
-            const item = await getDelegate(prisma).create({ data: { name } });
+            const item = await getDelegate(prisma).create({ data: { name } }) as { id: number };
+            await createAuditLog(prisma, 'CREATE', entityName, item.id, req.user!, { name });
             res.status(201).json(item);
         } catch (_e) {
             res.status(400).json({ error: `Could not create ${entityName}` });
         }
     });
 
-    router.put('/:id', async (req, res) => {
+    router.put('/:id', verifyToken, async (req: AuthRequest, res) => {
         const { id } = req.params;
         const { name } = req.body;
         try {
@@ -40,18 +43,20 @@ export function createCrudRouter(
             const item = await getDelegate(prisma).update({
                 where: { id: Number(id) },
                 data: { name },
-            });
+            }) as { id: number };
+            await createAuditLog(prisma, 'UPDATE', entityName, item.id, req.user!, { name });
             res.json(item);
         } catch (_e) {
             res.status(400).json({ error: `Could not update ${entityName}` });
         }
     });
 
-    router.delete('/:id', async (req, res) => {
+    router.delete('/:id', verifyToken, async (req: AuthRequest, res) => {
         const { id } = req.params;
         try {
             const prisma = await getClient();
             await getDelegate(prisma).delete({ where: { id: Number(id) } });
+            await createAuditLog(prisma, 'DELETE', entityName, Number(id), req.user!);
             res.sendStatus(204);
         } catch (_e) {
             res.status(400).json({ error: `Could not delete ${entityName}` });

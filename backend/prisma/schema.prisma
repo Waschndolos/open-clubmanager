@@ -108,3 +108,13 @@ model MemberFee {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String   // "CREATE" | "UPDATE" | "DELETE"
+  entity    String   // "Member" | "Role" | "Group" | "Section" | "FinanceTransaction" | "MemberFee"
+  entityId  Int
+  userId    String
+  data      String?
+  createdAt DateTime @default(now())
+}

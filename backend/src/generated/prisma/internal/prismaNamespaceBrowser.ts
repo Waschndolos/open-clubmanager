@@ -59,7 +59,8 @@ export const ModelName = {
   ClubSection: 'ClubSection',
   UserPreference: 'UserPreference',
   FinanceTransaction: 'FinanceTransaction',
-  MemberFee: 'MemberFee'
+  MemberFee: 'MemberFee',
+  AuditLog: 'AuditLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -186,6 +187,19 @@ export const MemberFeeScalarFieldEnum = {
 } as const
 
 export type MemberFeeScalarFieldEnum = (typeof MemberFeeScalarFieldEnum)[keyof typeof MemberFeeScalarFieldEnum]
+
+
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  userId: 'userId',
+  data: 'data',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
 export const SortOrder = {

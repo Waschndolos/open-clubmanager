@@ -42,7 +42,8 @@
         "finance": "Finances",
         "settings": "Settings",
         "entities": "Club Entities",
-        "profile": "Profile"
+        "profile": "Profile",
+        "history": "History"
     },
     "dashboard": {
         "membercount": "Member Count",
@@ -251,6 +252,18 @@
                 "titleCreate": "New Member Fee",
                 "titleEdit": "Edit Member Fee"
             }
+        }
+    },
+    "history": {
+        "title": "History",
+        "loadError": "Failed to load history. Please try again.",
+        "table": {
+            "timestamp": "Timestamp",
+            "action": "Action",
+            "entity": "Entity",
+            "entityId": "ID",
+            "user": "User",
+            "details": "Details"
         }
     }
 }

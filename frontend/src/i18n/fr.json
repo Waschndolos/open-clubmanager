@@ -42,7 +42,8 @@
         "finance": "Finances",
         "settings": "Paramètres",
         "entities": "Entités du club",
-        "profile": "Profil"
+        "profile": "Profil",
+        "history": "Historique"
     },
     "dashboard": {
         "membercount": "Nombre de membres",
@@ -251,6 +252,18 @@
                 "titleCreate": "Nouvelle cotisation",
                 "titleEdit": "Modifier la cotisation"
             }
+        }
+    },
+    "history": {
+        "title": "Historique",
+        "loadError": "Impossible de charger l'historique. Veuillez réessayer.",
+        "table": {
+            "timestamp": "Horodatage",
+            "action": "Action",
+            "entity": "Entité",
+            "entityId": "ID",
+            "user": "Utilisateur",
+            "details": "Détails"
         }
     }
 }
