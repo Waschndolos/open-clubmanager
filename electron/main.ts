@@ -74,7 +74,9 @@ ipcMain.on('apppreference-set', async (event, key, value) => {
 // ── Club IPC handlers ─────────────────────────────────────────────────────────
 
 ipcMain.handle('club:selectFolder', async () => {
-    const result = await dialog.showOpenDialog(mainWindow!, {
+    const win = mainWindow ?? BrowserWindow.getFocusedWindow();
+    if (!win) return null;
+    const result = await dialog.showOpenDialog(win, {
         properties: ['openDirectory'],
         title: 'Select Club Data Folder',
     });
