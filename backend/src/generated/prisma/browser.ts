@@ -52,3 +52,13 @@ export type ClubSection = Prisma.ClubSectionModel
  * 
  */
 export type UserPreference = Prisma.UserPreferenceModel
+/**
+ * Model FinanceTransaction
+ * 
+ */
+export type FinanceTransaction = Prisma.FinanceTransactionModel
+/**
+ * Model MemberFee
+ * 
+ */
+export type MemberFee = Prisma.MemberFeeModel

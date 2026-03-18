@@ -390,7 +390,9 @@ export const ModelName = {
   Role: 'Role',
   Group: 'Group',
   ClubSection: 'ClubSection',
-  UserPreference: 'UserPreference'
+  UserPreference: 'UserPreference',
+  FinanceTransaction: 'FinanceTransaction',
+  MemberFee: 'MemberFee'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "member" | "role" | "group" | "clubSection" | "userPreference"
+    modelProps: "user" | "refreshToken" | "member" | "role" | "group" | "clubSection" | "userPreference" | "financeTransaction" | "memberFee"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -928,6 +930,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FinanceTransaction: {
+      payload: Prisma.$FinanceTransactionPayload<ExtArgs>
+      fields: Prisma.FinanceTransactionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FinanceTransactionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FinanceTransactionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        findFirst: {
+          args: Prisma.FinanceTransactionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FinanceTransactionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        findMany: {
+          args: Prisma.FinanceTransactionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>[]
+        }
+        create: {
+          args: Prisma.FinanceTransactionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        createMany: {
+          args: Prisma.FinanceTransactionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FinanceTransactionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>[]
+        }
+        delete: {
+          args: Prisma.FinanceTransactionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        update: {
+          args: Prisma.FinanceTransactionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        deleteMany: {
+          args: Prisma.FinanceTransactionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FinanceTransactionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FinanceTransactionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>[]
+        }
+        upsert: {
+          args: Prisma.FinanceTransactionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        aggregate: {
+          args: Prisma.FinanceTransactionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFinanceTransaction>
+        }
+        groupBy: {
+          args: Prisma.FinanceTransactionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceTransactionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FinanceTransactionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceTransactionCountAggregateOutputType> | number
+        }
+      }
+    }
+    MemberFee: {
+      payload: Prisma.$MemberFeePayload<ExtArgs>
+      fields: Prisma.MemberFeeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MemberFeeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MemberFeeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload>
+        }
+        findFirst: {
+          args: Prisma.MemberFeeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MemberFeeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload>
+        }
+        findMany: {
+          args: Prisma.MemberFeeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload>[]
+        }
+        create: {
+          args: Prisma.MemberFeeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload>
+        }
+        createMany: {
+          args: Prisma.MemberFeeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MemberFeeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload>[]
+        }
+        delete: {
+          args: Prisma.MemberFeeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload>
+        }
+        update: {
+          args: Prisma.MemberFeeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload>
+        }
+        deleteMany: {
+          args: Prisma.MemberFeeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MemberFeeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MemberFeeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload>[]
+        }
+        upsert: {
+          args: Prisma.MemberFeeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemberFeePayload>
+        }
+        aggregate: {
+          args: Prisma.MemberFeeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMemberFee>
+        }
+        groupBy: {
+          args: Prisma.MemberFeeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemberFeeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MemberFeeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemberFeeCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1045,6 +1195,36 @@ export const UserPreferenceScalarFieldEnum = {
 } as const
 
 export type UserPreferenceScalarFieldEnum = (typeof UserPreferenceScalarFieldEnum)[keyof typeof UserPreferenceScalarFieldEnum]
+
+
+export const FinanceTransactionScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  description: 'description',
+  amount: 'amount',
+  type: 'type',
+  category: 'category',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceTransactionScalarFieldEnum = (typeof FinanceTransactionScalarFieldEnum)[keyof typeof FinanceTransactionScalarFieldEnum]
+
+
+export const MemberFeeScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  amount: 'amount',
+  dueDate: 'dueDate',
+  paidDate: 'paidDate',
+  description: 'description',
+  year: 'year',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MemberFeeScalarFieldEnum = (typeof MemberFeeScalarFieldEnum)[keyof typeof MemberFeeScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1198,6 +1378,8 @@ export type GlobalOmitConfig = {
   group?: Prisma.GroupOmit
   clubSection?: Prisma.ClubSectionOmit
   userPreference?: Prisma.UserPreferenceOmit
+  financeTransaction?: Prisma.FinanceTransactionOmit
+  memberFee?: Prisma.MemberFeeOmit
 }
 
 /* Types for Logging */

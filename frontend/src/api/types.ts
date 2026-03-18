@@ -42,3 +42,33 @@ export type Group = MemberContainingNamedArtifact
 export type Role = MemberContainingNamedArtifact
 
 export type ClubSection = MemberContainingNamedArtifact
+
+export type FinanceTransaction = {
+    id: number;
+    date: string;
+    description: string;
+    amount: number;
+    type: 'income' | 'expense';
+    category?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
+};
+
+export type MemberFee = {
+    id: number;
+    memberId: number;
+    member?: {
+        id: number;
+        firstName: string;
+        lastName: string;
+        number: number;
+    };
+    amount: number;
+    dueDate: string;
+    paidDate?: string | null;
+    description?: string;
+    year: number;
+    createdAt?: string;
+    updatedAt?: string;
+};

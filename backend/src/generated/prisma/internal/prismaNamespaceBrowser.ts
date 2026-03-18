@@ -57,7 +57,9 @@ export const ModelName = {
   Role: 'Role',
   Group: 'Group',
   ClubSection: 'ClubSection',
-  UserPreference: 'UserPreference'
+  UserPreference: 'UserPreference',
+  FinanceTransaction: 'FinanceTransaction',
+  MemberFee: 'MemberFee'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -154,6 +156,36 @@ export const UserPreferenceScalarFieldEnum = {
 } as const
 
 export type UserPreferenceScalarFieldEnum = (typeof UserPreferenceScalarFieldEnum)[keyof typeof UserPreferenceScalarFieldEnum]
+
+
+export const FinanceTransactionScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  description: 'description',
+  amount: 'amount',
+  type: 'type',
+  category: 'category',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceTransactionScalarFieldEnum = (typeof FinanceTransactionScalarFieldEnum)[keyof typeof FinanceTransactionScalarFieldEnum]
+
+
+export const MemberFeeScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  amount: 'amount',
+  dueDate: 'dueDate',
+  paidDate: 'paidDate',
+  description: 'description',
+  year: 'year',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MemberFeeScalarFieldEnum = (typeof MemberFeeScalarFieldEnum)[keyof typeof MemberFeeScalarFieldEnum]
 
 
 export const SortOrder = {
