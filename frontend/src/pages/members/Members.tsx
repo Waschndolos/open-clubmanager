@@ -7,7 +7,7 @@ import {Add, Clear, ManageAccounts} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import {EditMemberDialog} from "./EditMemberDialog";
 import {createMember, deleteMembers, fetchMembers} from "../../api/members";
-import {useNotification} from "../../components/header/NotificationContext";
+import {useNotification} from "../../context/NotificationContext";
 import PageHeader from "../../components/common/PageHeader";
 
 export function createEmptyMember(): Member {
