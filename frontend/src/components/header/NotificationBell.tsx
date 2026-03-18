@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {useTranslation} from "react-i18next";
-import {useNotification} from "./NotificationContext";
+import {useNotification} from "../../context/NotificationContext";
 
 export default function NotificationBell() {
     const { t } = useTranslation();
