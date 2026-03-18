@@ -177,6 +177,9 @@ export class FolderEventStore {
     }
 
     generateId(): number {
-        return Date.now();
+        // Combine millisecond timestamp with 3 random digits to minimise collision
+        // probability while staying within Number.MAX_SAFE_INTEGER (2^53 - 1).
+        const rand = Math.floor(Math.random() * 1000);
+        return Date.now() * 1000 + rand;
     }
 }

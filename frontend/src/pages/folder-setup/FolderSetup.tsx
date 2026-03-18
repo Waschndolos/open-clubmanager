@@ -12,6 +12,7 @@ import { FolderOpen, CheckCircle } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { FOLDER_MODE_TOKEN } from '../../lib/environment';
 
 const FolderSetup: React.FC = () => {
     const { t } = useTranslation();
@@ -32,7 +33,7 @@ const FolderSetup: React.FC = () => {
             }
             setSelectedFolder(folderPath);
             await window.api!.club.initFolder();
-            setAccessToken('folder-mode');
+            setAccessToken(FOLDER_MODE_TOKEN);
             navigate('/dashboard', { replace: true });
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : t('folderSetup.error.generic'));
