@@ -1,11 +1,14 @@
 import {Backdrop, Box, CircularProgress, IconButton, Tooltip, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import React, {useEffect, useMemo, useState} from "react";
-import {Member} from "../../api/types";
+import {ClubSection, Group, Member, Role} from "../../api/types";
 import {Delete, FileDownload, FileUpload} from "@mui/icons-material";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
 import {createMember, deleteMembers, updateMember} from "../../api/members";
+import {fetchRoles, createRole} from "../../api/roles";
+import {fetchGroups, createGroup} from "../../api/groups";
+import {fetchSections, createSection} from "../../api/sections";
 import {useUserPreference} from "../../hooks/useUserPreference";
 import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
 import {DeletingMemberDialog} from "./DeletingMemberDialog";
@@ -116,11 +119,51 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
         setEditingMember(null);
     };
 
+    async function resolveEntityIds<T extends { id: number; name: string }>(
+        value: T[] | string | undefined,
+        existingList: T[],
+        createFn: (data: { name: string }) => Promise<T>
+    ): Promise<number[]> {
+        if (value === undefined || value === null) return [];
+
+        if (typeof value === 'string') {
+            const names = value.split(',').map((s) => s.trim()).filter(Boolean);
+            const ids: number[] = [];
+            for (const name of names) {
+                const found = existingList.find((e) => e.name === name);
+                if (found) {
+                    ids.push(found.id);
+                } else {
+                    const created = await createFn({ name });
+                    ids.push(created.id);
+                    existingList.push(created);
+                }
+            }
+            return ids;
+        }
+
+        if (Array.isArray(value)) {
+            return value.map((e) => e.id);
+        }
+
+        return [];
+    }
+
     async function upsertImportedMembers(imported: Member[]) {
         const existingMap = new Map(members.map(m => [m.email.toLowerCase(), m]));
         setImportInProgress(true);
         let i = 0;
         const max = imported.length;
+
+        const [allRoles, allGroups, allSections] = await Promise.all([
+            fetchRoles(),
+            fetchGroups(),
+            fetchSections(),
+        ]);
+
+        const rolesList = [...allRoles] as { id: number; name: string }[];
+        const groupsList = [...allGroups] as { id: number; name: string }[];
+        const sectionsList = [...allSections] as { id: number; name: string }[];
 
         for (const member of imported) {
             const emailKey = member.email.toLowerCase();
@@ -128,13 +171,41 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
             setImportProgress(progress);
             i++;
 
+            const roleIds = await resolveEntityIds(
+                member.roles as unknown as { id: number; name: string }[] | string | undefined,
+                rolesList,
+                (data) => createRole(data as unknown as Omit<Role, 'id'>)
+            );
+            const groupIds = await resolveEntityIds(
+                member.groups as unknown as { id: number; name: string }[] | string | undefined,
+                groupsList,
+                (data) => createGroup(data as unknown as Omit<Group, 'id'>)
+            );
+            const sectionIds = await resolveEntityIds(
+                member.sections as unknown as { id: number; name: string }[] | string | undefined,
+                sectionsList,
+                (data) => createSection(data as unknown as Omit<ClubSection, 'id'>)
+            );
+
             if (existingMap.has(emailKey)) {
                 const existing = existingMap.get(emailKey)!;
-                const updated = {...existing, ...member, id: existing.id};
-                const saved = await updateMember(updated);
+                // When a field is not mapped (undefined), preserve the existing associations
+                const mergedRoleIds = member.roles !== undefined ? roleIds : (existing.roles?.map(r => r.id) || []);
+                const mergedGroupIds = member.groups !== undefined ? groupIds : (existing.groups?.map(g => g.id) || []);
+                const mergedSectionIds = member.sections !== undefined ? sectionIds : (existing.sections?.map(s => s.id) || []);
+                const updated = {
+                    ...existing,
+                    ...member,
+                    id: existing.id,
+                    roleIds: mergedRoleIds,
+                    groupIds: mergedGroupIds,
+                    sectionIds: mergedSectionIds,
+                };
+                const saved = await updateMember(updated as Member);
                 onMemberUpdated(saved);
             } else {
-                const saved = await createMember(member);
+                const payload = { ...member, roleIds, groupIds, sectionIds };
+                const saved = await createMember(payload as unknown as Omit<Member, 'id'>);
                 onMemberUpdated(saved);
             }
         }
