@@ -8,6 +8,7 @@ import {getSetupStatus} from '../../api/setup';
 import {useTranslation} from "react-i18next";
 import {useThemeContext} from "../../theme/ThemeContext";
 import {setAccessToken} from "../../api/api";
+import {isElectronFolderMode} from "../../lib/environment";
 
 const Login: React.FC = () => {
     const { mode } = useThemeContext();
@@ -22,6 +23,20 @@ const Login: React.FC = () => {
     const location = useLocation();
 
     useEffect(() => {
+        if (isElectronFolderMode()) {
+            window.api!.club.getFolder().then((folderPath) => {
+                setAuthAccessToken('folder-mode');
+                if (folderPath) {
+                    navigate('/dashboard', { replace: true });
+                } else {
+                    navigate('/folder-setup', { replace: true });
+                }
+            }).catch(() => {
+                navigate('/folder-setup', { replace: true });
+            });
+            return;
+        }
+
         getSetupStatus()
             .then(({ setupRequired }) => {
                 if (setupRequired) {
@@ -31,7 +46,7 @@ const Login: React.FC = () => {
             .catch(() => {
                 // If setup status cannot be fetched, allow login page to render normally
             });
-    }, [navigate]);
+    }, [navigate, setAuthAccessToken]);
 
     const setupComplete = (location.state as { setupComplete?: boolean } | null)?.setupComplete;
 

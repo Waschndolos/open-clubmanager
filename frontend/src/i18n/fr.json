@@ -265,5 +265,15 @@
             "user": "Utilisateur",
             "details": "Détails"
         }
+    },
+    "folderSetup": {
+        "title": "Sélectionner le dossier du club",
+        "description": "Choisissez un dossier partagé (SharePoint, OneDrive, lecteur réseau, USB, etc.) où toutes les données du club seront stockées. Tous ceux qui ont accès à ce dossier peuvent collaborer sans configuration de serveur.",
+        "selectButton": "Sélectionner le dossier du club",
+        "selecting": "Ouverture…",
+        "hint": "Vous pouvez modifier ce dossier ultérieurement dans les paramètres.",
+        "error": {
+            "generic": "Une erreur s'est produite lors de la configuration du dossier du club."
+        }
     }
 }

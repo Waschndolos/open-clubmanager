@@ -8,6 +8,7 @@ import { Settings } from "../pages/settings/Settings";
 import {EntitiesPage} from "../pages/entities/EntitiesPage";
 import Login from "../pages/login/Login";
 import Setup from "../pages/setup/Setup";
+import FolderSetup from "../pages/folder-setup/FolderSetup";
 import { RequireAuth } from "../guards/RequireAuth";
 import History from "../pages/history/History";
 
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
   {
     path: "/setup",
     element: <Setup />,
+  },
+  {
+    path: "/folder-setup",
+    element: <FolderSetup />,
   },
   {
         path: "/",
