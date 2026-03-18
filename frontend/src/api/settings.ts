@@ -1,6 +1,12 @@
 import {BACKEND_URL} from "./api";
 
-const BASE_URL = `${BACKEND_URL}/api/settings`;
+const BASE_URL = `${BACKEND_URL}/settings`;
+
+export async function getDbStatus(): Promise<{ configured: boolean }> {
+    const res = await fetch(`${BASE_URL}/db-status`);
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+}
 
 export async function saveDbPath(dbPath: string) {
     const res = await fetch(`${BASE_URL}/set-db-path`, {

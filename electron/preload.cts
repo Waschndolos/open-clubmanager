@@ -19,3 +19,13 @@ contextBridge.exposeInMainWorld('apppreference', {
     ipcRenderer.send('apppreference-set', key, value);
   }
 });
+
+contextBridge.exposeInMainWorld('electronDialog', {
+  selectNewDbPath(): Promise<string | null> {
+    return ipcRenderer.invoke('dialog:select-new-db-path');
+  },
+
+  selectExistingDbPath(): Promise<string | null> {
+    return ipcRenderer.invoke('dialog:select-existing-db-path');
+  },
+});

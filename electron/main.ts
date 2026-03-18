@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import Store from 'electron-store';
 import { fileURLToPath } from 'url';
 import * as path from 'path';
@@ -46,6 +46,27 @@ ipcMain.on('apppreference-set', async (event, key, value) => {
     body: JSON.stringify({ value })
   });
 
+});
+
+ipcMain.handle('dialog:select-new-db-path', async () => {
+    const result = await dialog.showSaveDialog(mainWindow!, {
+        title: 'Create New Database',
+        defaultPath: path.join(app.getPath('documents'), 'clubmanager.db'),
+        filters: [{ name: 'SQLite Database', extensions: ['db', 'sqlite', 'sqlite3'] }],
+        properties: ['createDirectory'],
+    });
+    if (result.canceled || !result.filePath) return null;
+    return result.filePath;
+});
+
+ipcMain.handle('dialog:select-existing-db-path', async () => {
+    const result = await dialog.showOpenDialog(mainWindow!, {
+        title: 'Open Existing Database',
+        filters: [{ name: 'SQLite Database', extensions: ['db', 'sqlite', 'sqlite3'] }],
+        properties: ['openFile'],
+    });
+    if (result.canceled || result.filePaths.length === 0) return null;
+    return result.filePaths[0];
 });
 
 const gotTheLock = app.requestSingleInstanceLock();

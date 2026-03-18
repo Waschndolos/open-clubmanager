@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme/ThemeContext';
 import { initializeAdmin, getSetupStatus } from '../../api/setup';
+import { getDbStatus } from '../../api/settings';
 
 const Setup: React.FC = () => {
     const { mode } = useThemeContext();
@@ -33,9 +34,16 @@ const Setup: React.FC = () => {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        getSetupStatus()
-            .then(({ setupRequired }) => {
-                if (!setupRequired) {
+        getDbStatus()
+            .then(({ configured }) => {
+                if (!configured) {
+                    navigate('/db-setup', { replace: true });
+                    return;
+                }
+                return getSetupStatus();
+            })
+            .then((setupResult) => {
+                if (setupResult && !setupResult.setupRequired) {
                     navigate('/login', { replace: true });
                 }
             })

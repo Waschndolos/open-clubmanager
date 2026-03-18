@@ -1,9 +1,12 @@
 import express from 'express';
-import {getCurrentDbPath, setActiveDb} from "../db.ts";
+import {getCurrentDbPath, isDbConfigured, setActiveDb} from "../db.ts";
 
 
 const router = express.Router();
 
+router.get('/db-status', (_req, res) => {
+    res.json({ configured: isDbConfigured() });
+});
 
 router.post("/set-db-path", async (req, res) => {
     const {dbPath} = req.body;

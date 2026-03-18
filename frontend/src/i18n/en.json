@@ -36,6 +36,19 @@
             "generic": "An error occurred. Please try again."
         }
     },
+    "dbSetup": {
+        "title": "Database Setup",
+        "description": "Choose where Open ClubManager should store its data. You can create a new database or use an existing one.",
+        "createNew": "Create New Database",
+        "openExisting": "Use Existing Database",
+        "or": "or",
+        "manualPathLabel": "Database Path",
+        "manualPathPlaceholder": "/path/to/clubmanager.db",
+        "manualPathHelper": "Enter the full path to a new or existing SQLite database file.",
+        "error": {
+            "generic": "An error occurred while setting up the database. Please try again."
+        }
+    },
     "menu": {
         "dashboard": "Dashboard",
         "members": "Member Management",

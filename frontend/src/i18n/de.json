@@ -36,6 +36,19 @@
             "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
         }
     },
+    "dbSetup": {
+        "title": "Datenbankeinrichtung",
+        "description": "Wählen Sie, wo Open ClubManager seine Daten speichern soll. Sie können eine neue Datenbank erstellen oder eine vorhandene verwenden.",
+        "createNew": "Neue Datenbank erstellen",
+        "openExisting": "Vorhandene Datenbank verwenden",
+        "or": "oder",
+        "manualPathLabel": "Datenbankpfad",
+        "manualPathPlaceholder": "/pfad/zur/clubmanager.db",
+        "manualPathHelper": "Geben Sie den vollständigen Pfad zu einer neuen oder vorhandenen SQLite-Datenbankdatei ein.",
+        "error": {
+            "generic": "Beim Einrichten der Datenbank ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+        }
+    },
     "menu": {
         "dashboard": "Startseite",
         "members": "Mitgliederverwaltung",

@@ -36,6 +36,19 @@
             "generic": "Une erreur s'est produite. Veuillez réessayer."
         }
     },
+    "dbSetup": {
+        "title": "Configuration de la base de données",
+        "description": "Choisissez où Open ClubManager doit stocker ses données. Vous pouvez créer une nouvelle base de données ou utiliser une existante.",
+        "createNew": "Créer une nouvelle base de données",
+        "openExisting": "Utiliser une base de données existante",
+        "or": "ou",
+        "manualPathLabel": "Chemin de la base de données",
+        "manualPathPlaceholder": "/chemin/vers/clubmanager.db",
+        "manualPathHelper": "Entrez le chemin complet vers un fichier de base de données SQLite nouveau ou existant.",
+        "error": {
+            "generic": "Une erreur s'est produite lors de la configuration de la base de données. Veuillez réessayer."
+        }
+    },
     "menu": {
         "dashboard": "Tableau de bord",
         "members": "Gestion des membres",
