@@ -12,6 +12,7 @@ import statisticRoutes from "./routes/statistics.ts";
 import authRoutes from "./routes/auth.ts";
 import setupRoutes from "./routes/setup.ts";
 import financeRoutes from "./routes/finance.ts";
+import historyRoutes from "./routes/history.ts";
 
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', {
@@ -52,6 +53,7 @@ app.use('/api/statistics', statisticRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/setup', setupRoutes);
 app.use('/api/finance', financeRoutes);
+app.use('/api/history', historyRoutes);
 
 // Error handling middleware
 app.use((err: unknown, _req: Request, res: Response) => {

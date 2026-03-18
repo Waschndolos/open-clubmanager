@@ -84,3 +84,8 @@ export type FinanceTransaction = Prisma.FinanceTransactionModel
  * 
  */
 export type MemberFee = Prisma.MemberFeeModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

@@ -42,7 +42,8 @@
         "finance": "Finanzen",
         "settings": "Einstellungen",
         "entities": "Vereinsverwaltung",
-        "profile": "Profil"
+        "profile": "Profil",
+        "history": "Verlauf"
     },
     "dashboard": {
         "membercount": "Anzahl Mitglieder",
@@ -251,6 +252,18 @@
                 "titleCreate": "Neuer Mitgliedsbeitrag",
                 "titleEdit": "Mitgliedsbeitrag bearbeiten"
             }
+        }
+    },
+    "history": {
+        "title": "Verlauf",
+        "loadError": "Verlauf konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+        "table": {
+            "timestamp": "Zeitstempel",
+            "action": "Aktion",
+            "entity": "Entität",
+            "entityId": "ID",
+            "user": "Benutzer",
+            "details": "Details"
         }
     }
 }

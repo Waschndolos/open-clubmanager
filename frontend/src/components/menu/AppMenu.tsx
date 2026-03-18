@@ -2,7 +2,7 @@ import {Box, List, Typography} from "@mui/material";
 import AppMenuItem from "./AppMenuItem";
 import packageJson from '../../../package.json'
 import {useTranslation} from "react-i18next";
-import {AccountBalance, Badge, GridView, ManageAccounts, Settings} from "@mui/icons-material";
+import {AccountBalance, Badge, GridView, History, ManageAccounts, Settings} from "@mui/icons-material";
 
 type Props = {
     collapsed: boolean;
@@ -26,6 +26,7 @@ export default function AppMenu({ collapsed }: Props) {
                 <AppMenuItem label={t("menu.members")} icon={<ManageAccounts />} link="members" collapsed={collapsed} />
                 <AppMenuItem label={t("menu.finance")} icon={<AccountBalance />} link="finance" collapsed={collapsed} />
                 <AppMenuItem label={t("menu.entities")} icon={<Badge />} link="entities" collapsed={collapsed} />
+                <AppMenuItem label={t("menu.history")} icon={<History />} link="history" collapsed={collapsed} />
                 <AppMenuItem label={t("menu.settings")} icon={<Settings />} link="settings" collapsed={collapsed} />
             </List>
 
