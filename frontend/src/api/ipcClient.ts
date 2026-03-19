@@ -1,4 +1,4 @@
-import { Member, Role, Group, ClubSection } from './types';
+import { Member, Role, Group, ClubSection, Payment, Attachment, StorageStatus } from './types';
 import { DataClient } from './dataClient';
 import { LockInfo } from './ipcTypes';
 
@@ -99,6 +99,56 @@ export const ipcClient: DataClient = {
         },
         delete: async (data: ClubSection): Promise<void> => {
             await getApi().sections.delete(data.id);
+        },
+    },
+
+    storage: {
+        getStatus: (): Promise<StorageStatus> =>
+            getApi().storage.getStatus() as Promise<StorageStatus>,
+        requestEditMode: (): Promise<{ acquired: boolean; status: StorageStatus }> =>
+            getApi().storage.requestEditMode() as Promise<{ acquired: boolean; status: StorageStatus }>,
+        releaseEditMode: async (): Promise<void> => {
+            await getApi().storage.releaseEditMode();
+        },
+        exportBackup: (): Promise<{ zipPath: string }> =>
+            getApi().storage.exportBackup(),
+    },
+
+    payments: {
+        list: async (): Promise<Payment[]> => {
+            const result = await getApi().payments.list();
+            return result as Payment[];
+        },
+        create: async (data: Omit<Payment, 'id' | 'createdAt'>): Promise<Payment> => {
+            const result = await getApi().payments.create(data);
+            return result as Payment;
+        },
+        update: async (data: Payment): Promise<Payment> => {
+            const result = await getApi().payments.update(data);
+            return result as Payment;
+        },
+        delete: async (id: string): Promise<void> => {
+            await getApi().payments.delete(id);
+        },
+    },
+
+    attachments: {
+        add: async (data: {
+            sourcePath: string;
+            originalName: string;
+            mimeType: string;
+            paymentId?: string;
+            memberId?: string;
+        }): Promise<Attachment> => {
+            const result = await getApi().attachments.add(data);
+            return result as Attachment;
+        },
+        list: async (filter?: { paymentId?: string; memberId?: string }): Promise<Attachment[]> => {
+            const result = await getApi().attachments.list(filter);
+            return result as Attachment[];
+        },
+        open: async (id: string): Promise<void> => {
+            await getApi().attachments.open(id);
         },
     },
 };

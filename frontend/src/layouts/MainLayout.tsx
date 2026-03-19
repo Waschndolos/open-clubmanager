@@ -2,11 +2,18 @@ import {Box} from '@mui/material';
 import AppMenu from "../components/menu/AppMenu";
 import Content from "../components/content/Content";
 import Header from "../components/header/Header";
+import ReadOnlyBanner from "../components/common/ReadOnlyBanner";
 import {useState} from "react";
+import { useStorage } from "../context/StorageContext";
+import { isElectronFolderMode } from "../lib/environment";
 
 
 export default function MainLayout() {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const { status, requestEditMode } = useStorage();
+
+    const showReadOnlyBanner =
+        isElectronFolderMode() && status?.mode === 'readonly';
 
     return (
         <Box 
@@ -16,6 +23,9 @@ export default function MainLayout() {
                 sidebarCollapsed={sidebarCollapsed}
                 onToggleSidebar={() => setSidebarCollapsed((c) => !c)}
             />
+            {showReadOnlyBanner && status && (
+                <ReadOnlyBanner status={status} onRequestEditMode={requestEditMode} />
+            )}
             <Box sx={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
                 <Box
                     sx={{

@@ -1,4 +1,4 @@
-import { Member, Role, Group, ClubSection } from './types';
+import { Member, Role, Group, ClubSection, Payment, Attachment, StorageStatus } from './types';
 import { LockInfo } from './ipcTypes';
 
 export interface MembersClient {
@@ -39,10 +39,39 @@ export interface ClubClient {
     initFolder(): Promise<void>;
 }
 
+export interface StorageClient {
+    getStatus(): Promise<StorageStatus>;
+    requestEditMode(): Promise<{ acquired: boolean; status: StorageStatus }>;
+    releaseEditMode(): Promise<void>;
+    exportBackup(): Promise<{ zipPath: string }>;
+}
+
+export interface PaymentsClient {
+    list(): Promise<Payment[]>;
+    create(data: Omit<Payment, 'id' | 'createdAt'>): Promise<Payment>;
+    update(data: Payment): Promise<Payment>;
+    delete(id: string): Promise<void>;
+}
+
+export interface AttachmentsClient {
+    add(data: {
+        sourcePath: string;
+        originalName: string;
+        mimeType: string;
+        paymentId?: string;
+        memberId?: string;
+    }): Promise<Attachment>;
+    list(filter?: { paymentId?: string; memberId?: string }): Promise<Attachment[]>;
+    open(id: string): Promise<void>;
+}
+
 export interface DataClient {
     club: ClubClient;
     members: MembersClient;
     roles: RolesClient;
     groups: GroupsClient;
     sections: SectionsClient;
+    storage: StorageClient;
+    payments: PaymentsClient;
+    attachments: AttachmentsClient;
 }

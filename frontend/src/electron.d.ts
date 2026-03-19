@@ -1,5 +1,20 @@
 import { LockInfo } from './api/ipcTypes';
 
+export interface WriteLockInfo {
+    holderId: string;
+    holderLabel: string;
+    acquiredAt: string;
+    refreshedAt: string;
+    appVersion: string;
+}
+
+export interface StorageStatus {
+    dataDir: string | null;
+    mode: 'edit' | 'readonly';
+    lockHolder?: WriteLockInfo;
+    lockAgeMs?: number;
+}
+
 export interface ElectronApi {
     club: {
         selectFolder(): Promise<string | null>;
@@ -33,6 +48,23 @@ export interface ElectronApi {
         create(data: unknown): Promise<unknown>;
         update(data: unknown): Promise<unknown>;
         delete(id: number): Promise<{ ok: boolean }>;
+    };
+    storage: {
+        getStatus(): Promise<StorageStatus>;
+        requestEditMode(): Promise<{ acquired: boolean; status: StorageStatus }>;
+        releaseEditMode(): Promise<{ ok: boolean }>;
+        exportBackup(): Promise<{ zipPath: string }>;
+    };
+    payments: {
+        list(): Promise<unknown[]>;
+        create(data: unknown): Promise<unknown>;
+        update(data: unknown): Promise<unknown>;
+        delete(id: string): Promise<{ ok: boolean }>;
+    };
+    attachments: {
+        add(data: unknown): Promise<unknown>;
+        list(filter?: unknown): Promise<unknown[]>;
+        open(id: string): Promise<{ ok: boolean }>;
     };
 }
 

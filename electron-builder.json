@@ -11,7 +11,12 @@
     "electron/dist/preload.js",
     "frontend/dist/**/*",
     "backend/dist/**/*",
-    "backend/package.json"
+    "backend/package.json",
+    "node_modules/better-sqlite3/**/*",
+    "node_modules/archiver/**/*"
+  ],
+  "asarUnpack": [
+    "node_modules/better-sqlite3/**/*"
   ],
   "extraResources": [
     {

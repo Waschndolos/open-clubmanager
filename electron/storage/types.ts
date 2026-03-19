@@ -26,3 +26,42 @@ export interface ClubMeta {
 }
 
 export const SCHEMA_VERSION = 1;
+
+// ── SQLite storage types ──────────────────────────────────────────────────────
+
+export interface WriteLockInfo {
+    holderId: string;
+    holderLabel: string;
+    acquiredAt: string;
+    refreshedAt: string;
+    appVersion: string;
+}
+
+export interface StorageStatus {
+    dataDir: string;
+    mode: 'edit' | 'readonly';
+    lockHolder?: WriteLockInfo;
+    lockAgeMs?: number;
+}
+
+export interface PaymentRecord {
+    id: string;
+    memberId: string | null;
+    amountCents: number;
+    currency: string;
+    date: string;
+    note: string | null;
+    createdAt: string;
+}
+
+export interface AttachmentRecord {
+    id: string;
+    originalName: string;
+    storedRelPath: string;
+    mimeType: string;
+    sizeBytes: number;
+    sha256: string;
+    paymentId: string | null;
+    memberId: string | null;
+    createdAt: string;
+}

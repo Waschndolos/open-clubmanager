@@ -54,4 +54,21 @@ contextBridge.exposeInMainWorld('api', {
     update: (data: unknown) => ipcRenderer.invoke('section:update', data),
     delete: (id: number) => ipcRenderer.invoke('section:delete', id),
   },
+  storage: {
+    getStatus: () => ipcRenderer.invoke('storage:getStatus'),
+    requestEditMode: () => ipcRenderer.invoke('storage:requestEditMode'),
+    releaseEditMode: () => ipcRenderer.invoke('storage:releaseEditMode'),
+    exportBackup: () => ipcRenderer.invoke('storage:exportBackup'),
+  },
+  payments: {
+    list: () => ipcRenderer.invoke('payments:list'),
+    create: (data: unknown) => ipcRenderer.invoke('payments:create', data),
+    update: (data: unknown) => ipcRenderer.invoke('payments:update', data),
+    delete: (id: string) => ipcRenderer.invoke('payments:delete', id),
+  },
+  attachments: {
+    add: (data: unknown) => ipcRenderer.invoke('attachments:add', data),
+    list: (filter?: unknown) => ipcRenderer.invoke('attachments:list', filter),
+    open: (id: string) => ipcRenderer.invoke('attachments:open', id),
+  },
 });
