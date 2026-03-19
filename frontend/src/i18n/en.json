@@ -265,5 +265,15 @@
             "user": "User",
             "details": "Details"
         }
+    },
+    "folderSetup": {
+        "title": "Select Club Folder",
+        "description": "Choose a shared folder (SharePoint, OneDrive, network drive, USB, etc.) where all club data will be stored. Everyone who has access to this folder can collaborate without any server setup.",
+        "selectButton": "Select Club Folder",
+        "selecting": "Opening…",
+        "hint": "You can change this folder later in the Settings.",
+        "error": {
+            "generic": "An error occurred while setting up the club folder."
+        }
     }
 }

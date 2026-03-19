@@ -19,3 +19,39 @@ contextBridge.exposeInMainWorld('apppreference', {
     ipcRenderer.send('apppreference-set', key, value);
   }
 });
+
+contextBridge.exposeInMainWorld('api', {
+  club: {
+    selectFolder: () => ipcRenderer.invoke('club:selectFolder'),
+    getFolder: () => ipcRenderer.invoke('club:getFolder'),
+    initFolder: () => ipcRenderer.invoke('club:initFolder'),
+  },
+  members: {
+    list: () => ipcRenderer.invoke('members:list'),
+    get: (id: number) => ipcRenderer.invoke('members:get', id),
+    create: (data: unknown) => ipcRenderer.invoke('members:create', data),
+    update: (id: number, patch: unknown) => ipcRenderer.invoke('members:update', { id, patch }),
+    delete: (ids: number[]) => ipcRenderer.invoke('members:delete', ids),
+    lock: (id: number, owner: string) => ipcRenderer.invoke('members:lock', { id, owner }),
+    unlock: (id: number, owner: string) => ipcRenderer.invoke('members:unlock', { id, owner }),
+    getLock: (id: number) => ipcRenderer.invoke('members:getLock', id),
+  },
+  roles: {
+    list: () => ipcRenderer.invoke('role:list'),
+    create: (data: unknown) => ipcRenderer.invoke('role:create', data),
+    update: (data: unknown) => ipcRenderer.invoke('role:update', data),
+    delete: (id: number) => ipcRenderer.invoke('role:delete', id),
+  },
+  groups: {
+    list: () => ipcRenderer.invoke('group:list'),
+    create: (data: unknown) => ipcRenderer.invoke('group:create', data),
+    update: (data: unknown) => ipcRenderer.invoke('group:update', data),
+    delete: (id: number) => ipcRenderer.invoke('group:delete', id),
+  },
+  sections: {
+    list: () => ipcRenderer.invoke('section:list'),
+    create: (data: unknown) => ipcRenderer.invoke('section:create', data),
+    update: (data: unknown) => ipcRenderer.invoke('section:update', data),
+    delete: (id: number) => ipcRenderer.invoke('section:delete', id),
+  },
+});

@@ -265,5 +265,15 @@
             "user": "Benutzer",
             "details": "Details"
         }
+    },
+    "folderSetup": {
+        "title": "Vereinsordner auswählen",
+        "description": "Wählen Sie einen gemeinsamen Ordner (SharePoint, OneDrive, Netzlaufwerk, USB usw.), in dem alle Vereinsdaten gespeichert werden. Alle, die Zugriff auf diesen Ordner haben, können ohne Serverinstallation zusammenarbeiten.",
+        "selectButton": "Vereinsordner auswählen",
+        "selecting": "Öffne…",
+        "hint": "Sie können diesen Ordner später in den Einstellungen ändern.",
+        "error": {
+            "generic": "Beim Einrichten des Vereinsordners ist ein Fehler aufgetreten."
+        }
     }
 }
