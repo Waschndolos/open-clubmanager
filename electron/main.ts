@@ -126,7 +126,7 @@ ipcMain.handle('members:update', (_event, { id, patch }: { id: number; patch: Re
     const current = (state['member'] ?? {})[id];
     if (!current) throw new Error(`Member ${id} not found.`);
     store_.appendEvent('member.update', 'member', id, patch, getActor());
-    return { ...current, ...patch };
+    return { ...current, ...patch, id };
 });
 
 ipcMain.handle('members:delete', (_event, ids: number[]) => {

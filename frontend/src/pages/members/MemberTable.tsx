@@ -17,6 +17,7 @@ import ImportMembersWizard from "./ImportMembersWizard";
 import {useTheme} from '@mui/material/styles';
 import {DataGrid, GridColDef, GridColumnVisibilityModel, GridRowSelectionModel} from '@mui/x-data-grid';
 import type {GridRenderCellParams} from "@mui/x-data-grid/models/params/gridCellParams";
+import {useNotification} from "../../context/NotificationContext";
 
 
 type MemberTableProps = {
@@ -27,6 +28,7 @@ type MemberTableProps = {
 
 export default function MemberTable({members, onMemberUpdated, onMembersDeleted}: MemberTableProps) {
     const {t} = useTranslation();
+    const { addNotification } = useNotification();
     const [editingMember, setEditingMember] = useState<Member | null>(null);
     const [exportOpened, setExportOpened] = useState<boolean>(false);
     const [deletingMembers, setDeletingMembers] = useState<Member[] | null>(null);
@@ -88,7 +90,7 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
 
     const handleSelectionChanged = (selectionModel: GridRowSelectionModel) => {
         const selected = members.filter(member =>
-            selectionModel.ids.has(member.id)
+            selectionModel.ids.has(member.id) || selectionModel.ids.has(String(member.id))
         );
 
         setSelectedMembers(selected.length ? selected : null);
@@ -114,9 +116,14 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
     }
 
     const handleSaveEdit = async (updated: Member) => {
-        const updatedMember = await updateMember(updated);
-        onMemberUpdated(updatedMember);
-        setEditingMember(null);
+        try {
+            const updatedMember = await updateMember(updated);
+            onMemberUpdated(updatedMember);
+            setEditingMember(null);
+        } catch (err) {
+            console.error('Failed to update member:', err);
+            addNotification(t('members.errors.updateFailed'));
+        }
     };
 
     async function resolveEntityIds<T extends { id: number; name: string }>(
@@ -286,8 +293,8 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
                 <EditMemberDialog
                     member={editingMember!}
                     onClose={() => setEditingMember(null)}
-                    onSave={(update: Member) => {
-                        handleSaveEdit(update);
+                    onSave={async (update: Member) => {
+                        await handleSaveEdit(update);
                     }}
                 />
             )}

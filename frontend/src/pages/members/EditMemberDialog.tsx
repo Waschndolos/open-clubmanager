@@ -3,7 +3,6 @@ import {
     AccordionSummary,
     Autocomplete,
     Button,
-    Chip,
     Dialog,
     DialogActions,
     DialogContent,
@@ -195,16 +194,12 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                                         multiple
                                         options={allRoles}
                                         getOptionLabel={(option) => option.name}
-                                        value={formData.roles}
+                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                        value={formData.roles ?? []}
                                         onChange={(_, value) => handleChange("roles", value)}
                                         renderInput={(params) => (
                                             <TextField {...params} label={t("members.table.header.roles")}/>
                                         )}
-                                        renderValue={(value, getTagProps) =>
-                                            value.map((option, index) => (
-                                                <Chip label={option.name} {...getTagProps({index})} key={option.id}/>
-                                            ))
-                                        }
                                     />
                                 </Grid>
                                 <Grid size={{xs: 12, sm: 6}}>
@@ -212,16 +207,12 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                                         multiple
                                         options={allGroups}
                                         getOptionLabel={(option) => option.name}
-                                        value={formData.groups}
+                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                        value={formData.groups ?? []}
                                         onChange={(_, value) => handleChange("groups", value)}
                                         renderInput={(params) => (
                                             <TextField {...params} label={t("members.table.header.groups")}/>
                                         )}
-                                        renderValue={(value, getTagProps) =>
-                                            value.map((option, index) => (
-                                                <Chip label={option.name} {...getTagProps({index})} key={option.id}/>
-                                            ))
-                                        }
                                     />
                                 </Grid>
                                 <Grid size={{xs: 12, sm: 6}}>
@@ -229,16 +220,12 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                                         multiple
                                         options={allSections}
                                         getOptionLabel={(option) => option.name}
-                                        value={formData.sections}
+                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                        value={formData.sections ?? []}
                                         onChange={(_, value) => handleChange("sections", value)}
                                         renderInput={(params) => (
                                             <TextField {...params} label={t("members.table.header.sections")}/>
                                         )}
-                                        renderValue={(value, getTagProps) =>
-                                            value.map((option, index) => (
-                                                <Chip label={option.name} {...getTagProps({index})} key={option.id}/>
-                                            ))
-                                        }
                                     />
                                 </Grid>
                             </Grid>

@@ -63,10 +63,10 @@ export default function Members() {
     );
 
     const handleMemberUpdated = (updated: Member) => {
-        if (members.find((member) => member.email === updated.email)) {
-            setMembers(prev => prev.map(m => m.email === updated.email ? updated : m));
+        if (members.find((member) => member.id === updated.id)) {
+            setMembers(prev => prev.map(m => m.id === updated.id ? updated : m));
         } else {
-            setMembers([...members, updated])
+            setMembers([...members, updated]);
         }
     };
 
