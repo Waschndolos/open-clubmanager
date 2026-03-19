@@ -1,9 +1,27 @@
-import Database from 'better-sqlite3';
+import { createRequire } from 'module';
+import type BetterSqlite3 from 'better-sqlite3';
 import * as path from 'path';
 import * as fs from 'fs';
 
 export const DB_FILENAME = 'club.db';
 const SCHEMA_TARGET_VERSION = 1;
+
+// Lazy-load better-sqlite3 so that a missing or wrongly-compiled native module
+// does not crash the entire Electron main process on startup.  Only the SQLite-
+// specific features will be unavailable; the event-based storage keeps working.
+const _require = createRequire(import.meta.url);
+function loadDatabase(): typeof BetterSqlite3 {
+    try {
+        return _require('better-sqlite3') as typeof BetterSqlite3;
+    } catch (err) {
+        throw new Error(
+            'better-sqlite3 native module could not be loaded. ' +
+            'Run "npm run electron:rebuild" from the project root to rebuild it ' +
+            'for the current Electron version, then restart the app. ' +
+            `Original error: ${err}`
+        );
+    }
+}
 
 export interface DbMember {
     id: string;
@@ -52,7 +70,7 @@ export interface DbAttachment {
  * on first open in read-write mode.
  */
 export class SqliteDbService {
-    private db: Database.Database | null = null;
+    private db: InstanceType<typeof BetterSqlite3> | null = null;
     private readonly dbPath: string;
     private readOnly = true;
 
@@ -68,6 +86,8 @@ export class SqliteDbService {
         }
 
         this.readOnly = readOnly;
+
+        const Database = loadDatabase();
 
         if (readOnly) {
             if (!fs.existsSync(this.dbPath)) {

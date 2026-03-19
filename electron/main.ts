@@ -50,13 +50,28 @@ function initFolderStore(folderPath: string): void {
 
     currentDataDir = folderPath;
     lockService = new GlobalLockService(folderPath, app.getVersion());
-    dbService = new SqliteDbService(folderPath);
-    attachmentService = new AttachmentService(folderPath);
-    attachmentService.ensureDirs();
 
-    // Open in read-only mode initially; caller must invoke storage:requestEditMode
-    // to acquire the write lock and reopen in read-write mode.
-    dbService.open(true);
+    // SQLite and attachment services are optional: if better-sqlite3 is not
+    // installed or not compiled for this Electron version, the app continues
+    // to work with the event-based storage.  Only payments/attachments/backup
+    // features will be unavailable until the module issue is resolved.
+    try {
+        dbService = new SqliteDbService(folderPath);
+        attachmentService = new AttachmentService(folderPath);
+        attachmentService.ensureDirs();
+        // Open in read-only mode initially; the user must invoke
+        // storage:requestEditMode to acquire the write lock and switch to RW.
+        dbService.open(true);
+    } catch (err) {
+        console.warn(
+            'SQLite storage backend could not be initialized:',
+            err,
+            '\nTo fix this, run "npm run electron:rebuild" from the project root and restart the app.',
+            '\nMember/role/group/section data saved via the event store remains fully functional.'
+        );
+        dbService = null;
+        attachmentService = null;
+    }
 }
 
 // ── User preferences (existing) ──────────────────────────────────────────────
