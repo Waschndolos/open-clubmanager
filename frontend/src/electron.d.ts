@@ -34,6 +34,19 @@ export interface ElectronApi {
         update(data: unknown): Promise<unknown>;
         delete(id: number): Promise<{ ok: boolean }>;
     };
+    finance: {
+        listTransactions(): Promise<unknown[]>;
+        createTransaction(data: unknown): Promise<unknown>;
+        updateTransaction(data: unknown): Promise<unknown>;
+        deleteTransaction(id: number): Promise<{ ok: boolean }>;
+        listMemberFees(): Promise<unknown[]>;
+        createMemberFee(data: unknown): Promise<unknown>;
+        updateMemberFee(data: unknown): Promise<unknown>;
+        deleteMemberFee(id: number): Promise<{ ok: boolean }>;
+    };
+    history: {
+        list(): Promise<unknown[]>;
+    };
 }
 
 declare global {

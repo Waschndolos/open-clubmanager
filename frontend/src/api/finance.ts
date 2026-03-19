@@ -1,50 +1,44 @@
-import api from './api';
 import { FinanceTransaction, MemberFee } from './types';
+import { getDataClient } from './clientFactory';
 
 // ─── Finance Transactions ─────────────────────────────────────────────────────
 
 export async function fetchTransactions(): Promise<FinanceTransaction[]> {
-    const res = await api.get<FinanceTransaction[]>('/finance/transactions');
-    return res.data;
+    return getDataClient().finance.listTransactions();
 }
 
 export async function createTransaction(
     data: Omit<FinanceTransaction, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<FinanceTransaction> {
-    const res = await api.post<FinanceTransaction>('/finance/transactions', data);
-    return res.data;
+    return getDataClient().finance.createTransaction(data);
 }
 
 export async function updateTransaction(
     data: FinanceTransaction
 ): Promise<FinanceTransaction> {
-    const res = await api.put<FinanceTransaction>(`/finance/transactions/${data.id}`, data);
-    return res.data;
+    return getDataClient().finance.updateTransaction(data);
 }
 
 export async function deleteTransaction(id: number): Promise<void> {
-    await api.delete(`/finance/transactions/${id}`);
+    return getDataClient().finance.deleteTransaction(id);
 }
 
 // ─── Member Fees ──────────────────────────────────────────────────────────────
 
 export async function fetchMemberFees(): Promise<MemberFee[]> {
-    const res = await api.get<MemberFee[]>('/finance/memberfees');
-    return res.data;
+    return getDataClient().finance.listMemberFees();
 }
 
 export async function createMemberFee(
     data: Omit<MemberFee, 'id' | 'member' | 'createdAt' | 'updatedAt'>
 ): Promise<MemberFee> {
-    const res = await api.post<MemberFee>('/finance/memberfees', data);
-    return res.data;
+    return getDataClient().finance.createMemberFee(data);
 }
 
 export async function updateMemberFee(data: MemberFee): Promise<MemberFee> {
-    const res = await api.put<MemberFee>(`/finance/memberfees/${data.id}`, data);
-    return res.data;
+    return getDataClient().finance.updateMemberFee(data);
 }
 
 export async function deleteMemberFee(id: number): Promise<void> {
-    await api.delete(`/finance/memberfees/${id}`);
+    return getDataClient().finance.deleteMemberFee(id);
 }

@@ -54,4 +54,17 @@ contextBridge.exposeInMainWorld('api', {
     update: (data: unknown) => ipcRenderer.invoke('section:update', data),
     delete: (id: number) => ipcRenderer.invoke('section:delete', id),
   },
+  finance: {
+    listTransactions: () => ipcRenderer.invoke('finance:listTransactions'),
+    createTransaction: (data: unknown) => ipcRenderer.invoke('finance:createTransaction', data),
+    updateTransaction: (data: unknown) => ipcRenderer.invoke('finance:updateTransaction', data),
+    deleteTransaction: (id: number) => ipcRenderer.invoke('finance:deleteTransaction', id),
+    listMemberFees: () => ipcRenderer.invoke('finance:listMemberFees'),
+    createMemberFee: (data: unknown) => ipcRenderer.invoke('finance:createMemberFee', data),
+    updateMemberFee: (data: unknown) => ipcRenderer.invoke('finance:updateMemberFee', data),
+    deleteMemberFee: (id: number) => ipcRenderer.invoke('finance:deleteMemberFee', id),
+  },
+  history: {
+    list: () => ipcRenderer.invoke('history:list'),
+  },
 });

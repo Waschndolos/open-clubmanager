@@ -52,23 +52,22 @@ ipcMain.on('userpreference-delete', async (event, userId, key, value) => {
     store.set(`${key}-${userId}`, value);
 });
 
-ipcMain.on('apppreference-get', async (event, key) => {
-    const res = await fetch(`http://localhost:3001/api/preference/app/${key}`);
-    const data = await res.json();
-
-    event.returnValue = data[key];
+ipcMain.on('apppreference-get', (event, key) => {
+    // Use electron-store as local storage for app preferences in Folder Mode.
+    // This avoids crashing when the HTTP backend is not running.
+    event.returnValue = store.get(`apppreference-${key}`) ?? null;
 });
 
-ipcMain.on('apppreference-set', async (event, key, value) => {
-
-    await fetch(`http://localhost:3001/api/preference/app/${key}`, {
+ipcMain.on('apppreference-set', (_event, key, value) => {
+    store.set(`apppreference-${key}`, value);
+    // Best-effort sync to backend when available (non-blocking).
+    fetch(`http://localhost:3001/api/preference/app/${key}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ value })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value }),
+    }).catch(() => {
+        // Backend not available – preference is already stored locally.
     });
-
 });
 
 // ── Club IPC handlers ─────────────────────────────────────────────────────────
@@ -191,7 +190,83 @@ entityHandlers('role');
 entityHandlers('group');
 entityHandlers('section');
 
-// ── Window management ─────────────────────────────────────────────────────────
+// ── Finance IPC handlers ──────────────────────────────────────────────────────
+
+const KIND_TRANSACTION = 'transaction';
+const KIND_MEMBER_FEE = 'memberfee';
+
+ipcMain.handle('finance:listTransactions', () => {
+    const state = getFolderStore().getState();
+    const txs = state[KIND_TRANSACTION] ?? {};
+    return Object.values(txs);
+});
+
+ipcMain.handle('finance:createTransaction', (_event, data: Record<string, unknown>) => {
+    const store_ = getFolderStore();
+    const id = store_.generateId();
+    const patch = { ...data, id, createdAt: new Date().toISOString() };
+    store_.appendEvent(`${KIND_TRANSACTION}.create`, KIND_TRANSACTION, id, patch, getActor());
+    return patch;
+});
+
+ipcMain.handle('finance:updateTransaction', (_event, data: Record<string, unknown>) => {
+    const store_ = getFolderStore();
+    const id = data.id as number;
+    const patch = { ...data, updatedAt: new Date().toISOString() };
+    store_.appendEvent(`${KIND_TRANSACTION}.update`, KIND_TRANSACTION, id, patch, getActor());
+    return patch;
+});
+
+ipcMain.handle('finance:deleteTransaction', (_event, id: number) => {
+    getFolderStore().appendEvent(`${KIND_TRANSACTION}.delete`, KIND_TRANSACTION, id, {}, getActor());
+    return { ok: true };
+});
+
+ipcMain.handle('finance:listMemberFees', () => {
+    const state = getFolderStore().getState();
+    const fees = state[KIND_MEMBER_FEE] ?? {};
+    return Object.values(fees);
+});
+
+ipcMain.handle('finance:createMemberFee', (_event, data: Record<string, unknown>) => {
+    const store_ = getFolderStore();
+    const id = store_.generateId();
+    const patch = { ...data, id, createdAt: new Date().toISOString() };
+    store_.appendEvent(`${KIND_MEMBER_FEE}.create`, KIND_MEMBER_FEE, id, patch, getActor());
+    return patch;
+});
+
+ipcMain.handle('finance:updateMemberFee', (_event, data: Record<string, unknown>) => {
+    const store_ = getFolderStore();
+    const id = data.id as number;
+    const patch = { ...data, updatedAt: new Date().toISOString() };
+    store_.appendEvent(`${KIND_MEMBER_FEE}.update`, KIND_MEMBER_FEE, id, patch, getActor());
+    return patch;
+});
+
+ipcMain.handle('finance:deleteMemberFee', (_event, id: number) => {
+    getFolderStore().appendEvent(`${KIND_MEMBER_FEE}.delete`, KIND_MEMBER_FEE, id, {}, getActor());
+    return { ok: true };
+});
+
+// ── History IPC handler ───────────────────────────────────────────────────────
+
+ipcMain.handle('history:list', () => {
+    const events = getFolderStore().readAllEvents();
+    return events.map((ev, index) => ({
+        id: index + 1,
+        action: ev.type.endsWith('.create')
+            ? 'CREATE'
+            : ev.type.endsWith('.delete')
+                ? 'DELETE'
+                : 'UPDATE',
+        entity: ev.entity.kind,
+        entityId: ev.entity.id,
+        userId: ev.actor,
+        data: Object.keys(ev.patch).length > 0 ? JSON.stringify(ev.patch) : null,
+        createdAt: ev.ts,
+    }));
+});
 
 const gotTheLock = app.requestSingleInstanceLock();
 

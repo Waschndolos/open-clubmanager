@@ -1,5 +1,6 @@
-import { Member, Role, Group, ClubSection } from './types';
+import { Member, Role, Group, ClubSection, FinanceTransaction, MemberFee } from './types';
 import { LockInfo } from './ipcTypes';
+import { AuditLog } from './history';
 
 export interface MembersClient {
     list(): Promise<Member[]>;
@@ -39,10 +40,27 @@ export interface ClubClient {
     initFolder(): Promise<void>;
 }
 
+export interface FinanceClient {
+    listTransactions(): Promise<FinanceTransaction[]>;
+    createTransaction(data: Omit<FinanceTransaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<FinanceTransaction>;
+    updateTransaction(data: FinanceTransaction): Promise<FinanceTransaction>;
+    deleteTransaction(id: number): Promise<void>;
+    listMemberFees(): Promise<MemberFee[]>;
+    createMemberFee(data: Omit<MemberFee, 'id' | 'member' | 'createdAt' | 'updatedAt'>): Promise<MemberFee>;
+    updateMemberFee(data: MemberFee): Promise<MemberFee>;
+    deleteMemberFee(id: number): Promise<void>;
+}
+
+export interface HistoryClient {
+    list(): Promise<AuditLog[]>;
+}
+
 export interface DataClient {
     club: ClubClient;
     members: MembersClient;
     roles: RolesClient;
     groups: GroupsClient;
     sections: SectionsClient;
+    finance: FinanceClient;
+    history: HistoryClient;
 }

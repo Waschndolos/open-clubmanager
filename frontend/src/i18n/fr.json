@@ -200,7 +200,10 @@
             "dbPath": "Chemin de la base de données",
             "save": "Chemin de la base de données",
             "saveSuccess": "Paramètres enregistrés avec succès !",
-            "saveFails": "Échec de l’enregistrement des paramètres !"
+            "saveFails": "Échec de l’enregistrement des paramètres !",
+            "clubFolder": "Dossier du club",
+            "noFolderSelected": "Aucun dossier sélectionné",
+            "changeFolder": "Changer le dossier"
         }
     },
     "profile": {

@@ -1,6 +1,7 @@
-import { Member, Role, Group, ClubSection } from './types';
+import { Member, Role, Group, ClubSection, FinanceTransaction, MemberFee } from './types';
 import { DataClient } from './dataClient';
 import { LockInfo } from './ipcTypes';
+import { AuditLog } from './history';
 
 function getApi() {
     if (!window.api) {
@@ -99,6 +100,46 @@ export const ipcClient: DataClient = {
         },
         delete: async (data: ClubSection): Promise<void> => {
             await getApi().sections.delete(data.id);
+        },
+    },
+
+    finance: {
+        listTransactions: async (): Promise<FinanceTransaction[]> => {
+            const result = await getApi().finance.listTransactions();
+            return result as FinanceTransaction[];
+        },
+        createTransaction: async (data: Omit<FinanceTransaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<FinanceTransaction> => {
+            const result = await getApi().finance.createTransaction(data);
+            return result as FinanceTransaction;
+        },
+        updateTransaction: async (data: FinanceTransaction): Promise<FinanceTransaction> => {
+            const result = await getApi().finance.updateTransaction(data);
+            return result as FinanceTransaction;
+        },
+        deleteTransaction: async (id: number): Promise<void> => {
+            await getApi().finance.deleteTransaction(id);
+        },
+        listMemberFees: async (): Promise<MemberFee[]> => {
+            const result = await getApi().finance.listMemberFees();
+            return result as MemberFee[];
+        },
+        createMemberFee: async (data: Omit<MemberFee, 'id' | 'member' | 'createdAt' | 'updatedAt'>): Promise<MemberFee> => {
+            const result = await getApi().finance.createMemberFee(data);
+            return result as MemberFee;
+        },
+        updateMemberFee: async (data: MemberFee): Promise<MemberFee> => {
+            const result = await getApi().finance.updateMemberFee(data);
+            return result as MemberFee;
+        },
+        deleteMemberFee: async (id: number): Promise<void> => {
+            await getApi().finance.deleteMemberFee(id);
+        },
+    },
+
+    history: {
+        list: async (): Promise<AuditLog[]> => {
+            const result = await getApi().history.list();
+            return result as AuditLog[];
         },
     },
 };

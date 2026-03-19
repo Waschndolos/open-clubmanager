@@ -1,4 +1,4 @@
-import api from './api';
+import { getDataClient } from './clientFactory';
 
 export type AuditLog = {
     id: number;
@@ -11,6 +11,5 @@ export type AuditLog = {
 };
 
 export async function fetchHistory(): Promise<AuditLog[]> {
-    const res = await api.get<AuditLog[]>('/history');
-    return res.data;
+    return getDataClient().history.list();
 }

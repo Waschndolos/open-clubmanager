@@ -8,8 +8,8 @@
     "strict": true,
     "esModuleInterop": true,
     "moduleDetection": "force",
-    "types": ["node", "electron"],
-    "typeRoots": ["../node_modules/@types", "../node_modules"]
+    "types": ["node"],
+    "typeRoots": ["../node_modules/@types"]
   },
   "include": ["main.ts", "preload.cts", "storage/**/*.ts"],
   "exclude": ["dist", "node_modules"]

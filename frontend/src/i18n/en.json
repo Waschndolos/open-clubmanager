@@ -200,7 +200,10 @@
             "dbPath": "Database Path",
             "save": "Database Path",
             "saveSuccess": "Settings saved successfully!",
-            "saveFails": "Failed to save settings!"
+            "saveFails": "Failed to save settings!",
+            "clubFolder": "Club Folder",
+            "noFolderSelected": "No folder selected",
+            "changeFolder": "Change Folder"
         }
     },
     "profile": {

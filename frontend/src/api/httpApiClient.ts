@@ -1,7 +1,8 @@
 import api, { BACKEND_URL } from './api';
-import { Member, Role, Group, ClubSection } from './types';
+import { Member, Role, Group, ClubSection, FinanceTransaction, MemberFee } from './types';
 import { DataClient } from './dataClient';
 import { LockInfo } from './ipcTypes';
+import { AuditLog } from './history';
 
 function notSupported(method: string): never {
     throw new Error(`${method} is not supported in browser (HTTP) mode.`);
@@ -101,6 +102,46 @@ export const httpApiClient: DataClient = {
         },
         delete: async (data: ClubSection): Promise<void> => {
             await api.delete(`/sections/${data.id}`);
+        },
+    },
+
+    finance: {
+        listTransactions: async (): Promise<FinanceTransaction[]> => {
+            const res = await api.get<FinanceTransaction[]>('/finance/transactions');
+            return res.data;
+        },
+        createTransaction: async (data: Omit<FinanceTransaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<FinanceTransaction> => {
+            const res = await api.post<FinanceTransaction>('/finance/transactions', data);
+            return res.data;
+        },
+        updateTransaction: async (data: FinanceTransaction): Promise<FinanceTransaction> => {
+            const res = await api.put<FinanceTransaction>(`/finance/transactions/${data.id}`, data);
+            return res.data;
+        },
+        deleteTransaction: async (id: number): Promise<void> => {
+            await api.delete(`/finance/transactions/${id}`);
+        },
+        listMemberFees: async (): Promise<MemberFee[]> => {
+            const res = await api.get<MemberFee[]>('/finance/memberfees');
+            return res.data;
+        },
+        createMemberFee: async (data: Omit<MemberFee, 'id' | 'member' | 'createdAt' | 'updatedAt'>): Promise<MemberFee> => {
+            const res = await api.post<MemberFee>('/finance/memberfees', data);
+            return res.data;
+        },
+        updateMemberFee: async (data: MemberFee): Promise<MemberFee> => {
+            const res = await api.put<MemberFee>(`/finance/memberfees/${data.id}`, data);
+            return res.data;
+        },
+        deleteMemberFee: async (id: number): Promise<void> => {
+            await api.delete(`/finance/memberfees/${id}`);
+        },
+    },
+
+    history: {
+        list: async (): Promise<AuditLog[]> => {
+            const res = await api.get<AuditLog[]>('/history');
+            return res.data;
         },
     },
 };

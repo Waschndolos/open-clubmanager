@@ -200,7 +200,10 @@
             "dbPath": "Datenbankpfad",
             "save": "Speichern",
             "saveSuccess": "Einstellungen erfolgreich gespeichert!",
-            "saveFails": "Fehler beim Speichern der Einstellungen!"
+            "saveFails": "Fehler beim Speichern der Einstellungen!",
+            "clubFolder": "Vereinsordner",
+            "noFolderSelected": "Kein Ordner ausgewählt",
+            "changeFolder": "Ordner ändern"
         }
     },
     "profile": {
