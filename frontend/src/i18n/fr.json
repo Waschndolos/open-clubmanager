@@ -275,5 +275,17 @@
         "error": {
             "generic": "Une erreur s'est produite lors de la configuration du dossier du club."
         }
+    },
+    "readOnlyBanner": {
+        "message": "Mode lecture seule – actuellement modifié par : {{holder}}",
+        "requestEdit": "Demander le mode édition",
+        "unknownHolder": "un autre utilisateur"
+    },
+    "storage": {
+        "backupSuccess": "Sauvegarde créée : {{path}}",
+        "backupError": "Échec de la sauvegarde.",
+        "editModeAcquired": "Mode édition activé.",
+        "editModeReleased": "Mode édition libéré.",
+        "editModeDenied": "Le mode édition n'a pas pu être activé. Un autre utilisateur est en cours d'édition."
     }
 }

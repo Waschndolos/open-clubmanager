@@ -1,11 +1,13 @@
 import api, { BACKEND_URL } from './api';
-import { Member, Role, Group, ClubSection } from './types';
+import { Member, Role, Group, ClubSection, Payment, Attachment, StorageStatus } from './types';
 import { DataClient } from './dataClient';
 import { LockInfo } from './ipcTypes';
 
 function notSupported(method: string): never {
     throw new Error(`${method} is not supported in browser (HTTP) mode.`);
 }
+
+const readOnlyStatus: StorageStatus = { dataDir: null, mode: 'readonly' };
 
 export const httpApiClient: DataClient = {
     club: {
@@ -102,5 +104,25 @@ export const httpApiClient: DataClient = {
         delete: async (data: ClubSection): Promise<void> => {
             await api.delete(`/sections/${data.id}`);
         },
+    },
+
+    storage: {
+        getStatus: async (): Promise<StorageStatus> => readOnlyStatus,
+        requestEditMode: async () => ({ acquired: false, status: readOnlyStatus }),
+        releaseEditMode: async () => { /* no-op in HTTP mode */ },
+        exportBackup: () => notSupported('storage.exportBackup'),
+    },
+
+    payments: {
+        list: async (): Promise<Payment[]> => [],
+        create: () => notSupported('payments.create'),
+        update: () => notSupported('payments.update'),
+        delete: () => notSupported('payments.delete'),
+    },
+
+    attachments: {
+        add: () => notSupported('attachments.add'),
+        list: async (): Promise<Attachment[]> => [],
+        open: () => notSupported('attachments.open'),
     },
 };

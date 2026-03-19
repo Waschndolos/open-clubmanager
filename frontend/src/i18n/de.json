@@ -275,5 +275,17 @@
         "error": {
             "generic": "Beim Einrichten des Vereinsordners ist ein Fehler aufgetreten."
         }
+    },
+    "readOnlyBanner": {
+        "message": "Nur-Lesen-Modus – wird gerade bearbeitet von: {{holder}}",
+        "requestEdit": "Bearbeitungsmodus anfordern",
+        "unknownHolder": "einem anderen Nutzer"
+    },
+    "storage": {
+        "backupSuccess": "Backup erstellt: {{path}}",
+        "backupError": "Backup fehlgeschlagen.",
+        "editModeAcquired": "Bearbeitungsmodus aktiviert.",
+        "editModeReleased": "Bearbeitungsmodus freigegeben.",
+        "editModeDenied": "Bearbeitungsmodus konnte nicht aktiviert werden. Ein anderer Nutzer bearbeitet gerade."
     }
 }

@@ -275,5 +275,17 @@
         "error": {
             "generic": "An error occurred while setting up the club folder."
         }
+    },
+    "readOnlyBanner": {
+        "message": "Read-only mode – currently edited by: {{holder}}",
+        "requestEdit": "Request edit mode",
+        "unknownHolder": "another user"
+    },
+    "storage": {
+        "backupSuccess": "Backup created: {{path}}",
+        "backupError": "Backup failed.",
+        "editModeAcquired": "Edit mode activated.",
+        "editModeReleased": "Edit mode released.",
+        "editModeDenied": "Edit mode could not be acquired. Another user is currently editing."
     }
 }

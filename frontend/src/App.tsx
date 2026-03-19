@@ -3,6 +3,7 @@ import {router} from "./routes/routes";
 import {ThemeProvider} from './theme/ThemeContext';
 import {NotificationProvider} from "./context/NotificationContext";
 import {AuthProvider} from "./context/AuthContext";
+import {StorageProvider} from "./context/StorageContext";
 import './i18n';
 import '@fontsource/roboto/300.css';
 
@@ -16,7 +17,9 @@ export default function App() {
         <ThemeProvider>
             <NotificationProvider>
                 <AuthProvider>
-                    <RouterProvider router={router}/>
+                    <StorageProvider>
+                        <RouterProvider router={router}/>
+                    </StorageProvider>
                 </AuthProvider>
             </NotificationProvider>
         </ThemeProvider>

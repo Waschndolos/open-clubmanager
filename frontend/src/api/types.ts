@@ -72,3 +72,42 @@ export type MemberFee = {
     createdAt?: string;
     updatedAt?: string;
 };
+
+// ── SQLite storage types ──────────────────────────────────────────────────────
+
+export type WriteLockInfo = {
+    holderId: string;
+    holderLabel: string;
+    acquiredAt: string;
+    refreshedAt: string;
+    appVersion: string;
+};
+
+export type StorageStatus = {
+    dataDir: string | null;
+    mode: 'edit' | 'readonly';
+    lockHolder?: WriteLockInfo;
+    lockAgeMs?: number;
+};
+
+export type Payment = {
+    id: string;
+    memberId: string | null;
+    amountCents: number;
+    currency: string;
+    date: string;
+    note: string | null;
+    createdAt: string;
+};
+
+export type Attachment = {
+    id: string;
+    originalName: string;
+    storedRelPath: string;
+    mimeType: string;
+    sizeBytes: number;
+    sha256: string;
+    paymentId: string | null;
+    memberId: string | null;
+    createdAt: string;
+};

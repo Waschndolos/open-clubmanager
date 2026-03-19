@@ -1,10 +1,16 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import Store from 'electron-store';
 import { fileURLToPath } from 'url';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import * as crypto from 'crypto';
 import { FolderEventStore } from './storage/FolderEventStore.js';
-import { LockInfo } from './storage/types.js';
+import { LockInfo, AttachmentRecord, PaymentRecord } from './storage/types.js';
+import { GlobalLockService } from './storage/GlobalLockService.js';
+import { SqliteDbService } from './storage/SqliteDbService.js';
+import { AttachmentService } from './storage/AttachmentService.js';
+import { createBackup } from './storage/BackupService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +27,11 @@ let mainWindow: BrowserWindow | null = null;
 const store = new Store();
 
 let folderStore: FolderEventStore | null = null;
+let lockService: GlobalLockService | null = null;
+let dbService: SqliteDbService | null = null;
+let attachmentService: AttachmentService | null = null;
+let lockHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
+let currentDataDir: string | null = null;
 
 function getActor(): string {
     return os.userInfo().username;
@@ -36,6 +47,16 @@ function getFolderStore(): FolderEventStore {
 function initFolderStore(folderPath: string): void {
     folderStore = new FolderEventStore(folderPath);
     folderStore.ensureFolderStructure();
+
+    currentDataDir = folderPath;
+    lockService = new GlobalLockService(folderPath, app.getVersion());
+    dbService = new SqliteDbService(folderPath);
+    attachmentService = new AttachmentService(folderPath);
+    attachmentService.ensureDirs();
+
+    // Open in read-only mode initially; caller must invoke storage:requestEditMode
+    // to acquire the write lock and reopen in read-write mode.
+    dbService.open(true);
 }
 
 // ── User preferences (existing) ──────────────────────────────────────────────
@@ -191,7 +212,221 @@ entityHandlers('role');
 entityHandlers('group');
 entityHandlers('section');
 
-// ── Window management ─────────────────────────────────────────────────────────
+// ── SQLite storage IPC handlers ───────────────────────────────────────────────
+
+function getDbService(): SqliteDbService {
+    if (!dbService) {
+        throw new Error('Club folder not configured. Please select a club folder first.');
+    }
+    return dbService;
+}
+
+function getLockService(): GlobalLockService {
+    if (!lockService) {
+        throw new Error('Club folder not configured. Please select a club folder first.');
+    }
+    return lockService;
+}
+
+function getAttachmentService(): AttachmentService {
+    if (!attachmentService) {
+        throw new Error('Club folder not configured. Please select a club folder first.');
+    }
+    return attachmentService;
+}
+
+function startLockHeartbeat(): void {
+    stopLockHeartbeat();
+    lockHeartbeatTimer = setInterval(() => {
+        try {
+            lockService?.refresh();
+        } catch {
+            // Non-fatal: heartbeat failure means the lock may go stale,
+            // but we don't want to crash the app over it.
+        }
+    }, 30_000);
+}
+
+function stopLockHeartbeat(): void {
+    if (lockHeartbeatTimer !== null) {
+        clearInterval(lockHeartbeatTimer);
+        lockHeartbeatTimer = null;
+    }
+}
+
+ipcMain.handle('storage:getStatus', () => {
+    if (!lockService || !currentDataDir) {
+        return { dataDir: null, mode: 'readonly' };
+    }
+    return lockService.getStatus(currentDataDir);
+});
+
+ipcMain.handle('storage:requestEditMode', () => {
+    const ls = getLockService();
+    const db = getDbService();
+    const acquired = ls.tryAcquire();
+    if (acquired) {
+        db.open(false);
+        startLockHeartbeat();
+    }
+    return { acquired, status: ls.getStatus(currentDataDir!) };
+});
+
+ipcMain.handle('storage:releaseEditMode', () => {
+    stopLockHeartbeat();
+    const ls = getLockService();
+    const db = getDbService();
+    ls.release();
+    db.open(true);
+    return { ok: true };
+});
+
+ipcMain.handle('storage:exportBackup', async () => {
+    if (!currentDataDir) {
+        throw new Error('Club folder not configured.');
+    }
+    const zipPath = await createBackup(currentDataDir);
+    return { zipPath };
+});
+
+// ── Payments IPC handlers ─────────────────────────────────────────────────────
+
+function dbPaymentToRecord(p: import('./storage/SqliteDbService.js').DbPayment): PaymentRecord {
+    return {
+        id: p.id,
+        memberId: p.member_id,
+        amountCents: p.amount_cents,
+        currency: p.currency,
+        date: p.date,
+        note: p.note,
+        createdAt: p.created_at,
+    };
+}
+
+ipcMain.handle('payments:list', () => {
+    return getDbService().listPayments().map(dbPaymentToRecord);
+});
+
+ipcMain.handle('payments:create', (_event, data: Omit<PaymentRecord, 'id' | 'createdAt'>) => {
+    const row = getDbService().createPayment({
+        id: crypto.randomUUID(),
+        member_id: data.memberId,
+        amount_cents: data.amountCents,
+        currency: data.currency,
+        date: data.date,
+        note: data.note,
+    });
+    return dbPaymentToRecord(row);
+});
+
+ipcMain.handle('payments:update', (_event, data: PaymentRecord) => {
+    const row = getDbService().updatePayment(data.id, {
+        member_id: data.memberId,
+        amount_cents: data.amountCents,
+        currency: data.currency,
+        date: data.date,
+        note: data.note,
+    });
+    if (!row) throw new Error(`Payment ${data.id} not found.`);
+    return dbPaymentToRecord(row);
+});
+
+ipcMain.handle('payments:delete', (_event, id: string) => {
+    getDbService().deletePayment(id);
+    return { ok: true };
+});
+
+// ── Attachments IPC handlers ──────────────────────────────────────────────────
+
+function dbAttachmentToRecord(a: import('./storage/SqliteDbService.js').DbAttachment): AttachmentRecord {
+    return {
+        id: a.id,
+        originalName: a.original_name,
+        storedRelPath: a.stored_rel_path,
+        mimeType: a.mime_type,
+        sizeBytes: a.size_bytes,
+        sha256: a.sha256,
+        paymentId: a.payment_id,
+        memberId: a.member_id,
+        createdAt: a.created_at,
+    };
+}
+
+ipcMain.handle(
+    'attachments:add',
+    async (
+        _event,
+        {
+            sourcePath,
+            originalName,
+            mimeType,
+            paymentId,
+            memberId,
+        }: {
+            sourcePath: string;
+            originalName: string;
+            mimeType: string;
+            paymentId?: string;
+            memberId?: string;
+        }
+    ) => {
+        const db = getDbService();
+        const attachSvc = getAttachmentService();
+        const uuid = crypto.randomUUID();
+
+        const { storedRelPath, sha256, sizeBytes } = await attachSvc.writeAttachment(
+            sourcePath,
+            originalName,
+            uuid
+        );
+
+        // Insert metadata inside a transaction; roll back and remove the file
+        // if the DB insert fails.
+        let inserted: AttachmentRecord;
+        try {
+            const row = db.transaction(() =>
+                db.insertAttachment({
+                    id: uuid,
+                    original_name: originalName,
+                    stored_rel_path: storedRelPath,
+                    mime_type: mimeType,
+                    size_bytes: sizeBytes,
+                    sha256,
+                    payment_id: paymentId ?? null,
+                    member_id: memberId ?? null,
+                    created_at: new Date().toISOString(),
+                })
+            );
+            inserted = dbAttachmentToRecord(row);
+        } catch (err) {
+            // Remove the already-written file to keep the store consistent.
+            try {
+                const absPath = attachSvc.resolvePath(currentDataDir!, storedRelPath);
+                try { fs.unlinkSync(absPath); } catch { /* best-effort */ }
+            } catch { /* ignore */ }
+            throw err;
+        }
+
+        return inserted;
+    }
+);
+
+ipcMain.handle('attachments:list', (_event, filter?: { paymentId?: string; memberId?: string }) => {
+    const rows = getDbService().listAttachments(
+        filter
+            ? { payment_id: filter.paymentId, member_id: filter.memberId }
+            : undefined
+    );
+    return rows.map(dbAttachmentToRecord);
+});
+
+ipcMain.handle('attachments:open', async (_event, id: string) => {
+    const row = getDbService().getAttachment(id);
+    if (!row) throw new Error(`Attachment ${id} not found.`);
+    const absPath = getAttachmentService().resolvePath(currentDataDir!, row.stored_rel_path);
+    await shell.openPath(absPath);
+    return { ok: true };
+});
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -220,6 +455,9 @@ if (!gotTheLock) {
     });
 
     app.on('window-all-closed', () => {
+        stopLockHeartbeat();
+        lockService?.release();
+        dbService?.close();
         if (process.platform !== 'darwin') {
             app.quit();
         }
