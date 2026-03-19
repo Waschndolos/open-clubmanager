@@ -74,7 +74,12 @@ export class SqliteDbService {
                 // No database yet – reads will return empty results.
                 return;
             }
-            this.db = new Database(this.dbPath, { readonly: true, fileMustExist: true });
+            try {
+                this.db = new Database(this.dbPath, { readonly: true, fileMustExist: true });
+            } catch {
+                // File may have been removed between the existence check and open.
+                // Leave db as null; reads will return empty results.
+            }
         } else {
             this.db = new Database(this.dbPath, { readonly: false });
             this.db.pragma('journal_mode = WAL');

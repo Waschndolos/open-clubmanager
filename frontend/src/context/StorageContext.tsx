@@ -22,8 +22,8 @@ export const StorageProvider: React.FC<{ children: ReactNode }> = ({ children })
         try {
             const s = await getDataClient().storage.getStatus();
             setStatus(s);
-        } catch {
-            // Ignore errors during background polling.
+        } catch (err) {
+            console.warn('Failed to refresh storage status:', err);
         }
     }, []);
 

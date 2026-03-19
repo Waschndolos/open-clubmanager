@@ -240,9 +240,10 @@ function startLockHeartbeat(): void {
     lockHeartbeatTimer = setInterval(() => {
         try {
             lockService?.refresh();
-        } catch {
+        } catch (err) {
             // Non-fatal: heartbeat failure means the lock may go stale,
             // but we don't want to crash the app over it.
+            console.warn('Lock heartbeat refresh failed:', err);
         }
     }, 30_000);
 }
@@ -402,8 +403,12 @@ ipcMain.handle(
             // Remove the already-written file to keep the store consistent.
             try {
                 const absPath = attachSvc.resolvePath(currentDataDir!, storedRelPath);
-                try { fs.unlinkSync(absPath); } catch { /* best-effort */ }
-            } catch { /* ignore */ }
+                try { fs.unlinkSync(absPath); } catch (cleanupErr) {
+                    console.error('Failed to clean up attachment file after DB insert failure:', cleanupErr);
+                }
+            } catch (cleanupErr) {
+                console.error('Failed to resolve attachment path for cleanup:', cleanupErr);
+            }
             throw err;
         }
 

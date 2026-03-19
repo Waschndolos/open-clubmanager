@@ -4,6 +4,7 @@ import * as crypto from 'crypto';
 
 const ATTACHMENTS_DIR = 'attachments';
 const TMP_DIR = '.tmp';
+const MAX_FILENAME_LENGTH = 200;
 
 export interface AttachmentWriteResult {
     storedRelPath: string;
@@ -80,8 +81,10 @@ export class AttachmentService {
 
             return { storedRelPath, sha256, sizeBytes };
         } catch (err) {
-            // Clean up temp file on any failure.
-            try { fs.unlinkSync(tmpFile); } catch { /* ignore */ }
+            // Clean up temp file on any failure to avoid orphaned temp files.
+            try { fs.unlinkSync(tmpFile); } catch (cleanupErr) {
+                console.error('Failed to clean up temp attachment file:', cleanupErr);
+            }
             throw err;
         }
     }
@@ -96,7 +99,7 @@ export class AttachmentService {
 
 function sanitizeFileName(name: string): string {
     // Keep only safe characters; replace everything else with underscore.
-    return name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 200);
+    return name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, MAX_FILENAME_LENGTH);
 }
 
 function computeHashAndSize(filePath: string): Promise<{ sha256: string; sizeBytes: number }> {

@@ -80,7 +80,7 @@ export class GlobalLockService {
             fs.closeSync(fd);
             return true;
         } catch (err: unknown) {
-            if ((err as NodeJS.ErrnoException).code === 'EEXIST') {
+            if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'EEXIST') {
                 return false;
             }
             throw err;
