@@ -226,6 +226,26 @@ The backend is exposed via the versioned namespace `/api/v2`.
 - `PUT /api/v2/members/:id`
 - `DELETE /api/v2/members/:id`
 
+### 📘 API documentation
+
+- OpenAPI spec: [`openapi.yaml`](openapi.yaml)
+- ReDoc page: [`docs/index.html`](docs/index.html)
+
+If you update `openapi.yaml`, regenerate the ReDoc page with:
+
+```bash
+npm run docs:redoc
+```
+
+The repository also contains a GitHub Pages workflow in [`.github/workflows/api-docs.yml`](.github/workflows/api-docs.yml).
+After GitHub Pages is enabled for the repository, pushes to `main` will publish the contents of `docs/` as a hosted ReDoc site.
+
+GitHub usually exposes that site under a URL like:
+
+```text
+https://github.com/Waschndolos/open-clubmanager/
+```
+
 ### Start Frontend and Backend in Dev mode
 ```bash
 cd <rootProject>
