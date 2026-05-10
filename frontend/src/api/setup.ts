@@ -1,4 +1,4 @@
-import { BACKEND_V2_URL } from './api';
+import { BACKEND_V2_URL } from './baseUrl';
 
 const SETUP_URL = `${BACKEND_V2_URL}/setup`;
 

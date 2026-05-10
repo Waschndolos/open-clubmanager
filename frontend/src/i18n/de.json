@@ -26,11 +26,14 @@
         "database": {
             "localOption": "Lokal arbeiten (SQLite)",
             "sharedOption": "Mit mehreren arbeiten (MySQL)",
-            "localHint": "Die Anwendung speichert lokal in einer SQLite-Datei.",
-            "sharedHint": "Geben Sie eine MySQL-Verbindungs-URL ein, auf die alle zugreifen koennen.",
+            "localHint": "Die Daten werden in einer Datei auf diesem Computer gespeichert.",
+            "sharedHint": "Die Daten liegen in einer gemeinsamen MySQL-Datenbank für mehrere Personen.",
+            "localPathLabel": "SQLite-Datenbankpfad",
+            "localPathHint": "Beispiele: ./clubmanager.db, /home/user/clubmanager.db oder C:\\Users\\Name\\clubmanager.db",
             "urlLabel": "MySQL Datenbank-URL",
-            "urlHint": "Beispiel: mysql://user:pass@host:3306/clubmanager",
+            "mysqlPlaceholderHint": "Beispiel: mysql://user:pass@host:3306/clubmanager",
             "saveButton": "Datenbankmodus speichern",
+            "continueButton": "Weiter",
             "saving": "Speichern...",
             "configured": "Datenbankkonfiguration gespeichert. Erstellen Sie jetzt das Admin-Konto."
         },

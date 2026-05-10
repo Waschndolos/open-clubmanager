@@ -14,8 +14,8 @@ import {
 import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {validateDatabaseUrl} from "../../api/validation";
 import {DatabaseMode, getDatabaseSettings, saveDatabaseSettings} from "../../api/settings";
+import {validatePath} from "../../api/validation";
 import PageHeader from "../../components/common/PageHeader";
 
 export function Settings() {
@@ -71,7 +71,15 @@ export function Settings() {
     };
 
     async function validateDbPath(path: string): Promise<{ valid: boolean, i18nToken?: string }> {
-        return await validateDatabaseUrl(databaseMode, path);
+        if (databaseMode === 'mysql-shared') {
+            const valid = /^mysqls?:\/\//i.test(path);
+            return {
+                valid,
+                i18nToken: valid ? 'success.valid' : 'error.invalidmysqlurl',
+            };
+        }
+
+        return await validatePath(path.startsWith('file:') ? path.replace('file:', '').replace(/^\/\//, '') : path);
     }
 
     return (

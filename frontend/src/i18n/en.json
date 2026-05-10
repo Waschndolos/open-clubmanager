@@ -26,11 +26,14 @@
         "database": {
             "localOption": "Work locally (SQLite)",
             "sharedOption": "Work with multiple users (MySQL)",
-            "localHint": "The application stores data in a local SQLite file.",
-            "sharedHint": "Enter a shared MySQL connection URL that all users can access.",
+            "localHint": "Data is stored in a file on this computer.",
+            "sharedHint": "Data is stored in a shared MySQL database for multiple users.",
+            "localPathLabel": "SQLite database path",
+            "localPathHint": "Examples: ./clubmanager.db, /home/user/clubmanager.db, or C:\\Users\\Name\\clubmanager.db",
             "urlLabel": "MySQL database URL",
-            "urlHint": "Example: mysql://user:pass@host:3306/clubmanager",
+            "mysqlPlaceholderHint": "Example: mysql://user:pass@host:3306/clubmanager",
             "saveButton": "Save database mode",
+            "continueButton": "Continue",
             "saving": "Saving...",
             "configured": "Database configuration saved. You can now create the admin account."
         },

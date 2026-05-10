@@ -3,17 +3,9 @@ import axios, {
     AxiosInstance,
     InternalAxiosRequestConfig,
 } from "axios";
-import { refreshAccessToken } from "./authentication";
+import { BACKEND_ORIGIN, BACKEND_URL, BACKEND_V2_URL } from './baseUrl';
 
-function normalizeOrigin(origin: string): string {
-    return origin.endsWith('/') ? origin.slice(0, -1) : origin;
-}
-
-export const BACKEND_ORIGIN = normalizeOrigin(
-    import.meta.env.VITE_BACKEND_ORIGIN ?? 'http://localhost:3001'
-);
-export const BACKEND_URL = `${BACKEND_ORIGIN}/api/v2`;
-export const BACKEND_V2_URL = BACKEND_URL;
+export { BACKEND_ORIGIN, BACKEND_URL, BACKEND_V2_URL };
 
 interface RetryAxiosRequestConfig extends InternalAxiosRequestConfig {
     _retry?: boolean;
@@ -83,6 +75,7 @@ api.interceptors.response.use(
             isRefreshing = true;
 
                 try {
+                    const { refreshAccessToken } = await import('./authentication');
                     const data = await refreshAccessToken();
                     accessToken = data.accessToken;
 

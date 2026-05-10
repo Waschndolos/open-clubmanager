@@ -26,11 +26,14 @@
         "database": {
             "localOption": "Travailler en local (SQLite)",
             "sharedOption": "Travailler a plusieurs (MySQL)",
-            "localHint": "L'application stocke les donnees dans un fichier SQLite local.",
-            "sharedHint": "Saisissez une URL MySQL partagee accessible a tous les utilisateurs.",
+            "localHint": "Les donnees sont stockees dans un fichier sur cet ordinateur.",
+            "sharedHint": "Les donnees sont stockees dans une base MySQL partagee pour plusieurs utilisateurs.",
+            "localPathLabel": "Chemin de la base SQLite",
+            "localPathHint": "Exemples: ./clubmanager.db, /home/user/clubmanager.db, ou C:\\Users\\Name\\clubmanager.db",
             "urlLabel": "URL de base MySQL",
-            "urlHint": "Exemple: mysql://user:pass@host:3306/clubmanager",
+            "mysqlPlaceholderHint": "Exemple: mysql://user:pass@host:3306/clubmanager",
             "saveButton": "Enregistrer le mode base de donnees",
+            "continueButton": "Continuer",
             "saving": "Enregistrement...",
             "configured": "Configuration de la base enregistree. Vous pouvez maintenant creer le compte admin."
         },
