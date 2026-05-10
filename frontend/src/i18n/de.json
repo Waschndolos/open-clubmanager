@@ -233,6 +233,15 @@
     },
     "finance": {
         "title": "Finanzen",
+        "ledgerReset": {
+            "button": "Kassenbuch komplett löschen",
+            "title": "Kassenbuch komplett löschen",
+            "description": "Diese Aktion löscht alle Buchungen und alle Mitgliedsbeiträge unwiderruflich.",
+            "confirmLabel": "Zum Bestätigen geben Sie {{token}} ein.",
+            "confirmButton": "Jetzt alles löschen",
+            "success": "Kassenbuch gelöscht: {{transactions}} Buchungen und {{memberfees}} Mitgliedsbeiträge entfernt.",
+            "error": "Kassenbuch konnte nicht gelöscht werden."
+        },
         "tabs": {
             "transactions": "Kassenbuch",
             "memberfees": "Mitgliedsbeiträge"
@@ -246,7 +255,7 @@
         "transactions": {
             "create": "Buchung hinzufügen",
             "importCamt": "CAMT.053 importieren",
-            "importResult": "CAMT.053: {{imported}} importiert, {{skipped}} übersprungen ({{total}} gesamt)",
+            "importResult": "CAMT.053: {{imported}} importiert, {{skipped}} übersprungen ({{total}} gesamt), {{matched}} Mitgliedern zugeordnet, {{paid}} Beiträge als bezahlt markiert, {{createdFees}} Beiträge neu angelegt",
             "importError": "CAMT.053 Import fehlgeschlagen.",
             "fields": {
                 "date": "Datum",

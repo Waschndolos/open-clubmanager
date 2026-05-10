@@ -233,6 +233,15 @@
     },
     "finance": {
         "title": "Finance",
+        "ledgerReset": {
+            "button": "Delete full ledger",
+            "title": "Delete full ledger",
+            "description": "This action permanently deletes all transactions and all member fees.",
+            "confirmLabel": "To confirm, type {{token}}.",
+            "confirmButton": "Delete everything now",
+            "success": "Ledger cleared: removed {{transactions}} transactions and {{memberfees}} member fees.",
+            "error": "Failed to clear ledger."
+        },
         "tabs": {
             "transactions": "Cashbook",
             "memberfees": "Member Fees"
@@ -246,7 +255,7 @@
         "transactions": {
             "create": "Add Transaction",
             "importCamt": "Import CAMT.053",
-            "importResult": "CAMT.053: {{imported}} imported, {{skipped}} skipped ({{total}} total)",
+            "importResult": "CAMT.053: {{imported}} imported, {{skipped}} skipped ({{total}} total), matched to {{matched}} members, marked {{paid}} fees as paid, created {{createdFees}} new fees",
             "importError": "CAMT.053 import failed.",
             "fields": {
                 "date": "Date",

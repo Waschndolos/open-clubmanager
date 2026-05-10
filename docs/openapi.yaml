@@ -681,7 +681,37 @@ components:
         totalCount:
           type: integer
           minimum: 0
-      required: [importedCount, skippedCount, totalCount]
+        matchedMemberCount:
+          type: integer
+          minimum: 0
+        memberFeesMarkedPaid:
+          type: integer
+          minimum: 0
+        memberFeesCreated:
+          type: integer
+          minimum: 0
+      required: [importedCount, skippedCount, totalCount, matchedMemberCount, memberFeesMarkedPaid, memberFeesCreated]
+      additionalProperties: false
+
+    FinanceResetRequest:
+      type: object
+      properties:
+        confirmation:
+          type: string
+          const: DELETE_KASSENBUCH
+      required: [confirmation]
+      additionalProperties: false
+
+    FinanceResetResponse:
+      type: object
+      properties:
+        deletedMemberFees:
+          type: integer
+          minimum: 0
+        deletedTransactions:
+          type: integer
+          minimum: 0
+      required: [deletedMemberFees, deletedTransactions]
       additionalProperties: false
 
     MemberSummary:
@@ -1841,6 +1871,33 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+
+  /finance/reset:
+    post:
+      tags: [finance]
+      summary: Delete complete finance ledger (transactions and member fees)
+      operationId: resetFinanceLedger
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceResetRequest'
+      responses:
+        '200':
+          description: Ledger deleted summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceResetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
     delete:
       tags: [finance]
       summary: Delete a member fee

@@ -5,6 +5,14 @@ export interface Camt053ImportResult {
     importedCount: number;
     skippedCount: number;
     totalCount: number;
+    matchedMemberCount: number;
+    memberFeesMarkedPaid: number;
+    memberFeesCreated: number;
+}
+
+export interface FinanceResetResult {
+    deletedMemberFees: number;
+    deletedTransactions: number;
 }
 
 // ─── Finance Transactions ─────────────────────────────────────────────────────
@@ -34,6 +42,13 @@ export async function deleteTransaction(id: number): Promise<void> {
 
 export async function importCamt053(xml: string): Promise<Camt053ImportResult> {
     const res = await api.post<Camt053ImportResult>('/finance/transactions/import/camt053', { xml });
+    return res.data;
+}
+
+export async function resetFinanceLedger(): Promise<FinanceResetResult> {
+    const res = await api.post<FinanceResetResult>('/finance/reset', {
+        confirmation: 'DELETE_KASSENBUCH',
+    });
     return res.data;
 }
 

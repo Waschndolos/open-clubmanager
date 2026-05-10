@@ -233,6 +233,15 @@
     },
     "finance": {
         "title": "Finances",
+        "ledgerReset": {
+            "button": "Supprimer tout le livre",
+            "title": "Supprimer tout le livre",
+            "description": "Cette action supprime définitivement toutes les transactions et toutes les cotisations.",
+            "confirmLabel": "Pour confirmer, saisissez {{token}}.",
+            "confirmButton": "Tout supprimer maintenant",
+            "success": "Livre vidé : {{transactions}} transactions et {{memberfees}} cotisations supprimées.",
+            "error": "Échec de la suppression du livre."
+        },
         "tabs": {
             "transactions": "Livre de caisse",
             "memberfees": "Cotisations"
@@ -246,7 +255,7 @@
         "transactions": {
             "create": "Ajouter une transaction",
             "importCamt": "Importer CAMT.053",
-            "importResult": "CAMT.053 : {{imported}} importées, {{skipped}} ignorées ({{total}} au total)",
+            "importResult": "CAMT.053 : {{imported}} importées, {{skipped}} ignorées ({{total}} au total), associées à {{matched}} membres, {{paid}} cotisations marquées payées, {{createdFees}} cotisations créées",
             "importError": "Échec de l'import CAMT.053.",
             "fields": {
                 "date": "Date",

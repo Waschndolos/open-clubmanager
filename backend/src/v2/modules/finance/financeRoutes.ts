@@ -4,7 +4,110 @@ import { ApiV2Config } from '../../config.ts';
 import { createVerifyToken, AuthenticatedRequest } from '../auth/authMiddleware.ts';
 import { asyncHandler } from '../../core/asyncHandler.ts';
 import { createAuditLog } from '../history/historyAudit.ts';
-import { parseCamt053 } from './camt053Import.ts';
+import { parseCamt053, ParsedBankTransaction } from './camt053Import.ts';
+
+type MemberSummary = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    number: number;
+    email: string;
+    iban: string | null;
+};
+
+function normalizeText(value: string): string {
+    return value
+        .toLocaleLowerCase('de-DE')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, ' ')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+}
+
+function normalizeCompact(value: string): string {
+    return value
+        .toLocaleLowerCase('de-DE')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+}
+
+function normalizeIban(value: string): string {
+    return value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function hasWord(text: string, word: string): boolean {
+    return new RegExp(`(^|\\s)${word}(\\s|$)`).test(text);
+}
+
+function findMatchingMember(transaction: ParsedBankTransaction, members: MemberSummary[]): MemberSummary | null {
+    const normalizedText = normalizeText([
+        transaction.description,
+        transaction.counterpartyName ?? '',
+        transaction.endToEndId ?? '',
+        transaction.mandateId ?? '',
+        transaction.notes,
+    ].join(' '));
+    const compactText = normalizeCompact([
+        transaction.description,
+        transaction.counterpartyName ?? '',
+        transaction.endToEndId ?? '',
+        transaction.mandateId ?? '',
+        transaction.notes,
+    ].join(' '));
+
+    if (!normalizedText && !compactText) {
+        return null;
+    }
+
+    let bestMatch: { member: MemberSummary; score: number } | null = null;
+    const txIban = transaction.counterpartyIban ? normalizeIban(transaction.counterpartyIban) : '';
+
+    for (const member of members) {
+        const first = normalizeText(member.firstName);
+        const last = normalizeText(member.lastName);
+        const email = normalizeCompact(member.email);
+        const memberIban = member.iban ? normalizeIban(member.iban) : '';
+
+        if (!first || !last || !member.email) {
+            continue;
+        }
+
+        const fullName = `${first} ${last}`;
+        let score = 0;
+
+        if (txIban && memberIban && txIban === memberIban) {
+            score += 1000;
+        }
+
+        if (email && compactText.includes(email)) {
+            score += 600;
+        }
+
+        if (hasWord(normalizedText, String(member.number))) {
+            score += 450;
+        }
+
+        const hasFullName = normalizedText.includes(fullName);
+        const hasFirst = normalizedText.includes(first);
+        const hasLast = normalizedText.includes(last);
+        if (hasFullName) {
+            score += 220;
+        } else if (hasFirst && hasLast) {
+            score += 140;
+        }
+
+        if (score === 0) {
+            continue;
+        }
+
+        if (!bestMatch || score > bestMatch.score) {
+            bestMatch = { member, score };
+        }
+    }
+
+    return bestMatch?.member ?? null;
+}
 
 export function createFinanceRoutes(config: ApiV2Config): Router {
     const router = Router();
@@ -22,9 +125,15 @@ export function createFinanceRoutes(config: ApiV2Config): Router {
         const { xml } = req.body as { xml?: string };
         const imported = parseCamt053(xml ?? '');
         const prisma = await getClient();
+        const members = await prisma.member.findMany({
+            select: { id: true, firstName: true, lastName: true, number: true, email: true, iban: true },
+        });
 
         let createdCount = 0;
         let skippedCount = 0;
+        let matchedMemberCount = 0;
+        let memberFeesMarkedPaid = 0;
+        let memberFeesCreated = 0;
 
         for (const tx of imported) {
             const duplicate = await prisma.financeTransaction.findFirst({
@@ -43,9 +152,84 @@ export function createFinanceRoutes(config: ApiV2Config): Router {
             }
 
             await prisma.financeTransaction.create({
-                data: tx,
+                data: {
+                    date: tx.date,
+                    description: tx.description,
+                    amount: tx.amount,
+                    type: tx.type,
+                    category: tx.category,
+                    notes: tx.notes,
+                },
             });
             createdCount += 1;
+
+            if (tx.type !== 'income') {
+                continue;
+            }
+
+            const matchedMember = findMatchingMember(tx, members);
+            if (!matchedMember) {
+                continue;
+            }
+
+            matchedMemberCount += 1;
+
+            const txYear = tx.date.getFullYear();
+            const existingOpenFee = await prisma.memberFee.findFirst({
+                where: {
+                    memberId: matchedMember.id,
+                    year: txYear,
+                    paidDate: null,
+                    amount: {
+                        gte: tx.amount - 0.005,
+                        lte: tx.amount + 0.005,
+                    },
+                },
+                orderBy: { dueDate: 'asc' },
+            });
+
+            if (existingOpenFee) {
+                await prisma.memberFee.update({
+                    where: { id: existingOpenFee.id },
+                    data: {
+                        paidDate: tx.date,
+                        description: existingOpenFee.description ?? `Auto-matched CAMT.053: ${tx.description}`,
+                    },
+                });
+                memberFeesMarkedPaid += 1;
+                continue;
+            }
+
+            const alreadyPaidSameYear = await prisma.memberFee.findFirst({
+                where: {
+                    memberId: matchedMember.id,
+                    year: txYear,
+                    paidDate: {
+                        not: null,
+                    },
+                    amount: {
+                        gte: tx.amount - 0.005,
+                        lte: tx.amount + 0.005,
+                    },
+                },
+                select: { id: true },
+            });
+
+            if (alreadyPaidSameYear) {
+                continue;
+            }
+
+            await prisma.memberFee.create({
+                data: {
+                    memberId: matchedMember.id,
+                    amount: tx.amount,
+                    dueDate: tx.date,
+                    paidDate: tx.date,
+                    description: `Imported from CAMT.053: ${tx.description}`,
+                    year: txYear,
+                },
+            });
+            memberFeesCreated += 1;
         }
 
         await createAuditLog(prisma, 'CREATE', 'FinanceTransactionImport', 0, req.userEmail ?? '', {
@@ -53,12 +237,18 @@ export function createFinanceRoutes(config: ApiV2Config): Router {
             importedCount: createdCount,
             skippedCount,
             totalCount: imported.length,
+            matchedMemberCount,
+            memberFeesMarkedPaid,
+            memberFeesCreated,
         });
 
         res.status(201).json({
             importedCount: createdCount,
             skippedCount,
             totalCount: imported.length,
+            matchedMemberCount,
+            memberFeesMarkedPaid,
+            memberFeesCreated,
         });
     }));
 
@@ -122,6 +312,31 @@ export function createFinanceRoutes(config: ApiV2Config): Router {
         await prisma.financeTransaction.delete({ where: { id } });
         await createAuditLog(prisma, 'DELETE', 'FinanceTransaction', id, req.userEmail ?? '');
         res.sendStatus(204);
+    }));
+
+    router.post('/reset', verifyToken, asyncHandler(async (req: AuthenticatedRequest, res) => {
+        const { confirmation } = req.body as { confirmation?: string };
+        if (confirmation !== 'DELETE_KASSENBUCH') {
+            res.status(400).json({ error: 'Confirmation token is invalid.' });
+            return;
+        }
+
+        const prisma = await getClient();
+
+        const [deletedMemberFees, deletedTransactions] = await prisma.$transaction([
+            prisma.memberFee.deleteMany(),
+            prisma.financeTransaction.deleteMany(),
+        ]);
+
+        await createAuditLog(prisma, 'DELETE', 'FinanceLedger', 0, req.userEmail ?? '', {
+            deletedMemberFees: deletedMemberFees.count,
+            deletedTransactions: deletedTransactions.count,
+        });
+
+        res.json({
+            deletedMemberFees: deletedMemberFees.count,
+            deletedTransactions: deletedTransactions.count,
+        });
     }));
 
     router.get('/memberfees', verifyToken, asyncHandler(async (_req, res) => {

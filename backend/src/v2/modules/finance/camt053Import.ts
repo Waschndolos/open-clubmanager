@@ -8,6 +8,10 @@ export interface ParsedBankTransaction {
     type: 'income' | 'expense';
     category: string;
     notes: string;
+    counterpartyName: string | null;
+    counterpartyIban: string | null;
+    endToEndId: string | null;
+    mandateId: string | null;
 }
 
 type UnknownRecord = Record<string, unknown>;
@@ -115,6 +119,42 @@ function parseDescription(entry: UnknownRecord): string {
         ?? 'Bank transaction import';
 }
 
+function getFirstTxDetails(entry: UnknownRecord): UnknownRecord | undefined {
+    const details = entry.NtryDtls as UnknownRecord | UnknownRecord[] | undefined;
+    const detail = asArray(details)[0] as UnknownRecord | undefined;
+    const txDetails = detail?.TxDtls as UnknownRecord | UnknownRecord[] | undefined;
+    return asArray(txDetails)[0] as UnknownRecord | undefined;
+}
+
+function parseCounterpartyName(entry: UnknownRecord): string | null {
+    const tx = getFirstTxDetails(entry);
+    const related = tx?.RltdPties as UnknownRecord | undefined;
+    const debtorName = getText((related?.Dbtr as UnknownRecord | undefined)?.Nm);
+    const creditorName = getText((related?.Cdtr as UnknownRecord | undefined)?.Nm);
+    return debtorName ?? creditorName ?? null;
+}
+
+function parseCounterpartyIban(entry: UnknownRecord): string | null {
+    const tx = getFirstTxDetails(entry);
+    const related = tx?.RltdPties as UnknownRecord | undefined;
+    const debtorIban = getText((((related?.DbtrAcct as UnknownRecord | undefined)?.Id as UnknownRecord | undefined)?.IBAN));
+    const creditorIban = getText((((related?.CdtrAcct as UnknownRecord | undefined)?.Id as UnknownRecord | undefined)?.IBAN));
+    return debtorIban ?? creditorIban ?? null;
+}
+
+function parseEndToEndId(entry: UnknownRecord): string | null {
+    const tx = getFirstTxDetails(entry);
+    const refs = tx?.Refs as UnknownRecord | undefined;
+    return getText(refs?.EndToEndId) ?? null;
+}
+
+function parseMandateId(entry: UnknownRecord): string | null {
+    const tx = getFirstTxDetails(entry);
+    const related = tx?.RltdTxInf as UnknownRecord | undefined;
+    const mandate = related?.MndtRltdInf as UnknownRecord | undefined;
+    return getText(mandate?.MndtId) ?? null;
+}
+
 export function parseCamt053(xml: string): ParsedBankTransaction[] {
     if (!xml.trim()) {
         throw new HttpError(400, 'FINANCE_IMPORT_EMPTY_FILE', 'No CAMT.053 XML content provided.');
@@ -138,13 +178,31 @@ export function parseCamt053(xml: string): ParsedBankTransaction[] {
 
     return entries.map((entry) => {
         const entryRecord = (entry ?? {}) as UnknownRecord;
+        const description = parseDescription(entryRecord);
+        const counterpartyName = parseCounterpartyName(entryRecord);
+        const counterpartyIban = parseCounterpartyIban(entryRecord);
+        const endToEndId = parseEndToEndId(entryRecord);
+        const mandateId = parseMandateId(entryRecord);
+
+        const notesParts = [
+            'Imported from CAMT.053',
+            counterpartyName ? `Counterparty: ${counterpartyName}` : null,
+            counterpartyIban ? `IBAN: ${counterpartyIban}` : null,
+            endToEndId ? `EndToEndId: ${endToEndId}` : null,
+            mandateId ? `MandateId: ${mandateId}` : null,
+        ].filter((item): item is string => Boolean(item));
+
         return {
             date: parseDate(entryRecord),
-            description: parseDescription(entryRecord),
+            description,
             amount: parseAmount(entryRecord),
             type: parseType(entryRecord),
             category: 'bank-import',
-            notes: 'Imported from CAMT.053',
+            notes: notesParts.join(' | '),
+            counterpartyName,
+            counterpartyIban,
+            endToEndId,
+            mandateId,
         };
     });
 }

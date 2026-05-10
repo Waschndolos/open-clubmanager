@@ -28,6 +28,7 @@ import {
     updateTransaction,
     deleteTransaction,
     importCamt053,
+    resetFinanceLedger,
     fetchMemberFees,
     createMemberFee,
     updateMemberFee,
@@ -36,6 +37,8 @@ import {
 import { fetchMembers } from '../../api/members';
 import { FinanceTransaction, MemberFee, Member } from '../../api/types';
 import PageHeader from '../../components/common/PageHeader';
+
+const FINANCE_RESET_CONFIRM_TEXT = 'DELETE';
 
 // ─── Transaction Dialog ───────────────────────────────────────────────────────
 
@@ -271,6 +274,9 @@ export function Finance() {
     const [fees, setFees] = useState<MemberFee[]>([]);
     const [members, setMembers] = useState<Member[]>([]);
     const [importSummary, setImportSummary] = useState<string | null>(null);
+    const [resetDialogOpen, setResetDialogOpen] = useState(false);
+    const [resetConfirmInput, setResetConfirmInput] = useState('');
+    const [resetSubmitting, setResetSubmitting] = useState(false);
 
     const [txDialog, setTxDialog] = useState<{ open: boolean; item: Partial<FinanceTransaction>; isNew: boolean }>({
         open: false,
@@ -314,13 +320,17 @@ export function Finance() {
     const handleImportCamt053 = async (file: File) => {
         const xml = await file.text();
         const result = await importCamt053(xml);
-        const txs = await fetchTransactions();
+        const [txs, memberFees] = await Promise.all([fetchTransactions(), fetchMemberFees()]);
         setTransactions(txs);
+        setFees(memberFees);
         setImportSummary(
             t('finance.transactions.importResult', {
                 imported: result.importedCount,
                 skipped: result.skippedCount,
                 total: result.totalCount,
+                matched: result.matchedMemberCount,
+                paid: result.memberFeesMarkedPaid,
+                createdFees: result.memberFeesCreated,
             })
         );
     };
@@ -341,6 +351,27 @@ export function Finance() {
     const handleDeleteFee = async (id: number) => {
         await deleteMemberFee(id);
         setFees((prev) => prev.filter((f) => f.id !== id));
+    };
+
+    const handleResetLedger = async () => {
+        setResetSubmitting(true);
+        try {
+            const result = await resetFinanceLedger();
+            setTransactions([]);
+            setFees([]);
+            setImportSummary(
+                t('finance.ledgerReset.success', {
+                    transactions: result.deletedTransactions,
+                    memberfees: result.deletedMemberFees,
+                })
+            );
+            setResetDialogOpen(false);
+            setResetConfirmInput('');
+        } catch {
+            setImportSummary(t('finance.ledgerReset.error'));
+        } finally {
+            setResetSubmitting(false);
+        }
     };
 
     // ── Column definitions ────────────────────────────────────────────────────
@@ -485,6 +516,17 @@ export function Finance() {
                 icon={<AccountBalance fontSize="small" />}
             />
 
+            <Box display="flex" justifyContent="flex-end" mb={2}>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<Delete />}
+                    onClick={() => setResetDialogOpen(true)}
+                >
+                    {t('finance.ledgerReset.button')}
+                </Button>
+            </Box>
+
             <BalanceSummary transactions={transactions} fees={fees} />
 
             <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
@@ -595,6 +637,35 @@ export function Finance() {
                     onSave={handleSaveFee}
                 />
             )}
+
+            <Dialog open={resetDialogOpen} onClose={() => setResetDialogOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>{t('finance.ledgerReset.title')}</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body2" color="text.secondary" mb={2}>
+                        {t('finance.ledgerReset.description')}
+                    </Typography>
+                    <Typography variant="body2" mb={1}>
+                        {t('finance.ledgerReset.confirmLabel', { token: FINANCE_RESET_CONFIRM_TEXT })}
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        value={resetConfirmInput}
+                        onChange={(e) => setResetConfirmInput(e.target.value)}
+                        placeholder={FINANCE_RESET_CONFIRM_TEXT}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setResetDialogOpen(false)}>{t('buttons.abort')}</Button>
+                    <Button
+                        color="error"
+                        variant="contained"
+                        onClick={handleResetLedger}
+                        disabled={resetSubmitting || resetConfirmInput !== FINANCE_RESET_CONFIRM_TEXT}
+                    >
+                        {t('finance.ledgerReset.confirmButton')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
