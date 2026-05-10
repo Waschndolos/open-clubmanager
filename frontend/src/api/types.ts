@@ -13,6 +13,7 @@ export interface MemberContainingNamedArtifact extends NamedArtifact {
 
 export type Member = {
     id: number;
+    versionToken?: string;
     number?: number;
     firstName?: string;
     lastName?: string;

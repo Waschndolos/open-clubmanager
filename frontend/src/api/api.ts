@@ -5,7 +5,15 @@ import axios, {
 } from "axios";
 import { refreshAccessToken } from "./authentication";
 
-export const BACKEND_URL = "http://localhost:3001/api";
+function normalizeOrigin(origin: string): string {
+    return origin.endsWith('/') ? origin.slice(0, -1) : origin;
+}
+
+export const BACKEND_ORIGIN = normalizeOrigin(
+    import.meta.env.VITE_BACKEND_ORIGIN ?? 'http://localhost:3001'
+);
+export const BACKEND_URL = `${BACKEND_ORIGIN}/api/v2`;
+export const BACKEND_V2_URL = BACKEND_URL;
 
 interface RetryAxiosRequestConfig extends InternalAxiosRequestConfig {
     _retry?: boolean;

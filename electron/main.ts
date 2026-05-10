@@ -53,7 +53,7 @@ ipcMain.on('userpreference-delete', async (event, userId, key, value) => {
 });
 
 ipcMain.on('apppreference-get', async (event, key) => {
-    const res = await fetch(`http://localhost:3001/api/preference/app/${key}`);
+    const res = await fetch(`http://localhost:3001/api/v2/preferences/app/${key}`);
     const data = await res.json();
 
     event.returnValue = data[key];
@@ -61,7 +61,7 @@ ipcMain.on('apppreference-get', async (event, key) => {
 
 ipcMain.on('apppreference-set', async (event, key, value) => {
 
-    await fetch(`http://localhost:3001/api/preference/app/${key}`, {
+    await fetch(`http://localhost:3001/api/v2/preferences/app/${key}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
