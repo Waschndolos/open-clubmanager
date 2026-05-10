@@ -111,7 +111,7 @@ No Node.js, no `.env` file, no server setup.
 ├── backend/         # Express API + Prisma + SQLite
 │   ├── src/
 │   │   ├── server.ts
-│   │   └── routes/
+│   │   └── v2/
 │   ├── prisma/
 │   │   ├── schema.prisma
 │   │   ├── migrations/
@@ -137,6 +137,10 @@ First, create a file named `.env` in the `backend` directory with the following 
 ```plaintext
 # The url where the backend will find the SQLite database
 DATABASE_URL="file:/home/myUser/clubmanager.db"
+
+# Development secrets for API authentication
+JWT_ACCESS_SECRET="dev_access_secret_change_me"
+JWT_REFRESH_SECRET="dev_refresh_secret_change_me"
 
 # Alternatively, for users who use "Please Reboot OS" you can use:
 # DATABASE_URL="file:C:\\Users\\myUser\\clubmanager.db"
@@ -191,11 +195,36 @@ npm run dev        # start the backend server
 
 #### Frontend
 
+Create a file named `.env` in the `frontend` directory with the following content:
+
+```plaintext
+VITE_APP_VERSION=1.0.0
+VITE_BACKEND_ORIGIN=http://localhost:3001
+```
+
 ```bash
 cd frontend
 npm install
 npm run dev        # start the Vite dev server
 ```
+
+### API v2 bootstrap endpoints
+
+The backend is exposed via the versioned namespace `/api/v2`.
+
+- `GET /api/v2/system/health`
+- `GET /api/v2/system/meta`
+- `GET /api/v2/setup/status`
+- `POST /api/v2/setup/initialize`
+- `POST /api/v2/auth/login`
+- `POST /api/v2/auth/refresh-token`
+- `POST /api/v2/auth/logout`
+- `GET /api/v2/auth/profile`
+- `GET /api/v2/members`
+- `GET /api/v2/members/:id`
+- `POST /api/v2/members`
+- `PUT /api/v2/members/:id`
+- `DELETE /api/v2/members/:id`
 
 ### Start Frontend and Backend in Dev mode
 ```bash
@@ -245,10 +274,10 @@ All scripts below can be run from the **project root**.
 
 You can use Postman or any REST client to test:
 
-* `GET /api/members`
-* `POST /api/members`
-* `PUT /api/members/:id`
-* `DELETE /api/members/:id`
+* `GET /api/v2/members`
+* `POST /api/v2/members`
+* `PUT /api/v2/members/:id`
+* `DELETE /api/v2/members/:id`
 
 Prisma Studio is available via:
 

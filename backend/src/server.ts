@@ -1,18 +1,7 @@
 import express, {Request, Response} from 'express'
 import cookieParser from "cookie-parser";
 import cors from 'cors'
-import memberRoutes from './routes/member.ts'
-import roleRoutes from "./routes/role.ts";
-import groupRoutes from "./routes/group.ts";
-import sectionRoutes from "./routes/section.ts";
-import preferenceRoutes from "./routes/userpreference.ts";
-import validationRoutes from "./routes/validation.ts";
-import settingRoutes from "./routes/settings.ts";
-import statisticRoutes from "./routes/statistics.ts";
-import authRoutes from "./routes/auth.ts";
-import setupRoutes from "./routes/setup.ts";
-import financeRoutes from "./routes/finance.ts";
-import historyRoutes from "./routes/history.ts";
+import { createApiV2Router } from './v2/createApiV2Router.ts';
 
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', {
@@ -42,21 +31,10 @@ app.use(cookieParser())
 
 console.log("Setup routes")
 // Routes
-app.use('/api/members', memberRoutes)
-app.use('/api/roles', roleRoutes);
-app.use('/api/groups', groupRoutes);
-app.use('/api/sections', sectionRoutes);
-app.use('/api/preferences', preferenceRoutes);
-app.use('/api/validation', validationRoutes);
-app.use('/api/settings', settingRoutes);
-app.use('/api/statistics', statisticRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/setup', setupRoutes);
-app.use('/api/finance', financeRoutes);
-app.use('/api/history', historyRoutes);
+app.use('/api/v2', createApiV2Router());
 
 // Error handling middleware
-app.use((err: unknown, _req: Request, res: Response) => {
+app.use((err: unknown, _req: Request, res: Response, _next: express.NextFunction) => {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
 });
