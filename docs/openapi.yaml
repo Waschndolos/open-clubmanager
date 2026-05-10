@@ -146,6 +146,14 @@ components:
       required: [id, name]
       additionalProperties: true
 
+    NamedEntityReference:
+      type: object
+      properties:
+        id:
+          type: integer
+      required: [id]
+      additionalProperties: false
+
     NamedEntityCreateRequest:
       type: object
       properties:
@@ -350,6 +358,18 @@ components:
           type: array
           items:
             type: integer
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntityReference'
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntityReference'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntityReference'
       required: [number, firstName, lastName, email]
       additionalProperties: false
 

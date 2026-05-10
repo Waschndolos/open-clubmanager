@@ -9,9 +9,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const configFilePath = path.join(__dirname, '..', '..', '..', '..', 'app-settings.json');
 
+const DEFAULT_APP_CONFIG: Record<string, unknown> = {
+    DATABASE_URL: '',
+};
+
 async function getConfig() {
-    const configContent = await fs.readFile(configFilePath, 'utf8');
-    return JSON.parse(configContent) as Record<string, unknown>;
+    try {
+        const configContent = await fs.readFile(configFilePath, 'utf8');
+        return JSON.parse(configContent) as Record<string, unknown>;
+    } catch (err) {
+        const errorCode = (err as NodeJS.ErrnoException).code;
+        if (errorCode !== 'ENOENT') {
+            throw err;
+        }
+
+        await fs.writeFile(configFilePath, JSON.stringify(DEFAULT_APP_CONFIG, null, 2), 'utf8');
+        return { ...DEFAULT_APP_CONFIG };
+    }
 }
 
 function normalizeParamKey(rawKey: string | string[] | undefined): string {

@@ -155,9 +155,9 @@ npm run setup
 This will:
 1. Install all dependencies (root, frontend, backend)
 2. Run Prisma migrations
-3. Seed the database with demo data
+3. Seed the database with demo data (members, roles, groups, sections)
 
-An admin user `admin@admin.com` / `admin` is created automatically.
+If the database contains no users yet, the app will guide you through the setup flow to create the first admin account.
 
 Once setup is complete, start the development servers:
 
@@ -181,6 +181,10 @@ Create a file named `.env` in the `backend` directory with the following content
 ```plaintext
 # The url where the backend will find the SQLite database
 DATABASE_URL="file:/home/myUser/clubmanager.db"
+
+# Recommended for local development
+JWT_ACCESS_SECRET="dev_access_secret_change_me"
+JWT_REFRESH_SECRET="dev_refresh_secret_change_me"
 
 # Alternatively, for users who use "Please Reboot OS" you can use:
 # DATABASE_URL="file:C:\\Users\\myUser\\clubmanager.db"
@@ -263,16 +267,16 @@ npm run dev:electron
 
 The initial user for the development mode is:
 ```plaintext
-Email:      admin@admin.com
-Password:   admin
+No fixed default user is created by the seed script.
+If there are no users yet, open the setup flow in the app and create the first admin account.
 ```
 
 ---
 
 ## 🌱 Development Mode
 
-When starting the backend in development mode (`NODE_ENV=development`), seed data will be automatically inserted to
-simulate real-world use cases.
+Demo data is created by running `npm run setup` or `npm run prisma:seed`.
+Starting the backend alone does not automatically reseed the database.
 
 ---
 
