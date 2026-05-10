@@ -1,19 +1,8 @@
 import api, { BACKEND_URL } from './api';
 import { Member, Role, Group, ClubSection } from './types';
 import { DataClient } from './dataClient';
-import { LockInfo } from './ipcTypes';
-
-function notSupported(method: string): never {
-    throw new Error(`${method} is not supported in browser (HTTP) mode.`);
-}
 
 export const httpApiClient: DataClient = {
-    club: {
-        selectFolder: () => notSupported('club.selectFolder'),
-        getFolder: async () => null,
-        initFolder: async () => { /* no-op in HTTP mode */ },
-    },
-
     members: {
         list: async (): Promise<Member[]> => {
             const res = await fetch(`${BACKEND_URL}/members?page=1&pageSize=500`);
@@ -43,13 +32,6 @@ export const httpApiClient: DataClient = {
                 await api.delete(`/members/${member.id}`);
             }
         },
-        lock: async (_id: number, _owner: string): Promise<{ acquired: boolean; lock: LockInfo | null }> => {
-            return { acquired: true, lock: null };
-        },
-        unlock: async (_id: number, _owner: string): Promise<{ released: boolean }> => {
-            return { released: true };
-        },
-        getLock: async (_id: number): Promise<LockInfo | null> => null,
     },
 
     roles: {

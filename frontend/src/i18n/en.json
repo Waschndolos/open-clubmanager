@@ -19,8 +19,20 @@
         "title": "Welcome to Open ClubManager",
         "description": "No admin account exists yet. Create your initial administrator account to get started.",
         "steps": {
+            "database": "Configure Database",
             "createAdmin": "Create Admin Account",
             "login": "Sign In"
+        },
+        "database": {
+            "localOption": "Work locally (SQLite)",
+            "sharedOption": "Work with multiple users (MySQL)",
+            "localHint": "The application stores data in a local SQLite file.",
+            "sharedHint": "Enter a shared MySQL connection URL that all users can access.",
+            "urlLabel": "MySQL database URL",
+            "urlHint": "Example: mysql://user:pass@host:3306/clubmanager",
+            "saveButton": "Save database mode",
+            "saving": "Saving...",
+            "configured": "Database configuration saved. You can now create the admin account."
         },
         "email": "Email",
         "password": "Password",
@@ -30,7 +42,8 @@
         "validation": {
             "invalidEmail": "Please enter a valid email address.",
             "passwordTooShort": "Password must be at least 8 characters long.",
-            "passwordMismatch": "Passwords do not match."
+            "passwordMismatch": "Passwords do not match.",
+            "invalidMysqlUrl": "Please enter a valid MySQL URL (mysql:// or mysqls://)."
         },
         "error": {
             "generic": "An error occurred. Please try again."
@@ -188,16 +201,25 @@
             "error": {
                 "nosqllitedb": "The path does not point to a valid SQLite database.",
                 "cannotcreate": "A database cannot be created at the specified path.",
-                "required": "The database path is required."
+                "required": "The database path is required.",
+                "invalidsqliteurl": "Please enter a valid SQLite URL (file:...).",
+                "invalidmysqlurl": "Please enter a valid MySQL URL (mysql:// or mysqls://).",
+                "invalidmode": "Invalid database mode."
             },
             "success": {
                 "newdb": "The database path is potentially valid. Copy clubmanager.db to this location if you want to use it.",
                 "valid": "The database path is valid."
             }
         },
+        "databaseModes": {
+            "sqliteLocal": "Local (SQLite)",
+            "mysqlShared": "Multi-user (MySQL)"
+        },
         "labels": {
             "language": "Language",
             "dbPath": "Database Path",
+            "dbUrl": "Database URL",
+            "databaseMode": "Database Mode",
             "save": "Database Path",
             "saveSuccess": "Settings saved successfully!",
             "saveFails": "Failed to save settings!"

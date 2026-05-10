@@ -78,6 +78,10 @@ components:
       required: [apiVersion, usesLegacyJwtFallback, now]
       additionalProperties: false
 
+    DatabaseMode:
+      type: string
+      enum: [sqlite-local, mysql-shared]
+
     SetupStatus:
       type: object
       properties:
@@ -85,7 +89,41 @@ components:
           type: boolean
         userCount:
           type: integer
-      required: [setupRequired, userCount]
+        databaseConfigured:
+          type: boolean
+        databaseMode:
+          $ref: '#/components/schemas/DatabaseMode'
+      required: [setupRequired, userCount, databaseConfigured, databaseMode]
+      additionalProperties: false
+
+    ConfigureDatabaseRequest:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/DatabaseMode'
+        databaseUrl:
+          type: string
+      required: [mode]
+      additionalProperties: false
+
+    ConfigureDatabaseResponse:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/DatabaseMode'
+        databaseUrl:
+          type: string
+      required: [mode, databaseUrl]
+      additionalProperties: false
+
+    DatabaseSettingsRequest:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/DatabaseMode'
+        databaseUrl:
+          type: string
+      required: [mode, databaseUrl]
       additionalProperties: false
 
     SetupInitializeRequest:
@@ -471,6 +509,16 @@ components:
       required: [path]
       additionalProperties: false
 
+    ValidationDatabaseUrlRequest:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/DatabaseMode'
+        databaseUrl:
+          type: string
+      required: [mode, databaseUrl]
+      additionalProperties: false
+
     ValidationResponse:
       type: object
       properties:
@@ -507,6 +555,16 @@ components:
             - string
             - 'null'
       required: [dbPath]
+      additionalProperties: false
+
+    DatabaseSettings:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/DatabaseMode'
+        databaseUrl:
+          type: string
+      required: [mode, databaseUrl]
       additionalProperties: false
 
     Statistic:
@@ -802,6 +860,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SetupStatus'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /setup/configure-database:
+    post:
+      tags: [setup]
+      summary: Configure the initial database mode and URL
+      operationId: configureSetupDatabase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigureDatabaseRequest'
+      responses:
+        '200':
+          description: Database configuration stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigureDatabaseResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalError'
 
@@ -1423,6 +1504,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationResponse'
 
+  /validation/check-db-url:
+    post:
+      tags: [validation]
+      summary: Validate a database URL for the selected mode
+      operationId: validateDbUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationDatabaseUrlRequest'
+      responses:
+        '200':
+          description: Validation result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+        '400':
+          description: Missing or invalid mode.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+
   /settings/set-db-path:
     post:
       tags: [settings]
@@ -1456,6 +1562,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DbPathResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /settings/database:
+    get:
+      tags: [settings]
+      summary: Get database mode and connection URL
+      operationId: getDatabaseSettings
+      responses:
+        '200':
+          description: Current database settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseSettings'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [settings]
+      summary: Update database mode and connection URL
+      operationId: updateDatabaseSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseSettingsRequest'
+      responses:
+        '200':
+          description: Database settings updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigureDatabaseResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalError'
 

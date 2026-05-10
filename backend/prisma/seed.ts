@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import {PrismaClient} from '../src/generated/prisma/client';
+import {PrismaClient} from '../src/generated/prisma-sqlite/client';
 import {faker} from '@faker-js/faker';
 const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) throw new Error("DATABASE_URL is not set in .env");

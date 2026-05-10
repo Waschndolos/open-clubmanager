@@ -19,8 +19,20 @@
         "title": "Bienvenue dans Open ClubManager",
         "description": "Aucun compte administrateur n'existe encore. Créez votre premier compte administrateur pour commencer.",
         "steps": {
+            "database": "Configurer la base de donnees",
             "createAdmin": "Créer un compte admin",
             "login": "Se connecter"
+        },
+        "database": {
+            "localOption": "Travailler en local (SQLite)",
+            "sharedOption": "Travailler a plusieurs (MySQL)",
+            "localHint": "L'application stocke les donnees dans un fichier SQLite local.",
+            "sharedHint": "Saisissez une URL MySQL partagee accessible a tous les utilisateurs.",
+            "urlLabel": "URL de base MySQL",
+            "urlHint": "Exemple: mysql://user:pass@host:3306/clubmanager",
+            "saveButton": "Enregistrer le mode base de donnees",
+            "saving": "Enregistrement...",
+            "configured": "Configuration de la base enregistree. Vous pouvez maintenant creer le compte admin."
         },
         "email": "E-mail",
         "password": "Mot de passe",
@@ -30,7 +42,8 @@
         "validation": {
             "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
             "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères.",
-            "passwordMismatch": "Les mots de passe ne correspondent pas."
+            "passwordMismatch": "Les mots de passe ne correspondent pas.",
+            "invalidMysqlUrl": "Veuillez saisir une URL MySQL valide (mysql:// ou mysqls://)."
         },
         "error": {
             "generic": "Une erreur s'est produite. Veuillez réessayer."
@@ -188,16 +201,25 @@
             "error": {
                 "nosqllitedb": "Le chemin ne pointe pas vers une base de données SQLite valide.",
                 "cannotcreate": "Impossible de créer une base de données à l'emplacement indiqué.",
-                "required": "Le chemin de la base de données est requis."
+                "required": "Le chemin de la base de données est requis.",
+                "invalidsqliteurl": "Veuillez saisir une URL SQLite valide (file:...).",
+                "invalidmysqlurl": "Veuillez saisir une URL MySQL valide (mysql:// ou mysqls://).",
+                "invalidmode": "Mode de base de données invalide."
             },
             "success": {
                 "newdb": "Le chemin de la base de données est potentiellement valide. Copiez clubmanager.db à cet emplacement si vous souhaitez l'utiliser.",
                 "valid": "Le chemin de la base de données est valide.+"
             }
         },
+        "databaseModes": {
+            "sqliteLocal": "Local (SQLite)",
+            "mysqlShared": "Multi-utilisateurs (MySQL)"
+        },
         "labels": {
             "language": "Langue",
             "dbPath": "Chemin de la base de données",
+            "dbUrl": "URL de base de données",
+            "databaseMode": "Mode de base de données",
             "save": "Chemin de la base de données",
             "saveSuccess": "Paramètres enregistrés avec succès !",
             "saveFails": "Échec de l’enregistrement des paramètres !"

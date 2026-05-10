@@ -2,23 +2,39 @@ import {BACKEND_URL} from "./api";
 
 const BASE_URL = `${BACKEND_URL}/settings`;
 
-export async function saveDbPath(dbPath: string) {
-    const res = await fetch(`${BASE_URL}/set-db-path`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dbPath }),
+export type DatabaseMode = 'sqlite-local' | 'mysql-shared';
+
+export interface DatabaseSettings {
+    mode: DatabaseMode;
+    databaseUrl: string;
+}
+
+export async function saveDatabaseSettings(settings: DatabaseSettings): Promise<void> {
+    const res = await fetch(`${BASE_URL}/database`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
     });
+
     if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    console.log("Database path saved:", data);
+}
+
+export async function getDatabaseSettings(): Promise<DatabaseSettings> {
+    const res = await fetch(`${BASE_URL}/database`);
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+}
+
+export async function saveDbPath(dbPath: string) {
+    return saveDatabaseSettings({
+        mode: 'sqlite-local',
+        databaseUrl: dbPath.startsWith('file:') ? dbPath : `file:${dbPath}`,
+    });
 }
 
 export async function getDbPath(): Promise<string> {
-    const res = await fetch(`${BASE_URL}/db-path`);
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    console.log("Current database path:", data.dbPath);
-    return stripFilePrefix(data.dbPath);
+    const data = await getDatabaseSettings();
+    return stripFilePrefix(data.databaseUrl);
 }
 
 function stripFilePrefix(path: string): string {

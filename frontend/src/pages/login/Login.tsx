@@ -8,7 +8,6 @@ import {getSetupStatus} from '../../api/setup';
 import {useTranslation} from "react-i18next";
 import {useThemeContext} from "../../theme/ThemeContext";
 import {setAccessToken} from "../../api/api";
-import {isElectronFolderMode, FOLDER_MODE_TOKEN} from "../../lib/environment";
 
 const Login: React.FC = () => {
     const { mode } = useThemeContext();
@@ -23,19 +22,6 @@ const Login: React.FC = () => {
     const location = useLocation();
 
     useEffect(() => {
-        if (isElectronFolderMode()) {
-            window.api!.club.getFolder().then((folderPath) => {
-                setAuthAccessToken(FOLDER_MODE_TOKEN);
-                if (folderPath) {
-                    navigate('/dashboard', { replace: true });
-                } else {
-                    navigate('/folder-setup', { replace: true });
-                }
-            }).catch(() => {
-                navigate('/folder-setup', { replace: true });
-            });
-            return;
-        }
 
         getSetupStatus()
             .then(({ setupRequired }) => {

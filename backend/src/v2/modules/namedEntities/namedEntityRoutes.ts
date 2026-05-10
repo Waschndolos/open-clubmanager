@@ -2,9 +2,10 @@ import { Router } from 'express';
 import { getClient } from '../../../db.ts';
 import { ApiV2Config } from '../../config.ts';
 import { createVerifyToken, AuthenticatedRequest } from '../auth/authMiddleware.ts';
-import { PrismaClient } from '../../../generated/prisma/client.ts';
 import { asyncHandler } from '../../core/asyncHandler.ts';
 import { createAuditLog } from '../history/historyAudit.ts';
+
+type DbClient = Awaited<ReturnType<typeof getClient>>;
 
 type ModelDelegate = {
     findMany: () => Promise<unknown[]>;
@@ -15,7 +16,7 @@ type ModelDelegate = {
 
 export function createNamedEntityRoutes(
     config: ApiV2Config,
-    getDelegate: (prisma: PrismaClient) => ModelDelegate,
+    getDelegate: (prisma: DbClient) => ModelDelegate,
     entityName: string
 ): Router {
     const router = Router();

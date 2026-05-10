@@ -12,12 +12,19 @@ import {
     Stepper,
     Step,
     StepLabel,
+    ToggleButton,
+    ToggleButtonGroup,
 } from '@mui/material';
 import { Visibility, VisibilityOff, AdminPanelSettings } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme/ThemeContext';
-import { initializeAdmin, getSetupStatus } from '../../api/setup';
+import {
+    configureDatabase,
+    initializeAdmin,
+    getSetupStatus,
+    SetupDatabaseMode,
+} from '../../api/setup';
 
 const Setup: React.FC = () => {
     const { mode } = useThemeContext();
@@ -31,12 +38,22 @@ const Setup: React.FC = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const [databaseMode, setDatabaseMode] = useState<SetupDatabaseMode>('sqlite-local');
+    const [databaseUrl, setDatabaseUrl] = useState('');
+    const [databaseConfigured, setDatabaseConfigured] = useState(false);
 
     useEffect(() => {
         getSetupStatus()
-            .then(({ setupRequired }) => {
+            .then(({ setupRequired, databaseConfigured: isConfigured, databaseMode: mode }) => {
                 if (!setupRequired) {
                     navigate('/login', { replace: true });
+                    return;
+                }
+
+                setDatabaseMode(mode);
+                setDatabaseConfigured(isConfigured);
+                if (isConfigured && mode === 'sqlite-local') {
+                    setDatabaseUrl('file:./clubmanager.db');
                 }
             })
             .catch(() => {
@@ -48,6 +65,10 @@ const Setup: React.FC = () => {
     const passwordLongEnough = password.length >= 8;
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const canSubmit = emailValid && passwordLongEnough && passwordsMatch && !submitting;
+    const needsDatabaseUrl = databaseMode === 'mysql-shared';
+    const databaseUrlValid = needsDatabaseUrl
+        ? /^mysqls?:\/\//i.test(databaseUrl.trim())
+        : true;
 
     const inputSx = {
         '& input': {
@@ -57,6 +78,19 @@ const Setup: React.FC = () => {
             MozTextFillColor: mode === 'dark' ? 'white' : 'black',
             color: mode === 'dark' ? 'white' : 'black',
         },
+    };
+
+    const handleConfigureDatabase = async () => {
+        setError(null);
+        setSubmitting(true);
+        try {
+            await configureDatabase(databaseMode, needsDatabaseUrl ? databaseUrl.trim() : undefined);
+            setDatabaseConfigured(true);
+        } catch (e: unknown) {
+            setError(e instanceof Error ? e.message : t('setup.error.generic'));
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     const handleSubmit = async () => {
@@ -96,7 +130,10 @@ const Setup: React.FC = () => {
                         </Typography>
                     </Box>
 
-                    <Stepper activeStep={0} sx={{ mb: 3 }}>
+                    <Stepper activeStep={databaseConfigured ? 1 : 0} sx={{ mb: 3 }}>
+                        <Step completed={false}>
+                            <StepLabel>{t('setup.steps.database')}</StepLabel>
+                        </Step>
                         <Step completed={false}>
                             <StepLabel>{t('setup.steps.createAdmin')}</StepLabel>
                         </Step>
@@ -106,94 +143,157 @@ const Setup: React.FC = () => {
                     </Stepper>
 
                     <Box display="flex" flexDirection="column" gap={2}>
-                        <TextField
-                            label={t('setup.email')}
-                            variant="outlined"
-                            fullWidth
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            error={email.length > 0 && !emailValid}
-                            helperText={email.length > 0 && !emailValid ? t('setup.validation.invalidEmail') : ''}
-                            slotProps={{ input: { sx: inputSx } }}
-                        />
+                        {!databaseConfigured && (
+                            <>
+                                <ToggleButtonGroup
+                                    value={databaseMode}
+                                    exclusive
+                                    onChange={(_event, value: SetupDatabaseMode | null) => {
+                                        if (value) {
+                                            setDatabaseMode(value);
+                                        }
+                                    }}
+                                    fullWidth
+                                    color="primary"
+                                >
+                                    <ToggleButton value="sqlite-local">
+                                        {t('setup.database.localOption')}
+                                    </ToggleButton>
+                                    <ToggleButton value="mysql-shared">
+                                        {t('setup.database.sharedOption')}
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
 
-                        <TextField
-                            label={t('setup.password')}
-                            variant="outlined"
-                            fullWidth
-                            type={showPassword ? 'text' : 'password'}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            error={password.length > 0 && !passwordLongEnough}
-                            helperText={
-                                password.length > 0 && !passwordLongEnough
-                                    ? t('setup.validation.passwordTooShort')
-                                    : ''
-                            }
-                            slotProps={{
-                                input: {
-                                    sx: inputSx,
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowPassword((prev) => !prev)}
-                                                edge="end"
-                                                aria-label="toggle password visibility"
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                },
-                            }}
-                        />
+                                <Typography variant="body2" color="text.secondary">
+                                    {databaseMode === 'sqlite-local'
+                                        ? t('setup.database.localHint')
+                                        : t('setup.database.sharedHint')}
+                                </Typography>
 
-                        <TextField
-                            label={t('setup.confirmPassword')}
-                            variant="outlined"
-                            fullWidth
-                            type={showConfirmPassword ? 'text' : 'password'}
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            error={confirmPassword.length > 0 && !passwordsMatch}
-                            helperText={
-                                confirmPassword.length > 0 && !passwordsMatch
-                                    ? t('setup.validation.passwordMismatch')
-                                    : ''
-                            }
-                            slotProps={{
-                                input: {
-                                    sx: inputSx,
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowConfirmPassword((prev) => !prev)}
-                                                edge="end"
-                                                aria-label="toggle confirm password visibility"
-                                            >
-                                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                },
-                            }}
-                        />
+                                {needsDatabaseUrl && (
+                                    <TextField
+                                        label={t('setup.database.urlLabel')}
+                                        variant="outlined"
+                                        fullWidth
+                                        value={databaseUrl}
+                                        onChange={(e) => setDatabaseUrl(e.target.value)}
+                                        error={databaseUrl.length > 0 && !databaseUrlValid}
+                                        helperText={
+                                            databaseUrl.length > 0 && !databaseUrlValid
+                                                ? t('setup.validation.invalidMysqlUrl')
+                                                : t('setup.database.urlHint')
+                                        }
+                                        slotProps={{ input: { sx: inputSx } }}
+                                    />
+                                )}
+
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    onClick={handleConfigureDatabase}
+                                    disabled={submitting || !databaseUrlValid}
+                                >
+                                    {submitting ? t('setup.database.saving') : t('setup.database.saveButton')}
+                                </Button>
+                            </>
+                        )}
+
+                        {databaseConfigured && (
+                            <>
+                                <Alert severity="success" variant="outlined">
+                                    {t('setup.database.configured')}
+                                </Alert>
+
+                                <TextField
+                                    label={t('setup.email')}
+                                    variant="outlined"
+                                    fullWidth
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    error={email.length > 0 && !emailValid}
+                                    helperText={email.length > 0 && !emailValid ? t('setup.validation.invalidEmail') : ''}
+                                    slotProps={{ input: { sx: inputSx } }}
+                                />
+
+                                <TextField
+                                    label={t('setup.password')}
+                                    variant="outlined"
+                                    fullWidth
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    error={password.length > 0 && !passwordLongEnough}
+                                    helperText={
+                                        password.length > 0 && !passwordLongEnough
+                                            ? t('setup.validation.passwordTooShort')
+                                            : ''
+                                    }
+                                    slotProps={{
+                                        input: {
+                                            sx: inputSx,
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() => setShowPassword((prev) => !prev)}
+                                                        edge="end"
+                                                        aria-label="toggle password visibility"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        },
+                                    }}
+                                />
+
+                                <TextField
+                                    label={t('setup.confirmPassword')}
+                                    variant="outlined"
+                                    fullWidth
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    error={confirmPassword.length > 0 && !passwordsMatch}
+                                    helperText={
+                                        confirmPassword.length > 0 && !passwordsMatch
+                                            ? t('setup.validation.passwordMismatch')
+                                            : ''
+                                    }
+                                    slotProps={{
+                                        input: {
+                                            sx: inputSx,
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                                        edge="end"
+                                                        aria-label="toggle confirm password visibility"
+                                                    >
+                                                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        },
+                                    }}
+                                />
+
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    onClick={handleSubmit}
+                                    disabled={!canSubmit}
+                                >
+                                    {submitting ? t('setup.creating') : t('setup.createButton')}
+                                </Button>
+                            </>
+                        )}
 
                         {error && (
                             <Alert severity="error" variant="outlined">
                                 {error}
                             </Alert>
                         )}
-
-                        <Button
-                            variant="contained"
-                            fullWidth
-                            onClick={handleSubmit}
-                            disabled={!canSubmit}
-                        >
-                            {submitting ? t('setup.creating') : t('setup.createButton')}
-                        </Button>
                     </Box>
                 </CardContent>
             </Card>

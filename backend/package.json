@@ -7,10 +7,12 @@
     "dev": "tsx src/server.ts",
     "dev:backend": "tsx src/server.ts",
     "build": "tsc",
-    "postinstall": "prisma generate",
-    "setup": "prisma migrate dev && tsx prisma/seed.ts",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
+    "postinstall": "npm run prisma:generate",
+    "setup": "npm run setup:sqlite",
+    "setup:sqlite": "prisma migrate dev --schema prisma/schema.sqlite.prisma && tsx prisma/seed.ts",
+    "setup:mysql": "prisma db push --schema prisma/schema.mysql.prisma",
+    "prisma:generate": "prisma generate --schema prisma/schema.sqlite.prisma && prisma generate --schema prisma/schema.mysql.prisma",
+    "prisma:migrate": "prisma migrate dev --schema prisma/schema.sqlite.prisma",
     "prisma:migrate:reset": "prisma migrate reset",
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:studio": "prisma studio",
@@ -23,6 +25,7 @@
   "description": "",
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.4.0",
+    "@prisma/adapter-mariadb": "^7.4.0",
     "@prisma/client": "^7.4.0",
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.2.0",
@@ -30,7 +33,8 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "mariadb": "^3.4.5"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",

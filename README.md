@@ -31,54 +31,13 @@ The goal is to reduce complexity and cost — and to empower small clubs to mana
 Open ClubManager is built by volunteers for volunteers.
 ---
 
-## 🗂️ Folder Mode (No Host)
+## 🗄️ Database-Only Architecture
 
-Folder Mode enables multi-user collaboration via a **shared folder** (SharePoint, OneDrive, Dropbox, SMB/NAS, USB) with **no external backend server** required.
+Open ClubManager now runs exclusively with the backend API and a database.
 
-### How it works
-
-Instead of a SQLite database, all club data is stored as an **append-only event log** inside the chosen folder:
-
-```
-ClubData/
-  club.json
-  schema-version.json
-  events/
-    2026-03-18T12-00-01-123Z_<uuid>.json
-    ...
-  snapshots/
-    snapshot-00000200.json
-  locks/
-    member-123.lock
-```
-
-- **Events** are never overwritten — each change is a new file. Sync tools (OneDrive, Dropbox…) handle new files reliably.
-- **State** is reconstructed at runtime by loading the latest snapshot and replaying events on top of it.
-- **Locking** prevents two people from editing the same member simultaneously.
-
-### Steps for end users
-
-1. Install and open the **Open ClubManager** desktop app.
-2. On first start you will be taken to the **"Select Club Folder"** screen.
-3. Click **Select Club Folder** and choose any folder — local, shared network drive, or a folder synced by SharePoint/OneDrive/Dropbox.
-4. That's it. The app creates the required folder structure automatically.
-
-Anyone with access to the same folder can open the app and work with the same data.  
-No Node.js, no `.env` file, no server setup.
-
-### Locking behaviour
-
-- When a user opens the **Edit Member** dialog, a lock file is created: `locks/member-<id>.lock`.
-- The lock file records the owner and an expiry time (default: 10 minutes).
-- While the lock is held, other users see the member as locked and cannot edit it.
-- If a lock is older than its expiry time it is considered **stale** and is automatically released when another user tries to acquire it.
-- Users can also manually force-release a stale lock.
-
-### Backward compatibility
-
-- `npm run dev:browser` continues to use the existing Express/Prisma backend unchanged.
-- `npm run dev:electron` starts the backend alongside Electron (development convenience).
-- In a production Electron build no backend process is required — the app uses IPC to its own built-in storage layer.
+- `npm run dev:browser` starts frontend + backend.
+- `npm run dev:electron` starts frontend + backend + Electron shell.
+- In all environments, application data is loaded and persisted through `/api/v2`.
 
 ---
 
@@ -135,7 +94,7 @@ No Node.js, no `.env` file, no server setup.
 
 First, create a file named `.env` in the `backend` directory with the following content:
 ```plaintext
-# The url where the backend will find the SQLite database
+# Default local database URL (SQLite)
 DATABASE_URL="file:/home/myUser/clubmanager.db"
 
 # Development secrets for API authentication
@@ -157,7 +116,12 @@ This will:
 2. Run Prisma migrations
 3. Seed the database with demo data (members, roles, groups, sections)
 
-If the database contains no users yet, the app will guide you through the setup flow to create the first admin account.
+If the database contains no users yet, the app will guide you through the setup flow:
+1. Choose database mode:
+   - local use: `sqlite-local`
+   - shared multi-user use: `mysql-shared`
+2. Enter a MySQL URL for shared mode
+3. Create the first admin account
 
 Once setup is complete, start the development servers:
 
@@ -179,7 +143,7 @@ If you prefer to set up each part individually:
 
 Create a file named `.env` in the `backend` directory with the following content:
 ```plaintext
-# The url where the backend will find the SQLite database
+# Default local database URL (SQLite)
 DATABASE_URL="file:/home/myUser/clubmanager.db"
 
 # Recommended for local development
@@ -193,7 +157,8 @@ JWT_REFRESH_SECRET="dev_refresh_secret_change_me"
 ```bash
 cd backend
 npm install
-npm run setup      # runs migrations + seeds the database
+npm run setup      # sqlite: runs migrations + seeds the database
+npm run setup:mysql # mysql: pushes schema (requires reachable MySQL DB)
 npm run dev        # start the backend server
 ```
 

@@ -1,32 +1,7 @@
 import { Router } from 'express';
-import fs from 'fs/promises';
-import { fileURLToPath } from 'url';
-import * as path from 'path';
 import { getClient } from '../../../db.ts';
 import { asyncHandler } from '../../core/asyncHandler.ts';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const configFilePath = path.join(__dirname, '..', '..', '..', '..', 'app-settings.json');
-
-const DEFAULT_APP_CONFIG: Record<string, unknown> = {
-    DATABASE_URL: '',
-};
-
-async function getConfig() {
-    try {
-        const configContent = await fs.readFile(configFilePath, 'utf8');
-        return JSON.parse(configContent) as Record<string, unknown>;
-    } catch (err) {
-        const errorCode = (err as NodeJS.ErrnoException).code;
-        if (errorCode !== 'ENOENT') {
-            throw err;
-        }
-
-        await fs.writeFile(configFilePath, JSON.stringify(DEFAULT_APP_CONFIG, null, 2), 'utf8');
-        return { ...DEFAULT_APP_CONFIG };
-    }
-}
+import { getAppConfig, setAppConfig } from './appConfigStore.ts';
 
 function normalizeParamKey(rawKey: string | string[] | undefined): string {
     if (Array.isArray(rawKey)) {
@@ -45,20 +20,21 @@ export function createPreferencesRoutes(): Router {
     }));
 
     router.get('/app', asyncHandler(async (_req, res) => {
-        const config = await getConfig();
+        const config = await getAppConfig();
         res.json(config);
     }));
 
     router.get('/app/:key', asyncHandler(async (req, res) => {
         const key = normalizeParamKey(req.params.key);
-        const config = await getConfig();
+        const config = await getAppConfig();
+        const configRecord = config as unknown as Record<string, unknown>;
 
-        if (!Object.prototype.hasOwnProperty.call(config, key)) {
+        if (!Object.prototype.hasOwnProperty.call(configRecord, key)) {
             res.status(404).json({ error: 'Key not found in app preferences' });
             return;
         }
 
-        res.json({ [key]: config[key] });
+        res.json({ [key]: configRecord[key] });
     }));
 
     router.get('/:key', asyncHandler(async (req, res) => {
@@ -110,15 +86,19 @@ export function createPreferencesRoutes(): Router {
     router.put('/app/:key', asyncHandler(async (req, res) => {
         const key = normalizeParamKey(req.params.key);
         const value = (req.body as { value?: unknown }).value;
-        const config = await getConfig();
+        const config = await getAppConfig();
+        const configRecord = config as unknown as Record<string, unknown>;
 
-        if (!Object.prototype.hasOwnProperty.call(config, key)) {
+        if (!Object.prototype.hasOwnProperty.call(configRecord, key)) {
             res.status(404).json({ error: 'Key not found in app preferences' });
             return;
         }
 
-        config[key] = value;
-        await fs.writeFile(configFilePath, JSON.stringify(config, null, 2), 'utf8');
+        configRecord[key] = value;
+        await setAppConfig({
+            DATABASE_URL: String(configRecord.DATABASE_URL ?? ''),
+            DATABASE_MODE: configRecord.DATABASE_MODE === 'mysql-shared' ? 'mysql-shared' : 'sqlite-local',
+        });
         res.json({ message: 'app preferences updated', [key]: value });
     }));
 

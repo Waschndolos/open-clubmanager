@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma-sqlite"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  roles         Role[]         @relation("UserRoles")
+  refreshTokens RefreshToken[]
+  preferences   UserPreference[]
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model Member {
+  id              Int           @id @default(autoincrement())
+  number          Int           @unique
+  firstName       String
+  lastName        String
+  email           String        @unique
+  birthday        DateTime?
+  phone           String?
+  phoneMobile     String?
+  comment         String?
+  entryDate       DateTime?
+  exitDate        DateTime?
+  street          String?
+  postalCode      String?
+  city            String?
+  state           String?
+  accountHolder   String?
+  iban            String?
+  bic             String?
+  bankName        String?
+  sepaMandateDate DateTime?
+  roles           Role[]        @relation("MemberRoles")
+  groups          Group[]       @relation("MemberGroups")
+  sections        ClubSection[] @relation("MemberSections")
+  fees            MemberFee[]
+}
+
+model Role {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  members Member[] @relation("MemberRoles")
+  users   User[]   @relation("UserRoles")
+}
+
+model Group {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  members Member[] @relation("MemberGroups")
+}
+
+model ClubSection {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  members Member[] @relation("MemberSections")
+}
+
+model UserPreference {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  key       String
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, key])
+}
+
+model FinanceTransaction {
+  id          Int      @id @default(autoincrement())
+  date        DateTime
+  description String
+  amount      Float
+  type        String
+  category    String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MemberFee {
+  id          Int      @id @default(autoincrement())
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId    Int
+  amount      Float
+  dueDate     DateTime
+  paidDate    DateTime?
+  description String?
+  year        Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  entity    String
+  entityId  Int
+  userId    String
+  data      String?
+  createdAt DateTime @default(now())
+}
+

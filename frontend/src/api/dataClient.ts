@@ -1,5 +1,4 @@
 import { Member, Role, Group, ClubSection } from './types';
-import { LockInfo } from './ipcTypes';
 
 export interface MembersClient {
     list(): Promise<Member[]>;
@@ -7,9 +6,6 @@ export interface MembersClient {
     create(data: Omit<Member, 'id'>): Promise<Member>;
     update(data: Member): Promise<Member>;
     delete(members: Member[]): Promise<void>;
-    lock(id: number, owner: string): Promise<{ acquired: boolean; lock: LockInfo | null }>;
-    unlock(id: number, owner: string): Promise<{ released: boolean }>;
-    getLock(id: number): Promise<LockInfo | null>;
 }
 
 export interface RolesClient {
@@ -33,14 +29,7 @@ export interface SectionsClient {
     delete(data: ClubSection): Promise<void>;
 }
 
-export interface ClubClient {
-    selectFolder(): Promise<string | null>;
-    getFolder(): Promise<string | null>;
-    initFolder(): Promise<void>;
-}
-
 export interface DataClient {
-    club: ClubClient;
     members: MembersClient;
     roles: RolesClient;
     groups: GroupsClient;

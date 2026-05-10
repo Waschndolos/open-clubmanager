@@ -1,7 +1,12 @@
-import { PrismaClient } from '../../../generated/prisma/client.ts';
+
+type AuditLogDbClient = {
+    auditLog: {
+        create(args: Record<string, unknown>): Promise<unknown>;
+    };
+};
 
 export async function createAuditLog(
-    prisma: PrismaClient,
+    prisma: AuditLogDbClient,
     action: 'CREATE' | 'UPDATE' | 'DELETE',
     entity: string,
     entityId: number,
@@ -14,7 +19,8 @@ export async function createAuditLog(
     }
 
     try {
-        await prisma.auditLog.create({
+        const auditLogDelegate = (prisma as unknown as AuditLogDbClient).auditLog;
+        await auditLogDelegate.create({
             data: {
                 action,
                 entity,

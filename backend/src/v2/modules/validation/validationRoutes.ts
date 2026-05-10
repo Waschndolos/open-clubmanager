@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { Router } from 'express';
+import { DatabaseMode, isDatabaseUrlValid } from '../preferences/appConfigStore.ts';
 
 export function createValidationRoutes(): Router {
     const router = Router();
@@ -55,6 +56,26 @@ export function createValidationRoutes(): Router {
                 res.json({ valid: true, i18nToken: 'success.valid' });
             });
         });
+    });
+
+    router.post('/check-db-url', async (req, res) => {
+        const { mode, databaseUrl } = req.body as { mode?: DatabaseMode; databaseUrl?: string };
+
+        if (mode !== 'sqlite-local' && mode !== 'mysql-shared') {
+            res.status(400).json({ valid: false, i18nToken: 'error.invalidmode' });
+            return;
+        }
+
+        const normalizedUrl = (databaseUrl ?? '').trim();
+        if (!isDatabaseUrlValid(mode, normalizedUrl)) {
+            res.json({
+                valid: false,
+                i18nToken: mode === 'sqlite-local' ? 'error.invalidsqliteurl' : 'error.invalidmysqlurl',
+            });
+            return;
+        }
+
+        res.json({ valid: true, i18nToken: 'success.valid' });
     });
 
     return router;

@@ -1,5 +1,4 @@
 import { getClient } from '../../../db.ts';
-import { Prisma } from '../../../generated/prisma/client.ts';
 
 const memberInclude = {
     roles: true,
@@ -7,7 +6,36 @@ const memberInclude = {
     sections: true,
 } as const;
 
-export type PersistedMember = Prisma.MemberGetPayload<{ include: typeof memberInclude }>;
+type NamedEntity = {
+    id: number;
+    name: string;
+};
+
+export interface PersistedMember {
+    id: number;
+    number: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    birthday: Date | null;
+    phone: string | null;
+    phoneMobile: string | null;
+    comment: string | null;
+    entryDate: Date | null;
+    exitDate: Date | null;
+    street: string | null;
+    postalCode: string | null;
+    city: string | null;
+    state: string | null;
+    accountHolder: string | null;
+    iban: string | null;
+    bic: string | null;
+    bankName: string | null;
+    sepaMandateDate: Date | null;
+    roles: NamedEntity[];
+    groups: NamedEntity[];
+    sections: NamedEntity[];
+}
 
 export interface MemberPersistenceInput {
     number: number;
@@ -43,14 +71,25 @@ export interface MembersRepository {
     delete(id: number): Promise<void>;
 }
 
-function buildSearchWhere(search?: string): Prisma.MemberWhereInput | undefined {
+type MembersDbClient = {
+    member: {
+        findMany(args: Record<string, unknown>): Promise<PersistedMember[]>;
+        count(args: Record<string, unknown>): Promise<number>;
+        findUnique(args: Record<string, unknown>): Promise<PersistedMember | null>;
+        create(args: Record<string, unknown>): Promise<PersistedMember>;
+        update(args: Record<string, unknown>): Promise<PersistedMember>;
+        delete(args: Record<string, unknown>): Promise<void>;
+    };
+};
+
+function buildSearchWhere(search?: string): Record<string, unknown> | undefined {
     if (!search) {
         return undefined;
     }
 
     const asNumber = Number(search);
 
-    const searchFilters: Prisma.MemberWhereInput[] = [
+    const searchFilters: Record<string, unknown>[] = [
         { firstName: { contains: search } },
         { lastName: { contains: search } },
         { email: { contains: search } },
@@ -67,7 +106,7 @@ function buildSearchWhere(search?: string): Prisma.MemberWhereInput | undefined 
 
 export class PrismaMembersRepository implements MembersRepository {
     async list(args: { skip: number; take: number; search?: string }): Promise<PersistedMember[]> {
-        const prisma = await getClient();
+        const prisma = (await getClient()) as unknown as MembersDbClient;
         return prisma.member.findMany({
             skip: args.skip,
             take: args.take,
@@ -78,14 +117,14 @@ export class PrismaMembersRepository implements MembersRepository {
     }
 
     async count(search?: string): Promise<number> {
-        const prisma = await getClient();
+        const prisma = (await getClient()) as unknown as MembersDbClient;
         return prisma.member.count({
             where: buildSearchWhere(search),
         });
     }
 
     async findById(id: number): Promise<PersistedMember | null> {
-        const prisma = await getClient();
+        const prisma = (await getClient()) as unknown as MembersDbClient;
         return prisma.member.findUnique({
             where: { id },
             include: memberInclude,
@@ -93,7 +132,7 @@ export class PrismaMembersRepository implements MembersRepository {
     }
 
     async create(data: MemberPersistenceInput): Promise<PersistedMember> {
-        const prisma = await getClient();
+        const prisma = (await getClient()) as unknown as MembersDbClient;
         return prisma.member.create({
             data: {
                 number: data.number,
@@ -124,7 +163,7 @@ export class PrismaMembersRepository implements MembersRepository {
     }
 
     async update(id: number, data: MemberPersistenceInput): Promise<PersistedMember> {
-        const prisma = await getClient();
+        const prisma = (await getClient()) as unknown as MembersDbClient;
         return prisma.member.update({
             where: { id },
             data: {
@@ -156,7 +195,7 @@ export class PrismaMembersRepository implements MembersRepository {
     }
 
     async delete(id: number): Promise<void> {
-        const prisma = await getClient();
+        const prisma = (await getClient()) as unknown as MembersDbClient;
         await prisma.member.delete({ where: { id } });
     }
 }
