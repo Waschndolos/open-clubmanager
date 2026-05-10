@@ -249,7 +249,7 @@ To expose the hosted documentation in GitHub Pages, set the repository Pages sou
 GitHub usually exposes that site under a URL like:
 
 ```text
-https://github.com/Waschndolos/open-clubmanager/
+https://waschndolos.github.io/open-clubmanager/
 ```
 
 ### Start Frontend and Backend in Dev mode
