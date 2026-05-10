@@ -1,6 +1,7 @@
 import { useCallback } from "react";
+import { BACKEND_URL } from '../api/api';
 
-const API_URL = "http://localhost:3001/api/preferences";
+const API_URL = `${BACKEND_URL}/preferences`;
 
 export function useUserPreference() {
 

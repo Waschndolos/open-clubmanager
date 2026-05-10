@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:3001/api/validation";
+import { BACKEND_URL } from './api';
+
+const BASE_URL = `${BACKEND_URL}/validation`;
 
 export async function validatePath(path: string): Promise<{valid: boolean, i18nToken?: string}> {
     const res = await fetch(BASE_URL + "/check-db-path",  {

@@ -16,9 +16,10 @@ export const httpApiClient: DataClient = {
 
     members: {
         list: async (): Promise<Member[]> => {
-            const res = await fetch(`${BACKEND_URL}/members`);
+            const res = await fetch(`${BACKEND_URL}/members?page=1&pageSize=500`);
             if (!res.ok) throw new Error('Error fetching members.');
-            return res.json();
+            const payload = await res.json() as { items?: Member[] } | Member[];
+            return Array.isArray(payload) ? payload : (payload.items ?? []);
         },
         get: async (id: number): Promise<Member> => {
             const res = await fetch(`${BACKEND_URL}/members/${id}`);
@@ -30,7 +31,11 @@ export const httpApiClient: DataClient = {
             return res.data;
         },
         update: async (data: Member): Promise<Member> => {
-            const res = await api.put<Member>(`/members/${data.id}`, data);
+            const { versionToken, ...memberData } = data;
+            const res = await api.put<Member>(`/members/${data.id}`, {
+                ...memberData,
+                expectedVersionToken: versionToken,
+            });
             return res.data;
         },
         delete: async (members: Member[]): Promise<void> => {

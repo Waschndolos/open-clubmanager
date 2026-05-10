@@ -1,6 +1,6 @@
-import { BACKEND_URL } from './api';
+import { BACKEND_V2_URL } from './api';
 
-const SETUP_URL = `${BACKEND_URL}/setup`;
+const SETUP_URL = `${BACKEND_V2_URL}/setup`;
 
 export async function getSetupStatus(): Promise<{ setupRequired: boolean }> {
     const res = await fetch(`${SETUP_URL}/status`);

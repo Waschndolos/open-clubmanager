@@ -1,4 +1,6 @@
-const BASE_URL = `http://localhost:3001/api/auth`;
+import { BACKEND_V2_URL } from './api';
+
+const BASE_URL = `${BACKEND_V2_URL}/auth`;
 
 export async function login(email: string, password: string) {
     const res = await fetch(`${BASE_URL}/login`, {
