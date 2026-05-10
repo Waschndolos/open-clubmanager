@@ -1,6 +1,12 @@
 import api from './api';
 import { FinanceTransaction, MemberFee } from './types';
 
+export interface Camt053ImportResult {
+    importedCount: number;
+    skippedCount: number;
+    totalCount: number;
+}
+
 // ─── Finance Transactions ─────────────────────────────────────────────────────
 
 export async function fetchTransactions(): Promise<FinanceTransaction[]> {
@@ -24,6 +30,11 @@ export async function updateTransaction(
 
 export async function deleteTransaction(id: number): Promise<void> {
     await api.delete(`/finance/transactions/${id}`);
+}
+
+export async function importCamt053(xml: string): Promise<Camt053ImportResult> {
+    const res = await api.post<Camt053ImportResult>('/finance/transactions/import/camt053', { xml });
+    return res.data;
 }
 
 // ─── Member Fees ──────────────────────────────────────────────────────────────

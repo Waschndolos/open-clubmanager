@@ -19,7 +19,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { Add, AccountBalance, Delete, Edit, EuroSymbol } from '@mui/icons-material';
+import { Add, AccountBalance, Delete, Edit, EuroSymbol, UploadFile } from '@mui/icons-material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import {
@@ -27,6 +27,7 @@ import {
     createTransaction,
     updateTransaction,
     deleteTransaction,
+    importCamt053,
     fetchMemberFees,
     createMemberFee,
     updateMemberFee,
@@ -269,6 +270,7 @@ export function Finance() {
     const [transactions, setTransactions] = useState<FinanceTransaction[]>([]);
     const [fees, setFees] = useState<MemberFee[]>([]);
     const [members, setMembers] = useState<Member[]>([]);
+    const [importSummary, setImportSummary] = useState<string | null>(null);
 
     const [txDialog, setTxDialog] = useState<{ open: boolean; item: Partial<FinanceTransaction>; isNew: boolean }>({
         open: false,
@@ -307,6 +309,20 @@ export function Finance() {
     const handleDeleteTransaction = async (id: number) => {
         await deleteTransaction(id);
         setTransactions((prev) => prev.filter((tx) => tx.id !== id));
+    };
+
+    const handleImportCamt053 = async (file: File) => {
+        const xml = await file.text();
+        const result = await importCamt053(xml);
+        const txs = await fetchTransactions();
+        setTransactions(txs);
+        setImportSummary(
+            t('finance.transactions.importResult', {
+                imported: result.importedCount,
+                skipped: result.skippedCount,
+                total: result.totalCount,
+            })
+        );
     };
 
     // ── Member fee handlers ───────────────────────────────────────────────────
@@ -480,6 +496,31 @@ export function Finance() {
                 <Box>
                     <Box display="flex" justifyContent="flex-end" mb={1}>
                         <Button
+                            component="label"
+                            variant="outlined"
+                            startIcon={<UploadFile />}
+                            sx={{ mr: 1 }}
+                        >
+                            {t('finance.transactions.importCamt')}
+                            <input
+                                type="file"
+                                accept=".xml,text/xml,application/xml"
+                                hidden
+                                onChange={async (e) => {
+                                    const input = e.currentTarget;
+                                    const file = input.files?.[0];
+                                    if (!file) return;
+                                    try {
+                                        await handleImportCamt053(file);
+                                    } catch {
+                                        setImportSummary(t('finance.transactions.importError'));
+                                    } finally {
+                                        input.value = '';
+                                    }
+                                }}
+                            />
+                        </Button>
+                        <Button
                             variant="contained"
                             startIcon={<Add />}
                             onClick={() =>
@@ -499,6 +540,11 @@ export function Finance() {
                         columns={transactionColumns}
                         pageSizeOptions={[10, 25, 50]}
                     />
+                    {importSummary && (
+                        <Typography variant="body2" color="text.secondary" mt={1}>
+                            {importSummary}
+                        </Typography>
+                    )}
                 </Box>
             )}
 

@@ -660,6 +660,30 @@ components:
             - 'null'
       additionalProperties: false
 
+    Camt053ImportRequest:
+      type: object
+      properties:
+        xml:
+          type: string
+          description: Raw CAMT.053 XML content.
+      required: [xml]
+      additionalProperties: false
+
+    Camt053ImportResponse:
+      type: object
+      properties:
+        importedCount:
+          type: integer
+          minimum: 0
+        skippedCount:
+          type: integer
+          minimum: 0
+        totalCount:
+          type: integer
+          minimum: 0
+      required: [importedCount, skippedCount, totalCount]
+      additionalProperties: false
+
     MemberSummary:
       type: object
       properties:
@@ -1711,6 +1735,33 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+
+  /finance/transactions/import/camt053:
+    post:
+      tags: [finance]
+      summary: Import finance transactions from CAMT.053 XML
+      operationId: importFinanceTransactionsCamt053
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Camt053ImportRequest'
+      responses:
+        '201':
+          description: Import summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Camt053ImportResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /finance/memberfees:
     get:

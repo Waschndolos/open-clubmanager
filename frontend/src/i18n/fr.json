@@ -245,6 +245,9 @@
         },
         "transactions": {
             "create": "Ajouter une transaction",
+            "importCamt": "Importer CAMT.053",
+            "importResult": "CAMT.053 : {{imported}} importées, {{skipped}} ignorées ({{total}} au total)",
+            "importError": "Échec de l'import CAMT.053.",
             "fields": {
                 "date": "Date",
                 "description": "Description",

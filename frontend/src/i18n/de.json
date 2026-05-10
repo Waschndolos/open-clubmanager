@@ -245,6 +245,9 @@
         },
         "transactions": {
             "create": "Buchung hinzufügen",
+            "importCamt": "CAMT.053 importieren",
+            "importResult": "CAMT.053: {{imported}} importiert, {{skipped}} übersprungen ({{total}} gesamt)",
+            "importError": "CAMT.053 Import fehlgeschlagen.",
             "fields": {
                 "date": "Datum",
                 "description": "Beschreibung",

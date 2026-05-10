@@ -4,6 +4,7 @@ import { ApiV2Config } from '../../config.ts';
 import { createVerifyToken, AuthenticatedRequest } from '../auth/authMiddleware.ts';
 import { asyncHandler } from '../../core/asyncHandler.ts';
 import { createAuditLog } from '../history/historyAudit.ts';
+import { parseCamt053 } from './camt053Import.ts';
 
 export function createFinanceRoutes(config: ApiV2Config): Router {
     const router = Router();
@@ -15,6 +16,50 @@ export function createFinanceRoutes(config: ApiV2Config): Router {
             orderBy: { date: 'desc' },
         });
         res.json(transactions);
+    }));
+
+    router.post('/transactions/import/camt053', verifyToken, asyncHandler(async (req: AuthenticatedRequest, res) => {
+        const { xml } = req.body as { xml?: string };
+        const imported = parseCamt053(xml ?? '');
+        const prisma = await getClient();
+
+        let createdCount = 0;
+        let skippedCount = 0;
+
+        for (const tx of imported) {
+            const duplicate = await prisma.financeTransaction.findFirst({
+                where: {
+                    date: tx.date,
+                    amount: tx.amount,
+                    type: tx.type,
+                    description: tx.description,
+                },
+                select: { id: true },
+            });
+
+            if (duplicate) {
+                skippedCount += 1;
+                continue;
+            }
+
+            await prisma.financeTransaction.create({
+                data: tx,
+            });
+            createdCount += 1;
+        }
+
+        await createAuditLog(prisma, 'CREATE', 'FinanceTransactionImport', 0, req.userEmail ?? '', {
+            format: 'CAMT.053',
+            importedCount: createdCount,
+            skippedCount,
+            totalCount: imported.length,
+        });
+
+        res.status(201).json({
+            importedCount: createdCount,
+            skippedCount,
+            totalCount: imported.length,
+        });
     }));
 
     router.post('/transactions', verifyToken, asyncHandler(async (req: AuthenticatedRequest, res) => {

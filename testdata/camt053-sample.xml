@@ -1,0 +1,1811 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+  <BkToCstmrStmt>
+    <Stmt>
+      <Id>STATEMENT-2026-05</Id>
+      <ElctrncSeqNb>5</ElctrncSeqNb>
+      <LglSeqNb>5</LglSeqNb>
+      <CreDtTm>2026-05-10T12:00:00</CreDtTm>
+      <Ntry>
+        <Amt Ccy="EUR">46.37</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-01</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-01</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 1</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #001</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">13.82</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-02</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-02</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #002</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">49.11</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-03</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-03</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 1</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #003</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">15.64</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-04</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-04</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #004</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">51.85</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-05</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-05</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 1</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #005</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">17.46</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-06</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-06</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #006</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">54.59</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-07</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-07</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 1</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #007</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">19.28</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-08</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-08</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #008</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">57.33</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-09</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-09</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 1</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #009</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">21.10</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-10</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-10</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #010</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">60.07</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-11</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-11</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 2</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #011</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">22.92</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-12</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-12</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #012</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">62.81</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-13</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-13</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 2</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #013</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">24.74</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-14</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-14</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #014</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">65.55</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-15</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-15</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 2</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #015</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">26.56</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-16</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-16</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #016</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">68.29</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-17</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-17</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 2</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #017</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">28.38</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-18</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-18</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #018</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">71.03</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-19</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-19</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 2</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #019</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">30.20</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-20</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-20</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #020</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">73.77</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-21</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-21</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 3</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #021</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">32.02</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-22</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-22</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #022</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">76.51</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-23</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-23</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 3</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #023</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">33.84</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-24</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-24</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #024</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">79.25</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-25</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-25</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 3</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #025</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">35.66</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-26</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-26</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #026</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">81.99</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-27</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 3</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #027</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">37.48</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-28</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-28</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #028</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">84.73</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-01</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-01</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 3</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #029</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">39.30</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-02</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-02</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #030</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">87.47</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-03</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-03</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 4</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #031</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">41.12</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-04</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-04</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #032</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">90.21</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-05</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-05</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 4</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #033</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">42.94</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-06</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-06</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #034</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">92.95</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-07</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-07</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 4</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #035</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">44.76</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-08</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-08</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #036</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">95.69</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-09</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-09</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 4</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #037</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">46.58</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-10</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-10</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #038</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">98.43</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-11</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-11</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 4</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #039</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">48.40</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-12</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-12</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #040</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">101.17</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-13</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-13</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 5</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #041</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">50.22</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-14</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-14</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #042</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">103.91</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-15</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-15</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 5</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #043</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">52.04</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-16</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-16</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #044</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">106.65</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-17</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-17</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 5</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #045</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">53.86</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-18</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-18</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #046</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">109.39</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-19</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-19</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 5</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #047</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">55.68</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-20</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-20</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #048</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">112.13</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-21</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-21</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 5</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #049</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">57.50</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-22</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-22</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #050</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">114.87</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-23</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-23</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 6</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #051</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">59.32</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-24</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-24</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #052</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">117.61</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-25</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-25</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 6</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #053</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">61.14</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-26</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-26</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #054</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">120.35</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-27</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 6</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #055</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">62.96</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-28</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-28</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #056</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">123.09</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-01</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-01</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 6</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #057</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">64.78</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-02</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-02</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #058</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">125.83</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-03</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-03</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 6</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #059</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">66.60</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-04</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-04</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #060</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">128.57</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-05</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-05</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 7</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #061</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">68.42</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-06</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-06</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #062</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">131.31</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-07</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-07</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 7</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #063</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">70.24</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-08</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-08</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #064</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">134.05</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-09</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-09</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 7</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #065</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">72.06</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-10</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-10</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #066</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">136.79</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-11</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-11</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 7</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #067</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">73.88</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-12</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-12</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #068</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">139.53</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-13</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-13</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 7</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #069</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">75.70</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-14</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-14</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #070</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">142.27</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-15</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-15</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 8</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #071</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">77.52</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-16</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-16</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #072</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">145.01</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-17</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-17</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 8</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #073</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">79.34</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-18</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-18</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #074</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">147.75</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-19</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-19</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 8</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #075</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">81.16</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-20</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-20</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #076</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">150.49</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-21</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-21</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 8</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #077</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">82.98</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-22</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-22</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #078</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">153.23</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-23</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-23</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 8</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #079</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">84.80</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-24</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-24</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #080</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">155.97</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-25</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-25</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 9</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #081</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">86.62</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-26</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-26</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #082</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">158.71</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-27</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 9</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #083</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">88.44</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-28</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-28</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #084</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">161.45</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-01</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-01</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 9</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #085</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">90.26</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-02</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-02</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #086</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">164.19</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-03</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-03</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 9</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #087</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">92.08</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-04</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-04</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #088</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">166.93</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-05</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-05</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 9</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #089</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">93.90</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-06</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-06</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #090</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">169.67</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-07</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-07</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 10</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #091</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">95.72</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-08</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-08</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #092</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">172.41</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-09</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-09</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 10</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #093</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">97.54</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-10</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-10</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #094</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">175.15</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-11</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-11</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 10</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #095</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">99.36</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-12</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-12</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #096</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">177.89</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-13</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-13</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 10</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #097</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">101.18</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-14</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-14</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #098</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">180.63</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-15</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-15</Dt>
+        </ValDt>
+        <AddtlNtryInf>Membership fee batch 10</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Membership fee John Doe #099</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">103.00</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <BookgDt>
+          <Dt>2026-05-16</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-05-16</Dt>
+        </ValDt>
+        <AddtlNtryInf>Club operating expense</AddtlNtryInf>
+        <NtryDtls>
+          <TxDtls>
+            <RmtInf>
+              <Ustrd>Office and equipment purchase #100</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>
