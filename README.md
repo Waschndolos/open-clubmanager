@@ -237,8 +237,14 @@ If you update `openapi.yaml`, regenerate the ReDoc page with:
 npm run docs:redoc
 ```
 
-The repository also contains a GitHub Pages workflow in [`.github/workflows/api-docs.yml`](.github/workflows/api-docs.yml).
-After GitHub Pages is enabled for the repository, pushes to `main` will publish the contents of `docs/` as a hosted ReDoc site.
+The repository also contains a publishing workflow in [`.github/workflows/api-docs.yml`](.github/workflows/api-docs.yml).
+Pushes to `main` regenerate the ReDoc bundle and publish it to the `gh-pages` branch.
+
+To expose the hosted documentation in GitHub Pages, set the repository Pages source to:
+
+- **Deploy from a branch**
+- **Branch:** `gh-pages`
+- **Folder:** `/ (root)`
 
 GitHub usually exposes that site under a URL like:
 
