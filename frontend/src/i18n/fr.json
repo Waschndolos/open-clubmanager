@@ -128,10 +128,16 @@
                 "2": {
                     "title": "Attribuer les colonnes",
                     "description": "Attribuez les colonnes au modèle d’Open Clubmanager.",
-                    "ignore": "--- Ignorer ---"
+                    "ignore": "--- Ignorer ---",
+                    "matchField": "Mettre à jour les membres existants via",
+                    "keys": {
+                        "email": "E-mail",
+                        "number": "Numéro de membre"
+                    }
                 },
                 "3": {
-                    "title": "Aperçu"
+                    "title": "Aperçu",
+                    "duplicateMatchField": "⚠️ Des valeurs {{field}} en double existent dans les données importées !"
                 }
             },
             "sections": {

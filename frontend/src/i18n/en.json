@@ -128,10 +128,16 @@
                 "2": {
                     "title": "Assign Columns",
                     "description": "Assign columns to the Open ClubManager model.",
-                    "ignore": "--- Ignore ---"
+                    "ignore": "--- Ignore ---",
+                    "matchField": "Update existing members by",
+                    "keys": {
+                        "email": "Email",
+                        "number": "Member number"
+                    }
                 },
                 "3": {
-                    "title": "Preview"
+                    "title": "Preview",
+                    "duplicateMatchField": "⚠️ Duplicate {{field}} values exist in the imported data!"
                 }
             },
             "sections": {

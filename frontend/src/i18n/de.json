@@ -128,10 +128,16 @@
                 "2": {
                     "title": "Spalten zuordnen",
                     "description": "Ordne die Excel Spalten zu dem Open ClubManager Modell zu.",
-                    "ignore": "--- Ignorieren ---"
+                    "ignore": "--- Ignorieren ---",
+                    "matchField": "Bestehende Mitglieder aktualisieren über",
+                    "keys": {
+                        "email": "E-Mail",
+                        "number": "Mitgliedsnummer"
+                    }
                 },
                 "3": {
-                    "title": "Vorschau"
+                    "title": "Vorschau",
+                    "duplicateMatchField": "⚠️ Es gibt doppelte {{field}}-Werte in den importierten Daten!"
                 }
             },
             "sections": {
