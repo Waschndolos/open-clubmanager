@@ -1,0 +1,40 @@
+{
+  "name": "open-clubmanager",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "workspaceFolder": "/workspaces/open-clubmanager",
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": false,
+  "init": true,
+  "forwardPorts": [5173, 3001],
+  "portsAttributes": {
+    "5173": {
+      "label": "Frontend (Vite)"
+    },
+    "3001": {
+      "label": "Backend (Go API)"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "golang.go",
+        "rust-lang.rust-analyzer",
+        "Prisma.prisma",
+        "tauri-apps.tauri-vscode",
+        "ms-vscode.vscode-typescript-next"
+      ],
+      "settings": {
+        "go.useLanguageServer": true,
+        "editor.formatOnSave": true,
+        "files.eol": "\n"
+      }
+    }
+  }
+}
+

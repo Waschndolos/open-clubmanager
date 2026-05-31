@@ -84,6 +84,79 @@ Open ClubManager runs exclusively with the backend API and a database.
 
 ---
 
+## 🐳 Dev Container (recommended for contributors)
+
+The repository ships with a ready-to-use Dev Container configuration in `.devcontainer/`.
+It includes all required toolchains and system dependencies so you can start coding without any manual setup.
+
+### What's included
+
+| Tool                       | Version      |
+|----------------------------|--------------|
+| Node.js + npm              | 22 (LTS)     |
+| Go                         | 1.25.0       |
+| Rust + Cargo               | 1.77.2       |
+| Python 3                   | system       |
+| SQLite / MySQL CLI         | system       |
+| Tauri 2 Linux dependencies | Ubuntu 24.04 |
+
+### Using the Dev Container
+
+#### Option A — VS Code / GitHub Codespaces
+
+1. Open the repository in VS Code (or create a Codespace on GitHub).
+2. When prompted, click **"Reopen in Container"** — or open the Command Palette and run:
+   ```
+   Dev Containers: Reopen in Container
+   ```
+3. The container builds automatically and runs the bootstrap script, which:
+   - installs all npm workspaces (`root`, `frontend`, `db`)
+   - downloads Go modules (`go mod download`)
+   - pre-fetches Rust crates (`cargo fetch`)
+   - validates the Prisma schemas
+   - checks Tauri prerequisites
+
+#### Option B — Dev Container CLI
+
+```bash
+# Install the CLI once
+npm install -g @devcontainers/cli
+
+# Open the container
+devcontainer up --workspace-folder .
+
+# Execute a command inside it
+devcontainer exec --workspace-folder . npm run dev:browser
+```
+
+### Available ports
+
+| Port   | Service                    |
+|--------|----------------------------|
+| `5173` | Frontend (Vite dev server) |
+| `3001` | Backend (Go API)           |
+
+### Before you start
+
+Create the required environment files if they don't exist yet:
+
+**`server/.env`**
+```plaintext
+DATABASE_URL="file:/home/myUser/clubmanager.db"
+JWT_ACCESS_SECRET="dev_access_secret_change_me"
+JWT_REFRESH_SECRET="dev_refresh_secret_change_me"
+```
+
+**`frontend/.env`**
+```plaintext
+VITE_APP_VERSION=1.0.0
+VITE_BACKEND_ORIGIN=http://localhost:3001
+```
+
+> **Note:** Running `npm run dev` with the native Tauri window inside a container requires display forwarding (X11 or Wayland) from the host. For browser-based development, `npm run dev:browser` works out of the box.
+
+---
+
 ## 🛠️ Getting Started
 
 ### Prerequisites
@@ -93,6 +166,9 @@ Open ClubManager runs exclusively with the backend API and a database.
 * Go 1.24+
 * Rust + Cargo (for Tauri desktop builds) – install via [rustup](https://rustup.rs)
 * System dependencies for Tauri 2 – see [Tauri prerequisites](https://tauri.app/start/prerequisites/)
+
+> If `npm run dev` fails with a `cargo metadata` error, Rust/Cargo is not available in the current shell or IDE PATH yet.
+> Install Rust via `rustup` and restart the terminal / IDE so `cargo` and `rustc` are available.
 
 ### ⚡ Quick Setup (recommended)
 
