@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -19,6 +20,38 @@ import (
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
 )
 
+// corsMiddleware adds CORS headers for the Tauri desktop frontend and the
+// Vite dev server. Only recognised origins are reflected; all others are
+// silently ignored so the default browser same-origin policy still applies.
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		if isCORSAllowed(origin) {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
+		}
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// isCORSAllowed returns true for origins that may call the API:
+//   - tauri://localhost       – Tauri 2 production app (macOS / Linux)
+//   - https://tauri.localhost – Tauri 2 production app (Windows WebView2)
+//   - http://localhost:<port> – Vite dev server (any port)
+func isCORSAllowed(origin string) bool {
+	switch origin {
+	case "tauri://localhost", "https://tauri.localhost":
+		return true
+	}
+	return strings.HasPrefix(origin, "http://localhost:")
+}
+
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
@@ -30,6 +63,7 @@ func main() {
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
+	router.Use(corsMiddleware)
 
 	api := handlers.New(cfg)
 	openapi.HandlerWithOptions(api, openapi.ChiServerOptions{
