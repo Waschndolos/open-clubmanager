@@ -13,7 +13,7 @@ import {useUserPreference} from "../../hooks/useUserPreference";
 import {DateRenderer, DefaultRenderer, MemberContainingNamedArtifactRenderer} from "./renderer";
 import {DeletingMemberDialog} from "./DeletingMemberDialog";
 import {ExportMembersDialog} from "./ExportMembersDialog";
-import ImportMembersWizard from "./ImportMembersWizard";
+import ImportMembersWizard, {ImportMatchField} from "./ImportMembersWizard";
 import {useTheme} from '@mui/material/styles';
 import {DataGrid, GridColDef, GridColumnVisibilityModel, GridRowSelectionModel} from '@mui/x-data-grid';
 import type {GridRenderCellParams} from "@mui/x-data-grid/models/params/gridCellParams";
@@ -24,6 +24,21 @@ type MemberTableProps = {
     onMemberUpdated: (newMember: Member) => void;
     onMembersDeleted: (deletedMember: Member[]) => void;
 };
+
+function getImportMatchValue(member: Partial<Member>, matchField: ImportMatchField): string | null {
+    const value = member[matchField];
+
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        return trimmed ? trimmed.toLowerCase() : null;
+    }
+
+    if (typeof value === 'number') {
+        return String(value);
+    }
+
+    return null;
+}
 
 export default function MemberTable({members, onMemberUpdated, onMembersDeleted}: MemberTableProps) {
     const {t} = useTranslation();
@@ -149,8 +164,15 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
         return [];
     }
 
-    async function upsertImportedMembers(imported: Member[]) {
-        const existingMap = new Map(members.map(m => [m.email.toLowerCase(), m]));
+    async function upsertImportedMembers(imported: Member[], matchField: ImportMatchField) {
+        const existingMap = new Map(
+            members
+                .map((member) => {
+                    const key = getImportMatchValue(member, matchField);
+                    return key ? [key, member] as const : null;
+                })
+                .filter((entry): entry is readonly [string, Member] => entry !== null)
+        );
         setImportInProgress(true);
         let i = 0;
         const max = imported.length;
@@ -166,7 +188,7 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
         const sectionsList = [...allSections] as { id: number; name: string }[];
 
         for (const member of imported) {
-            const emailKey = member.email.toLowerCase();
+            const matchValue = getImportMatchValue(member, matchField);
             const progress = Math.round((i / max) * 100);
             setImportProgress(progress);
             i++;
@@ -187,8 +209,8 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
                 (data) => createSection(data as unknown as Omit<ClubSection, 'id'>)
             );
 
-            if (existingMap.has(emailKey)) {
-                const existing = existingMap.get(emailKey)!;
+            if (matchValue && existingMap.has(matchValue)) {
+                const existing = existingMap.get(matchValue)!;
                 // When a field is not mapped (undefined), preserve the existing associations
                 const mergedRoleIds = member.roles !== undefined ? roleIds : (existing.roles?.map(r => r.id) || []);
                 const mergedGroupIds = member.groups !== undefined ? groupIds : (existing.groups?.map(g => g.id) || []);
@@ -202,10 +224,14 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
                     sectionIds: mergedSectionIds,
                 };
                 const saved = await updateMember(updated as Member);
+                existingMap.set(matchValue, saved);
                 onMemberUpdated(saved);
             } else {
                 const payload = { ...member, roleIds, groupIds, sectionIds };
                 const saved = await createMember(payload as unknown as Omit<Member, 'id'>);
+                if (matchValue) {
+                    existingMap.set(matchValue, saved);
+                }
                 onMemberUpdated(saved);
             }
         }
@@ -250,9 +276,9 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
                     {importWizardOpen && (
                         <ImportMembersWizard
                             onClose={() => setImportWizardOpen(false)}
-                            onImport={async (imported: Member[]) => {
+                            onImport={async (imported: Member[], matchField: ImportMatchField) => {
                                 setImportWizardOpen(false);
-                                await upsertImportedMembers(imported);
+                                await upsertImportedMembers(imported, matchField);
                             }}
                         />
                     )}

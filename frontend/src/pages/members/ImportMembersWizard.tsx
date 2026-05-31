@@ -15,9 +15,11 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
+export type ImportMatchField = "email" | "number";
+
 type Props = {
     onClose: () => void;
-    onImport: (members: Member[]) => void;
+    onImport: (members: Member[], matchField: ImportMatchField) => void;
 };
 
 const memberFields: (keyof Member)[] = [
@@ -45,12 +47,15 @@ const memberFields: (keyof Member)[] = [
     "comment",
 ];
 
+const importMatchFields: ImportMatchField[] = ["email", "number"];
+
 export default function ImportMembersWizard({ onClose, onImport }: Props) {
     const [step, setStep] = useState(0);
     const [headers, setHeaders] = useState<string[]>([]);
     const [rows, setRows] = useState<(string | number | null)[][]>([]);
     // mapping erlaubt jetzt auch "", um "Ignorieren" abzubilden
     const [mapping, setMapping] = useState<Record<string, keyof Member | "">>({});
+    const [matchField, setMatchField] = useState<ImportMatchField>("email");
     const { t } = useTranslation();
 
     const handleFileUpload = (f: File) => {
@@ -87,15 +92,33 @@ export default function ImportMembersWizard({ onClose, onImport }: Props) {
         return entry;
     });
 
-    const isMappingValid = Object.values(mapping).includes("email");
+    const isMappingValid =
+        Object.values(mapping).includes("email") &&
+        Object.values(mapping).includes(matchField);
 
-    const hasDuplicateEmails = (() => {
-        const emailIndex = headers.findIndex((h) => mapping[h] === "email");
-        if (emailIndex === -1) return false;
-        const emails = rows
-            .map((row) => row[emailIndex])
-            .filter((email): email is string => !!email);
-        return new Set(emails).size !== emails.length;
+    const matchFieldLabel = t(`members.dialogs.import.2.keys.${matchField}`);
+
+    const hasDuplicateMatchFieldValues = (() => {
+        const matchFieldIndex = headers.findIndex((h) => mapping[h] === matchField);
+        if (matchFieldIndex === -1) return false;
+
+        const values = rows
+            .map((row) => row[matchFieldIndex])
+            .map((value) => {
+                if (typeof value === "string") {
+                    const trimmed = value.trim();
+                    return trimmed ? trimmed.toLowerCase() : null;
+                }
+
+                if (typeof value === "number") {
+                    return String(value);
+                }
+
+                return null;
+            })
+            .filter((value): value is string => value !== null);
+
+        return new Set(values).size !== values.length;
     })();
 
     function normalize(s: string): string {
@@ -145,6 +168,22 @@ export default function ImportMembersWizard({ onClose, onImport }: Props) {
                 {step === 1 && (
                     <Box>
                         <Typography>{t("members.dialogs.import.2.description")}</Typography>
+                        <Box display="flex" gap={2} mt={2} alignItems="center">
+                            <Typography sx={{ width: 150 }}>
+                                {t("members.dialogs.import.2.matchField")}
+                            </Typography>
+                            <Select
+                                fullWidth
+                                value={matchField}
+                                onChange={(e) => setMatchField(e.target.value as ImportMatchField)}
+                            >
+                                {importMatchFields.map((field) => (
+                                    <MenuItem key={field} value={field}>
+                                        {t(`members.dialogs.import.2.keys.${field}`)}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </Box>
                         {headers.map((h) => {
                             // Alle aktuell gewählten Felder außer dem für das aktuelle Header h
                             const selectedFields = Object.entries(mapping)
@@ -183,9 +222,11 @@ export default function ImportMembersWizard({ onClose, onImport }: Props) {
 
                 {step === 2 && (
                     <Box>
-                        {hasDuplicateEmails && (
+                        {hasDuplicateMatchFieldValues && (
                             <Alert severity="error" sx={{ mb: 2 }}>
-                                ⚠️ Es gibt doppelte E-Mail-Adressen in den importierten Daten!
+                                {t("members.dialogs.import.3.duplicateMatchField", {
+                                    field: matchFieldLabel,
+                                })}
                             </Alert>
                         )}
                         <Typography>{t("members.dialogs.import.3.title")}</Typography>
@@ -225,11 +266,10 @@ export default function ImportMembersWizard({ onClose, onImport }: Props) {
                                 });
                                 return entry as Member;
                             });
-                            console.log("Imported:", imported)
-                            onImport(imported);
+                            onImport(imported, matchField);
                             onClose();
                         }}
-                        disabled={hasDuplicateEmails}
+                        disabled={hasDuplicateMatchFieldValues}
                     >
                         {t("buttons.import")}
                     </Button>
