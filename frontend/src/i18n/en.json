@@ -13,7 +13,30 @@
         "email": "Email",
         "password": "Password",
         "loginButton": "Login",
-        "setupComplete": "Setup complete! Please log in with your new admin account."
+        "setupComplete": "Setup complete! Please log in with your new admin account.",
+        "forgotPassword": "Forgot password?"
+    },
+    "forgotPassword": {
+        "title": "Forgot Password",
+        "description": "Enter your email address and we'll send you a link to reset your password.",
+        "email": "Email",
+        "submitButton": "Send Reset Link",
+        "successMessage": "If an account with that email exists, a password reset link has been sent.",
+        "backToLogin": "Back to Login"
+    },
+    "resetPassword": {
+        "title": "Set New Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "submitButton": "Reset Password",
+        "successMessage": "Your password has been reset successfully. You can now log in.",
+        "backToLogin": "Back to Login",
+        "passwordMismatch": "Passwords do not match.",
+        "passwordTooShort": "Password must be at least 8 characters long.",
+        "tokenExpired": "The password reset link has expired. Please request a new one.",
+        "tokenInvalid": "The password reset link is invalid.",
+        "genericError": "An error occurred while resetting your password.",
+        "missingToken": "No valid reset token found. Please request a new reset link."
     },
     "setup": {
         "title": "Welcome to Open ClubManager",

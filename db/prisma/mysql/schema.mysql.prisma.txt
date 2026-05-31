@@ -1,18 +1,21 @@
+generator client {
+  provider = "prisma-client"
+}
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  roles     Role[]   @relation("UserRoles")
-  refreshTokens RefreshToken[]
+  id                  Int                  @id @default(autoincrement())
+  email               String               @unique
+  password            String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  roles               Role[]               @relation("UserRoles")
+  refreshTokens       RefreshToken[]
   passwordResetTokens PasswordResetToken[]
-  preferences UserPreference[]
+  preferences         UserPreference[]
 }
 
 model RefreshToken {
@@ -54,7 +57,7 @@ model Member {
   bic             String?
   bankName        String?
   sepaMandateDate DateTime?
-  roles           Role[]       @relation("MemberRoles")
+  roles           Role[]        @relation("MemberRoles")
   groups          Group[]       @relation("MemberGroups")
   sections        ClubSection[] @relation("MemberSections")
   fees            MemberFee[]
@@ -80,12 +83,12 @@ model ClubSection {
 }
 
 model UserPreference {
-  id         Int     @id @default(autoincrement())
-  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int
-  key        String
-  value      String
-  updatedAt  DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  key       String
+  value     String
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, key])
 }
@@ -95,7 +98,7 @@ model FinanceTransaction {
   date        DateTime
   description String
   amount      Float
-  type        String   // "income" | "expense"
+  type        String
   category    String?
   notes       String?
   createdAt   DateTime @default(now())
@@ -117,8 +120,8 @@ model MemberFee {
 
 model AuditLog {
   id        Int      @id @default(autoincrement())
-  action    String   // "CREATE" | "UPDATE" | "DELETE"
-  entity    String   // "Member" | "Role" | "Group" | "Section" | "FinanceTransaction" | "MemberFee"
+  action    String
+  entity    String
   entityId  Int
   userId    String
   data      String?

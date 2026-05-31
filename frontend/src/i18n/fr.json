@@ -13,7 +13,30 @@
         "email": "E-mail",
         "password": "Mot de passe",
         "loginButton": "Connexion",
-        "setupComplete": "Configuration terminée ! Veuillez vous connecter avec votre nouveau compte administrateur."
+        "setupComplete": "Configuration terminée ! Veuillez vous connecter avec votre nouveau compte administrateur.",
+        "forgotPassword": "Mot de passe oublié ?"
+    },
+    "forgotPassword": {
+        "title": "Mot de passe oublié",
+        "description": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+        "email": "E-mail",
+        "submitButton": "Envoyer le lien",
+        "successMessage": "Si un compte avec cette adresse e-mail existe, un lien de réinitialisation a été envoyé.",
+        "backToLogin": "Retour à la connexion"
+    },
+    "resetPassword": {
+        "title": "Nouveau mot de passe",
+        "newPassword": "Nouveau mot de passe",
+        "confirmPassword": "Confirmer le mot de passe",
+        "submitButton": "Réinitialiser le mot de passe",
+        "successMessage": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.",
+        "backToLogin": "Retour à la connexion",
+        "passwordMismatch": "Les mots de passe ne correspondent pas.",
+        "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères.",
+        "tokenExpired": "Le lien de réinitialisation a expiré. Veuillez en demander un nouveau.",
+        "tokenInvalid": "Le lien de réinitialisation est invalide.",
+        "genericError": "Une erreur s'est produite lors de la réinitialisation de votre mot de passe.",
+        "missingToken": "Aucun token de réinitialisation valide trouvé. Veuillez demander un nouveau lien."
     },
     "setup": {
         "title": "Bienvenue dans Open ClubManager",

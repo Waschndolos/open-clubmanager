@@ -6,7 +6,7 @@
   "scripts": {
     "setup": "npm run setup:sqlite",
     "setup:sqlite": "prisma migrate dev --schema prisma/schema.prisma",
-    "setup:mysql": "prisma db push --schema prisma/mysql/schema.mysql.prisma.txt --skip-generate",
+    "setup:mysql": "prisma db push --schema prisma/mysql/schema.mysql.prisma.txt",
     "prisma:validate": "prisma validate --schema prisma/schema.prisma && prisma validate --schema prisma/mysql/schema.mysql.prisma.txt",
     "prisma:migrate": "prisma migrate dev --schema prisma/schema.prisma",
     "prisma:migrate:reset": "prisma migrate reset",

@@ -54,7 +54,7 @@ jobs:
         run: npm run prisma:validate
 
       - name: Push Prisma schema
-        run: npx prisma db push --schema prisma/schema.prisma --skip-generate
+        run: npx prisma db push --schema prisma/schema.prisma
 
   frontend:
     runs-on: ubuntu-latest

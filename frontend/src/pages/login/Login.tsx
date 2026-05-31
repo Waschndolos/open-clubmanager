@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Alert, Box, Button, Card, CardContent, IconButton, InputAdornment, TextField, Typography,} from '@mui/material';
+import {Alert, Box, Button, Card, CardContent, IconButton, InputAdornment, Link, TextField, Typography,} from '@mui/material';
 import {Visibility, VisibilityOff} from '@mui/icons-material';
 import {useAuth} from '../../context/AuthContext';
 import {useNavigate, useLocation} from 'react-router-dom';
@@ -142,6 +142,15 @@ const Login: React.FC = () => {
                         >
                             {t('login.loginButton')}
                         </Button>
+
+                        <Link
+                            component="button"
+                            variant="body2"
+                            onClick={() => navigate('/forgot-password')}
+                            sx={{ alignSelf: 'center' }}
+                        >
+                            {t('login.forgotPassword')}
+                        </Link>
                     </Box>
                 </CardContent>
             </Card>
