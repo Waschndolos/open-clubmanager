@@ -69,6 +69,7 @@ Open ClubManager runs exclusively with the backend API and a database.
 ```
 /clubmanager
 ├── assets/          # App icons
+├── db/              # Prisma schemas + migrations
 ├── server/          # Go API + Chi router
 │   ├── cmd/server/  # binary entry point
 │   └── internal/    # generated OpenAPI bindings + handlers
@@ -274,8 +275,8 @@ All scripts below can be run from the **project root**.
 
 | Script | Description |
 |---|---|
-| `npm run setup` | Install all dependencies for frontend + Go server |
-| `npm run install:all` | Install dependencies for root + frontend and run `go mod tidy` in `server/` |
+| `npm run setup` | Install all dependencies for frontend + db tooling + Go server |
+| `npm run install:all` | Install dependencies for root + frontend + db and run `go mod tidy` in `server/` |
 | `npm run dev:browser` | Start frontend + backend in browser dev mode (no Tauri shell) |
 | `npm run dev` | Start full Tauri desktop app (frontend + backend + Tauri window) |
 | `npm run build` | Build backend, copy sidecar binary, and build Tauri app |

@@ -5,8 +5,11 @@
   "description": "Open Clubmanager ",
   "type": "module",
   "scripts": {
-    "install:all": "npm install && npm --prefix frontend install && cd server && go mod tidy",
+    "install:all": "npm install && npm --prefix frontend install && npm --prefix db install && cd server && go mod tidy",
     "setup": "npm run install:all",
+    "prisma:validate": "npm --prefix db run prisma:validate",
+    "prisma:setup:sqlite": "npm --prefix db run setup:sqlite",
+    "prisma:setup:mysql": "npm --prefix db run setup:mysql",
     "dev:browser": "concurrently -k -n FRONTEND,SERVER -c yellow,cyan \"npm --prefix frontend run dev:frontend\" \"cd server && go run ./cmd/server\"",
     "dev": "tauri dev",
     "build:frontend": "npm --prefix frontend run build",
