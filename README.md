@@ -33,10 +33,10 @@ Open ClubManager is built by volunteers for volunteers.
 
 ## 🗄️ Database-Only Architecture
 
-Open ClubManager now runs exclusively with the backend API and a database.
+Open ClubManager runs exclusively with the backend API and a database.
 
-- `npm run dev:browser` starts frontend + backend.
-- `npm run dev:electron` starts frontend + backend + Electron shell.
+- `npm run dev:browser` starts frontend + backend in the browser.
+- `npm run dev` starts the full Tauri desktop app (frontend + backend + Tauri shell).
 - In all environments, application data is loaded and persisted through `/api/v2`.
 
 ---
@@ -49,6 +49,7 @@ Open ClubManager now runs exclusively with the backend API and a database.
 * 🔒 Local database (SQLite) – no cloud dependency
 * 🎨 React + TypeScript frontend
 * ⚙️ Go + Chi backend
+* 🖥️ Tauri 2 desktop shell (~10 MB bundle)
 * 🌱 Seed system for demo data in development
 
 ---
@@ -57,8 +58,9 @@ Open ClubManager now runs exclusively with the backend API and a database.
 
 * **Frontend**: React, TypeScript, Axios, Vite
 * **Backend**: Go, Chi, oapi-codegen
+* **Desktop**: Tauri 2 (Rust)
 * **Database**: SQLite / MySQL
-* **Dev Tools**: go toolchain, npm, WebStorm/VS Code
+* **Dev Tools**: go toolchain, npm, Rust/Cargo, WebStorm/VS Code
 
 ---
 
@@ -66,12 +68,18 @@ Open ClubManager now runs exclusively with the backend API and a database.
 
 ```
 /clubmanager
-├── assets/          # Assets for the electron build
+├── assets/          # App icons
+├── db/              # Prisma schemas + migrations
 ├── server/          # Go API + Chi router
 │   ├── cmd/server/  # binary entry point
 │   └── internal/    # generated OpenAPI bindings + handlers
-├── electron/        # Electron build
+├── src-tauri/       # Tauri 2 desktop shell (Rust)
+│   ├── src/         # Rust source (lib.rs spawns the Go sidecar)
+│   ├── capabilities/# Tauri capability definitions
+│   ├── binaries/    # Go sidecar binary (populated by prepare:sidecar)
+│   └── tauri.conf.json
 ├── frontend/        # React client
+└── scripts/         # Helper scripts (prepare-sidecar.js, …)
 ```
 
 ---
@@ -80,15 +88,17 @@ Open ClubManager now runs exclusively with the backend API and a database.
 
 ### Prerequisites
 
-* Node.js 20
+* Node.js 20+
 * npm
 * Go 1.24+
+* Rust + Cargo (for Tauri desktop builds) – install via [rustup](https://rustup.rs)
+* System dependencies for Tauri 2 – see [Tauri prerequisites](https://tauri.app/start/prerequisites/)
 
 ### ⚡ Quick Setup (recommended)
 
-> **One-command setup** – installs all dependencies and initialises the development database in one step.
+> **One-command setup** – installs all dependencies in one step.
 
-First, create a file named `.env` in the `backend` directory with the following content:
+First, create a file named `.env` in the `server` directory with the following content:
 ```plaintext
 # Default local database URL (SQLite)
 DATABASE_URL="file:/home/myUser/clubmanager.db"
@@ -96,9 +106,6 @@ DATABASE_URL="file:/home/myUser/clubmanager.db"
 # Development secrets for API authentication
 JWT_ACCESS_SECRET="dev_access_secret_change_me"
 JWT_REFRESH_SECRET="dev_refresh_secret_change_me"
-
-# Alternatively, for users who use "Please Reboot OS" you can use:
-# DATABASE_URL="file:C:\\Users\\myUser\\clubmanager.db"
 ```
 
 Then, from the project root run:
@@ -108,9 +115,7 @@ npm run setup
 ```
 
 This will:
-1. Install all dependencies (root, frontend, backend)
-2. Run Prisma migrations
-3. Seed the database with demo data (members, roles, groups, sections)
+1. Install all dependencies (root, frontend, Go modules)
 
 If the database contains no users yet, the app will guide you through the setup flow:
 1. Choose database mode:
@@ -122,11 +127,11 @@ If the database contains no users yet, the app will guide you through the setup 
 Once setup is complete, start the development servers:
 
 ```bash
-# Start frontend + backend in the browser
+# Start frontend + backend in the browser (no desktop shell)
 npm run dev:browser
 
-# or start frontend + backend + Electron
-npm run dev:electron
+# Start the full Tauri desktop app (frontend + backend + Tauri window)
+npm run dev
 ```
 
 ---
@@ -137,7 +142,7 @@ If you prefer to set up each part individually:
 
 #### Backend
 
-Create a file named `.env` in the `backend` directory with the following content:
+Create a file named `.env` in the `server` directory with the following content:
 ```plaintext
 # Default local database URL (SQLite)
 DATABASE_URL="file:/home/myUser/clubmanager.db"
@@ -145,17 +150,11 @@ DATABASE_URL="file:/home/myUser/clubmanager.db"
 # Recommended for local development
 JWT_ACCESS_SECRET="dev_access_secret_change_me"
 JWT_REFRESH_SECRET="dev_refresh_secret_change_me"
-
-# Alternatively, for users who use "Please Reboot OS" you can use:
-# DATABASE_URL="file:C:\\Users\\myUser\\clubmanager.db"
 ```
 
 ```bash
-cd backend
-npm install
-npm run setup      # sqlite: runs migrations + seeds the database
-npm run setup:mysql # mysql: pushes schema (requires reachable MySQL DB)
-npm run dev        # start the backend server
+cd server
+go run ./cmd/server   # start the backend server
 ```
 
 #### Frontend
@@ -171,6 +170,13 @@ VITE_BACKEND_ORIGIN=http://localhost:3001
 cd frontend
 npm install
 npm run dev        # start the Vite dev server
+```
+
+#### Tauri (desktop)
+
+```bash
+# From the project root
+npm run dev        # starts frontend + backend + Tauri window
 ```
 
 ### API v2 bootstrap endpoints
@@ -220,10 +226,11 @@ https://waschndolos.github.io/open-clubmanager/
 ### Start Frontend and Backend in Dev mode
 ```bash
 cd <rootProject>
-# Start the frontend and backend in browser
+# Start the frontend and backend in browser (no desktop shell)
 npm run dev:browser
-# or start the frontend and backend in electron
-npm run dev:electron
+
+# Start the full Tauri desktop app
+npm run dev
 ```
 
 The initial user for the development mode is:
@@ -234,9 +241,30 @@ If there are no users yet, open the setup flow in the app and create the first a
 
 ---
 
+## 🏗️ Building a distributable package
+
+```bash
+# 1. Build the Go backend binary
+npm run build:backend
+
+# 2. Copy the binary into src-tauri/binaries/ with the correct target-triple suffix
+npm run prepare:sidecar
+
+# 3. Build the Tauri app (also builds the frontend)
+#    The resulting installer is placed in src-tauri/target/release/bundle/
+npm run build
+```
+
+> **Note:** Before the first build, generate the Tauri icon set from the project icon:
+> ```bash
+> npx tauri icon assets/clubmanager-icon.ico
+> ```
+
+---
+
 ## 🌱 Development Mode
 
-Demo data is created by running `npm run setup` or `npm run prisma:seed`.
+Demo data is created by running `npm run setup` or by seeding manually.
 Starting the backend alone does not automatically reseed the database.
 
 ---
@@ -247,13 +275,15 @@ All scripts below can be run from the **project root**.
 
 | Script | Description |
 |---|---|
-| `npm run setup` | Install all dependencies for frontend + Go server |
-| `npm run install:all` | Install dependencies for root + frontend and run `go mod tidy` in `server/` |
-| `npm run dev:browser` | Start frontend + backend in browser dev mode |
-| `npm run dev:electron` | Start frontend + backend + Electron in dev mode |
-| `npm run build` | Build frontend, backend, and Electron |
+| `npm run setup` | Install all dependencies for frontend + db tooling + Go server |
+| `npm run install:all` | Install dependencies for root + frontend + db and run `go mod tidy` in `server/` |
+| `npm run dev:browser` | Start frontend + backend in browser dev mode (no Tauri shell) |
+| `npm run dev` | Start full Tauri desktop app (frontend + backend + Tauri window) |
+| `npm run build` | Build backend, copy sidecar binary, and build Tauri app |
+| `npm run build:frontend` | Build the React frontend only |
+| `npm run build:backend` | Build the Go backend binary only |
+| `npm run prepare:sidecar` | Copy Go binary to `src-tauri/binaries/` with target-triple suffix |
 | `npm run lint` | Lint frontend and run Go tests for the server |
-| `npm run dist` | Create a distributable Electron package |
 | `npm run licenses` | Regenerate third-party licence files |
 
 ---
@@ -266,16 +296,6 @@ You can use Postman or any REST client to test:
 * `POST /api/v2/members`
 * `PUT /api/v2/members/:id`
 * `DELETE /api/v2/members/:id`
-
-Prisma Studio is available via:
-
-```bash
-# From the project root
-npm run prisma:studio
-
-# or from the backend directory
-npx prisma studio
-```
 
 ---
 
@@ -312,12 +332,11 @@ For full terms, see the LICENSE file or visit https://creativecommons.org/licens
 
 ## 📚 Licenses of Used Libraries
 
-This project uses open source packages such as React, Express, and Prisma. These components are licensed under permissive licenses (MIT, Apache-2.0, etc.). You can find their license texts in their respective repositories or via `npm`.
+This project uses open source packages such as React, Axios, and Tauri. These components are licensed under permissive licenses (MIT, Apache-2.0, etc.). You can find their license texts in their respective repositories or via `npm`.
 
 The original code of ClubManager is licensed under **CC BY-NC 4.0**.
 
 For a list of all third-party libraries and their licenses, see 
-* [backend/THIRD_PARTY_LICENSES.md](backend/THIRD_PARTY_LICENSES.md).
 * [frontend/THIRD_PARTY_LICENSES.md](frontend/THIRD_PARTY_LICENSES.md)
 
 ## 💬 Questions & Feedback

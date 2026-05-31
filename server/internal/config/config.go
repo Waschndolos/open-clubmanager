@@ -7,13 +7,23 @@ import (
 	"strconv"
 )
 
+type SMTPConfig struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	From     string `json:"from"`
+}
+
 type Config struct {
-	Port          int    `json:"port"`
-	DatabasePath  string `json:"databasePath"`
-	DatabaseURL   string `json:"databaseUrl"`
-	JWTSecret     string `json:"jwtSecret"`
-	AdminEmail    string `json:"adminEmail"`
-	AdminPassword string `json:"adminPasswordHash"`
+	Port          int        `json:"port"`
+	DatabasePath  string     `json:"databasePath"`
+	DatabaseURL   string     `json:"databaseUrl"`
+	JWTSecret     string     `json:"jwtSecret"`
+	AdminEmail    string     `json:"adminEmail"`
+	AdminPassword string     `json:"adminPasswordHash"`
+	AppBaseURL    string     `json:"appBaseUrl"`
+	SMTP          SMTPConfig `json:"smtp"`
 }
 
 func Load() (Config, error) {
@@ -64,6 +74,30 @@ func Load() (Config, error) {
 
 	if value := os.Getenv("ADMIN_PASSWORD_HASH"); value != "" {
 		cfg.AdminPassword = value
+	}
+
+	if value := os.Getenv("APP_BASE_URL"); value != "" {
+		cfg.AppBaseURL = value
+	}
+
+	if value := os.Getenv("SMTP_HOST"); value != "" {
+		cfg.SMTP.Host = value
+	}
+	if value := os.Getenv("SMTP_PORT"); value != "" {
+		port, err := strconv.Atoi(value)
+		if err != nil {
+			return Config{}, err
+		}
+		cfg.SMTP.Port = port
+	}
+	if value := os.Getenv("SMTP_USER"); value != "" {
+		cfg.SMTP.User = value
+	}
+	if value := os.Getenv("SMTP_PASSWORD"); value != "" {
+		cfg.SMTP.Password = value
+	}
+	if value := os.Getenv("SMTP_FROM"); value != "" {
+		cfg.SMTP.From = value
 	}
 
 	if cfg.Port <= 0 {

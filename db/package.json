@@ -1,0 +1,26 @@
+{
+  "name": "db",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "prisma/schema.prisma",
+  "scripts": {
+    "setup": "npm run setup:sqlite",
+    "setup:sqlite": "prisma migrate dev --schema prisma/schema.prisma",
+    "setup:mysql": "prisma db push --schema prisma/mysql/schema.mysql.prisma.txt --skip-generate",
+    "prisma:validate": "prisma validate --schema prisma/schema.prisma && prisma validate --schema prisma/mysql/schema.mysql.prisma.txt",
+    "prisma:migrate": "prisma migrate dev --schema prisma/schema.prisma",
+    "prisma:migrate:reset": "prisma migrate reset",
+    "prisma:status": "prisma migrate status --schema prisma/schema.prisma",
+    "prisma:studio": "prisma studio --schema prisma/schema.prisma"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Prisma schema and migrations for Open ClubManager",
+  "dependencies": {
+    "dotenv": "^17.2.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.4.0"
+  }
+}

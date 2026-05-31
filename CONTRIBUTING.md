@@ -10,6 +10,8 @@ We welcome contributions of all kinds, including bug reports, feature requests, 
 
 * Node.js >= 18
 * npm or pnpm
+* Go 1.24+
+* Rust + Cargo (optional, only for Tauri desktop development)
 * Git
 
 ---
@@ -35,10 +37,19 @@ npm run dev:browser
 #### Backend
 
 ```bash
-cd backend
+cd server
+go mod tidy
+go run ./cmd/server   # start the backend server
+```
+
+#### Prisma tooling (`db/` folder)
+
+The `db/` directory contains Prisma schema and migrations.
+
+```bash
+cd db
 npm install
-npm run setup      # runs Prisma migrations and seeds the database
-npm run dev        # start the backend server
+npm run setup:sqlite
 ```
 
 #### Frontend

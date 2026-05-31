@@ -15,7 +15,28 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache: true
+
+      - name: Download Go modules
+        run: go mod download
+
+      - name: Test
+        run: go test ./...
+
+      - name: Build
+        run: go build ./cmd/server
+
+  prisma-tooling:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: db
     env:
       DATABASE_URL: "file:./clubmanager.db"
     steps:
@@ -24,25 +45,16 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: db/package-lock.json
 
-      - name: Install backend dependencies
+      - name: Install db dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
+      - name: Validate Prisma schemas
+        run: npm run prisma:validate
 
-      - name: Generate Prisma client
-        run: npx prisma generate
-
-      - name: Type check
-        run: npx tsc --noEmit
-
-      - name: Push database schema
-        run: npx prisma db push
-
-      - name: Seed database
-        run: npm run prisma:seed
+      - name: Push Prisma schema
+        run: npx prisma db push --schema prisma/schema.prisma --skip-generate
 
   frontend:
     runs-on: ubuntu-latest

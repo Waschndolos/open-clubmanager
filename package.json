@@ -3,32 +3,27 @@
   "version": "1.0.0",
   "author": "Waschndolos",
   "description": "Open Clubmanager ",
-  "main": "electron/dist/main.js",
   "type": "module",
   "scripts": {
-    "install:all": "npm install && npm --prefix frontend install && cd server && go mod tidy",
+    "install:all": "npm install && npm --prefix frontend install && npm --prefix db install && cd server && go mod tidy",
     "setup": "npm run install:all",
+    "prisma:validate": "npm --prefix db run prisma:validate",
+    "prisma:setup:sqlite": "npm --prefix db run setup:sqlite",
+    "prisma:setup:mysql": "npm --prefix db run setup:mysql",
     "dev:browser": "concurrently -k -n FRONTEND,SERVER -c yellow,cyan \"npm --prefix frontend run dev:frontend\" \"cd server && go run ./cmd/server\"",
-    "dev:electron": "concurrently -k -n FRONTEND,SERVER,ELECTRON -c yellow,cyan,green \"npm --prefix frontend run dev:frontend\" \"cd server && go run ./cmd/server\" \"wait-on http://localhost:5173 && tsc --project electron/tsconfig.json && electron .\"",
-    "build": "npm run build:frontend && npm run build:backend && npm run build:electron",
+    "dev": "tauri dev",
     "build:frontend": "npm --prefix frontend run build",
     "build:backend": "cd server && ./build.sh local",
-    "build:electron": "tsc --project electron/tsconfig.json",
+    "prepare:sidecar": "node scripts/prepare-sidecar.js",
+    "build": "npm run build:backend && npm run prepare:sidecar && tauri build",
     "docs:redoc": "python3 scripts/generate_redoc.py",
-    "dist": "npm run build && npx electron-builder --config electron-builder.json",
     "lint": "npm --prefix frontend run lint && cd server && go test ./...",
-    "licenses": "npm --prefix frontend run licenses && npm --prefix backend run licenses"
+    "licenses": "npm --prefix frontend run licenses"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2",
     "concurrently": "^9.1.2",
-    "cross-env": "^7.0.3",
-    "electron": "^40.2.1",
-    "electron-builder": "^26.7.0",
-    "typescript": "^5.8.3",
-    "wait-on": "^8.0.3"
+    "cross-env": "^7.0.3"
   },
-  "dependencies": {
-    "conf": "^14.0.0",
-    "electron-store": "^10.0.1"
-  }
+  "dependencies": {}
 }
