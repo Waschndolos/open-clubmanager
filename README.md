@@ -5,7 +5,7 @@
 🚧 This project is currently under construction. Features and structure may change frequently. 🚧
 
 **Open ClubManager** is an open source web application for managing clubs. It features a modern React-based frontend and
-a TypeScript + SQLite backend powered by Prisma and Express. ClubManager is designed to be lightweight, self-hostable,
+a Go + Chi backend API. ClubManager is designed to be lightweight, self-hostable,
 and suitable for small to medium-sized clubs or associations.
 
 ---
@@ -48,7 +48,7 @@ Open ClubManager now runs exclusively with the backend API and a database.
 * 🗓️ Record entry/exit dates, comments, and status
 * 🔒 Local database (SQLite) – no cloud dependency
 * 🎨 React + TypeScript frontend
-* ⚙️ Express + Prisma backend
+* ⚙️ Go + Chi backend
 * 🌱 Seed system for demo data in development
 
 ---
@@ -56,9 +56,9 @@ Open ClubManager now runs exclusively with the backend API and a database.
 ## 📦 Tech Stack
 
 * **Frontend**: React, TypeScript, Axios, Vite
-* **Backend**: Node.js, Express, TypeScript
-* **Database**: SQLite (via Prisma ORM)
-* **Dev Tools**: ts-node, Prisma Studio, WebStorm/VS Code
+* **Backend**: Go, Chi, oapi-codegen
+* **Database**: SQLite / MySQL
+* **Dev Tools**: go toolchain, npm, WebStorm/VS Code
 
 ---
 
@@ -67,14 +67,9 @@ Open ClubManager now runs exclusively with the backend API and a database.
 ```
 /clubmanager
 ├── assets/          # Assets for the electron build
-├── backend/         # Express API + Prisma + SQLite
-│   ├── src/
-│   │   ├── server.ts
-│   │   └── v2/
-│   ├── prisma/
-│   │   ├── schema.prisma
-│   │   ├── migrations/
-│   │   └── seed.ts
+├── server/          # Go API + Chi router
+│   ├── cmd/server/  # binary entry point
+│   └── internal/    # generated OpenAPI bindings + handlers
 ├── electron/        # Electron build
 ├── frontend/        # React client
 ```
@@ -87,6 +82,7 @@ Open ClubManager now runs exclusively with the backend API and a database.
 
 * Node.js 20
 * npm
+* Go 1.24+
 
 ### ⚡ Quick Setup (recommended)
 
@@ -251,15 +247,12 @@ All scripts below can be run from the **project root**.
 
 | Script | Description |
 |---|---|
-| `npm run setup` | Install all dependencies and initialise the dev database (first-time setup) |
-| `npm run install:all` | Install dependencies for root, frontend, and backend |
+| `npm run setup` | Install all dependencies for frontend + Go server |
+| `npm run install:all` | Install dependencies for root + frontend and run `go mod tidy` in `server/` |
 | `npm run dev:browser` | Start frontend + backend in browser dev mode |
 | `npm run dev:electron` | Start frontend + backend + Electron in dev mode |
 | `npm run build` | Build frontend, backend, and Electron |
-| `npm run lint` | Lint frontend and backend source code |
-| `npm run prisma:studio` | Open Prisma Studio (database GUI) |
-| `npm run prisma:seed` | Re-seed the development database |
-| `npm run prisma:reset` | Reset and re-run all migrations |
+| `npm run lint` | Lint frontend and run Go tests for the server |
 | `npm run dist` | Create a distributable Electron package |
 | `npm run licenses` | Regenerate third-party licence files |
 
