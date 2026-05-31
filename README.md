@@ -36,7 +36,7 @@ Open ClubManager is built by volunteers for volunteers.
 Open ClubManager now runs exclusively with the backend API and a database.
 
 - `npm run dev:browser` starts frontend + backend.
-- `npm run dev:electron` starts frontend + backend + Electron shell.
+- `npm run dev` starts the Tauri desktop shell with frontend + backend.
 - In all environments, application data is loaded and persisted through `/api/v2`.
 
 ---
@@ -57,6 +57,7 @@ Open ClubManager now runs exclusively with the backend API and a database.
 
 * **Frontend**: React, TypeScript, Axios, Vite
 * **Backend**: Node.js, Express, TypeScript
+* **Desktop Wrapper**: Tauri 2
 * **Database**: SQLite (via Prisma ORM)
 * **Dev Tools**: ts-node, Prisma Studio, WebStorm/VS Code
 
@@ -66,7 +67,7 @@ Open ClubManager now runs exclusively with the backend API and a database.
 
 ```
 /clubmanager
-├── assets/          # Assets for the electron build
+├── assets/          # Shared desktop build assets
 ├── backend/         # Express API + Prisma + SQLite
 │   ├── src/
 │   │   ├── server.ts
@@ -75,7 +76,7 @@ Open ClubManager now runs exclusively with the backend API and a database.
 │   │   ├── schema.prisma
 │   │   ├── migrations/
 │   │   └── seed.ts
-├── electron/        # Electron build
+├── src-tauri/       # Tauri desktop shell
 ├── frontend/        # React client
 ```
 
@@ -87,6 +88,7 @@ Open ClubManager now runs exclusively with the backend API and a database.
 
 * Node.js 20
 * npm
+* Rust toolchain (required for Tauri builds)
 
 ### ⚡ Quick Setup (recommended)
 
@@ -129,8 +131,8 @@ Once setup is complete, start the development servers:
 # Start frontend + backend in the browser
 npm run dev:browser
 
-# or start frontend + backend + Electron
-npm run dev:electron
+# or start the Tauri desktop shell
+npm run dev
 ```
 
 ---
@@ -226,8 +228,8 @@ https://waschndolos.github.io/open-clubmanager/
 cd <rootProject>
 # Start the frontend and backend in browser
 npm run dev:browser
-# or start the frontend and backend in electron
-npm run dev:electron
+# or start the Tauri desktop shell
+npm run dev
 ```
 
 The initial user for the development mode is:
@@ -254,13 +256,14 @@ All scripts below can be run from the **project root**.
 | `npm run setup` | Install all dependencies and initialise the dev database (first-time setup) |
 | `npm run install:all` | Install dependencies for root, frontend, and backend |
 | `npm run dev:browser` | Start frontend + backend in browser dev mode |
-| `npm run dev:electron` | Start frontend + backend + Electron in dev mode |
-| `npm run build` | Build frontend, backend, and Electron |
+| `npm run dev` | Start frontend + backend with the Tauri desktop shell |
+| `npm run dev:tauri` | Alias for `npm run dev` |
+| `npm run build` | Build frontend and backend artifacts |
 | `npm run lint` | Lint frontend and backend source code |
 | `npm run prisma:studio` | Open Prisma Studio (database GUI) |
 | `npm run prisma:seed` | Re-seed the development database |
 | `npm run prisma:reset` | Reset and re-run all migrations |
-| `npm run dist` | Create a distributable Electron package |
+| `npm run dist` | Create a distributable Tauri package |
 | `npm run licenses` | Regenerate third-party licence files |
 
 ---

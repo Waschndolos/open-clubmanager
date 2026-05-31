@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Open ClubManager",
+  "version": "1.0.0",
+  "identifier": "org.clubmanager.app",
+  "build": {
+    "beforeDevCommand": "npm run dev:browser",
+    "beforeBuildCommand": "npm run build:frontend && npm run build:backend",
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../frontend/dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Open ClubManager",
+        "width": 1280,
+        "height": 900
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "externalBin": [
+      "binaries/clubmanager-backend"
+    ],
+    "resources": [
+      "../assets/clubmanager-icon.ico"
+    ]
+  }
+}
