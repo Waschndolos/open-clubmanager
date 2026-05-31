@@ -57,6 +57,19 @@ export function createAuthRoutes(config: ApiV2Config, authService: AuthService):
         res.json({ email: authReq.userEmail });
     });
 
+    router.post('/forgot-password', asyncHandler(async (req, res) => {
+        const { email } = req.body as { email?: string };
+        await authService.requestPasswordReset(email ?? '');
+        // Always return 200 to avoid leaking whether the email exists
+        res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+    }));
+
+    router.post('/reset-password', asyncHandler(async (req, res) => {
+        const { token, newPassword } = req.body as { token?: string; newPassword?: string };
+        await authService.resetPassword(token ?? '', newPassword ?? '');
+        res.json({ message: 'Password has been reset successfully.' });
+    }));
+
     return router;
 }
 

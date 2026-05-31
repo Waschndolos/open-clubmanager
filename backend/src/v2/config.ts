@@ -4,6 +4,12 @@ export interface ApiV2Config {
     jwtAccessSecret: string;
     jwtRefreshSecret: string;
     usesLegacyFallback: boolean;
+    smtpHost?: string;
+    smtpPort?: number;
+    smtpUser?: string;
+    smtpPassword?: string;
+    smtpFrom?: string;
+    appBaseUrl?: string;
 }
 
 /**
@@ -22,6 +28,12 @@ export function readApiV2Config(env: NodeJS.ProcessEnv = process.env): ApiV2Conf
         jwtAccessSecret,
         jwtRefreshSecret,
         usesLegacyFallback,
+        smtpHost: env.SMTP_HOST,
+        smtpPort: env.SMTP_PORT ? parseInt(env.SMTP_PORT, 10) : undefined,
+        smtpUser: env.SMTP_USER,
+        smtpPassword: env.SMTP_PASSWORD,
+        smtpFrom: env.SMTP_FROM,
+        appBaseUrl: env.APP_BASE_URL ?? 'http://localhost:5173',
     };
 }
 

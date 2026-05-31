@@ -7,6 +7,8 @@ import {Finance} from "../pages/finance/Finance";
 import { Settings } from "../pages/settings/Settings";
 import {EntitiesPage} from "../pages/entities/EntitiesPage";
 import Login from "../pages/login/Login";
+import ForgotPassword from "../pages/login/ForgotPassword";
+import ResetPassword from "../pages/login/ResetPassword";
 import Setup from "../pages/setup/Setup";
 import { RequireAuth } from "../guards/RequireAuth";
 import History from "../pages/history/History";
@@ -15,6 +17,14 @@ export const router = createBrowserRouter([
     {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
   },
   {
     path: "/setup",
@@ -83,3 +93,4 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+

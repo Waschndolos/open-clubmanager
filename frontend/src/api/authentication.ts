@@ -35,3 +35,30 @@ export async function getProfile(token: string) {
 
     return res.json(); // { email }
 }
+
+export async function forgotPassword(email: string) {
+    const res = await fetch(`${BASE_URL}/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    });
+
+    if (!res.ok) throw new Error("Request failed");
+
+    return res.json();
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+    const res = await fetch(`${BASE_URL}/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, newPassword }),
+    });
+
+    if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { error?: string }).error ?? "Reset failed");
+    }
+
+    return res.json();
+}
