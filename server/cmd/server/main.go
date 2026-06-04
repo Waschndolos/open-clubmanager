@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"context"
 	"fmt"
 	"log"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/Waschndolos/open-clubmanager/server/internal/auth"
 	"github.com/Waschndolos/open-clubmanager/server/internal/config"
+	dbpkg "github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/handlers"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
 )
@@ -58,6 +60,26 @@ func main() {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
+	// Open the database if already configured (e.g. on subsequent launches).
+	var db *sql.DB
+	if cfg.DatabasePath != "" || cfg.DatabaseURL != "" {
+		mode := "sqlite-local"
+		dsn := cfg.DatabasePath
+		if cfg.DatabaseURL != "" {
+			mode = "mysql-shared"
+			dsn = cfg.DatabaseURL
+		}
+		if opened, dbErr := dbpkg.Open(mode, dsn); dbErr == nil {
+			if migrateErr := dbpkg.Migrate(opened); migrateErr != nil {
+				log.Printf("warning: database migration failed: %v", migrateErr)
+			} else {
+				db = opened
+			}
+		} else {
+			log.Printf("warning: failed to open database: %v", dbErr)
+		}
+	}
+
 	router := chi.NewRouter()
 	router.Use(middleware.RealIP)
 	router.Use(middleware.RequestID)
@@ -65,7 +87,7 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(corsMiddleware)
 
-	api := handlers.New(cfg)
+	api := handlers.New(&cfg, db)
 	openapi.HandlerWithOptions(api, openapi.ChiServerOptions{
 		BaseURL:     "/api/v2",
 		BaseRouter:  router,
