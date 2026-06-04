@@ -36,13 +36,13 @@ export default function StatisticCard({id, value, details}: StatisticCardProps) 
     function getIcon() {
         switch (id) {
             case 1:
-                return <PeopleAltIcon sx={{ fontSize: 22 }} />;
+                return <PeopleAltIcon sx={{ fontSize: 24 }} />;
             case 2:
-                return <EventNoteIcon sx={{ fontSize: 22 }} />;
+                return <EventNoteIcon sx={{ fontSize: 24 }} />;
             case 3:
-                return <PersonRemoveIcon sx={{ fontSize: 22 }} />;
+                return <PersonRemoveIcon sx={{ fontSize: 24 }} />;
             default:
-                return <HelpOutlineIcon sx={{ fontSize: 22 }} />;
+                return <HelpOutlineIcon sx={{ fontSize: 24 }} />;
         }
     }
 
@@ -65,18 +65,38 @@ export default function StatisticCard({id, value, details}: StatisticCardProps) 
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
+            background: theme.palette.mode === 'dark'
+                ? 'rgba(26, 32, 34, 0.6)'
+                : 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(12px)',
+            border: theme.palette.mode === 'dark'
+                ? '1px solid rgba(0, 255, 194, 0.1)'
+                : '1px solid rgba(0, 200, 154, 0.12)',
+            boxShadow: theme.palette.mode === 'dark'
+                ? '0 8px 24px rgba(0, 0, 0, 0.2)'
+                : '0 6px 20px rgba(0, 0, 0, 0.08)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: theme.palette.mode === 'dark'
+                    ? '0 12px 32px rgba(0, 255, 194, 0.15)'
+                    : '0 10px 28px rgba(0, 200, 154, 0.12)',
+                background: theme.palette.mode === 'dark'
+                    ? 'rgba(26, 32, 34, 0.75)'
+                    : 'rgba(255, 255, 255, 0.95)',
+            }
         }}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
                 <Box>
                     <Typography
                         variant="subtitle2"
                         color="text.secondary"
-                        fontWeight={500}
-                        sx={{ fontSize: '0.75rem', mb: 1 }}
+                        fontWeight={600}
+                        sx={{ fontSize: '0.7rem', mb: 1, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8 }}
                     >
                         {getTitle()}
                     </Typography>
-                    <Typography variant="h3" fontWeight={700} lineHeight={1}>
+                    <Typography variant="h3" fontWeight={800} lineHeight={1}>
                         {value}
                     </Typography>
                 </Box>
@@ -84,21 +104,22 @@ export default function StatisticCard({id, value, details}: StatisticCardProps) 
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 2,
-                    bgcolor: alpha(accent.color, 0.1),
+                    width: 48,
+                    height: 48,
+                    borderRadius: '12px',
+                    bgcolor: alpha(accent.color, 0.12),
                     color: accent.color,
                     flexShrink: 0,
+                    transition: 'all 0.3s ease',
                 }}>
                     {getIcon()}
                 </Box>
             </Box>
 
             {details && details.length > 0 && (
-                <Box sx={{ mt: 'auto', pt: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
+                <Box sx={{ mt: 'auto', pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
                     {details.map((detail, index) => (
-                        <Typography key={index} variant="body2" color="text.secondary">
+                        <Typography key={index} variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                             {detail}
                         </Typography>
                     ))}

@@ -7,9 +7,11 @@ export default function Content() {
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
-            padding: 4,
+            padding: { xs: 2, sm: 3, md: 4, lg: 5 },
             borderRadius: 0,
-            transition: 'background 0.4s',
+            backgroundColor: (theme) => theme.palette.background.default,
+            transition: 'background 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            overflowY: 'auto',
         }}>
             <Outlet></Outlet>
         </Box>

@@ -80,8 +80,10 @@ const lightTheme = createTheme({
         MuiPaper: {
             styleOverrides: {
                 root: {
-                    border: '1px solid rgba(45, 52, 54, 0.14)',
-                    boxShadow: '0 8px 24px rgba(45, 52, 54, 0.10)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    border: '1px solid rgba(45, 52, 54, 0.12)',
+                    boxShadow: '0 6px 20px rgba(45, 52, 54, 0.08)',
+                    backdropFilter: 'blur(8px)',
                 },
             },
         },
@@ -98,10 +100,34 @@ const lightTheme = createTheme({
                 root: {
                     borderRadius: 10,
                     textTransform: 'none',
+                    fontWeight: 650,
+                    letterSpacing: '0.01em',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    position: 'relative',
+                    overflow: 'hidden',
                 },
                 contained: {
-                    boxShadow: '0 8px 20px rgba(0, 200, 154, 0.28)',
+                    boxShadow: '0 6px 18px rgba(0, 200, 154, 0.24)',
+                    '&:hover': {
+                        boxShadow: '0 10px 26px rgba(0, 200, 154, 0.32)',
+                        transform: 'translateY(-2px)',
+                    },
+                    '&:active': {
+                        transform: 'translateY(0)',
+                    }
                 },
+                outlined: {
+                    borderColor: 'rgba(0, 200, 154, 0.4)',
+                    '&:hover': {
+                        backgroundColor: 'rgba(0, 200, 154, 0.06)',
+                        borderColor: 'rgba(0, 200, 154, 0.6)',
+                    }
+                },
+                text: {
+                    '&:hover': {
+                        backgroundColor: 'rgba(0, 200, 154, 0.06)',
+                    }
+                }
             },
         },
         MuiOutlinedInput: {
@@ -120,6 +146,25 @@ const lightTheme = createTheme({
                     },
                 },
             },
+        },
+        MuiDialog: {
+            styleOverrides: {
+                paper: {
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(0, 200, 154, 0.12)',
+                    boxShadow: '0 20px 60px rgba(45, 52, 54, 0.15)',
+                }
+            }
+        },
+        MuiMenu: {
+            styleOverrides: {
+                paper: {
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(0, 200, 154, 0.12)',
+                }
+            }
         },
     },
 });
