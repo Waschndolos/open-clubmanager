@@ -52,6 +52,12 @@ const Login: React.FC = () => {
         }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && email && password) {
+            handleLogin();
+        }
+    };
+
     const textPrimary = theme.palette.text.primary;
     const textSecondary = theme.palette.text.secondary;
     const accentStrong = theme.palette.primary.main;
@@ -213,6 +219,7 @@ const Login: React.FC = () => {
                                     fullWidth
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    onKeyDown={handleKeyDown}
                                     sx={textFieldSx}
                                     slotProps={{
                                         input: {
@@ -236,6 +243,7 @@ const Login: React.FC = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    onKeyDown={handleKeyDown}
                                     sx={textFieldSx}
                                     slotProps={{
                                         input: {
