@@ -12,7 +12,7 @@
     "prisma:setup:mysql": "npm --prefix db run setup:mysql",
     "tauri:check": "node scripts/check-tauri-prereqs.js",
     "dev:browser": "concurrently -k -n FRONTEND,SERVER -c yellow,cyan \"npm --prefix frontend run dev:frontend\" \"cd server && go run ./cmd/server\"",
-    "dev": "npm run tauri:check && tauri dev",
+    "dev": "npm run tauri:check && npm run build:backend && npm run prepare:sidecar && tauri dev",
     "build:frontend": "npm --prefix frontend run build",
     "build:backend": "cd server && ./build.sh local",
     "prepare:sidecar": "node scripts/prepare-sidecar.js",
