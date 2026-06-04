@@ -134,43 +134,6 @@ const Login: React.FC = () => {
             >
                 <Box
                     sx={{
-                        display: { xs: 'none', md: 'flex' },
-                        flex: 1,
-                        px: { md: 7, lg: 10 },
-                        py: { md: 8, lg: 10 },
-                        alignItems: 'flex-end',
-                    }}
-                >
-                    <Box sx={{ maxWidth: 640 }}>
-                        <Typography
-                            variant="h2"
-                            sx={{
-                                color: welcomeTextColor,
-                                fontWeight: 800,
-                                lineHeight: 1.06,
-                                letterSpacing: '-0.02em',
-                                mb: 2,
-                                textShadow: '0 8px 30px rgba(0,0,0,0.45)',
-                            }}
-                        >
-                            {t('login.welcomeTitle')}
-                        </Typography>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                color: welcomeSubtextColor,
-                                fontWeight: 400,
-                                lineHeight: 1.5,
-                                textShadow: '0 4px 18px rgba(0,0,0,0.35)',
-                            }}
-                        >
-                            {t('login.welcomeSubtitle')}
-                        </Typography>
-                    </Box>
-                </Box>
-
-                <Box
-                    sx={{
                         height: '100vh',
                         width: { xs: '100%', md: '40vw' },
                         minWidth: { md: 460 },
@@ -180,7 +143,7 @@ const Login: React.FC = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         bgcolor: backgroundLight,
-                        borderLeft: mode === 'dark' ? '1px solid rgba(0, 255, 194, 0.24)' : '1px solid rgba(0, 200, 154, 0.18)',
+                        borderRight: mode === 'dark' ? '1px solid rgba(0, 255, 194, 0.24)' : '1px solid rgba(0, 200, 154, 0.18)',
                         backdropFilter: 'blur(14px)',
                     }}
                 >
@@ -306,6 +269,43 @@ const Login: React.FC = () => {
                             </Box>
                         </CardContent>
                     </Card>
+                </Box>
+
+                <Box
+                    sx={{
+                        display: { xs: 'none', md: 'flex' },
+                        flex: 1,
+                        px: { md: 7, lg: 10 },
+                        py: { md: 8, lg: 10 },
+                        alignItems: 'flex-end',
+                    }}
+                >
+                    <Box sx={{ maxWidth: 640 }}>
+                        <Typography
+                            variant="h2"
+                            sx={{
+                                color: welcomeTextColor,
+                                fontWeight: 800,
+                                lineHeight: 1.06,
+                                letterSpacing: '-0.02em',
+                                mb: 2,
+                                textShadow: '0 8px 30px rgba(0,0,0,0.45)',
+                            }}
+                        >
+                            {t('login.welcomeTitle')}
+                        </Typography>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                color: welcomeSubtextColor,
+                                fontWeight: 400,
+                                lineHeight: 1.5,
+                                textShadow: '0 4px 18px rgba(0,0,0,0.35)',
+                            }}
+                        >
+                            {t('login.welcomeSubtitle')}
+                        </Typography>
+                    </Box>
                 </Box>
             </Box>
         </Box>
