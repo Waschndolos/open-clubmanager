@@ -11,6 +11,33 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Remove blue autofill background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #FFFFFF inset !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Remove blue autofill text color and set to dark */
+input:-webkit-autofill {
+  -webkit-text-fill-color: #2D3436 !important;
+}
+
+/* Same for dark mode */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #1A2022 inset !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+}
+
+.dark input:-webkit-autofill {
+  -webkit-text-fill-color: #E8FFFA !important;
+}
+
 body {
   margin: 0;
   display: flex;
@@ -20,26 +47,26 @@ body {
 }
 
 .ag-theme-clubmanager-dark {
-  --ag-background-color: #242424;
-  --ag-header-background-color: #272727;
-  --ag-header-foreground-color: rgba(255, 255, 255, 0.87);
-  --ag-foreground-color: rgba(255, 255, 255, 0.87);
-  --ag-border-color: #333333;
-  --ag-disabled-foreground-color: rgba(255, 255, 255, 0.38);
-  --ag-input-border-color: #555555;
-  --ag-row-hover-color: #819A91;
-  --ag-odd-row-background-color: #555555;
+  --ag-background-color: #1A2022;
+  --ag-header-background-color: #23243a;
+  --ag-header-foreground-color: #E8FFFA;
+  --ag-foreground-color: #E8FFFA;
+  --ag-border-color: rgba(181, 209, 203, 0.24);
+  --ag-disabled-foreground-color: rgba(232, 255, 250, 0.38);
+  --ag-input-border-color: rgba(181, 209, 203, 0.30);
+  --ag-row-hover-color: rgba(0, 255, 194, 0.12);
+  --ag-odd-row-background-color: #23243a;
 }
 
 /* light.css */
 .ag-theme-clubmanager-light {
-  --ag-background-color: #ffffff;
-  --ag-header-background-color: #f5f5f5;
-  --ag-header-foreground-color: rgba(0, 0, 0, 0.87);
-  --ag-foreground-color: rgba(0, 0, 0, 0.87);
-  --ag-border-color: #e0e0e0;
-  --ag-disabled-foreground-color: rgba(0, 0, 0, 0.38);
-  --ag-input-border-color: #cccccc;
-  --ag-row-hover-color: #9FB5AB;
-  --ag-odd-row-background-color: #f5f5f5;
+  --ag-background-color: #FFFFFF;
+  --ag-header-background-color: #F3F8F7;
+  --ag-header-foreground-color: #2D3436;
+  --ag-foreground-color: #2D3436;
+  --ag-border-color: rgba(45, 52, 54, 0.18);
+  --ag-disabled-foreground-color: rgba(45, 52, 54, 0.38);
+  --ag-input-border-color: rgba(45, 52, 54, 0.22);
+  --ag-row-hover-color: rgba(0, 200, 154, 0.12);
+  --ag-odd-row-background-color: #F3F8F7;
 }

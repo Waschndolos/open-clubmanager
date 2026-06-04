@@ -5,7 +5,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import {useTranslation} from "react-i18next";
-import { alpha } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 
 interface StatisticCardProps {
     id: number;
@@ -13,15 +13,25 @@ interface StatisticCardProps {
     details?: string[];
 }
 
-const CARD_ACCENTS: Record<number, { color: string }> = {
-    1: { color: '#4F6AF5' },
-    2: { color: '#F59E0B' },
-    3: { color: '#EF4444' },
-};
-
 export default function StatisticCard({id, value, details}: StatisticCardProps) {
     const {t} = useTranslation();
-    const accent = CARD_ACCENTS[id] ?? { color: '#4F6AF5' };
+    const theme = useTheme();
+
+    // Map card IDs to theme colors
+    const getCardColor = () => {
+        switch (id) {
+            case 1:
+                return theme.palette.primary.main;
+            case 2:
+                return theme.palette.info.main;
+            case 3:
+                return theme.palette.error.main;
+            default:
+                return theme.palette.primary.main;
+        }
+    };
+
+    const accent = { color: getCardColor() };
 
     function getIcon() {
         switch (id) {

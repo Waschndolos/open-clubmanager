@@ -14,7 +14,10 @@
         "password": "Mot de passe",
         "loginButton": "Connexion",
         "setupComplete": "Configuration terminée ! Veuillez vous connecter avec votre nouveau compte administrateur.",
-        "forgotPassword": "Mot de passe oublié ?"
+        "forgotPassword": "Mot de passe oublié ?",
+        "welcomeTitle": "Bienvenue sur Open ClubManager",
+        "welcomeSubtitle": "Gérez les membres, les finances, les groupes et les processus du club dans une application moderne, claire et rapide.",
+        "errorInvalidCredentials": "Échec de la connexion. Veuillez vérifier vos identifiants."
     },
     "forgotPassword": {
         "title": "Mot de passe oublié",

@@ -14,7 +14,10 @@
         "password": "Password",
         "loginButton": "Login",
         "setupComplete": "Setup complete! Please log in with your new admin account.",
-        "forgotPassword": "Forgot password?"
+        "forgotPassword": "Forgot password?",
+        "welcomeTitle": "Welcome to Open ClubManager",
+        "welcomeSubtitle": "Manage members, finances, groups, and club processes in a modern, clear, and fast application.",
+        "errorInvalidCredentials": "Login failed. Please check your credentials."
     },
     "forgotPassword": {
         "title": "Forgot Password",

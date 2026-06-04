@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import { useThemeContext } from '../../theme/ThemeContext';
+import { useTheme } from '@mui/material/styles';
 import {Brightness4, Brightness7} from '@mui/icons-material';
 
 /**
@@ -11,6 +12,7 @@ import {Brightness4, Brightness7} from '@mui/icons-material';
  */
 const ThemeToggle: React.FC = () => {
   const { mode, toggleTheme } = useThemeContext();
+  const theme = useTheme();
 
   return (
     <Tooltip title={mode === 'dark' ? 'Change to light mode' : 'Change to dark mode'}>
@@ -24,7 +26,7 @@ const ThemeToggle: React.FC = () => {
           boxShadow: 'none',
           '&:hover': {
             background: 'none',
-            color: mode === 'dark' ? "#819A91" : '#000',
+            color: theme.palette.primary.main,
           },
         }}
         aria-label="Toggle theme"
@@ -34,7 +36,6 @@ const ThemeToggle: React.FC = () => {
             display: 'inline-flex',
             transition: 'transform 0.5s cubic-bezier(.68,-0.55,.27,1.55)',
             transform: mode === 'dark' ? 'rotate(-40deg) scale(1.15)' : 'rotate(0deg) scale(1)',
-             color: mode === 'dark' ? "#819A91" : '#000',
             filter: 'none',
           }}
         >

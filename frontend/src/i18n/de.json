@@ -14,7 +14,10 @@
         "password": "Passwort",
         "loginButton": "Anmelden",
         "setupComplete": "Einrichtung abgeschlossen! Bitte melden Sie sich mit Ihrem neuen Admin-Konto an.",
-        "forgotPassword": "Passwort vergessen?"
+        "forgotPassword": "Passwort vergessen?",
+        "welcomeTitle": "Willkommen beim Open ClubManager",
+        "welcomeSubtitle": "Verwalte Mitglieder, Finanzen, Gruppen und Vereinsprozesse in einer modernen, klaren und schnellen Anwendung.",
+        "errorInvalidCredentials": "Login fehlgeschlagen. Bitte überprüfe deine Eingaben."
     },
     "forgotPassword": {
         "title": "Passwort vergessen",

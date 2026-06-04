@@ -22,8 +22,7 @@ export default function MainLayout() {
                         width: sidebarCollapsed ? 60 : "20%",
                         minWidth: sidebarCollapsed ? 60 : "20%",
                         borderRight: (theme) => theme.custom.border,
-                        bgcolor: (theme) =>
-                            theme.palette.mode === 'dark' ? '#14161F' : '#ffffff',
+                        bgcolor: (theme) => theme.palette.background.paper,
                         transition: "width 0.3s, min-width 0.3s",
                         overflowY: "auto",
                     }}
