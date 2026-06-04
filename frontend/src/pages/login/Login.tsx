@@ -61,9 +61,9 @@ const Login: React.FC = () => {
     const textPrimary = theme.palette.text.primary;
     const textSecondary = theme.palette.text.secondary;
     const accentStrong = theme.palette.primary.main;
-    const backgroundLight = mode === 'dark' ? 'rgba(24, 30, 32, 0.72)' : 'rgba(236, 249, 246, 0.62)';
-    const welcomeTextColor = mode === 'dark' ? '#F0FAFF' : '#1D3A36';
-    const welcomeSubtextColor = mode === 'dark' ? 'rgba(224, 245, 255, 0.92)' : 'rgba(29, 58, 54, 0.88)';
+    const backgroundLight = mode === 'dark' ? '#162122' : '#FFFFFF';
+    const welcomeTextColor = mode === 'dark' ? '#E8F4F1' : '#203436';
+    const welcomeSubtextColor = mode === 'dark' ? '#A8C5C1' : '#6B8A87';
 
     const textFieldSx = {
         '& .MuiInputLabel-root': {
@@ -76,19 +76,15 @@ const Login: React.FC = () => {
             color: textPrimary,
             '& fieldset': {
                 borderColor: theme.palette.mode === 'dark'
-                    ? 'rgba(181, 209, 203, 0.30)'
-                    : 'rgba(45, 52, 54, 0.28)',
+                    ? '#203436'
+                    : '#203436',
             },
             '&:hover fieldset': {
-                borderColor: theme.palette.mode === 'dark'
-                    ? 'rgba(181, 209, 203, 0.38)'
-                    : 'rgba(45, 52, 54, 0.34)',
+                borderColor: '#00FFC2',
             },
             '&.Mui-focused fieldset': {
-                borderColor: theme.palette.mode === 'dark'
-                    ? 'rgba(181, 209, 203, 0.46)'
-                    : 'rgba(45, 52, 54, 0.40)',
-                borderWidth: 1,
+                borderColor: '#00FFC2',
+                borderWidth: 2,
             },
         },
     };
@@ -143,7 +139,7 @@ const Login: React.FC = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         bgcolor: backgroundLight,
-                        borderRight: mode === 'dark' ? '1px solid rgba(0, 255, 194, 0.24)' : '1px solid rgba(0, 200, 154, 0.18)',
+                        borderRight: '1px solid #203436',
                         backdropFilter: 'blur(14px)',
                     }}
                 >
@@ -251,8 +247,8 @@ const Login: React.FC = () => {
                                         py: 1.2,
                                         fontWeight: 700,
                                         bgcolor: accentStrong,
-                                        color: '#0D1B18',
-                                        '&:hover': { bgcolor: '#00B287' },
+                                        color: '#203436',
+                                        '&:hover': { bgcolor: '#00FFC2' },
                                     }}
                                 >
                                     {t('login.loginButton')}

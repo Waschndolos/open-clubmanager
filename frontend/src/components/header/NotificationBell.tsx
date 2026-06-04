@@ -47,20 +47,20 @@ export default function NotificationBell() {
                 </Badge>
             </IconButton>
 
-            <Menu
-                anchorEl={anchorEl}
-                open={open}
+            <Menu 
+                anchorEl={anchorEl} 
+                open={open} 
                 onClose={handleClose}
                 slotProps={{
                     paper: {
                         sx: {
                             background: theme.palette.mode === 'dark'
-                                ? 'rgba(26, 32, 34, 0.95)'
-                                : 'rgba(255, 255, 255, 0.95)',
+                                ? '#162122'
+                                : '#FFFFFF',
                             backdropFilter: 'blur(12px)',
                             border: theme.palette.mode === 'dark'
-                                ? '1px solid rgba(0, 255, 194, 0.1)'
-                                : '1px solid rgba(0, 200, 154, 0.12)',
+                                ? '1px solid #203436'
+                                : '1px solid #203436',
                         }
                     }
                 }}

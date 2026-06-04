@@ -14,17 +14,17 @@ type HeaderProps = {
 
 export default function Header({onToggleSidebar }: HeaderProps) {
     const theme = useTheme();
-
+    
     return (
         <AppBar position="static" sx={{
-            backgroundColor: theme.palette.mode === 'dark'
-                ? 'rgba(26, 32, 34, 0.95)'
-                : 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: theme.palette.mode === 'dark' 
+                ? '#162122'
+                : '#FFFFFF',
             backdropFilter: 'blur(20px)',
             borderBottom: theme.palette.mode === 'dark'
-                ? '1px solid rgba(0, 255, 194, 0.12)'
-                : '1px solid rgba(0, 200, 154, 0.15)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                ? '1px solid #203436'
+                : '1px solid #203436',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
             borderRadius: 0,
         }}>
             <Toolbar sx={{ py: 1 }}>

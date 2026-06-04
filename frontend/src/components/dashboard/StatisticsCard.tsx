@@ -66,12 +66,12 @@ export default function StatisticCard({id, value, details}: StatisticCardProps) 
             flexDirection: 'column',
             height: '100%',
             background: theme.palette.mode === 'dark'
-                ? 'rgba(26, 32, 34, 0.6)'
-                : 'rgba(255, 255, 255, 0.8)',
+                ? '#162122'
+                : '#FFFFFF',
             backdropFilter: 'blur(12px)',
             border: theme.palette.mode === 'dark'
-                ? '1px solid rgba(0, 255, 194, 0.1)'
-                : '1px solid rgba(0, 200, 154, 0.12)',
+                ? '1px solid #203436'
+                : '1px solid #203436',
             boxShadow: theme.palette.mode === 'dark'
                 ? '0 8px 24px rgba(0, 0, 0, 0.2)'
                 : '0 6px 20px rgba(0, 0, 0, 0.08)',
@@ -82,8 +82,8 @@ export default function StatisticCard({id, value, details}: StatisticCardProps) 
                     ? '0 12px 32px rgba(0, 255, 194, 0.15)'
                     : '0 10px 28px rgba(0, 200, 154, 0.12)',
                 background: theme.palette.mode === 'dark'
-                    ? 'rgba(26, 32, 34, 0.75)'
-                    : 'rgba(255, 255, 255, 0.95)',
+                    ? '#203436'
+                    : '#F0F5F5',
             }
         }}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
