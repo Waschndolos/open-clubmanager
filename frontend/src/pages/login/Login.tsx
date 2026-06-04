@@ -37,7 +37,9 @@ const Login: React.FC = () => {
             });
     }, [navigate, setAuthAccessToken]);
 
-    const setupComplete = (location.state as { setupComplete?: boolean } | null)?.setupComplete;
+    const setupState = (location.state as { setupComplete?: boolean; setupWarning?: string } | null) ?? null;
+    const setupComplete = setupState?.setupComplete;
+    const setupWarning = setupState?.setupWarning;
 
     const handleLogin = async () => {
         setError(null);
@@ -170,6 +172,11 @@ const Login: React.FC = () => {
                                 {setupComplete && (
                                     <Alert severity="success" variant="outlined" sx={{ width: '100%' }}>
                                         {t('login.setupComplete')}
+                                    </Alert>
+                                )}
+                                {setupWarning && (
+                                    <Alert severity="warning" variant="outlined" sx={{ width: '100%' }}>
+                                        {setupWarning}
                                     </Alert>
                                 )}
                                 <TextField

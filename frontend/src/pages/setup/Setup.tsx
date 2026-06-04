@@ -4,6 +4,8 @@ import {
     Button,
     Card,
     CardContent,
+    Checkbox,
+    FormControlLabel,
     IconButton,
     InputAdornment,
     TextField,
@@ -26,6 +28,9 @@ import {
     getSetupStatus,
     SetupDatabaseMode,
 } from '../../api/setup';
+import { login } from '../../api/authentication';
+import { setAccessToken } from '../../api/api';
+import { seedSetupDemoData } from '../../api/setupDemoData';
 import { getDatabaseSettings } from '../../api/settings';
 import { validatePath } from '../../api/validation';
 import loginBg from '../../assets/login_bg.jpeg';
@@ -48,6 +53,7 @@ const Setup: React.FC = () => {
     const [databaseUrl, setDatabaseUrl] = useState('');
     const [databaseConfigured, setDatabaseConfigured] = useState(false);
     const [databaseValidationMessage, setDatabaseValidationMessage] = useState('');
+    const [importDemoData, setImportDemoData] = useState(false);
 
     const isWindowsClient = typeof navigator !== 'undefined' && /windows/i.test(navigator.userAgent);
     const localPathPlaceholder = isWindowsClient
@@ -140,12 +146,6 @@ const Setup: React.FC = () => {
             await configureDatabase(databaseMode, configuredValue);
             setDatabaseConfigured(true);
 
-            const status = await getSetupStatus();
-            if (!status.setupRequired) {
-                navigate('/login', { replace: true });
-                return;
-            }
-
             setCurrentStep(1);
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : t('setup.error.generic'));
@@ -189,7 +189,21 @@ const Setup: React.FC = () => {
         setSubmitting(true);
         try {
             await initializeAdmin(email, password);
-            navigate('/login', { replace: true, state: { setupComplete: true } });
+
+            let setupWarning: string | undefined;
+            if (importDemoData) {
+                try {
+                    const { accessToken } = await login(email, password);
+                    setAccessToken(accessToken);
+                    await seedSetupDemoData();
+                } catch {
+                    setupWarning = t('setup.demoData.warningContinue');
+                } finally {
+                    setAccessToken(null);
+                }
+            }
+
+            navigate('/login', { replace: true, state: { setupComplete: true, setupWarning } });
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : t('setup.error.generic'));
         } finally {
@@ -453,6 +467,21 @@ const Setup: React.FC = () => {
                                             }}
                                         />
 
+                                        <FormControlLabel
+                                            control={(
+                                                <Checkbox
+                                                    checked={importDemoData}
+                                                    onChange={(event) => setImportDemoData(event.target.checked)}
+                                                    disabled={submitting}
+                                                />
+                                            )}
+                                            label={t('setup.demoData.label')}
+                                        />
+
+                                        <Typography variant="body2" color="text.secondary">
+                                            {t('setup.demoData.hint')}
+                                        </Typography>
+
                                         <Button
                                             variant="contained"
                                             fullWidth
@@ -463,7 +492,9 @@ const Setup: React.FC = () => {
                                                 fontWeight: 700,
                                             }}
                                         >
-                                            {submitting ? t('setup.creating') : t('setup.createButton')}
+                                            {submitting
+                                                ? (importDemoData ? t('setup.demoData.seeding') : t('setup.creating'))
+                                                : t('setup.createButton')}
                                         </Button>
                                     </>
                                 )}

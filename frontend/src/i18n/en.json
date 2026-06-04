@@ -68,6 +68,12 @@
         "confirmPassword": "Confirm Password",
         "createButton": "Create Admin Account",
         "creating": "Creating...",
+        "demoData": {
+            "label": "Import demo data",
+            "hint": "Creates sample members, club entities, and a few finance entries so you can explore the app quickly.",
+            "seeding": "Creating admin and importing demo data...",
+            "warningContinue": "Admin account was created, but demo data could not be imported completely."
+        },
         "validation": {
             "invalidEmail": "Please enter a valid email address.",
             "passwordTooShort": "Password must be at least 8 characters long.",

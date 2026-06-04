@@ -1,13 +1,14 @@
 package main
 
 import (
-	"database/sql"
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -69,14 +70,36 @@ func main() {
 			mode = "mysql-shared"
 			dsn = cfg.DatabaseURL
 		}
-		if opened, dbErr := dbpkg.Open(mode, dsn); dbErr == nil {
-			if migrateErr := dbpkg.Migrate(opened); migrateErr != nil {
-				log.Printf("warning: database migration failed: %v", migrateErr)
+
+		if mode == "sqlite-local" {
+			sqlitePath := strings.TrimPrefix(dsn, "file:")
+			sqlitePath = strings.TrimPrefix(sqlitePath, "//")
+			sqlitePath = filepath.Clean(sqlitePath)
+			if _, statErr := os.Stat(sqlitePath); os.IsNotExist(statErr) {
+				log.Printf("warning: sqlite database missing at %s; skipping auto-open to force setup", sqlitePath)
+			} else if statErr != nil {
+				log.Printf("warning: failed to stat sqlite database %s: %v", sqlitePath, statErr)
 			} else {
-				db = opened
+				if opened, dbErr := dbpkg.Open(mode, dsn); dbErr == nil {
+					if migrateErr := dbpkg.Migrate(opened); migrateErr != nil {
+						log.Printf("warning: database migration failed: %v", migrateErr)
+					} else {
+						db = opened
+					}
+				} else {
+					log.Printf("warning: failed to open database: %v", dbErr)
+				}
 			}
 		} else {
-			log.Printf("warning: failed to open database: %v", dbErr)
+			if opened, dbErr := dbpkg.Open(mode, dsn); dbErr == nil {
+				if migrateErr := dbpkg.Migrate(opened); migrateErr != nil {
+					log.Printf("warning: database migration failed: %v", migrateErr)
+				} else {
+					db = opened
+				}
+			} else {
+				log.Printf("warning: failed to open database: %v", dbErr)
+			}
 		}
 	}
 

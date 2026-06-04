@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -81,10 +83,24 @@ func (a *API) GetSetupStatus(w http.ResponseWriter, _ *http.Request) {
 		mode = openapi.MysqlShared
 	}
 
+	databaseConfigured := a.cfg.DatabasePath != "" || a.cfg.DatabaseURL != ""
+	if mode == openapi.SqliteLocal {
+		sqlitePath := strings.TrimPrefix(a.cfg.DatabasePath, "file:")
+		sqlitePath = strings.TrimPrefix(sqlitePath, "//")
+		sqlitePath = filepath.Clean(sqlitePath)
+		if sqlitePath == "" {
+			databaseConfigured = false
+		} else if _, err := os.Stat(sqlitePath); err != nil {
+			databaseConfigured = false
+		}
+	}
+
+	setupRequired := a.cfg.AdminPassword == "" || a.getDB() == nil
+
 	writeJSON(w, http.StatusOK, openapi.SetupStatus{
-		SetupRequired:      a.cfg.AdminPassword == "",
+		SetupRequired:      setupRequired,
 		UserCount:          0,
-		DatabaseConfigured: a.cfg.DatabasePath != "" || a.cfg.DatabaseURL != "",
+		DatabaseConfigured: databaseConfigured,
 		DatabaseMode:       mode,
 	})
 }
@@ -315,4 +331,3 @@ func writeJSON(w http.ResponseWriter, status int, payload any) {
 func saveConfig(a *API) error {
 	return config.Save(*a.cfg, a.cfgFilePath)
 }
-
