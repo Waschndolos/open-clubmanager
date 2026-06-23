@@ -117,6 +117,13 @@
     "entities": {
         "edit": "Bearbeiten",
         "create": "Erstellen",
+        "assignMembers": {
+            "title": "Mitglieder zuweisen – {{entity}}",
+            "tooltip": "Mitglieder zuweisen",
+            "search": "Mitglieder suchen…",
+            "noMembers": "Keine Mitglieder gefunden.",
+            "selected": "{{count}} Mitglied(er) ausgewählt"
+        },
         "groups": {
             "title": "Gruppenverwaltung",
             "description": "Organisiere Mitglieder in thematische oder organisatorische Gruppen, z.B. Trainingsgruppen, Projektteams oder Altersklassen. Gruppen helfen dir, gezielt zu filtern, Beiträge zu verwalten oder interne Strukturen abzubilden.",

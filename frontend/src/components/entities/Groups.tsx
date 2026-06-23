@@ -1,7 +1,7 @@
 import {EntityManager} from "./EntityManager";
 import {useTranslation} from "react-i18next";
 import {Group} from "../../api/types";
-import {createGroup, deleteGroup, fetchGroups, updateGroup} from "../../api/groups";
+import {assignGroupMembers, createGroup, deleteGroup, fetchGroupMembers, fetchGroups, updateGroup} from "../../api/groups";
 
 export function Groups() {
 
@@ -13,6 +13,8 @@ export function Groups() {
             createFn={createGroup}
             deleteFn={deleteGroup}
             updateFn={updateGroup}
+            fetchMembersFn={fetchGroupMembers}
+            assignMembersFn={assignGroupMembers}
             labels={{
                 name: t("entities.groups.dialogs.name"),
                 description: t("entities.groups.dialogs.description"),

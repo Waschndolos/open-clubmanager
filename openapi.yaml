@@ -232,6 +232,16 @@ components:
       allOf:
         - $ref: '#/components/schemas/NamedEntityCreateRequest'
 
+    BulkMemberAssignRequest:
+      type: object
+      properties:
+        memberIds:
+          type: array
+          items:
+            type: integer
+      required: [memberIds]
+      additionalProperties: false
+
     Member:
       type: object
       properties:
@@ -1332,6 +1342,58 @@ paths:
         '204':
           $ref: '#/components/responses/NoContent'
 
+  /roles/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [roles]
+      summary: Get members of a role
+      operationId: getRoleMembers
+      responses:
+        '200':
+          description: List of members assigned to the role.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [roles]
+      summary: Bulk assign members to a role
+      operationId: bulkAssignRoleMembers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMemberAssignRequest'
+      responses:
+        '200':
+          description: Members assigned to the role.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /groups:
     get:
       tags: [groups]
@@ -1402,6 +1464,58 @@ paths:
         '204':
           $ref: '#/components/responses/NoContent'
 
+  /groups/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [groups]
+      summary: Get members of a group
+      operationId: getGroupMembers
+      responses:
+        '200':
+          description: List of members assigned to the group.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [groups]
+      summary: Bulk assign members to a group
+      operationId: bulkAssignGroupMembers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMemberAssignRequest'
+      responses:
+        '200':
+          description: Members assigned to the group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /sections:
     get:
       tags: [sections]
@@ -1471,6 +1585,58 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
+  /sections/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [sections]
+      summary: Get members of a section
+      operationId: getSectionMembers
+      responses:
+        '200':
+          description: List of members assigned to the section.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [sections]
+      summary: Bulk assign members to a section
+      operationId: bulkAssignSectionMembers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMemberAssignRequest'
+      responses:
+        '200':
+          description: Members assigned to the section.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
 
   /preferences:
     get:

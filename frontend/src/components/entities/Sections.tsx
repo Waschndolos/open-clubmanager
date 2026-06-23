@@ -1,7 +1,7 @@
 import {EntityManager} from "./EntityManager";
 import {useTranslation} from "react-i18next";
 import {ClubSection} from "../../api/types";
-import {createSection, deleteSection, fetchSections, updateSection} from "../../api/sections";
+import {assignSectionMembers, createSection, deleteSection, fetchSectionMembers, fetchSections, updateSection} from "../../api/sections";
 
 export function Sections() {
 
@@ -13,6 +13,8 @@ export function Sections() {
             createFn={createSection}
             updateFn={updateSection}
             deleteFn={deleteSection}
+            fetchMembersFn={fetchSectionMembers}
+            assignMembersFn={assignSectionMembers}
             labels={{
                 name: t("entities.sections.dialogs.name"),
                 description: t("entities.sections.dialogs.description"),

@@ -1,7 +1,7 @@
 import {EntityManager} from "./EntityManager";
 import {useTranslation} from "react-i18next";
 import {Role} from "../../api/types";
-import {createRole, deleteRole, fetchRoles, updateRole} from "../../api/roles";
+import {assignRoleMembers, createRole, deleteRole, fetchRoleMembers, fetchRoles, updateRole} from "../../api/roles";
 
 export function Roles() {
 
@@ -13,6 +13,8 @@ export function Roles() {
             createFn={createRole}
             updateFn={updateRole}
             deleteFn={deleteRole}
+            fetchMembersFn={fetchRoleMembers}
+            assignMembersFn={assignRoleMembers}
             labels={{
                 name: t("entities.roles.dialogs.name"),
                 description: t("entities.roles.dialogs.description"),

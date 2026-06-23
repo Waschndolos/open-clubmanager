@@ -117,6 +117,13 @@
     "entities": {
         "edit": "Edit",
         "create": "Create",
+        "assignMembers": {
+            "title": "Assign Members – {{entity}}",
+            "tooltip": "Assign members",
+            "search": "Search members…",
+            "noMembers": "No members found.",
+            "selected": "{{count}} member(s) selected"
+        },
         "groups": {
             "title": "Group Management",
             "description": "Organize members into thematic or organizational groups, such as training units, project teams, or age categories. Groups help you filter, manage fees, and reflect internal club structures.",
