@@ -534,6 +534,11 @@ type ValidationResponse struct {
 	Valid     bool    `json:"valid"`
 }
 
+// BulkMemberAssignRequest defines model for BulkMemberAssignRequest.
+type BulkMemberAssignRequest struct {
+	MemberIds []int `json:"memberIds"`
+}
+
 // BadRequest defines model for BadRequest.
 type BadRequest = ErrorResponse
 
@@ -858,6 +863,12 @@ type ServerInterface interface {
 	// Update a group
 	// (PUT /groups/{id})
 	UpdateGroup(w http.ResponseWriter, r *http.Request, id int)
+	// Get members of a group
+	// (GET /groups/{id}/members)
+	GetGroupMembers(w http.ResponseWriter, r *http.Request, id int)
+	// Bulk assign members to a group
+	// (PUT /groups/{id}/members)
+	BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id int)
 	// List recent audit log entries
 	// (GET /history)
 	ListHistory(w http.ResponseWriter, r *http.Request)
@@ -909,6 +920,12 @@ type ServerInterface interface {
 	// Update a role
 	// (PUT /roles/{id})
 	UpdateRole(w http.ResponseWriter, r *http.Request, id int)
+	// Get members of a role
+	// (GET /roles/{id}/members)
+	GetRoleMembers(w http.ResponseWriter, r *http.Request, id int)
+	// Bulk assign members to a role
+	// (PUT /roles/{id}/members)
+	BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id int)
 	// List sections
 	// (GET /sections)
 	ListSections(w http.ResponseWriter, r *http.Request)
@@ -921,6 +938,12 @@ type ServerInterface interface {
 	// Update a section
 	// (PUT /sections/{id})
 	UpdateSection(w http.ResponseWriter, r *http.Request, id int)
+	// Get members of a section
+	// (GET /sections/{id}/members)
+	GetSectionMembers(w http.ResponseWriter, r *http.Request, id int)
+	// Bulk assign members to a section
+	// (PUT /sections/{id}/members)
+	BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id int)
 	// Get database mode and connection URL
 	// (GET /settings/database)
 	GetDatabaseSettings(w http.ResponseWriter, r *http.Request)
@@ -1083,6 +1106,18 @@ func (_ Unimplemented) UpdateGroup(w http.ResponseWriter, r *http.Request, id in
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Get members of a group
+// (GET /groups/{id}/members)
+func (_ Unimplemented) GetGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Bulk assign members to a group
+// (PUT /groups/{id}/members)
+func (_ Unimplemented) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // List recent audit log entries
 // (GET /history)
 func (_ Unimplemented) ListHistory(w http.ResponseWriter, r *http.Request) {
@@ -1185,6 +1220,18 @@ func (_ Unimplemented) UpdateRole(w http.ResponseWriter, r *http.Request, id int
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Get members of a role
+// (GET /roles/{id}/members)
+func (_ Unimplemented) GetRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Bulk assign members to a role
+// (PUT /roles/{id}/members)
+func (_ Unimplemented) BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // List sections
 // (GET /sections)
 func (_ Unimplemented) ListSections(w http.ResponseWriter, r *http.Request) {
@@ -1206,6 +1253,18 @@ func (_ Unimplemented) DeleteSection(w http.ResponseWriter, r *http.Request, id 
 // Update a section
 // (PUT /sections/{id})
 func (_ Unimplemented) UpdateSection(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get members of a section
+// (GET /sections/{id}/members)
+func (_ Unimplemented) GetSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Bulk assign members to a section
+// (PUT /sections/{id}/members)
+func (_ Unimplemented) BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1726,6 +1785,64 @@ func (siw *ServerInterfaceWrapper) UpdateGroup(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r)
 }
 
+// GetGroupMembers operation middleware
+func (siw *ServerInterfaceWrapper) GetGroupMembers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetGroupMembers(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// BulkAssignGroupMembers operation middleware
+func (siw *ServerInterfaceWrapper) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.BulkAssignGroupMembers(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListHistory operation middleware
 func (siw *ServerInterfaceWrapper) ListHistory(w http.ResponseWriter, r *http.Request) {
 
@@ -2159,6 +2276,64 @@ func (siw *ServerInterfaceWrapper) UpdateRole(w http.ResponseWriter, r *http.Req
 	handler.ServeHTTP(w, r)
 }
 
+// GetRoleMembers operation middleware
+func (siw *ServerInterfaceWrapper) GetRoleMembers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetRoleMembers(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// BulkAssignRoleMembers operation middleware
+func (siw *ServerInterfaceWrapper) BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.BulkAssignRoleMembers(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListSections operation middleware
 func (siw *ServerInterfaceWrapper) ListSections(w http.ResponseWriter, r *http.Request) {
 
@@ -2248,6 +2423,64 @@ func (siw *ServerInterfaceWrapper) UpdateSection(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateSection(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetSectionMembers operation middleware
+func (siw *ServerInterfaceWrapper) GetSectionMembers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetSectionMembers(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// BulkAssignSectionMembers operation middleware
+func (siw *ServerInterfaceWrapper) BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.BulkAssignSectionMembers(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2599,6 +2832,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Put(options.BaseURL+"/groups/{id}", wrapper.UpdateGroup)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/groups/{id}/members", wrapper.GetGroupMembers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/groups/{id}/members", wrapper.BulkAssignGroupMembers)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/history", wrapper.ListHistory)
 	})
 	r.Group(func(r chi.Router) {
@@ -2650,6 +2889,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Put(options.BaseURL+"/roles/{id}", wrapper.UpdateRole)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/roles/{id}/members", wrapper.GetRoleMembers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/roles/{id}/members", wrapper.BulkAssignRoleMembers)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/sections", wrapper.ListSections)
 	})
 	r.Group(func(r chi.Router) {
@@ -2660,6 +2905,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Put(options.BaseURL+"/sections/{id}", wrapper.UpdateSection)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/sections/{id}/members", wrapper.GetSectionMembers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/sections/{id}/members", wrapper.BulkAssignSectionMembers)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/settings/database", wrapper.GetDatabaseSettings)
@@ -5671,6 +5922,16 @@ func (sh *strictHandler) UpdateGroup(w http.ResponseWriter, r *http.Request, id 
 	}
 }
 
+// GetGroupMembers operation middleware
+func (sh *strictHandler) GetGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// BulkAssignGroupMembers operation middleware
+func (sh *strictHandler) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ListHistory operation middleware
 func (sh *strictHandler) ListHistory(w http.ResponseWriter, r *http.Request) {
 	var request ListHistoryRequestObject
@@ -6148,6 +6409,16 @@ func (sh *strictHandler) UpdateRole(w http.ResponseWriter, r *http.Request, id i
 	}
 }
 
+// GetRoleMembers operation middleware
+func (sh *strictHandler) GetRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// BulkAssignRoleMembers operation middleware
+func (sh *strictHandler) BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ListSections operation middleware
 func (sh *strictHandler) ListSections(w http.ResponseWriter, r *http.Request) {
 	var request ListSectionsRequestObject
@@ -6260,6 +6531,16 @@ func (sh *strictHandler) UpdateSection(w http.ResponseWriter, r *http.Request, i
 	} else if response != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
+}
+
+// GetSectionMembers operation middleware
+func (sh *strictHandler) GetSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// BulkAssignSectionMembers operation middleware
+func (sh *strictHandler) BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // GetDatabaseSettings operation middleware

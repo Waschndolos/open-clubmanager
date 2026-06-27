@@ -1,3 +1,5 @@
+import { MemberSummary } from "../../api/types";
+
 export interface NamedEntity {
     id: number;
     name: string;
@@ -9,6 +11,8 @@ export interface EntityManagerProps<T extends NamedEntity> {
     createFn: (data: Omit<T, "id">) => Promise<T>;
     updateFn: (data: T) => Promise<T>;
     deleteFn: (data: T) => Promise<void>;
+    fetchMembersFn?: (id: number) => Promise<MemberSummary[]>;
+    assignMembersFn?: (id: number, memberIds: number[]) => Promise<void>;
     labels?: {
         name?: string;
         description?: string;

@@ -117,6 +117,13 @@
     "entities": {
         "edit": "Modifier",
         "create": "Créer",
+        "assignMembers": {
+            "title": "Attribuer des membres – {{entity}}",
+            "tooltip": "Attribuer des membres",
+            "search": "Rechercher des membres…",
+            "noMembers": "Aucun membre trouvé.",
+            "selected": "{{count}} membre(s) sélectionné(s)"
+        },
         "groups": {
             "title": "Gestion des groupes",
             "description": "Organisez les membres en groupes thématiques ou organisationnels, tels que des unités d'entraînement, des équipes projet ou des catégories d'âge. Les groupes aident à filtrer, gérer les cotisations et refléter la structure interne du club.",

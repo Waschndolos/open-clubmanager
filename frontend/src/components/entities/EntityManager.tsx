@@ -20,6 +20,8 @@ export function EntityManager<T extends NamedEntity>({
                                                          createFn,
                                                          updateFn,
                                                          deleteFn,
+                                                         fetchMembersFn,
+                                                         assignMembersFn,
                                                          labels = {},
                                                      }: EntityManagerProps<T>) {
     const {t} = useTranslation();
@@ -78,6 +80,8 @@ export function EntityManager<T extends NamedEntity>({
                         item={e}
                         onEdit={handleUpdate}
                         onDelete={handleDelete}
+                        fetchMembersFn={fetchMembersFn}
+                        assignMembersFn={assignMembersFn}
                     />
                 ))}
             </Paper>
