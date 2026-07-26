@@ -1,7 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
+    Alert,
     Box,
     Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     Fade,
     FormControl,
     InputLabel,
@@ -10,13 +17,17 @@ import {
     Select,
     Snackbar,
     TextField,
+    Typography,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {DatabaseMode, getDatabaseSettings, saveDatabaseSettings} from "../../api/settings";
 import {validatePath} from "../../api/validation";
+import {createBackup, restoreBackup} from "../../api/backup";
 import PageHeader from "../../components/common/PageHeader";
+
+const LAST_BACKUP_KEY = 'lastBackupDate';
 
 export function Settings() {
     const {t, i18n} = useTranslation();
@@ -30,6 +41,16 @@ export function Settings() {
         open: false,
         message: ""
     });
+
+    // Backup / restore state
+    const [backupLoading, setBackupLoading] = useState(false);
+    const [restoreLoading, setRestoreLoading] = useState(false);
+    const [lastBackupDate, setLastBackupDate] = useState<string | null>(
+        localStorage.getItem(LAST_BACKUP_KEY)
+    );
+    const [pendingRestoreFile, setPendingRestoreFile] = useState<File | null>(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const availableLanguages = () => {
         return Object.keys(i18n.services.resourceStore.data);
@@ -82,6 +103,52 @@ export function Settings() {
         return await validatePath(path.startsWith('file:') ? path.replace('file:', '').replace(/^\/\//, '') : path);
     }
 
+    const handleBackup = async () => {
+        setBackupLoading(true);
+        try {
+            await createBackup();
+            const now = new Date().toISOString();
+            localStorage.setItem(LAST_BACKUP_KEY, now);
+            setLastBackupDate(now);
+            setSnackBarState({ open: true, message: t("settings.backup.backupSuccess") });
+        } catch {
+            setSnackBarState({ open: true, message: t("settings.backup.backupError") });
+        } finally {
+            setBackupLoading(false);
+        }
+    };
+
+    const handleRestoreFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setPendingRestoreFile(file);
+            setConfirmOpen(true);
+        }
+        // Reset input so the same file can be re-selected after a cancel
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const handleRestoreConfirm = async () => {
+        if (!pendingRestoreFile) return;
+        setConfirmOpen(false);
+        setRestoreLoading(true);
+        try {
+            await restoreBackup(pendingRestoreFile);
+            setSnackBarState({ open: true, message: t("settings.backup.restoreSuccess") });
+        } catch {
+            setSnackBarState({ open: true, message: t("settings.backup.restoreError") });
+        } finally {
+            setRestoreLoading(false);
+            setPendingRestoreFile(null);
+        }
+    };
+
+    const formattedLastBackup = lastBackupDate
+        ? new Date(lastBackupDate).toLocaleString()
+        : t("settings.backup.never");
+
     return (
         <Box sx={{p: 4}}>
             <PageHeader
@@ -133,7 +200,7 @@ export function Settings() {
                                     : t(`settings.validatíon.${response.i18nToken}`)
                             );
                         }}
-                        placeholder={databaseMode === 'sqlite-local' ? "file:/path/to/database.db" : "mysql://user:pass@host:3306/db"}
+                        placeholder={databaseMode === 'sqlite-local' ? "file:/path/to/database.db" : "******host:3306/db"}
                         margin="normal"/>
                 </FormControl>
 
@@ -165,6 +232,63 @@ export function Settings() {
             >
                 {t("buttons.save")}
             </Button>
+
+            {/* ── Backup & Restore ─────────────────────────────────────────── */}
+            <Typography variant="h6" sx={{mt: 4, mb: 1}}>
+                {t("settings.backup.title")}
+            </Typography>
+
+            {databaseMode === 'mysql-shared' ? (
+                <Alert severity="info" sx={{mb: 2}}>
+                    {t("settings.backup.mysqlHint")}
+                </Alert>
+            ) : (
+                <Paper sx={{p: 3}}>
+                    <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
+                        {t("settings.backup.description")}
+                    </Typography>
+
+                    <Typography variant="body2" sx={{mb: 2}}>
+                        {t("settings.backup.lastBackup")}: <strong>{formattedLastBackup}</strong>
+                    </Typography>
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleBackup}
+                        disabled={backupLoading}
+                        startIcon={backupLoading ? <CircularProgress size={16} /> : undefined}
+                        sx={{mr: 2, mb: 2}}
+                    >
+                        {t("settings.backup.backupButton")}
+                    </Button>
+
+                    <Typography variant="subtitle2" sx={{mt: 2, mb: 1}}>
+                        {t("settings.backup.restoreTitle")}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{mb: 1}}>
+                        {t("settings.backup.restoreDescription")}
+                    </Typography>
+
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".zip"
+                        style={{display: 'none'}}
+                        onChange={handleRestoreFileChange}
+                    />
+                    <Button
+                        variant="outlined"
+                        color="warning"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={restoreLoading}
+                        startIcon={restoreLoading ? <CircularProgress size={16} /> : undefined}
+                    >
+                        {t("settings.backup.selectFile")}
+                    </Button>
+                </Paper>
+            )}
+
             <Snackbar
                 open={snackBarState.open}
                 color="primary"
@@ -175,6 +299,23 @@ export function Settings() {
                 message={snackBarState.message}
                 autoHideDuration={3000}/>
 
+            {/* ── Restore confirmation dialog ──────────────────────────────── */}
+            <Dialog open={confirmOpen} onClose={() => { setConfirmOpen(false); setPendingRestoreFile(null); }}>
+                <DialogTitle>{t("settings.backup.confirmTitle")}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {t("settings.backup.confirmDescription", { filename: pendingRestoreFile?.name ?? '' })}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => { setConfirmOpen(false); setPendingRestoreFile(null); }}>
+                        {t("buttons.abort")}
+                    </Button>
+                    <Button onClick={handleRestoreConfirm} color="error" variant="contained">
+                        {t("settings.backup.confirmButton")}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     )
 }

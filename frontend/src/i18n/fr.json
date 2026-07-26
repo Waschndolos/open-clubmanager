@@ -272,6 +272,25 @@
             "save": "Chemin de la base de données",
             "saveSuccess": "Paramètres enregistrés avec succès !",
             "saveFails": "Échec de l’enregistrement des paramètres !"
+        },
+        "backup": {
+            "title": "Sauvegarde des données",
+            "description": "Créez une sauvegarde de votre base de données ou restaurez une sauvegarde existante.",
+            "mysqlHint": "En mode multi-utilisateurs (MySQL), les sauvegardes sont gérées par le serveur de base de données lui-même.",
+            "backupButton": "Sauvegarder maintenant",
+            "backupSuccess": "Sauvegarde créée avec succès.",
+            "backupError": "Échec de la création de la sauvegarde.",
+            "restoreTitle": "Restaurer la sauvegarde",
+            "restoreDescription": "Sélectionnez un fichier de sauvegarde (.zip) pour restaurer la base de données.",
+            "restoreButton": "Restaurer la sauvegarde",
+            "restoreSuccess": "Base de données restaurée avec succès. Veuillez redémarrer l'application.",
+            "restoreError": "Échec de la restauration de la base de données.",
+            "lastBackup": "Dernière sauvegarde",
+            "never": "Aucune sauvegarde créée",
+            "confirmTitle": "Confirmer la restauration",
+            "confirmDescription": "Êtes-vous sûr de vouloir remplacer la base de données par la sauvegarde \"{{filename}}\" ? Cette action est irréversible.",
+            "confirmButton": "Restaurer maintenant",
+            "selectFile": "Sélectionner le fichier de sauvegarde (.zip)"
         }
     },
     "profile": {

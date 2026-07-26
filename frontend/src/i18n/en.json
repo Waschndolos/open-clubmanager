@@ -272,6 +272,25 @@
             "save": "Database Path",
             "saveSuccess": "Settings saved successfully!",
             "saveFails": "Failed to save settings!"
+        },
+        "backup": {
+            "title": "Data Backup",
+            "description": "Create a backup of your database or restore an existing backup.",
+            "mysqlHint": "In multi-user mode (MySQL), backups are handled by the database server itself.",
+            "backupButton": "Back up now",
+            "backupSuccess": "Backup created successfully.",
+            "backupError": "Failed to create backup.",
+            "restoreTitle": "Restore Backup",
+            "restoreDescription": "Select a backup file (.zip) to restore the database.",
+            "restoreButton": "Restore backup",
+            "restoreSuccess": "Database restored successfully. Please restart the application.",
+            "restoreError": "Failed to restore the database.",
+            "lastBackup": "Last backup",
+            "never": "No backup created yet",
+            "confirmTitle": "Confirm Restore",
+            "confirmDescription": "Are you sure you want to overwrite the database with the backup \"{{filename}}\"? This action cannot be undone.",
+            "confirmButton": "Restore now",
+            "selectFile": "Select backup file (.zip)"
         }
     },
     "profile": {

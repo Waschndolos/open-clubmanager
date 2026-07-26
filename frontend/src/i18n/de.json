@@ -272,6 +272,25 @@
             "save": "Speichern",
             "saveSuccess": "Einstellungen erfolgreich gespeichert!",
             "saveFails": "Fehler beim Speichern der Einstellungen!"
+        },
+        "backup": {
+            "title": "Datensicherung",
+            "description": "Erstellen Sie eine Sicherung Ihrer Datenbank oder stellen Sie eine vorhandene Sicherung wieder her.",
+            "mysqlHint": "Im Mehrbenutzer-Modus (MySQL) wird die Datensicherung über das Datenbanksystem selbst vorgenommen.",
+            "backupButton": "Jetzt sichern",
+            "backupSuccess": "Datensicherung erfolgreich erstellt.",
+            "backupError": "Fehler beim Erstellen der Datensicherung.",
+            "restoreTitle": "Backup einspielen",
+            "restoreDescription": "Wählen Sie eine Backup-Datei (.zip) aus, um die Datenbank wiederherzustellen.",
+            "restoreButton": "Backup einspielen",
+            "restoreSuccess": "Datenbank erfolgreich wiederhergestellt. Bitte starten Sie die Anwendung neu.",
+            "restoreError": "Fehler beim Wiederherstellen der Datenbank.",
+            "lastBackup": "Letztes Backup",
+            "never": "Noch kein Backup erstellt",
+            "confirmTitle": "Backup einspielen bestätigen",
+            "confirmDescription": "Möchten Sie die Datenbank wirklich mit der Sicherung \"{{filename}}\" überschreiben? Diese Aktion kann nicht rückgängig gemacht werden.",
+            "confirmButton": "Jetzt wiederherstellen",
+            "selectFile": "Backup-Datei auswählen (.zip)"
         }
     },
     "profile": {
