@@ -31,7 +31,7 @@ export default function FinanceChart({ data }: FinanceChartProps) {
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                         <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                         <YAxis tickFormatter={(v) => `${v} €`} tick={{ fontSize: 11 }} />
-                        <Tooltip formatter={(value: number) => `${value.toFixed(2)} €`} />
+                        <Tooltip formatter={(value) => typeof value === 'number' ? `${value.toFixed(2)} €` : `${value} €`} />
                         <Legend wrapperStyle={{ fontSize: 12 }} />
                         <Bar
                             dataKey="income"

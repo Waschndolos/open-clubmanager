@@ -39,7 +39,7 @@ export default function FeeStatusChart({ data }: FeeStatusChartProps) {
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                             ))}
                         </Pie>
-                        <Tooltip formatter={(value: number) => value} />
+                        <Tooltip formatter={(value) => value} />
                         <Legend wrapperStyle={{ fontSize: 12 }} />
                     </PieChart>
                 </ResponsiveContainer>
