@@ -3,7 +3,9 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
+	"sort"
 
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
 )
@@ -129,7 +131,9 @@ func (a *API) queryMemberGrowth(db *sql.DB) []memberGrowthPoint {
 	)
 
 	entries := map[string]int{}
-	if rows, err := db.Query(query); err == nil {
+	if rows, err := db.Query(query); err != nil {
+		log.Printf("queryMemberGrowth (entries): %v", err)
+	} else {
 		defer rows.Close()
 		for rows.Next() {
 			var month string
@@ -148,7 +152,9 @@ func (a *API) queryMemberGrowth(db *sql.DB) []memberGrowthPoint {
 	)
 
 	exits := map[string]int{}
-	if rows, err := db.Query(query); err == nil {
+	if rows, err := db.Query(query); err != nil {
+		log.Printf("queryMemberGrowth (exits): %v", err)
+	} else {
 		defer rows.Close()
 		for rows.Next() {
 			var month string
@@ -176,7 +182,7 @@ func (a *API) queryMemberGrowth(db *sql.DB) []memberGrowthPoint {
 	}
 
 	// Sort months chronologically.
-	sortStrings(months)
+	sort.Strings(months)
 
 	points := make([]memberGrowthPoint, 0, len(months))
 	for _, m := range months {
@@ -205,6 +211,7 @@ func (a *API) queryFinanceTimeSeries(db *sql.DB) []financeTimeSeriesPoint {
 
 	rows, err := db.Query(query)
 	if err != nil {
+		log.Printf("queryFinanceTimeSeries: %v", err)
 		return []financeTimeSeriesPoint{}
 	}
 	defer rows.Close()
@@ -231,7 +238,9 @@ func (a *API) queryFeeStatus(db *sql.DB) feeStatus {
 	`, filter)
 
 	var fs feeStatus
-	_ = db.QueryRow(query).Scan(&fs.Paid, &fs.Open)
+	if err := db.QueryRow(query).Scan(&fs.Paid, &fs.Open); err != nil {
+		log.Printf("queryFeeStatus: %v", err)
+	}
 	return fs
 }
 
@@ -248,6 +257,7 @@ func (a *API) queryMembersBySection(db *sql.DB) []sectionCount {
 
 	rows, err := db.Query(query)
 	if err != nil {
+		log.Printf("queryMembersBySection: %v", err)
 		return []sectionCount{}
 	}
 	defer rows.Close()
@@ -261,13 +271,3 @@ func (a *API) queryMembersBySection(db *sql.DB) []sectionCount {
 	}
 	return counts
 }
-
-// sortStrings sorts a slice of strings in-place.
-func sortStrings(s []string) {
-	for i := 1; i < len(s); i++ {
-		for j := i; j > 0 && s[j] < s[j-1]; j-- {
-			s[j], s[j-1] = s[j-1], s[j]
-		}
-	}
-}
-
