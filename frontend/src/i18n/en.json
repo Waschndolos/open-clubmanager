@@ -97,7 +97,28 @@
     "dashboard": {
         "membercount": "Member Count",
         "upcommingBirthdays": "Upcomming Birthdays",
-        "membersExitingThisYear": "Members Exiting This Year"
+        "membersExitingThisYear": "Members Exiting This Year",
+        "charts": {
+            "title": "Statistics & Charts",
+            "memberGrowth": {
+                "title": "Member Growth (last 12 months)",
+                "entries": "Entries",
+                "exits": "Exits"
+            },
+            "finance": {
+                "title": "Income & Expenses (last 12 months)",
+                "income": "Income",
+                "expenses": "Expenses"
+            },
+            "feeStatus": {
+                "title": "Fee Status (current year)",
+                "paid": "Paid",
+                "open": "Outstanding"
+            },
+            "membersBySection": {
+                "title": "Members by Section"
+            }
+        }
     },
     "tooltips": {
         "edit": "Edit",

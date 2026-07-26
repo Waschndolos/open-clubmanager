@@ -97,7 +97,28 @@
     "dashboard": {
         "membercount": "Anzahl Mitglieder",
         "upcommingBirthdays": "Anstehende Geburtstage",
-        "membersExitingThisYear": "Austritte in diesem Jahr"
+        "membersExitingThisYear": "Austritte in diesem Jahr",
+        "charts": {
+            "title": "Statistiken & Diagramme",
+            "memberGrowth": {
+                "title": "Mitgliederentwicklung (letzte 12 Monate)",
+                "entries": "Eintritte",
+                "exits": "Austritte"
+            },
+            "finance": {
+                "title": "Einnahmen & Ausgaben (letzte 12 Monate)",
+                "income": "Einnahmen",
+                "expenses": "Ausgaben"
+            },
+            "feeStatus": {
+                "title": "Beitragsstatus (aktuelles Jahr)",
+                "paid": "Bezahlt",
+                "open": "Ausstehend"
+            },
+            "membersBySection": {
+                "title": "Mitglieder nach Abteilung"
+            }
+        }
     },
     "tooltips": {
         "edit": "Editieren",
