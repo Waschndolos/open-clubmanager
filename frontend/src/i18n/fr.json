@@ -97,7 +97,28 @@
     "dashboard": {
         "membercount": "Nombre de membres",
         "upcommingBirthdays": "Anniversaires à venir",
-        "membersExitingThisYear": "Membres quittant cette année"
+        "membersExitingThisYear": "Membres quittant cette année",
+        "charts": {
+            "title": "Statistiques & Graphiques",
+            "memberGrowth": {
+                "title": "Évolution des membres (12 derniers mois)",
+                "entries": "Entrées",
+                "exits": "Sorties"
+            },
+            "finance": {
+                "title": "Recettes & Dépenses (12 derniers mois)",
+                "income": "Recettes",
+                "expenses": "Dépenses"
+            },
+            "feeStatus": {
+                "title": "Statut des cotisations (année en cours)",
+                "paid": "Payé",
+                "open": "En attente"
+            },
+            "membersBySection": {
+                "title": "Membres par section"
+            }
+        }
     },
     "tooltips": {
         "edit": "Modifier",

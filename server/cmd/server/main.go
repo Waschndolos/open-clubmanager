@@ -132,6 +132,10 @@ func main() {
 	router.Post("/api/v2/system/backup", bearerAuthRequired(cfg.JWTSecret, api.BackupDatabase))
 	router.Post("/api/v2/system/restore", bearerAuthRequired(cfg.JWTSecret, api.RestoreDatabase))
 
+	// Chart statistics endpoint – extends the existing statistics API with
+	// chart-ready time series and distribution data.
+	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))
+
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.Port),
 		Handler:           router,
