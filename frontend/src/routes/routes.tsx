@@ -11,7 +11,9 @@ import ForgotPassword from "../pages/login/ForgotPassword";
 import ResetPassword from "../pages/login/ResetPassword";
 import Setup from "../pages/setup/Setup";
 import { RequireAuth } from "../guards/RequireAuth";
+import { RequireRole } from "../guards/RequireRole";
 import History from "../pages/history/History";
+import Users from "../pages/users/Users";
 
 export const router = createBrowserRouter([
     {
@@ -83,6 +85,16 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth>
             <History />
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "users",
+        element: (
+          <RequireAuth>
+            <RequireRole roles={["ADMIN"]}>
+              <Users />
+            </RequireRole>
           </RequireAuth>
         ),
             },

@@ -2,7 +2,8 @@ import {Box, List, Typography} from "@mui/material";
 import AppMenuItem from "./AppMenuItem";
 import packageJson from '../../../package.json'
 import {useTranslation} from "react-i18next";
-import {AccountBalance, Badge, GridView, History, ManageAccounts, Settings} from "@mui/icons-material";
+import {AccountBalance, Badge, GridView, History, ManageAccounts, People, Settings} from "@mui/icons-material";
+import { useAuth } from "../../context/AuthContext";
 
 type Props = {
     collapsed: boolean;
@@ -10,6 +11,10 @@ type Props = {
 
 export default function AppMenu({ collapsed }: Props) {
     const { t } = useTranslation();
+    const { appRole } = useAuth();
+
+    const isAdmin = appRole === 'ADMIN';
+    const canViewFinance = appRole === 'ADMIN' || appRole === 'TREASURER';
     
     return (
         <Box
@@ -26,9 +31,14 @@ export default function AppMenu({ collapsed }: Props) {
             <List sx={{ flexGrow: 1, gap: 0.5, display: "flex", flexDirection: "column" }}>
                 <AppMenuItem label={t("menu.dashboard")} icon={<GridView />} link="dashboard" collapsed={collapsed} />
                 <AppMenuItem label={t("menu.members")} icon={<ManageAccounts />} link="members" collapsed={collapsed} />
-                <AppMenuItem label={t("menu.finance")} icon={<AccountBalance />} link="finance" collapsed={collapsed} />
+                {canViewFinance && (
+                    <AppMenuItem label={t("menu.finance")} icon={<AccountBalance />} link="finance" collapsed={collapsed} />
+                )}
                 <AppMenuItem label={t("menu.entities")} icon={<Badge />} link="entities" collapsed={collapsed} />
                 <AppMenuItem label={t("menu.history")} icon={<History />} link="history" collapsed={collapsed} />
+                {isAdmin && (
+                    <AppMenuItem label={t("menu.users")} icon={<People />} link="users" collapsed={collapsed} />
+                )}
                 <AppMenuItem label={t("menu.settings")} icon={<Settings />} link="settings" collapsed={collapsed} />
             </List>
 

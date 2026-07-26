@@ -17,14 +17,18 @@ const (
 	claimsKey contextKey = "claims"
 )
 
+// Claims holds the JWT payload for an authenticated app user.
 type Claims struct {
-	Email string `json:"email"`
+	Email   string          `json:"email"`
+	AppRole openapi.AppRole `json:"appRole"`
 	jwt.RegisteredClaims
 }
 
-func NewToken(email string, secret string) (string, error) {
+// NewToken mints a signed JWT for the given email and app role.
+func NewToken(email string, role openapi.AppRole, secret string) (string, error) {
 	claims := Claims{
-		Email: email,
+		Email:   email,
+		AppRole: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

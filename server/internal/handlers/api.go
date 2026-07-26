@@ -198,12 +198,36 @@ func (a *API) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if string(req.Email) != a.cfg.AdminEmail || bcrypt.CompareHashAndPassword([]byte(a.cfg.AdminPassword), []byte(req.Password)) != nil {
+	email := string(req.Email)
+	role := openapi.ADMIN
+
+	// Try the config-based admin first (backwards compatibility).
+	if email == a.cfg.AdminEmail {
+		if bcrypt.CompareHashAndPassword([]byte(a.cfg.AdminPassword), []byte(req.Password)) != nil {
+			writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
+			return
+		}
+	} else if db := a.getDB(); db != nil {
+		// Fall back to database users.
+		var hashedPwd, appRole string
+		err := db.QueryRow(
+			`SELECT "password", "appRole" FROM "User" WHERE "email" = ?`, email,
+		).Scan(&hashedPwd, &appRole)
+		if err != nil {
+			writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
+			return
+		}
+		if bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(req.Password)) != nil {
+			writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
+			return
+		}
+		role = openapi.AppRole(appRole)
+	} else {
 		writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
 		return
 	}
 
-	token, err := auth.NewToken(string(req.Email), a.cfg.JWTSecret)
+	token, err := auth.NewToken(email, role, a.cfg.JWTSecret)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to create access token"})
 		return
@@ -218,7 +242,10 @@ func (a *API) GetProfile(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "unauthorized"})
 		return
 	}
-	writeJSON(w, http.StatusOK, openapi.UserProfile{Email: openapi_types.Email(claims.Email)})
+	writeJSON(w, http.StatusOK, openapi.UserProfile{
+		Email:   openapi_types.Email(claims.Email),
+		AppRole: &claims.AppRole,
+	})
 }
 
 // Logout is a no-op for JWT-based auth – the client discards the token.
@@ -235,7 +262,7 @@ func (a *API) RefreshAccessToken(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "unauthorized"})
 		return
 	}
-	token, err := auth.NewToken(claims.Email, a.cfg.JWTSecret)
+	token, err := auth.NewToken(claims.Email, claims.AppRole, a.cfg.JWTSecret)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to refresh token"})
 		return

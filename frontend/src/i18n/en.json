@@ -91,7 +91,8 @@
         "settings": "Settings",
         "entities": "Club Entities",
         "profile": "Profile",
-        "history": "History"
+        "history": "History",
+        "users": "User Management"
     },
     "dashboard": {
         "membercount": "Member Count",
@@ -274,7 +275,63 @@
         }
     },
     "profile": {
-        "role": "Administrator"
+        "role": "User",
+        "changePassword": {
+            "title": "Change Password",
+            "currentPassword": "Current Password",
+            "newPassword": "New Password",
+            "confirmPassword": "Confirm New Password",
+            "save": "Change Password",
+            "saving": "Saving...",
+            "success": "Password changed successfully.",
+            "error": "Failed to change password.",
+            "tooShort": "Password must be at least 8 characters long.",
+            "mismatch": "Passwords do not match."
+        }
+    },
+    "users": {
+        "title": "User Management",
+        "createButton": "Create User",
+        "noUsers": "No users found.",
+        "roles": {
+            "ADMIN": "Administrator",
+            "TREASURER": "Treasurer",
+            "SECRETARY": "Secretary",
+            "READONLY": "Read Only"
+        },
+        "columns": {
+            "email": "Email",
+            "role": "Role",
+            "createdAt": "Created At",
+            "actions": "Actions"
+        },
+        "dialogs": {
+            "create": {
+                "title": "Create New User",
+                "email": "Email",
+                "password": "Password",
+                "role": "Role"
+            },
+            "edit": {
+                "title": "Edit User",
+                "role": "Role"
+            },
+            "delete": {
+                "title": "Delete User",
+                "confirm": "Are you sure you want to delete the user \"{{email}}\"? This action cannot be undone."
+            }
+        },
+        "snack": {
+            "created": "User created successfully.",
+            "updated": "User updated successfully.",
+            "deleted": "User deleted successfully."
+        },
+        "errors": {
+            "loadFailed": "Failed to load users.",
+            "createFailed": "Failed to create user.",
+            "updateFailed": "Failed to update user.",
+            "deleteFailed": "Failed to delete user."
+        }
     },
     "finance": {
         "title": "Finance",

@@ -78,6 +78,7 @@ func Migrate(db *sql.DB) error {
 			"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			"email" TEXT NOT NULL UNIQUE,
 			"password" TEXT NOT NULL,
+			"appRole" TEXT NOT NULL DEFAULT 'READONLY',
 			"createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			"updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		)`,
@@ -199,6 +200,15 @@ func Migrate(db *sql.DB) error {
 			return fmt.Errorf("migration failed: %w", err)
 		}
 	}
+
+	// Additive column migrations: silently ignore errors when the column already exists.
+	additiveMigrations := []string{
+		`ALTER TABLE "User" ADD COLUMN "appRole" TEXT NOT NULL DEFAULT 'READONLY'`,
+	}
+	for _, stmt := range additiveMigrations {
+		_, _ = db.Exec(stmt) // intentionally ignore "duplicate column" errors
+	}
+
 	return nil
 }
 

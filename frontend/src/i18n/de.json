@@ -91,7 +91,8 @@
         "settings": "Einstellungen",
         "entities": "Vereinsverwaltung",
         "profile": "Profil",
-        "history": "Verlauf"
+        "history": "Verlauf",
+        "users": "Benutzerverwaltung"
     },
     "dashboard": {
         "membercount": "Anzahl Mitglieder",
@@ -274,7 +275,63 @@
         }
     },
     "profile": {
-        "role": "Administrator"
+        "role": "Benutzer",
+        "changePassword": {
+            "title": "Passwort ändern",
+            "currentPassword": "Aktuelles Passwort",
+            "newPassword": "Neues Passwort",
+            "confirmPassword": "Neues Passwort bestätigen",
+            "save": "Passwort ändern",
+            "saving": "Wird gespeichert...",
+            "success": "Passwort erfolgreich geändert.",
+            "error": "Passwort konnte nicht geändert werden.",
+            "tooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+            "mismatch": "Die Passwörter stimmen nicht überein."
+        }
+    },
+    "users": {
+        "title": "Benutzerverwaltung",
+        "createButton": "Benutzer anlegen",
+        "noUsers": "Keine Benutzer vorhanden.",
+        "roles": {
+            "ADMIN": "Administrator",
+            "TREASURER": "Kassenwart",
+            "SECRETARY": "Schriftführer",
+            "READONLY": "Nur Lesen"
+        },
+        "columns": {
+            "email": "E-Mail",
+            "role": "Rolle",
+            "createdAt": "Erstellt am",
+            "actions": "Aktionen"
+        },
+        "dialogs": {
+            "create": {
+                "title": "Neuen Benutzer anlegen",
+                "email": "E-Mail",
+                "password": "Passwort",
+                "role": "Rolle"
+            },
+            "edit": {
+                "title": "Benutzer bearbeiten",
+                "role": "Rolle"
+            },
+            "delete": {
+                "title": "Benutzer löschen",
+                "confirm": "Möchten Sie den Benutzer \"{{email}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+            }
+        },
+        "snack": {
+            "created": "Benutzer erfolgreich angelegt.",
+            "updated": "Benutzer erfolgreich aktualisiert.",
+            "deleted": "Benutzer erfolgreich gelöscht."
+        },
+        "errors": {
+            "loadFailed": "Benutzer konnten nicht geladen werden.",
+            "createFailed": "Benutzer konnte nicht angelegt werden.",
+            "updateFailed": "Benutzer konnte nicht aktualisiert werden.",
+            "deleteFailed": "Benutzer konnte nicht gelöscht werden."
+        }
     },
     "finance": {
         "title": "Finanzen",
