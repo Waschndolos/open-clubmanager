@@ -23,6 +23,16 @@ import (
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
 )
 
+// bearerAuthRequired wraps the given handler so that requests must carry a
+// valid JWT – mirroring the way the generated openapi middleware applies auth.
+func bearerAuthRequired(jwtSecret string, h http.HandlerFunc) http.HandlerFunc {
+	jwtMw := auth.Middleware(jwtSecret)
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), openapi.BearerAuthScopes, []string{})
+		jwtMw(h).ServeHTTP(w, r.WithContext(ctx))
+	}
+}
+
 // corsMiddleware adds CORS headers for the Tauri desktop frontend and the
 // Vite dev server. Only recognised origins are reflected; all others are
 // silently ignored so the default browser same-origin policy still applies.
@@ -116,6 +126,11 @@ func main() {
 		BaseRouter:  router,
 		Middlewares: []openapi.MiddlewareFunc{auth.Middleware(cfg.JWTSecret)},
 	})
+
+	// Backup / restore endpoints are not part of the generated OpenAPI spec, so
+	// they are wired up manually here with the same JWT auth enforcement.
+	router.Post("/api/v2/system/backup", bearerAuthRequired(cfg.JWTSecret, api.BackupDatabase))
+	router.Post("/api/v2/system/restore", bearerAuthRequired(cfg.JWTSecret, api.RestoreDatabase))
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.Port),
