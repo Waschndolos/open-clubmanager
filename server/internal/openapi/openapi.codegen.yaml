@@ -23,6 +23,7 @@ tags:
 - name: system
 - name: setup
 - name: auth
+- name: users
 - name: members
 - name: roles
 - name: groups
@@ -173,6 +174,35 @@ components:
       - email
       - password
       additionalProperties: false
+    ForgotPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+      additionalProperties: false
+    ResetPasswordRequest:
+      type: object
+      properties:
+        token:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+      required:
+      - token
+      - newPassword
+      additionalProperties: false
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+      additionalProperties: false
     AccessTokenResponse:
       type: object
       properties:
@@ -181,14 +211,78 @@ components:
       required:
       - accessToken
       additionalProperties: false
+    AppRole:
+      type: string
+      enum:
+      - ADMIN
+      - TREASURER
+      - SECRETARY
+      - READONLY
     UserProfile:
       type: object
       properties:
         email:
           type: string
           format: email
+        appRole:
+          $ref: '#/components/schemas/AppRole'
       required:
       - email
+      additionalProperties: false
+    AppUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - email
+      - appRole
+      - createdAt
+      additionalProperties: false
+    CreateAppUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+      required:
+      - email
+      - password
+      - appRole
+      additionalProperties: false
+    UpdateAppUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+      additionalProperties: false
+    ChangePasswordRequest:
+      type: object
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+      required:
+      - newPassword
       additionalProperties: false
     NamedEntity:
       type: object
@@ -220,6 +314,16 @@ components:
     NamedEntityUpdateRequest:
       allOf:
       - $ref: '#/components/schemas/NamedEntityCreateRequest'
+    BulkMemberAssignRequest:
+      type: object
+      properties:
+        memberIds:
+          type: array
+          items:
+            type: integer
+      required:
+      - memberIds
+      additionalProperties: false
     Member:
       type: object
       properties:
@@ -1051,6 +1155,50 @@ paths:
           $ref: '#/components/responses/NoContent'
         '500':
           $ref: '#/components/responses/InternalError'
+  /auth/forgot-password:
+    post:
+      tags:
+      - auth
+      summary: Request a password reset email
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: Reset email sent (always returns 200 to prevent email enumeration).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /auth/reset-password:
+    post:
+      tags:
+      - auth
+      summary: Reset password using a valid reset token
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /auth/profile:
     get:
       tags:
@@ -1070,6 +1218,35 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /auth/change-password:
+    post:
+      tags:
+      - auth
+      summary: Change the current user's password
+      operationId: changePassword
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /members:
     get:
       tags:
@@ -1292,6 +1469,57 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+  /roles/{id}/members:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - roles
+      summary: Get members of a role
+      operationId: getRoleMembers
+      responses:
+        '200':
+          description: List of members assigned to the role.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags:
+      - roles
+      summary: Bulk assign members to a role
+      operationId: bulkAssignRoleMembers
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMemberAssignRequest'
+      responses:
+        '200':
+          description: Members assigned to the role.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /groups:
     get:
       tags:
@@ -1364,6 +1592,55 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+  /groups/{id}/members:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - groups
+      summary: Get members of a group
+      operationId: getGroupMembers
+      responses:
+        '200':
+          description: List of members assigned to the group.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - groups
+      summary: Bulk assign members to a group
+      operationId: bulkAssignGroupMembers
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMemberAssignRequest'
+      responses:
+        '200':
+          description: Members assigned to the group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /sections:
     get:
       tags:
@@ -1436,6 +1713,55 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+  /sections/{id}/members:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - sections
+      summary: Get members of a section
+      operationId: getSectionMembers
+      responses:
+        '200':
+          description: List of members assigned to the section.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - sections
+      summary: Bulk assign members to a section
+      operationId: bulkAssignSectionMembers
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMemberAssignRequest'
+      responses:
+        '200':
+          description: Members assigned to the section.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /preferences:
     get:
       tags:
@@ -1981,3 +2307,109 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /users:
+    get:
+      tags:
+      - users
+      summary: List all app users
+      operationId: listAppUsers
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: List of app users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+      - users
+      summary: Create a new app user
+      operationId: createAppUser
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppUserRequest'
+      responses:
+        '201':
+          description: User created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /users/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    put:
+      tags:
+      - users
+      summary: Update an app user
+      operationId: updateAppUser
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAppUserRequest'
+      responses:
+        '200':
+          description: User updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags:
+      - users
+      summary: Delete an app user
+      operationId: deleteAppUser
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'

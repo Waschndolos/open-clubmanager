@@ -18,6 +18,7 @@ tags:
   - name: system
   - name: setup
   - name: auth
+  - name: users
   - name: members
   - name: roles
   - name: groups
@@ -193,13 +194,70 @@ components:
       required: [accessToken]
       additionalProperties: false
 
+    AppRole:
+      type: string
+      enum: [ADMIN, TREASURER, SECRETARY, READONLY]
+
     UserProfile:
       type: object
       properties:
         email:
           type: string
           format: email
+        appRole:
+          $ref: '#/components/schemas/AppRole'
       required: [email]
+      additionalProperties: false
+
+    AppUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, email, appRole, createdAt]
+      additionalProperties: false
+
+    CreateAppUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+      required: [email, password, appRole]
+      additionalProperties: false
+
+    UpdateAppUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+      additionalProperties: false
+
+    ChangePasswordRequest:
+      type: object
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+      required: [newPassword]
       additionalProperties: false
 
     NamedEntity:
@@ -1104,6 +1162,35 @@ paths:
                 $ref: '#/components/schemas/MessageResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /auth/change-password:
+    post:
+      tags: [auth]
+      summary: Change the current user's password
+      operationId: changePassword
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalError'
 
@@ -2173,3 +2260,107 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
+
+  /users:
+    get:
+      tags: [users]
+      summary: List all app users
+      operationId: listAppUsers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of app users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [users]
+      summary: Create a new app user
+      operationId: createAppUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppUserRequest'
+      responses:
+        '201':
+          description: User created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    put:
+      tags: [users]
+      summary: Update an app user
+      operationId: updateAppUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAppUserRequest'
+      responses:
+        '200':
+          description: User updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [users]
+      summary: Delete an app user
+      operationId: deleteAppUser
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'

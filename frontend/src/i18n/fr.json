@@ -91,7 +91,8 @@
         "settings": "Paramètres",
         "entities": "Entités du club",
         "profile": "Profil",
-        "history": "Historique"
+        "history": "Historique",
+        "users": "Gestion des utilisateurs"
     },
     "dashboard": {
         "membercount": "Nombre de membres",
@@ -274,7 +275,63 @@
         }
     },
     "profile": {
-        "role": "Administrateur"
+        "role": "Utilisateur",
+        "changePassword": {
+            "title": "Changer le mot de passe",
+            "currentPassword": "Mot de passe actuel",
+            "newPassword": "Nouveau mot de passe",
+            "confirmPassword": "Confirmer le nouveau mot de passe",
+            "save": "Changer le mot de passe",
+            "saving": "Enregistrement...",
+            "success": "Mot de passe changé avec succès.",
+            "error": "Impossible de changer le mot de passe.",
+            "tooShort": "Le mot de passe doit comporter au moins 8 caractères.",
+            "mismatch": "Les mots de passe ne correspondent pas."
+        }
+    },
+    "users": {
+        "title": "Gestion des utilisateurs",
+        "createButton": "Créer un utilisateur",
+        "noUsers": "Aucun utilisateur trouvé.",
+        "roles": {
+            "ADMIN": "Administrateur",
+            "TREASURER": "Trésorier",
+            "SECRETARY": "Secrétaire",
+            "READONLY": "Lecture seule"
+        },
+        "columns": {
+            "email": "E-mail",
+            "role": "Rôle",
+            "createdAt": "Créé le",
+            "actions": "Actions"
+        },
+        "dialogs": {
+            "create": {
+                "title": "Créer un nouvel utilisateur",
+                "email": "E-mail",
+                "password": "Mot de passe",
+                "role": "Rôle"
+            },
+            "edit": {
+                "title": "Modifier l'utilisateur",
+                "role": "Rôle"
+            },
+            "delete": {
+                "title": "Supprimer l'utilisateur",
+                "confirm": "Êtes-vous sûr de vouloir supprimer l'utilisateur \"{{email}}\" ? Cette action est irréversible."
+            }
+        },
+        "snack": {
+            "created": "Utilisateur créé avec succès.",
+            "updated": "Utilisateur mis à jour avec succès.",
+            "deleted": "Utilisateur supprimé avec succès."
+        },
+        "errors": {
+            "loadFailed": "Impossible de charger les utilisateurs.",
+            "createFailed": "Impossible de créer l'utilisateur.",
+            "updateFailed": "Impossible de mettre à jour l'utilisateur.",
+            "deleteFailed": "Impossible de supprimer l'utilisateur."
+        }
     },
     "finance": {
         "title": "Finances",

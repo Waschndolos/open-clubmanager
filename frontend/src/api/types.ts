@@ -51,6 +51,15 @@ export type Role = MemberContainingNamedArtifact
 
 export type ClubSection = MemberContainingNamedArtifact
 
+export type AppRole = 'ADMIN' | 'TREASURER' | 'SECRETARY' | 'READONLY';
+
+export type AppUser = {
+    id: number;
+    email: string;
+    appRole: AppRole;
+    createdAt: string;
+};
+
 export type FinanceTransaction = {
     id: number;
     date: string;
