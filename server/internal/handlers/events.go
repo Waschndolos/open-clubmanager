@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -94,7 +95,11 @@ func (a *API) CreateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id64, _ := res.LastInsertId()
+	id64, err := res.LastInsertId()
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to determine created event id"})
+		return
+	}
 	e, err := getEventByID(a.getDB(), int(id64))
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to load created event"})
@@ -127,7 +132,17 @@ func (a *API) UpdateEvent(w http.ResponseWriter, r *http.Request, id int) {
 	}
 
 	var req openapi.EventUpdateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
+		return
+	}
+	if err := json.Unmarshal(body, &req); err != nil {
+		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
+		return
+	}
+	var reqRaw map[string]json.RawMessage
+	if err := json.Unmarshal(body, &reqRaw); err != nil {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
 		return
 	}
@@ -147,11 +162,15 @@ func (a *API) UpdateEvent(w http.ResponseWriter, r *http.Request, id int) {
 		title = *req.Title
 	}
 	description := existing.Description
-	if req.Description != nil {
+	if isExplicitNullField(reqRaw, "description") {
+		description = nil
+	} else if req.Description != nil {
 		description = req.Description
 	}
 	location := existing.Location
-	if req.Location != nil {
+	if isExplicitNullField(reqRaw, "location") {
+		location = nil
+	} else if req.Location != nil {
 		location = req.Location
 	}
 	startDate := existing.StartDate
@@ -171,7 +190,9 @@ func (a *API) UpdateEvent(w http.ResponseWriter, r *http.Request, id int) {
 		eventType = *req.Type
 	}
 	maxParticipants := existing.MaxParticipants
-	if req.MaxParticipants != nil {
+	if isExplicitNullField(reqRaw, "maxParticipants") {
+		maxParticipants = nil
+	} else if req.MaxParticipants != nil {
 		maxParticipants = req.MaxParticipants
 	}
 	if maxParticipants != nil && *maxParticipants <= 0 {
@@ -359,28 +380,7 @@ type eventRows interface {
 }
 
 func scanEvent(rows *sql.Rows) (openapi.Event, error) {
-	var event openapi.Event
-	var description, location sql.NullString
-	var maxParticipants sql.NullInt64
-	var startDateStr, endDateStr, createdAtStr, updatedAtStr string
-
-	err := rows.Scan(
-		&event.Id,
-		&event.Title,
-		&description,
-		&location,
-		&startDateStr,
-		&endDateStr,
-		(*string)(&event.Type),
-		&maxParticipants,
-		&createdAtStr,
-		&updatedAtStr,
-	)
-	if err != nil {
-		return event, err
-	}
-	mapEventNullableFields(&event, description, location, maxParticipants, startDateStr, endDateStr, createdAtStr, updatedAtStr)
-	return event, nil
+	return scanEventRow(rows)
 }
 
 func scanEventRow(row eventRows) (openapi.Event, error) {
@@ -419,4 +419,9 @@ func mapEventNullableFields(event *openapi.Event, description sql.NullString, lo
 	event.EndDate, _ = parseTime(endDateStr)
 	event.CreatedAt, _ = parseTime(createdAtStr)
 	event.UpdatedAt, _ = parseTime(updatedAtStr)
+}
+
+func isExplicitNullField(raw map[string]json.RawMessage, key string) bool {
+	value, ok := raw[key]
+	return ok && string(value) == "null"
 }

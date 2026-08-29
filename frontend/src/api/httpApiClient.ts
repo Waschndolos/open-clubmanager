@@ -98,14 +98,12 @@ export const httpApiClient: DataClient = {
             if (filters?.startDateTo) params.set('startDateTo', filters.startDateTo);
             if (filters?.type) params.set('type', filters.type);
             const query = params.toString();
-            const res = await fetch(`${BACKEND_URL}/events${query ? `?${query}` : ''}`);
-            if (!res.ok) throw new Error('Error fetching events.');
-            return res.json();
+            const res = await api.get<Event[]>(`/events${query ? `?${query}` : ''}`);
+            return res.data;
         },
         get: async (id: number): Promise<Event> => {
-            const res = await fetch(`${BACKEND_URL}/events/${id}`);
-            if (!res.ok) throw new Error(`Error fetching event ${id}.`);
-            return res.json();
+            const res = await api.get<Event>(`/events/${id}`);
+            return res.data;
         },
         create: async (data: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>): Promise<Event> => {
             const res = await api.post<Event>('/events', data);
@@ -119,9 +117,8 @@ export const httpApiClient: DataClient = {
             await api.delete(`/events/${id}`);
         },
         listAttendees: async (eventId: number): Promise<EventAttendee[]> => {
-            const res = await fetch(`${BACKEND_URL}/events/${eventId}/attendees`);
-            if (!res.ok) throw new Error(`Error fetching attendees for event ${eventId}.`);
-            return res.json();
+            const res = await api.get<EventAttendee[]>(`/events/${eventId}/attendees`);
+            return res.data;
         },
         upsertAttendees: async (eventId: number, attendees: Array<{ memberId: number; status?: EventAttendanceStatus }>): Promise<void> => {
             await api.post(`/events/${eventId}/attendees`, { attendees });

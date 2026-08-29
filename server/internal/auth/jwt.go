@@ -41,7 +41,7 @@ func NewToken(email string, role openapi.AppRole, secret string) (string, error)
 func Middleware(secret string) openapi.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.Context().Value(openapi.BearerAuthScopes) == nil {
+			if isPublicRoute(r.Method, r.URL.Path) {
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -67,6 +67,33 @@ func Middleware(secret string) openapi.MiddlewareFunc {
 
 			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), claimsKey, claims)))
 		})
+	}
+}
+
+func isPublicRoute(method, path string) bool {
+	switch {
+	case method == http.MethodGet && path == "/api/v2/system/health":
+		return true
+	case method == http.MethodGet && path == "/api/v2/system/meta":
+		return true
+	case method == http.MethodGet && path == "/api/v2/setup/status":
+		return true
+	case method == http.MethodPost && path == "/api/v2/setup/configure-database":
+		return true
+	case method == http.MethodPost && path == "/api/v2/setup/initialize":
+		return true
+	case method == http.MethodPost && path == "/api/v2/auth/login":
+		return true
+	case method == http.MethodPost && path == "/api/v2/auth/refresh-token":
+		return true
+	case method == http.MethodPost && path == "/api/v2/auth/logout":
+		return true
+	case method == http.MethodPost && path == "/api/v2/auth/forgot-password":
+		return true
+	case method == http.MethodPost && path == "/api/v2/auth/reset-password":
+		return true
+	default:
+		return false
 	}
 }
 

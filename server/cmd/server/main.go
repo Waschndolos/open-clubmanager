@@ -28,8 +28,7 @@ import (
 func bearerAuthRequired(jwtSecret string, h http.HandlerFunc) http.HandlerFunc {
 	jwtMw := auth.Middleware(jwtSecret)
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), openapi.BearerAuthScopes, []string{})
-		jwtMw(h).ServeHTTP(w, r.WithContext(ctx))
+		jwtMw(h).ServeHTTP(w, r)
 	}
 }
 
