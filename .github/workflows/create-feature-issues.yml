@@ -1,0 +1,219 @@
+name: Create Feature Issues
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create feature issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = [
+              {
+                title: "[Feature] Custom Member Fields – Eigene Felder für Mitglieder definieren",
+                labels: ["feature"],
+                body: `## Summary
+
+Clubs differ widely in the data they need to track for members. Currently, the member model has a fixed set of fields. This feature allows administrators to define **custom fields** (e.g. "T-Shirt Size", "Dietary Requirements", "Sports License Number") attached to every member profile.
+
+## Motivation
+
+Small clubs often have unique tracking needs that don't fit into the standard address/banking/SEPA model. Instead of maintaining separate spreadsheets, admins should be able to extend the member data model directly in Open ClubManager.
+
+## Proposed Solution
+
+- Add a **Custom Fields** configuration page in Settings or Club Structure
+- Supported field types: Text, Number, Date, Boolean, Select (dropdown with predefined options)
+- Custom field values are stored per-member and shown in the member detail view and edit form
+- Custom fields can be marked as required or optional
+- Export (CSV) should include custom fields as additional columns
+
+## Acceptance Criteria
+
+- [ ] Admin can create, rename, reorder, and delete custom field definitions
+- [ ] Members display and allow editing of all custom field values
+- [ ] Custom fields appear in CSV export
+- [ ] Custom fields are validated according to their type on save`,
+              },
+              {
+                title: "[Feature] Member Status History – Statusänderungen nachverfolgen",
+                labels: ["feature"],
+                body: `## Summary
+
+Track every change to a member's status over time (active → passive → resigned → re-joined). This builds on the existing entry/exit date fields and audit log foundation to provide a full membership lifecycle view.
+
+## Motivation
+
+Clubs frequently need to answer questions like "When did this member first join?", "How often has the member changed status?", or "Who were our members during a specific period?". Currently there is no way to see the history of a member's status changes.
+
+## Proposed Solution
+
+- Introduce a \`member_status_history\` table that records: status, changed_at, changed_by, reason (optional)
+- Display a timeline or table of status changes on the member detail page
+- Allow admins to annotate status changes with a reason (e.g. "moved away", "on parental leave")
+- Include status history in the member PDF report (issue #108)
+
+## Acceptance Criteria
+
+- [ ] Every status change is automatically recorded with timestamp and user
+- [ ] Member detail page shows the full status history
+- [ ] Admin can optionally add a reason when changing a status
+- [ ] Status history is included in member exports`,
+              },
+              {
+                title: "[Feature] Advanced Member Search & Filter – Erweiterte Suchfunktion",
+                labels: ["feature"],
+                body: `## Summary
+
+Replace the current single free-text search on the members list with an **advanced filter panel** that allows combining multiple criteria (role, group, section, status, age range, fee status, date ranges, custom fields).
+
+## Motivation
+
+As clubs grow, finding the right subset of members becomes harder. Treasurers need "all active members without a SEPA mandate", coaches need "all members of section Handball aged 18–25". The current search only supports plain text across all fields.
+
+## Proposed Solution
+
+- Add a collapsible **Filter Panel** above the members table
+- Filter dimensions: Role, Group, Section, Member Status, Birthday range, Entry date range, Fee Status, Has SEPA Mandate, City/State
+- Filters can be combined (AND logic)
+- Active filters are shown as removable chips in the table header
+- Filtered view can be directly exported to CSV/PDF
+- Save frequently used filter combinations as presets
+
+## Acceptance Criteria
+
+- [ ] At least 8 filter dimensions available
+- [ ] Multiple filters combine with AND logic
+- [ ] Active filters are visible and individually removable
+- [ ] Filtered result set can be exported
+- [ ] Filter state persists across page navigation (session)`,
+              },
+              {
+                title: "[Feature] Membership Application / Waiting List – Aufnahmeantrag & Warteliste",
+                labels: ["feature"],
+                body: `## Summary
+
+Provide a **public-facing web form** where prospective members can submit a membership application. Applications land in a waiting list inside Open ClubManager, where admins review and accept or reject them, automatically creating a member record on acceptance.
+
+## Motivation
+
+Currently, new members must be entered manually by an admin. Many clubs receive applications via paper or email, creating extra work. A self-service application form reduces admin overhead and avoids data entry errors.
+
+## Proposed Solution
+
+- A shareable URL (e.g. \`/apply\`) renders a public membership application form (no login required)
+- Form collects the same core fields as the member form (name, address, email, birthday, desired section/role)
+- Submitted applications are stored in a new \`applications\` table with status: Pending / Accepted / Rejected
+- Admins see a new **Applications** section in the menu showing all pending applications
+- On acceptance, the application is converted to a full member record
+- Optional: send a confirmation email to the applicant on submission and on decision
+
+## Acceptance Criteria
+
+- [ ] Public application form is accessible without authentication
+- [ ] Applications appear in an admin inbox with Pending status
+- [ ] Admin can accept (creates member) or reject (with optional reason) an application
+- [ ] Accepted member is pre-populated from the application data
+- [ ] Application list shows submission date, applicant name, and current status`,
+              },
+              {
+                title: "[Feature] Duplicate Member Detection – Erkennung doppelter Mitglieder",
+                labels: ["feature"],
+                body: `## Summary
+
+Automatically detect potential duplicate members during manual creation and CSV import, and provide a UI to review and merge duplicates.
+
+## Motivation
+
+When multiple admins or committee members maintain the database, or when importing from old spreadsheets, duplicate entries are a common and hard-to-fix problem. Duplicate members cause incorrect statistics, double fee collection, and confusion.
+
+## Proposed Solution
+
+- **On creation/import**: Compare the new member against existing records by email, full name + birthday, or IBAN. If a likely duplicate is found, warn the user and show the conflicting record before saving.
+- **Scheduled scan**: A background job (or manual scan trigger) runs fuzzy matching across all members (Levenshtein on name+birthday) to find potential duplicates.
+- **Merge UI**: When two records are flagged as duplicates, the admin can choose which fields to keep from each record and merge them into one. All related records (fees, finance references) are re-linked to the surviving member.
+
+## Acceptance Criteria
+
+- [ ] Exact-match duplicate warning on member create
+- [ ] Import wizard warns about potential duplicates before finalizing
+- [ ] Manual duplicate scan accessible from member settings
+- [ ] Merge dialog lets admin select canonical field values
+- [ ] All related data is migrated to the merged record`,
+              },
+              {
+                title: "[Feature] Member Age Group Statistics & Demographics – Altersstruktur-Auswertung",
+                labels: ["feature"],
+                body: `## Summary
+
+Extend the dashboard and reports module with **demographic charts** – in particular, age group distribution, gender distribution (if tracked), and membership duration statistics.
+
+## Motivation
+
+Club boards and general assemblies regularly need demographic overviews to make decisions about club development (e.g. "We are losing youth members" or "Average member age has risen 5 years"). This data is already available but not visualized.
+
+## Proposed Solution
+
+- Add a new "Demographics" chart section to the Dashboard (extending the existing chart cards)
+- **Age Group Bar Chart**: Configurable age buckets (e.g. <18, 18–30, 31–50, 51–65, 65+)
+- **Membership Duration Histogram**: How long have current members been in the club?
+- **Section Age Distribution**: Age group breakdown per section
+- Charts should support toggling the reference date (e.g. compare current year vs. last year)
+- Demographics data should also be exportable as part of the PDF report (#108)
+
+## Acceptance Criteria
+
+- [ ] Age group bar chart visible on Dashboard
+- [ ] Age buckets are configurable in settings
+- [ ] Membership duration histogram is available
+- [ ] Section-level age breakdown is supported
+- [ ] Data is included in PDF/Excel report export`,
+              },
+              {
+                title: "[Feature] Recurring Reminders & Notifications – Regelmäßige Erinnerungen",
+                labels: ["feature"],
+                body: `## Summary
+
+Add a configurable **reminders & notifications** system that alerts designated users (e.g. treasurer, board) about upcoming or overdue events: unpaid member fees, expiring SEPA mandates, upcoming member birthdays, and contract renewals.
+
+## Motivation
+
+Admins currently must manually check for overdue fees or expiring mandates. Automated reminders reduce the risk of missed follow-ups and save time for volunteer-run clubs.
+
+## Proposed Solution
+
+- A new **Reminders** settings page where admins configure:
+  - Which reminder types are active (fee overdue, SEPA expiry, birthday, etc.)
+  - Lead time (e.g. "remind 30 days before SEPA expiry")
+  - Recipient role(s)
+- Reminders appear as a notification badge/panel inside the app (in-app notifications)
+- Optionally deliver reminders by email if the email feature (issue #109) is configured
+- A daily background check evaluates conditions and creates pending notifications
+- Notification history is kept so admins can see what was triggered and when
+
+## Acceptance Criteria
+
+- [ ] At least 4 reminder types available (fee overdue, SEPA expiry, birthday, mandate renewal)
+- [ ] Each reminder type has a configurable lead time and recipients
+- [ ] In-app notification panel shows unread reminders with dismiss action
+- [ ] Optional email delivery when email is configured
+- [ ] Notification history is accessible to admins`,
+              },
+            ];
+
+            for (const issue of issues) {
+              const result = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issue.title,
+                labels: issue.labels,
+                body: issue.body,
+              });
+              console.log(`Created issue #${result.data.number}: ${result.data.title}`);
+            }
