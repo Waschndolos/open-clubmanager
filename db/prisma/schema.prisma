@@ -153,3 +153,17 @@ model AuditLog {
   data      String?
   createdAt DateTime @default(now())
 }
+
+model Document {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  category    String
+  filename    String
+  storagePath String
+  size        Int
+  mimeType    String
+  uploadedBy  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

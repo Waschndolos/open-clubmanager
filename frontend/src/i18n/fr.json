@@ -89,6 +89,7 @@
         "members": "Gestion des membres",
         "finance": "Finances",
         "inventory": "Inventaire",
+        "documents": "Documents",
         "settings": "Paramètres",
         "entities": "Entités du club",
         "profile": "Profil",
@@ -463,6 +464,36 @@
             "create": "Créer un prêt",
             "activeTitle": "Articles actuellement prêtés",
             "markReturned": "Marquer comme rendu"
+        }
+    },
+    "documents": {
+        "title": "Gestion des documents",
+        "loadError": "Impossible de charger les documents. Veuillez réessayer.",
+        "uploadError": "Impossible de téléverser le document. Veuillez réessayer.",
+        "deleteError": "Impossible de supprimer le document. Veuillez réessayer.",
+        "updateError": "Impossible de mettre à jour le document. Veuillez réessayer.",
+        "search": "Rechercher des documents",
+        "categoryFilter": "Filtrer par catégorie",
+        "categoryAll": "Toutes les catégories",
+        "fields": {
+            "title": "Titre",
+            "description": "Description",
+            "category": "Catégorie",
+            "filename": "Nom du fichier",
+            "size": "Taille",
+            "createdAt": "Téléversé le"
+        },
+        "actions": {
+            "download": "Télécharger"
+        },
+        "upload": {
+            "open": "Téléverser un document",
+            "title": "Téléverser un document",
+            "dropzone": "Glissez-déposez un fichier ici ou cliquez pour en choisir un",
+            "submit": "Téléverser"
+        },
+        "edit": {
+            "title": "Modifier les métadonnées"
         }
     },
     "history": {

@@ -20,6 +20,7 @@ type Config struct {
 	Port           int                    `json:"port"`
 	DatabasePath   string                 `json:"databasePath"`
 	DatabaseURL    string                 `json:"databaseUrl"`
+	DocumentMaxMB  int                    `json:"documentMaxMb"`
 	JWTSecret      string                 `json:"jwtSecret"`
 	AdminEmail     string                 `json:"adminEmail"`
 	AdminPassword  string                 `json:"adminPasswordHash"`
@@ -55,9 +56,10 @@ func Save(cfg Config, path string) error {
 
 func Load() (Config, error) {
 	cfg := Config{
-		Port:         3001,
-		DatabasePath: "./clubmanager.db",
-		JWTSecret:    "dev_access_secret_change_me",
+		Port:          3001,
+		DatabasePath:  "./clubmanager.db",
+		DocumentMaxMB: 20,
+		JWTSecret:     "dev_access_secret_change_me",
 	}
 
 	// Prefer an explicitly configured file; fall back to the default location.
@@ -95,6 +97,13 @@ func Load() (Config, error) {
 
 	if value := os.Getenv("DATABASE_URL"); value != "" {
 		cfg.DatabaseURL = value
+	}
+	if value := os.Getenv("DOCUMENT_MAX_MB"); value != "" {
+		maxMB, err := strconv.Atoi(value)
+		if err != nil {
+			return Config{}, err
+		}
+		cfg.DocumentMaxMB = maxMB
 	}
 
 	if value := os.Getenv("JWT_SECRET"); value != "" {
@@ -142,6 +151,9 @@ func Load() (Config, error) {
 
 	if cfg.JWTSecret == "" {
 		return Config{}, errors.New("jwt secret must not be empty")
+	}
+	if cfg.DocumentMaxMB <= 0 {
+		return Config{}, errors.New("document max upload size must be greater than 0")
 	}
 
 	return cfg, nil

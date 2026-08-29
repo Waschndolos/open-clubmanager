@@ -218,6 +218,19 @@ func Migrate(db *sql.DB) error {
 			"data" TEXT,
 			"createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		)`,
+		`CREATE TABLE IF NOT EXISTS "Document" (
+			"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			"title" TEXT NOT NULL,
+			"description" TEXT,
+			"category" TEXT NOT NULL,
+			"filename" TEXT NOT NULL,
+			"storagePath" TEXT NOT NULL,
+			"size" INTEGER NOT NULL,
+			"mimeType" TEXT NOT NULL,
+			"uploadedBy" TEXT NOT NULL,
+			"createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			"updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		)`,
 	}
 
 	for _, stmt := range statements {
