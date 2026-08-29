@@ -184,6 +184,31 @@ func Migrate(db *sql.DB) error {
 			"updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY ("memberId") REFERENCES "Member" ("id") ON DELETE CASCADE
 		)`,
+		`CREATE TABLE IF NOT EXISTS "InventoryItem" (
+			"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			"name" TEXT NOT NULL,
+			"description" TEXT,
+			"serialNumber" TEXT,
+			"category" TEXT NOT NULL,
+			"quantity" INTEGER NOT NULL,
+			"location" TEXT NOT NULL,
+			"purchaseDate" DATETIME,
+			"purchasePrice" REAL,
+			"createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			"updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		)`,
+		`CREATE TABLE IF NOT EXISTS "InventoryLoan" (
+			"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			"itemId" INTEGER NOT NULL,
+			"memberId" INTEGER NOT NULL,
+			"loanedAt" DATETIME NOT NULL,
+			"dueDate" DATETIME,
+			"returnedAt" DATETIME,
+			"notes" TEXT NOT NULL,
+			"createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY ("itemId") REFERENCES "InventoryItem" ("id") ON DELETE CASCADE,
+			FOREIGN KEY ("memberId") REFERENCES "Member" ("id") ON DELETE CASCADE
+		)`,
 		`CREATE TABLE IF NOT EXISTS "AuditLog" (
 			"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			"action" TEXT NOT NULL,
@@ -211,4 +236,3 @@ func Migrate(db *sql.DB) error {
 
 	return nil
 }
-

@@ -308,6 +308,76 @@ type HealthResponse struct {
 	Status  string `json:"status"`
 }
 
+// InventoryItem defines model for InventoryItem.
+type InventoryItem struct {
+	Category      string     `json:"category"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	Description   *string    `json:"description,omitempty"`
+	Id            int        `json:"id"`
+	Location      string     `json:"location"`
+	Name          string     `json:"name"`
+	PurchaseDate  *time.Time `json:"purchaseDate,omitempty"`
+	PurchasePrice *float32   `json:"purchasePrice,omitempty"`
+	Quantity      int        `json:"quantity"`
+	SerialNumber  *string    `json:"serialNumber,omitempty"`
+	UpdatedAt     time.Time  `json:"updatedAt"`
+}
+
+// InventoryItemCreateRequest defines model for InventoryItemCreateRequest.
+type InventoryItemCreateRequest struct {
+	Category      string     `json:"category"`
+	Description   *string    `json:"description,omitempty"`
+	Location      string     `json:"location"`
+	Name          string     `json:"name"`
+	PurchaseDate  *time.Time `json:"purchaseDate,omitempty"`
+	PurchasePrice *float32   `json:"purchasePrice,omitempty"`
+	Quantity      int        `json:"quantity"`
+	SerialNumber  *string    `json:"serialNumber,omitempty"`
+}
+
+// InventoryItemUpdateRequest defines model for InventoryItemUpdateRequest.
+type InventoryItemUpdateRequest struct {
+	Category      *string    `json:"category,omitempty"`
+	Description   *string    `json:"description,omitempty"`
+	Location      *string    `json:"location,omitempty"`
+	Name          *string    `json:"name,omitempty"`
+	PurchaseDate  *time.Time `json:"purchaseDate,omitempty"`
+	PurchasePrice *float32   `json:"purchasePrice,omitempty"`
+	Quantity      *int       `json:"quantity,omitempty"`
+	SerialNumber  *string    `json:"serialNumber,omitempty"`
+}
+
+// InventoryLoan defines model for InventoryLoan.
+type InventoryLoan struct {
+	CreatedAt  time.Time  `json:"createdAt"`
+	DueDate    *time.Time `json:"dueDate,omitempty"`
+	Id         int        `json:"id"`
+	ItemId     int        `json:"itemId"`
+	LoanedAt   time.Time  `json:"loanedAt"`
+	MemberId   int        `json:"memberId"`
+	Notes      string     `json:"notes"`
+	ReturnedAt *time.Time `json:"returnedAt,omitempty"`
+}
+
+// InventoryLoanCreateRequest defines model for InventoryLoanCreateRequest.
+type InventoryLoanCreateRequest struct {
+	DueDate  *time.Time `json:"dueDate,omitempty"`
+	ItemId   int        `json:"itemId"`
+	LoanedAt time.Time  `json:"loanedAt"`
+	MemberId int        `json:"memberId"`
+	Notes    string     `json:"notes"`
+}
+
+// InventoryLoanUpdateRequest defines model for InventoryLoanUpdateRequest.
+type InventoryLoanUpdateRequest struct {
+	DueDate    *time.Time `json:"dueDate,omitempty"`
+	ItemId     *int       `json:"itemId,omitempty"`
+	LoanedAt   *time.Time `json:"loanedAt,omitempty"`
+	MemberId   *int       `json:"memberId,omitempty"`
+	Notes      *string    `json:"notes,omitempty"`
+	ReturnedAt *time.Time `json:"returnedAt,omitempty"`
+}
+
 // LoginRequest defines model for LoginRequest.
 type LoginRequest struct {
 	Email    openapi_types.Email `json:"email"`
@@ -670,6 +740,18 @@ type UpdateGroupJSONRequestBody = NamedEntityUpdateRequest
 // BulkAssignGroupMembersJSONRequestBody defines body for BulkAssignGroupMembers for application/json ContentType.
 type BulkAssignGroupMembersJSONRequestBody = BulkMemberAssignRequest
 
+// CreateInventoryItemJSONRequestBody defines body for CreateInventoryItem for application/json ContentType.
+type CreateInventoryItemJSONRequestBody = InventoryItemCreateRequest
+
+// UpdateInventoryItemJSONRequestBody defines body for UpdateInventoryItem for application/json ContentType.
+type UpdateInventoryItemJSONRequestBody = InventoryItemUpdateRequest
+
+// CreateInventoryLoanJSONRequestBody defines body for CreateInventoryLoan for application/json ContentType.
+type CreateInventoryLoanJSONRequestBody = InventoryLoanCreateRequest
+
+// UpdateInventoryLoanJSONRequestBody defines body for UpdateInventoryLoan for application/json ContentType.
+type UpdateInventoryLoanJSONRequestBody = InventoryLoanUpdateRequest
+
 // CreateMemberJSONRequestBody defines body for CreateMember for application/json ContentType.
 type CreateMemberJSONRequestBody = MemberCreateRequest
 
@@ -948,6 +1030,36 @@ type ServerInterface interface {
 	// List recent audit log entries
 	// (GET /history)
 	ListHistory(w http.ResponseWriter, r *http.Request)
+	// List inventory items
+	// (GET /inventory/items)
+	ListInventoryItems(w http.ResponseWriter, r *http.Request)
+	// Create an inventory item
+	// (POST /inventory/items)
+	CreateInventoryItem(w http.ResponseWriter, r *http.Request)
+	// Delete an inventory item
+	// (DELETE /inventory/items/{id})
+	DeleteInventoryItem(w http.ResponseWriter, r *http.Request, id int)
+	// Get an inventory item
+	// (GET /inventory/items/{id})
+	GetInventoryItem(w http.ResponseWriter, r *http.Request, id int)
+	// Update an inventory item
+	// (PUT /inventory/items/{id})
+	UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id int)
+	// List inventory loans
+	// (GET /inventory/loans)
+	ListInventoryLoans(w http.ResponseWriter, r *http.Request)
+	// Create an inventory loan
+	// (POST /inventory/loans)
+	CreateInventoryLoan(w http.ResponseWriter, r *http.Request)
+	// Delete an inventory loan
+	// (DELETE /inventory/loans/{id})
+	DeleteInventoryLoan(w http.ResponseWriter, r *http.Request, id int)
+	// Get an inventory loan
+	// (GET /inventory/loans/{id})
+	GetInventoryLoan(w http.ResponseWriter, r *http.Request, id int)
+	// Update an inventory loan
+	// (PUT /inventory/loans/{id})
+	UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id int)
 	// List members
 	// (GET /members)
 	ListMembers(w http.ResponseWriter, r *http.Request, params ListMembersParams)
@@ -1215,6 +1327,66 @@ func (_ Unimplemented) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Req
 // List recent audit log entries
 // (GET /history)
 func (_ Unimplemented) ListHistory(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List inventory items
+// (GET /inventory/items)
+func (_ Unimplemented) ListInventoryItems(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create an inventory item
+// (POST /inventory/items)
+func (_ Unimplemented) CreateInventoryItem(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete an inventory item
+// (DELETE /inventory/items/{id})
+func (_ Unimplemented) DeleteInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get an inventory item
+// (GET /inventory/items/{id})
+func (_ Unimplemented) GetInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update an inventory item
+// (PUT /inventory/items/{id})
+func (_ Unimplemented) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List inventory loans
+// (GET /inventory/loans)
+func (_ Unimplemented) ListInventoryLoans(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create an inventory loan
+// (POST /inventory/loans)
+func (_ Unimplemented) CreateInventoryLoan(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete an inventory loan
+// (DELETE /inventory/loans/{id})
+func (_ Unimplemented) DeleteInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get an inventory loan
+// (GET /inventory/loans/{id})
+func (_ Unimplemented) GetInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update an inventory loan
+// (PUT /inventory/loans/{id})
+func (_ Unimplemented) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1992,6 +2164,278 @@ func (siw *ServerInterfaceWrapper) ListHistory(w http.ResponseWriter, r *http.Re
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListHistory(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListInventoryItems operation middleware
+func (siw *ServerInterfaceWrapper) ListInventoryItems(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListInventoryItems(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateInventoryItem operation middleware
+func (siw *ServerInterfaceWrapper) CreateInventoryItem(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateInventoryItem(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteInventoryItem operation middleware
+func (siw *ServerInterfaceWrapper) DeleteInventoryItem(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteInventoryItem(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetInventoryItem operation middleware
+func (siw *ServerInterfaceWrapper) GetInventoryItem(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetInventoryItem(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateInventoryItem operation middleware
+func (siw *ServerInterfaceWrapper) UpdateInventoryItem(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateInventoryItem(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListInventoryLoans operation middleware
+func (siw *ServerInterfaceWrapper) ListInventoryLoans(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListInventoryLoans(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateInventoryLoan operation middleware
+func (siw *ServerInterfaceWrapper) CreateInventoryLoan(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateInventoryLoan(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteInventoryLoan operation middleware
+func (siw *ServerInterfaceWrapper) DeleteInventoryLoan(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteInventoryLoan(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetInventoryLoan operation middleware
+func (siw *ServerInterfaceWrapper) GetInventoryLoan(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetInventoryLoan(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateInventoryLoan operation middleware
+func (siw *ServerInterfaceWrapper) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateInventoryLoan(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3084,6 +3528,36 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/history", wrapper.ListHistory)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/inventory/items", wrapper.ListInventoryItems)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/inventory/items", wrapper.CreateInventoryItem)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/inventory/items/{id}", wrapper.DeleteInventoryItem)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/inventory/items/{id}", wrapper.GetInventoryItem)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/inventory/items/{id}", wrapper.UpdateInventoryItem)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/inventory/loans", wrapper.ListInventoryLoans)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/inventory/loans", wrapper.CreateInventoryLoan)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/inventory/loans/{id}", wrapper.DeleteInventoryLoan)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/inventory/loans/{id}", wrapper.GetInventoryLoan)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/inventory/loans/{id}", wrapper.UpdateInventoryLoan)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/members", wrapper.ListMembers)
@@ -4398,6 +4872,618 @@ func (response ListHistory403JSONResponse) VisitListHistoryResponse(w http.Respo
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryItemsRequestObject struct {
+}
+
+type ListInventoryItemsResponseObject interface {
+	VisitListInventoryItemsResponse(w http.ResponseWriter) error
+}
+
+type ListInventoryItems200JSONResponse []InventoryItem
+
+func (response ListInventoryItems200JSONResponse) VisitListInventoryItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryItems401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ListInventoryItems401JSONResponse) VisitListInventoryItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryItems403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response ListInventoryItems403JSONResponse) VisitListInventoryItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryItemRequestObject struct {
+	Body *CreateInventoryItemJSONRequestBody
+}
+
+type CreateInventoryItemResponseObject interface {
+	VisitCreateInventoryItemResponse(w http.ResponseWriter) error
+}
+
+type CreateInventoryItem201JSONResponse InventoryItem
+
+func (response CreateInventoryItem201JSONResponse) VisitCreateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryItem400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response CreateInventoryItem400JSONResponse) VisitCreateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryItem401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response CreateInventoryItem401JSONResponse) VisitCreateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryItem403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response CreateInventoryItem403JSONResponse) VisitCreateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteInventoryItemRequestObject struct {
+	Id int `json:"id"`
+}
+
+type DeleteInventoryItemResponseObject interface {
+	VisitDeleteInventoryItemResponse(w http.ResponseWriter) error
+}
+
+type DeleteInventoryItem200JSONResponse SuccessResponse
+
+func (response DeleteInventoryItem200JSONResponse) VisitDeleteInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteInventoryItem401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response DeleteInventoryItem401JSONResponse) VisitDeleteInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteInventoryItem403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response DeleteInventoryItem403JSONResponse) VisitDeleteInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteInventoryItem404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response DeleteInventoryItem404JSONResponse) VisitDeleteInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetInventoryItemRequestObject struct {
+	Id int `json:"id"`
+}
+
+type GetInventoryItemResponseObject interface {
+	VisitGetInventoryItemResponse(w http.ResponseWriter) error
+}
+
+type GetInventoryItem200JSONResponse InventoryItem
+
+func (response GetInventoryItem200JSONResponse) VisitGetInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetInventoryItem401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response GetInventoryItem401JSONResponse) VisitGetInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetInventoryItem403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response GetInventoryItem403JSONResponse) VisitGetInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetInventoryItem404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response GetInventoryItem404JSONResponse) VisitGetInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItemRequestObject struct {
+	Id   int `json:"id"`
+	Body *UpdateInventoryItemJSONRequestBody
+}
+
+type UpdateInventoryItemResponseObject interface {
+	VisitUpdateInventoryItemResponse(w http.ResponseWriter) error
+}
+
+type UpdateInventoryItem200JSONResponse InventoryItem
+
+func (response UpdateInventoryItem200JSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response UpdateInventoryItem401JSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response UpdateInventoryItem403JSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryItem404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response UpdateInventoryItem404JSONResponse) VisitUpdateInventoryItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryLoansRequestObject struct {
+}
+
+type ListInventoryLoansResponseObject interface {
+	VisitListInventoryLoansResponse(w http.ResponseWriter) error
+}
+
+type ListInventoryLoans200JSONResponse []InventoryLoan
+
+func (response ListInventoryLoans200JSONResponse) VisitListInventoryLoansResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryLoans401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ListInventoryLoans401JSONResponse) VisitListInventoryLoansResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListInventoryLoans403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response ListInventoryLoans403JSONResponse) VisitListInventoryLoansResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryLoanRequestObject struct {
+	Body *CreateInventoryLoanJSONRequestBody
+}
+
+type CreateInventoryLoanResponseObject interface {
+	VisitCreateInventoryLoanResponse(w http.ResponseWriter) error
+}
+
+type CreateInventoryLoan201JSONResponse InventoryLoan
+
+func (response CreateInventoryLoan201JSONResponse) VisitCreateInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryLoan400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response CreateInventoryLoan400JSONResponse) VisitCreateInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryLoan401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response CreateInventoryLoan401JSONResponse) VisitCreateInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateInventoryLoan403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response CreateInventoryLoan403JSONResponse) VisitCreateInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteInventoryLoanRequestObject struct {
+	Id int `json:"id"`
+}
+
+type DeleteInventoryLoanResponseObject interface {
+	VisitDeleteInventoryLoanResponse(w http.ResponseWriter) error
+}
+
+type DeleteInventoryLoan200JSONResponse SuccessResponse
+
+func (response DeleteInventoryLoan200JSONResponse) VisitDeleteInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteInventoryLoan401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response DeleteInventoryLoan401JSONResponse) VisitDeleteInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteInventoryLoan403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response DeleteInventoryLoan403JSONResponse) VisitDeleteInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteInventoryLoan404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response DeleteInventoryLoan404JSONResponse) VisitDeleteInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetInventoryLoanRequestObject struct {
+	Id int `json:"id"`
+}
+
+type GetInventoryLoanResponseObject interface {
+	VisitGetInventoryLoanResponse(w http.ResponseWriter) error
+}
+
+type GetInventoryLoan200JSONResponse InventoryLoan
+
+func (response GetInventoryLoan200JSONResponse) VisitGetInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetInventoryLoan401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response GetInventoryLoan401JSONResponse) VisitGetInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetInventoryLoan403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response GetInventoryLoan403JSONResponse) VisitGetInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetInventoryLoan404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response GetInventoryLoan404JSONResponse) VisitGetInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryLoanRequestObject struct {
+	Id   int `json:"id"`
+	Body *UpdateInventoryLoanJSONRequestBody
+}
+
+type UpdateInventoryLoanResponseObject interface {
+	VisitUpdateInventoryLoanResponse(w http.ResponseWriter) error
+}
+
+type UpdateInventoryLoan200JSONResponse InventoryLoan
+
+func (response UpdateInventoryLoan200JSONResponse) VisitUpdateInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryLoan401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response UpdateInventoryLoan401JSONResponse) VisitUpdateInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryLoan403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response UpdateInventoryLoan403JSONResponse) VisitUpdateInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateInventoryLoan404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response UpdateInventoryLoan404JSONResponse) VisitUpdateInventoryLoanResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
 	_, err := buf.WriteTo(w)
 	return err
 }
@@ -6199,6 +7285,36 @@ type StrictServerInterface interface {
 	// List recent audit log entries
 	// (GET /history)
 	ListHistory(ctx context.Context, request ListHistoryRequestObject) (ListHistoryResponseObject, error)
+	// List inventory items
+	// (GET /inventory/items)
+	ListInventoryItems(ctx context.Context, request ListInventoryItemsRequestObject) (ListInventoryItemsResponseObject, error)
+	// Create an inventory item
+	// (POST /inventory/items)
+	CreateInventoryItem(ctx context.Context, request CreateInventoryItemRequestObject) (CreateInventoryItemResponseObject, error)
+	// Delete an inventory item
+	// (DELETE /inventory/items/{id})
+	DeleteInventoryItem(ctx context.Context, request DeleteInventoryItemRequestObject) (DeleteInventoryItemResponseObject, error)
+	// Get an inventory item
+	// (GET /inventory/items/{id})
+	GetInventoryItem(ctx context.Context, request GetInventoryItemRequestObject) (GetInventoryItemResponseObject, error)
+	// Update an inventory item
+	// (PUT /inventory/items/{id})
+	UpdateInventoryItem(ctx context.Context, request UpdateInventoryItemRequestObject) (UpdateInventoryItemResponseObject, error)
+	// List inventory loans
+	// (GET /inventory/loans)
+	ListInventoryLoans(ctx context.Context, request ListInventoryLoansRequestObject) (ListInventoryLoansResponseObject, error)
+	// Create an inventory loan
+	// (POST /inventory/loans)
+	CreateInventoryLoan(ctx context.Context, request CreateInventoryLoanRequestObject) (CreateInventoryLoanResponseObject, error)
+	// Delete an inventory loan
+	// (DELETE /inventory/loans/{id})
+	DeleteInventoryLoan(ctx context.Context, request DeleteInventoryLoanRequestObject) (DeleteInventoryLoanResponseObject, error)
+	// Get an inventory loan
+	// (GET /inventory/loans/{id})
+	GetInventoryLoan(ctx context.Context, request GetInventoryLoanRequestObject) (GetInventoryLoanResponseObject, error)
+	// Update an inventory loan
+	// (PUT /inventory/loans/{id})
+	UpdateInventoryLoan(ctx context.Context, request UpdateInventoryLoanRequestObject) (UpdateInventoryLoanResponseObject, error)
 	// List members
 	// (GET /members)
 	ListMembers(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error)
@@ -7024,6 +8140,286 @@ func (sh *strictHandler) ListHistory(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ListHistoryResponseObject); ok {
 		if err := validResponse.VisitListHistoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListInventoryItems operation middleware
+func (sh *strictHandler) ListInventoryItems(w http.ResponseWriter, r *http.Request) {
+	var request ListInventoryItemsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListInventoryItems(ctx, request.(ListInventoryItemsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListInventoryItems")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListInventoryItemsResponseObject); ok {
+		if err := validResponse.VisitListInventoryItemsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateInventoryItem operation middleware
+func (sh *strictHandler) CreateInventoryItem(w http.ResponseWriter, r *http.Request) {
+	var request CreateInventoryItemRequestObject
+
+	var body CreateInventoryItemJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateInventoryItem(ctx, request.(CreateInventoryItemRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateInventoryItem")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateInventoryItemResponseObject); ok {
+		if err := validResponse.VisitCreateInventoryItemResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteInventoryItem operation middleware
+func (sh *strictHandler) DeleteInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+	var request DeleteInventoryItemRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteInventoryItem(ctx, request.(DeleteInventoryItemRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteInventoryItem")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteInventoryItemResponseObject); ok {
+		if err := validResponse.VisitDeleteInventoryItemResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetInventoryItem operation middleware
+func (sh *strictHandler) GetInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+	var request GetInventoryItemRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetInventoryItem(ctx, request.(GetInventoryItemRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetInventoryItem")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetInventoryItemResponseObject); ok {
+		if err := validResponse.VisitGetInventoryItemResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateInventoryItem operation middleware
+func (sh *strictHandler) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+	var request UpdateInventoryItemRequestObject
+
+	request.Id = id
+
+	var body UpdateInventoryItemJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateInventoryItem(ctx, request.(UpdateInventoryItemRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateInventoryItem")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateInventoryItemResponseObject); ok {
+		if err := validResponse.VisitUpdateInventoryItemResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListInventoryLoans operation middleware
+func (sh *strictHandler) ListInventoryLoans(w http.ResponseWriter, r *http.Request) {
+	var request ListInventoryLoansRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListInventoryLoans(ctx, request.(ListInventoryLoansRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListInventoryLoans")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListInventoryLoansResponseObject); ok {
+		if err := validResponse.VisitListInventoryLoansResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateInventoryLoan operation middleware
+func (sh *strictHandler) CreateInventoryLoan(w http.ResponseWriter, r *http.Request) {
+	var request CreateInventoryLoanRequestObject
+
+	var body CreateInventoryLoanJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateInventoryLoan(ctx, request.(CreateInventoryLoanRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateInventoryLoan")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateInventoryLoanResponseObject); ok {
+		if err := validResponse.VisitCreateInventoryLoanResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteInventoryLoan operation middleware
+func (sh *strictHandler) DeleteInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+	var request DeleteInventoryLoanRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteInventoryLoan(ctx, request.(DeleteInventoryLoanRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteInventoryLoan")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteInventoryLoanResponseObject); ok {
+		if err := validResponse.VisitDeleteInventoryLoanResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetInventoryLoan operation middleware
+func (sh *strictHandler) GetInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+	var request GetInventoryLoanRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetInventoryLoan(ctx, request.(GetInventoryLoanRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetInventoryLoan")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetInventoryLoanResponseObject); ok {
+		if err := validResponse.VisitGetInventoryLoanResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateInventoryLoan operation middleware
+func (sh *strictHandler) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+	var request UpdateInventoryLoanRequestObject
+
+	request.Id = id
+
+	var body UpdateInventoryLoanJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateInventoryLoan(ctx, request.(UpdateInventoryLoanRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateInventoryLoan")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateInventoryLoanResponseObject); ok {
+		if err := validResponse.VisitUpdateInventoryLoanResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

@@ -33,6 +33,7 @@ tags:
 - name: settings
 - name: statistics
 - name: finance
+- name: inventory
 - name: history
 components:
   securitySchemes:
@@ -934,6 +935,178 @@ components:
           nullable: true
         year:
           type: integer
+      additionalProperties: false
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        serialNumber:
+          type: string
+          nullable: true
+        category:
+          type: string
+        quantity:
+          type: integer
+        location:
+          type: string
+        purchaseDate:
+          type: string
+          format: date-time
+          nullable: true
+        purchasePrice:
+          type: number
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - category
+      - quantity
+      - location
+      - createdAt
+      - updatedAt
+      additionalProperties: false
+    InventoryItemCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        serialNumber:
+          type: string
+          nullable: true
+        category:
+          type: string
+        quantity:
+          type: integer
+        location:
+          type: string
+        purchaseDate:
+          type: string
+          format: date-time
+          nullable: true
+        purchasePrice:
+          type: number
+          nullable: true
+      required:
+      - name
+      - category
+      - quantity
+      - location
+      additionalProperties: false
+    InventoryItemUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        serialNumber:
+          type: string
+          nullable: true
+        category:
+          type: string
+        quantity:
+          type: integer
+        location:
+          type: string
+        purchaseDate:
+          type: string
+          format: date-time
+          nullable: true
+        purchasePrice:
+          type: number
+          nullable: true
+      additionalProperties: false
+    InventoryLoan:
+      type: object
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        memberId:
+          type: integer
+        loanedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - itemId
+      - memberId
+      - loanedAt
+      - notes
+      - createdAt
+      additionalProperties: false
+    InventoryLoanCreateRequest:
+      type: object
+      properties:
+        itemId:
+          type: integer
+        memberId:
+          type: integer
+        loanedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+      required:
+      - itemId
+      - memberId
+      - loanedAt
+      - notes
+      additionalProperties: false
+    InventoryLoanUpdateRequest:
+      type: object
+      properties:
+        itemId:
+          type: integer
+        memberId:
+          type: integer
+        loanedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
       additionalProperties: false
     AuditLog:
       type: object
@@ -2280,6 +2453,246 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /inventory/items:
+    get:
+      tags:
+      - inventory
+      summary: List inventory items
+      operationId: listInventoryItems
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: List of inventory items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+      - inventory
+      summary: Create an inventory item
+      operationId: createInventoryItem
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItemCreateRequest'
+      responses:
+        '201':
+          description: Inventory item created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /inventory/items/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - inventory
+      summary: Get an inventory item
+      operationId: getInventoryItem
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Inventory item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - inventory
+      summary: Update an inventory item
+      operationId: updateInventoryItem
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItemUpdateRequest'
+      responses:
+        '200':
+          description: Updated inventory item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - inventory
+      summary: Delete an inventory item
+      operationId: deleteInventoryItem
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Inventory item deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /inventory/loans:
+    get:
+      tags:
+      - inventory
+      summary: List inventory loans
+      operationId: listInventoryLoans
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: List of inventory loans.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryLoan'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+      - inventory
+      summary: Create an inventory loan
+      operationId: createInventoryLoan
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryLoanCreateRequest'
+      responses:
+        '201':
+          description: Inventory loan created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryLoan'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /inventory/loans/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - inventory
+      summary: Get an inventory loan
+      operationId: getInventoryLoan
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Inventory loan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryLoan'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - inventory
+      summary: Update an inventory loan
+      operationId: updateInventoryLoan
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryLoanUpdateRequest'
+      responses:
+        '200':
+          description: Updated inventory loan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryLoan'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - inventory
+      summary: Delete an inventory loan
+      operationId: deleteInventoryLoan
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Inventory loan deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
