@@ -190,7 +190,7 @@ export default function Documents() {
                                 onClick={() => {
                                     void deleteDocument(row.id)
                                         .then(() => setDocuments((prev) => prev.filter((item) => item.id !== row.id)))
-                                        .catch(() => setError(t('documents.loadError')));
+                                        .catch(() => setError(t('documents.deleteError')));
                                 }}
                             >
                                 <Delete fontSize="small" />
@@ -257,7 +257,7 @@ export default function Documents() {
                             setUploadOpen(false);
                             setError(null);
                         } catch {
-                            setError(t('documents.loadError'));
+                            setError(t('documents.uploadError'));
                         }
                     }}
                 />
@@ -304,7 +304,7 @@ export default function Documents() {
                                         setDocuments((prev) => prev.map((item) => item.id === updated.id ? updated : item));
                                         setEditingDocument(null);
                                     })
-                                    .catch(() => setError(t('documents.loadError')));
+                                    .catch(() => setError(t('documents.updateError')));
                             }}
                             disabled={!editingDocument.title.trim() || !editingDocument.category.trim()}
                         >

@@ -121,7 +121,6 @@ export type ClubDocument = {
     description?: string;
     category: string;
     filename: string;
-    storagePath: string;
     size: number;
     mimeType: string;
     uploadedBy: string;

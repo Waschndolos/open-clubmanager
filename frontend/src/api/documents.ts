@@ -44,13 +44,12 @@ export async function deleteDocument(id: number): Promise<void> {
 
 export async function downloadDocument(id: number, filename: string): Promise<void> {
     const res = await api.get<Blob>(`/documents/${id}`, { responseType: 'blob' });
-    const blob = new Blob([res.data]);
-    const objectUrl = window.URL.createObjectURL(blob);
+    const objectUrl = window.URL.createObjectURL(res.data);
     const anchor = window.document.createElement('a');
     anchor.href = objectUrl;
     anchor.download = filename;
     window.document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
-    window.URL.revokeObjectURL(objectUrl);
+    window.setTimeout(() => window.URL.revokeObjectURL(objectUrl), 60_000);
 }

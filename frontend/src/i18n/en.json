@@ -469,6 +469,9 @@
     "documents": {
         "title": "Document Management",
         "loadError": "Failed to load documents. Please try again.",
+        "uploadError": "Failed to upload document. Please try again.",
+        "deleteError": "Failed to delete document. Please try again.",
+        "updateError": "Failed to update document. Please try again.",
         "search": "Search documents",
         "categoryFilter": "Filter category",
         "categoryAll": "All categories",

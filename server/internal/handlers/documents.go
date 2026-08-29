@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"mime"
 	"net/http"
 	"os"
@@ -23,7 +24,7 @@ type documentRecord struct {
 	Description *string   `json:"description,omitempty"`
 	Category    string    `json:"category"`
 	Filename    string    `json:"filename"`
-	StoragePath string    `json:"storagePath"`
+	StoragePath string    `json:"-"`
 	Size        int64     `json:"size"`
 	MimeType    string    `json:"mimeType"`
 	UploadedBy  string    `json:"uploadedBy"`
@@ -60,12 +61,16 @@ func (a *API) ListDocuments(w http.ResponseWriter, r *http.Request) {
 
 	result := make([]documentRecord, 0)
 	for rows.Next() {
-		doc, scanErr := scanDocument(rows)
+		doc, scanErr := scanDocumentFrom(rows)
 		if scanErr != nil {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to scan document"})
 			return
 		}
 		result = append(result, doc)
+	}
+	if err := rows.Err(); err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to list documents"})
+		return
 	}
 	writeJSON(w, http.StatusOK, result)
 }
@@ -78,7 +83,8 @@ func (a *API) UploadDocument(w http.ResponseWriter, r *http.Request) {
 	maxBytes := int64(a.cfg.DocumentMaxMB) * 1024 * 1024
 	r.Body = http.MaxBytesReader(w, r.Body, maxBytes+(1<<20))
 	if err := r.ParseMultipartForm(maxBytes + (1 << 20)); err != nil {
-		if strings.Contains(strings.ToLower(err.Error()), "too large") {
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
 			writeJSON(w, http.StatusRequestEntityTooLarge, map[string]string{"error": "file exceeds maximum upload size"})
 			return
 		}
@@ -142,12 +148,8 @@ func (a *API) UploadDocument(w http.ResponseWriter, r *http.Request) {
 
 	copied, err := io.Copy(targetFile, file)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to store uploaded file"})
-		return
-	}
-	if copied > maxBytes {
 		_ = os.Remove(fullPath)
-		writeJSON(w, http.StatusRequestEntityTooLarge, map[string]string{"error": "file exceeds maximum upload size"})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to store uploaded file"})
 		return
 	}
 
@@ -162,7 +164,7 @@ func (a *API) UploadDocument(w http.ResponseWriter, r *http.Request) {
 	now := time.Now().UTC().Format(time.RFC3339)
 	res, err := a.getDB().Exec(
 		`INSERT INTO "Document" ("title","description","category","filename","storagePath","size","mimeType","uploadedBy","createdAt","updatedAt") VALUES (?,?,?,?,?,?,?,?,?,?)`,
-		title, optStr(descriptionPtr), category, header.Filename, storagePath, copied, mimeType, currentUserID(r), now, now,
+		title, optStr(descriptionPtr), category, safeOriginal, storagePath, copied, mimeType, currentUserID(r), now, now,
 	)
 	if err != nil {
 		_ = os.Remove(fullPath)
@@ -315,15 +317,24 @@ func (a *API) DeleteDocument(w http.ResponseWriter, r *http.Request, id int) {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "invalid document path"})
 		return
 	}
-	if err := os.Remove(fullPath); err != nil && !os.IsNotExist(err) {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to delete document file"})
-		return
-	}
-
-	_, err = a.getDB().Exec(`DELETE FROM "Document" WHERE "id"=?`, id)
+	tx, err := a.getDB().Begin()
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to delete document"})
 		return
+	}
+
+	_, err = tx.Exec(`DELETE FROM "Document" WHERE "id"=?`, id)
+	if err != nil {
+		_ = tx.Rollback()
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to delete document"})
+		return
+	}
+	if err := tx.Commit(); err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to delete document"})
+		return
+	}
+	if err := os.Remove(fullPath); err != nil && !os.IsNotExist(err) {
+		log.Printf("warning: failed to remove document file %q: %v", fullPath, err)
 	}
 	dbpkg.LogAudit(a.getDB(), "DELETE", "Document", id, currentUserID(r), "")
 	writeJSON(w, http.StatusOK, map[string]bool{"success": true})
@@ -334,30 +345,18 @@ func getDocumentByID(db *sql.DB, id int) (documentRecord, error) {
 		`SELECT "id","title","description","category","filename","storagePath","size","mimeType","uploadedBy","createdAt","updatedAt" FROM "Document" WHERE "id"=?`,
 		id,
 	)
-	return scanDocumentRow(row)
+	return scanDocumentFrom(row)
 }
 
-func scanDocument(rows *sql.Rows) (documentRecord, error) {
+type documentScanner interface {
+	Scan(dest ...interface{}) error
+}
+
+func scanDocumentFrom(scanner documentScanner) (documentRecord, error) {
 	var doc documentRecord
 	var description sql.NullString
 	var createdAtStr, updatedAtStr string
-	err := rows.Scan(
-		&doc.Id, &doc.Title, &description, &doc.Category, &doc.Filename, &doc.StoragePath, &doc.Size, &doc.MimeType, &doc.UploadedBy, &createdAtStr, &updatedAtStr,
-	)
-	if err != nil {
-		return doc, err
-	}
-	doc.Description = nullStrPtr(description)
-	doc.CreatedAt, _ = parseTime(createdAtStr)
-	doc.UpdatedAt, _ = parseTime(updatedAtStr)
-	return doc, nil
-}
-
-func scanDocumentRow(row *sql.Row) (documentRecord, error) {
-	var doc documentRecord
-	var description sql.NullString
-	var createdAtStr, updatedAtStr string
-	err := row.Scan(
+	err := scanner.Scan(
 		&doc.Id, &doc.Title, &description, &doc.Category, &doc.Filename, &doc.StoragePath, &doc.Size, &doc.MimeType, &doc.UploadedBy, &createdAtStr, &updatedAtStr,
 	)
 	if err != nil {
@@ -391,7 +390,7 @@ func sanitizeFilename(name string) string {
 			out.WriteRune('_')
 		}
 	}
-	return strings.Trim(out.String(), "._")
+	return out.String()
 }
 
 func resolveStoredDocumentPath(dbDir, storagePath string) (string, error) {
