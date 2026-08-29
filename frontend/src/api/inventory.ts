@@ -31,7 +31,13 @@ export async function fetchInventoryLoans(): Promise<InventoryLoan[]> {
 }
 
 export async function createInventoryLoan(
-    data: Omit<InventoryLoan, 'id' | 'createdAt'>
+    data: {
+        itemId: number;
+        memberId: number;
+        loanedAt: string;
+        dueDate?: string | null;
+        notes: string;
+    }
 ): Promise<InventoryLoan> {
     const res = await api.post<InventoryLoan>('/inventory/loans', data);
     return res.data;

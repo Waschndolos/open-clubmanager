@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -40,7 +41,7 @@ func (a *API) GetInventoryItem(w http.ResponseWriter, _ *http.Request, id int) {
 		return
 	}
 	item, err := getInventoryItemByID(a.getDB(), id)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "inventory item not found"})
 		return
 	}
@@ -71,10 +72,18 @@ func (a *API) CreateInventoryItem(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to create inventory item"})
 		return
 	}
-	id64, _ := res.LastInsertId()
+	id64, err := res.LastInsertId()
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to create inventory item"})
+		return
+	}
 	dbpkg.LogAudit(a.getDB(), "CREATE", "InventoryItem", int(id64), currentUserID(r), "")
 
-	item, _ := getInventoryItemByID(a.getDB(), int(id64))
+	item, err := getInventoryItemByID(a.getDB(), int(id64))
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to load created inventory item"})
+		return
+	}
 	writeJSON(w, http.StatusCreated, item)
 }
 
@@ -89,7 +98,7 @@ func (a *API) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id int
 	}
 
 	existing, err := getInventoryItemByID(a.getDB(), id)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "inventory item not found"})
 		return
 	}
@@ -142,7 +151,11 @@ func (a *API) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id int
 	}
 	dbpkg.LogAudit(a.getDB(), "UPDATE", "InventoryItem", id, currentUserID(r), "")
 
-	item, _ := getInventoryItemByID(a.getDB(), id)
+	item, err := getInventoryItemByID(a.getDB(), id)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to load updated inventory item"})
+		return
+	}
 	writeJSON(w, http.StatusOK, item)
 }
 
@@ -193,7 +206,7 @@ func (a *API) GetInventoryLoan(w http.ResponseWriter, _ *http.Request, id int) {
 		return
 	}
 	loan, err := getInventoryLoanByID(a.getDB(), id)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "inventory loan not found"})
 		return
 	}
@@ -218,16 +231,24 @@ func (a *API) CreateInventoryLoan(w http.ResponseWriter, r *http.Request) {
 	res, err := a.getDB().Exec(
 		`INSERT INTO "InventoryLoan" ("itemId","memberId","loanedAt","dueDate","returnedAt","notes","createdAt") VALUES (?,?,?,?,?,?,?)`,
 		req.ItemId, req.MemberId, req.LoanedAt.UTC().Format(time.RFC3339),
-		optTime(req.DueDate), optTime(req.ReturnedAt), req.Notes, now,
+		optTime(req.DueDate), nil, req.Notes, now,
 	)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to create inventory loan"})
 		return
 	}
-	id64, _ := res.LastInsertId()
+	id64, err := res.LastInsertId()
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to create inventory loan"})
+		return
+	}
 	dbpkg.LogAudit(a.getDB(), "CREATE", "InventoryLoan", int(id64), currentUserID(r), "")
 
-	loan, _ := getInventoryLoanByID(a.getDB(), int(id64))
+	loan, err := getInventoryLoanByID(a.getDB(), int(id64))
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to load created inventory loan"})
+		return
+	}
 	writeJSON(w, http.StatusCreated, loan)
 }
 
@@ -242,7 +263,7 @@ func (a *API) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id int
 	}
 
 	existing, err := getInventoryLoanByID(a.getDB(), id)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "inventory loan not found"})
 		return
 	}
@@ -286,7 +307,11 @@ func (a *API) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id int
 	}
 	dbpkg.LogAudit(a.getDB(), "UPDATE", "InventoryLoan", id, currentUserID(r), "")
 
-	loan, _ := getInventoryLoanByID(a.getDB(), id)
+	loan, err := getInventoryLoanByID(a.getDB(), id)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to load updated inventory loan"})
+		return
+	}
 	writeJSON(w, http.StatusOK, loan)
 }
 

@@ -1079,10 +1079,6 @@ components:
           type: string
           format: date-time
           nullable: true
-        returnedAt:
-          type: string
-          format: date-time
-          nullable: true
         notes:
           type: string
       required:

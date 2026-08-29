@@ -436,6 +436,7 @@
     },
     "inventory": {
         "title": "Gestion de l'inventaire",
+        "loadError": "Impossible de charger l'inventaire. Veuillez réessayer.",
         "search": "Rechercher dans l'inventaire",
         "categoryFilter": "Filtrer par catégorie",
         "categoryAll": "Toutes les catégories",

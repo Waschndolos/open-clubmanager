@@ -171,6 +171,7 @@ export default function Inventory() {
     const [items, setItems] = useState<InventoryItem[]>([]);
     const [loans, setLoans] = useState<InventoryLoan[]>([]);
     const [members, setMembers] = useState<Member[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('ALL');
     const [itemDialog, setItemDialog] = useState<{ open: boolean; isNew: boolean; item: Partial<InventoryItem> }>({
@@ -181,12 +182,15 @@ export default function Inventory() {
     const [loanDialogOpen, setLoanDialogOpen] = useState(false);
 
     useEffect(() => {
-        Promise.all([fetchInventoryItems(), fetchInventoryLoans(), fetchMembers()]).then(([itemRows, loanRows, memberRows]) => {
-            setItems(itemRows);
-            setLoans(loanRows);
-            setMembers(memberRows);
-        });
-    }, []);
+        Promise.all([fetchInventoryItems(), fetchInventoryLoans(), fetchMembers()])
+            .then(([itemRows, loanRows, memberRows]) => {
+                setItems(itemRows);
+                setLoans(loanRows);
+                setMembers(memberRows);
+                setError(null);
+            })
+            .catch(() => setError(t('inventory.loadError')));
+    }, [t]);
 
     const categories = useMemo(
         () => Array.from(new Set(items.map((item) => item.category))).sort((a, b) => a.localeCompare(b)),
@@ -212,32 +216,56 @@ export default function Inventory() {
     const memberById = useMemo(() => new Map(members.map((member) => [member.id, member])), [members]);
 
     const saveItem = async (item: Partial<InventoryItem>) => {
-        if (itemDialog.isNew) {
-            const created = await createInventoryItem(item as Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>);
-            setItems((prev) => [...prev, created]);
-        } else if (itemDialog.item.id) {
-            const updated = await updateInventoryItem(itemDialog.item.id, item);
-            setItems((prev) => prev.map((entry) => (entry.id === updated.id ? updated : entry)));
+        try {
+            if (itemDialog.isNew) {
+                const created = await createInventoryItem(item as Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>);
+                setItems((prev) => [...prev, created]);
+            } else if (itemDialog.item.id) {
+                const updated = await updateInventoryItem(itemDialog.item.id, item);
+                setItems((prev) => prev.map((entry) => (entry.id === updated.id ? updated : entry)));
+            }
+            setError(null);
+            setItemDialog({ open: false, isNew: true, item: {} });
+        } catch {
+            setError(t('inventory.loadError'));
         }
-        setItemDialog({ open: false, isNew: true, item: {} });
     };
 
     const saveLoan = async (loan: Partial<InventoryLoan>) => {
-        const created = await createInventoryLoan({
-            itemId: loan.itemId as number,
-            memberId: loan.memberId as number,
-            loanedAt: (loan.loanedAt as string) || new Date().toISOString(),
-            dueDate: loan.dueDate ?? null,
-            returnedAt: null,
-            notes: (loan.notes as string) || '',
-        });
-        setLoans((prev) => [created, ...prev]);
-        setLoanDialogOpen(false);
+        try {
+            const created = await createInventoryLoan({
+                itemId: loan.itemId as number,
+                memberId: loan.memberId as number,
+                loanedAt: (loan.loanedAt as string) || new Date().toISOString(),
+                dueDate: loan.dueDate ?? null,
+                notes: (loan.notes as string) || '',
+            });
+            setLoans((prev) => [created, ...prev]);
+            setLoanDialogOpen(false);
+            setError(null);
+        } catch {
+            setError(t('inventory.loadError'));
+        }
     };
 
     const markReturned = async (loan: InventoryLoan) => {
-        const updated = await updateInventoryLoan(loan.id, { returnedAt: new Date().toISOString() });
-        setLoans((prev) => prev.map((entry) => (entry.id === updated.id ? updated : entry)));
+        try {
+            const updated = await updateInventoryLoan(loan.id, { returnedAt: new Date().toISOString() });
+            setLoans((prev) => prev.map((entry) => (entry.id === updated.id ? updated : entry)));
+            setError(null);
+        } catch {
+            setError(t('inventory.loadError'));
+        }
+    };
+
+    const handleDeleteItem = async (id: number) => {
+        try {
+            await deleteInventoryItem(id);
+            setItems((prev) => prev.filter((entry) => entry.id !== id));
+            setError(null);
+        } catch {
+            setError(t('inventory.loadError'));
+        }
     };
 
     const itemColumns: GridColDef[] = [
@@ -261,11 +289,7 @@ export default function Inventory() {
                     <Tooltip title={t('tooltips.delete')}>
                         <IconButton
                             size="small"
-                            onClick={async () => {
-                                const id = (params.row as InventoryItem).id;
-                                await deleteInventoryItem(id);
-                                setItems((prev) => prev.filter((entry) => entry.id !== id));
-                            }}
+                            onClick={() => void handleDeleteItem((params.row as InventoryItem).id)}
                         >
                             <Delete fontSize="small" />
                         </IconButton>
@@ -342,6 +366,9 @@ export default function Inventory() {
                 }
             />
 
+            {error && (
+                <Typography color="error" mb={2}>{error}</Typography>
+            )}
             <Box display="flex" gap={2} mb={2} flexWrap="wrap">
                 <TextField
                     label={t('inventory.search')}

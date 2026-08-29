@@ -436,6 +436,7 @@
     },
     "inventory": {
         "title": "Inventory Management",
+        "loadError": "Failed to load inventory. Please try again.",
         "search": "Search inventory",
         "categoryFilter": "Filter category",
         "categoryAll": "All categories",

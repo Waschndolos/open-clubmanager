@@ -361,12 +361,11 @@ type InventoryLoan struct {
 
 // InventoryLoanCreateRequest defines model for InventoryLoanCreateRequest.
 type InventoryLoanCreateRequest struct {
-	DueDate    *time.Time `json:"dueDate,omitempty"`
-	ItemId     int        `json:"itemId"`
-	LoanedAt   time.Time  `json:"loanedAt"`
-	MemberId   int        `json:"memberId"`
-	Notes      string     `json:"notes"`
-	ReturnedAt *time.Time `json:"returnedAt,omitempty"`
+	DueDate  *time.Time `json:"dueDate,omitempty"`
+	ItemId   int        `json:"itemId"`
+	LoanedAt time.Time  `json:"loanedAt"`
+	MemberId int        `json:"memberId"`
+	Notes    string     `json:"notes"`
 }
 
 // InventoryLoanUpdateRequest defines model for InventoryLoanUpdateRequest.
