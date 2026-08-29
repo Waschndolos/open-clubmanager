@@ -88,6 +88,7 @@
         "dashboard": "Tableau de bord",
         "members": "Gestion des membres",
         "finance": "Finances",
+        "inventory": "Inventaire",
         "settings": "Paramètres",
         "entities": "Entités du club",
         "profile": "Profil",
@@ -431,6 +432,36 @@
                 "titleCreate": "Nouvelle cotisation",
                 "titleEdit": "Modifier la cotisation"
             }
+        }
+    },
+    "inventory": {
+        "title": "Gestion de l'inventaire",
+        "search": "Rechercher dans l'inventaire",
+        "categoryFilter": "Filtrer par catégorie",
+        "categoryAll": "Toutes les catégories",
+        "fields": {
+            "name": "Nom",
+            "description": "Description",
+            "serialNumber": "Numéro de série",
+            "category": "Catégorie",
+            "quantity": "Quantité",
+            "location": "Emplacement",
+            "purchaseDate": "Date d'achat",
+            "purchasePrice": "Prix d'achat (€)",
+            "item": "Article",
+            "member": "Membre",
+            "loanedAt": "Prêté le",
+            "dueDate": "Date d'échéance",
+            "notes": "Notes"
+        },
+        "items": {
+            "create": "Ajouter un article",
+            "edit": "Modifier l'article"
+        },
+        "loans": {
+            "create": "Créer un prêt",
+            "activeTitle": "Articles actuellement prêtés",
+            "markReturned": "Marquer comme rendu"
         }
     },
     "history": {

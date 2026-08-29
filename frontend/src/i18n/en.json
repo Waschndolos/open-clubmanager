@@ -88,6 +88,7 @@
         "dashboard": "Dashboard",
         "members": "Member Management",
         "finance": "Finances",
+        "inventory": "Inventory",
         "settings": "Settings",
         "entities": "Club Entities",
         "profile": "Profile",
@@ -431,6 +432,36 @@
                 "titleCreate": "New Member Fee",
                 "titleEdit": "Edit Member Fee"
             }
+        }
+    },
+    "inventory": {
+        "title": "Inventory Management",
+        "search": "Search inventory",
+        "categoryFilter": "Filter category",
+        "categoryAll": "All categories",
+        "fields": {
+            "name": "Name",
+            "description": "Description",
+            "serialNumber": "Serial number",
+            "category": "Category",
+            "quantity": "Quantity",
+            "location": "Location",
+            "purchaseDate": "Purchase date",
+            "purchasePrice": "Purchase price (€)",
+            "item": "Item",
+            "member": "Member",
+            "loanedAt": "Loaned at",
+            "dueDate": "Due date",
+            "notes": "Notes"
+        },
+        "items": {
+            "create": "Add item",
+            "edit": "Edit item"
+        },
+        "loans": {
+            "create": "Create loan",
+            "activeTitle": "Currently loaned items",
+            "markReturned": "Mark as returned"
         }
     },
     "history": {

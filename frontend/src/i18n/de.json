@@ -88,6 +88,7 @@
         "dashboard": "Startseite",
         "members": "Mitgliederverwaltung",
         "finance": "Finanzen",
+        "inventory": "Inventar",
         "settings": "Einstellungen",
         "entities": "Vereinsverwaltung",
         "profile": "Profil",
@@ -431,6 +432,36 @@
                 "titleCreate": "Neuer Mitgliedsbeitrag",
                 "titleEdit": "Mitgliedsbeitrag bearbeiten"
             }
+        }
+    },
+    "inventory": {
+        "title": "Inventarverwaltung",
+        "search": "Inventar suchen",
+        "categoryFilter": "Kategorie filtern",
+        "categoryAll": "Alle Kategorien",
+        "fields": {
+            "name": "Name",
+            "description": "Beschreibung",
+            "serialNumber": "Seriennummer",
+            "category": "Kategorie",
+            "quantity": "Menge",
+            "location": "Standort",
+            "purchaseDate": "Kaufdatum",
+            "purchasePrice": "Kaufpreis (€)",
+            "item": "Gegenstand",
+            "member": "Mitglied",
+            "loanedAt": "Ausgeliehen am",
+            "dueDate": "Fälligkeitsdatum",
+            "notes": "Notizen"
+        },
+        "items": {
+            "create": "Gegenstand hinzufügen",
+            "edit": "Gegenstand bearbeiten"
+        },
+        "loans": {
+            "create": "Ausleihe erfassen",
+            "activeTitle": "Aktuell ausgeliehene Gegenstände",
+            "markReturned": "Als zurückgegeben markieren"
         }
     },
     "history": {

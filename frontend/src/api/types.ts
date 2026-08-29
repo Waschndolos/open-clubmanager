@@ -89,3 +89,28 @@ export type MemberFee = {
     createdAt?: string;
     updatedAt?: string;
 };
+
+export type InventoryItem = {
+    id: number;
+    name: string;
+    description?: string;
+    serialNumber?: string;
+    category: string;
+    quantity: number;
+    location: string;
+    purchaseDate?: string | null;
+    purchasePrice?: number | null;
+    createdAt?: string;
+    updatedAt?: string;
+};
+
+export type InventoryLoan = {
+    id: number;
+    itemId: number;
+    memberId: number;
+    loanedAt: string;
+    dueDate?: string | null;
+    returnedAt?: string | null;
+    notes: string;
+    createdAt?: string;
+};
