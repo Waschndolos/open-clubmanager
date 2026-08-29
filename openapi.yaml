@@ -28,6 +28,7 @@ tags:
   - name: settings
   - name: statistics
   - name: finance
+  - name: events
   - name: history
 
 components:
@@ -905,6 +906,147 @@ components:
             - 'null'
         year:
           type: integer
+      additionalProperties: false
+
+
+    EventType:
+      type: string
+      enum: [meeting, training, tournament, social, other]
+
+    EventAttendanceStatus:
+      type: string
+      enum: [registered, attended, absent]
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type:
+            - string
+            - 'null'
+        location:
+          type:
+            - string
+            - 'null'
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        type:
+          $ref: '#/components/schemas/EventType'
+        maxParticipants:
+          type:
+            - integer
+            - 'null'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, title, startDate, endDate, type, createdAt, updatedAt]
+      additionalProperties: false
+
+    EventCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type:
+            - string
+            - 'null'
+        location:
+          type:
+            - string
+            - 'null'
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        type:
+          $ref: '#/components/schemas/EventType'
+        maxParticipants:
+          type:
+            - integer
+            - 'null'
+      required: [title, startDate, endDate, type]
+      additionalProperties: false
+
+    EventUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type:
+            - string
+            - 'null'
+        location:
+          type:
+            - string
+            - 'null'
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        type:
+          $ref: '#/components/schemas/EventType'
+        maxParticipants:
+          type:
+            - integer
+            - 'null'
+      additionalProperties: false
+
+    EventAttendee:
+      type: object
+      properties:
+        id:
+          type: integer
+        eventId:
+          type: integer
+        memberId:
+          type: integer
+        status:
+          $ref: '#/components/schemas/EventAttendanceStatus'
+        createdAt:
+          type: string
+          format: date-time
+        member:
+          anyOf:
+            - $ref: '#/components/schemas/MemberSummary'
+            - type: 'null'
+      required: [id, eventId, memberId, status, createdAt, member]
+      additionalProperties: false
+
+    EventAttendeeUpsertItem:
+      type: object
+      properties:
+        memberId:
+          type: integer
+        status:
+          $ref: '#/components/schemas/EventAttendanceStatus'
+      required: [memberId]
+      additionalProperties: false
+
+    EventAttendeeBulkRequest:
+      type: object
+      properties:
+        attendees:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventAttendeeUpsertItem'
+      required: [attendees]
       additionalProperties: false
 
     AuditLog:
@@ -2238,6 +2380,244 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+
+  /events:
+    get:
+      tags: [events]
+      summary: List events
+      operationId: listEvents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDateFrom
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: startDateTo
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: type
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/EventType'
+      responses:
+        '200':
+          description: List of events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [events]
+      summary: Create an event
+      operationId: createEvent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreateRequest'
+      responses:
+        '201':
+          description: Event created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /events/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [events]
+      summary: Get an event by id
+      operationId: getEventById
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Event details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [events]
+      summary: Update an event
+      operationId: updateEvent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdateRequest'
+      responses:
+        '200':
+          description: Updated event.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [events]
+      summary: Delete an event
+      operationId: deleteEvent
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /events/{id}/attendees:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [events]
+      summary: List event attendees
+      operationId: listEventAttendees
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of event attendees.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventAttendee'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [events]
+      summary: Register or update event attendees in bulk
+      operationId: upsertEventAttendees
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventAttendeeBulkRequest'
+      responses:
+        '200':
+          description: Event attendees updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /events/{id}/attendees/{memberId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: memberId
+        in: path
+        required: true
+        schema:
+          type: integer
+    delete:
+      tags: [events]
+      summary: Remove an event attendee
+      operationId: deleteEventAttendee
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Event attendee removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
 
   /history:
     get:

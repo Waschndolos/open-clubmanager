@@ -8,6 +8,7 @@ import { useStatistics, useChartStatistics } from '../../hooks/statistics';
 import PageHeader from '../../components/common/PageHeader';
 import GridViewIcon from '@mui/icons-material/GridView';
 import { useTranslation } from 'react-i18next';
+import UpcomingEventsWidget from "../../components/dashboard/UpcomingEventsWidget";
 
 export default function Dashboard() {
     const { statistics } = useStatistics();
@@ -39,6 +40,9 @@ export default function Dashboard() {
                         {t('dashboard.charts.title')}
                     </Typography>
                     <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, lg: 4 }}>
+                            <UpcomingEventsWidget />
+                        </Grid>
                         <Grid size={{ xs: 12, lg: 8 }}>
                             <MemberGrowthChart data={charts.memberGrowth} />
                         </Grid>

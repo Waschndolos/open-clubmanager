@@ -89,3 +89,29 @@ export type MemberFee = {
     createdAt?: string;
     updatedAt?: string;
 };
+
+export type EventType = 'meeting' | 'training' | 'tournament' | 'social' | 'other';
+
+export type EventAttendanceStatus = 'registered' | 'attended' | 'absent';
+
+export type Event = {
+    id: number;
+    title: string;
+    description?: string | null;
+    location?: string | null;
+    startDate: string;
+    endDate: string;
+    type: EventType;
+    maxParticipants?: number | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type EventAttendee = {
+    id: number;
+    eventId: number;
+    memberId: number;
+    status: EventAttendanceStatus;
+    createdAt: string;
+    member: MemberSummary | null;
+};

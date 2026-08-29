@@ -184,6 +184,28 @@ func Migrate(db *sql.DB) error {
 			"updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY ("memberId") REFERENCES "Member" ("id") ON DELETE CASCADE
 		)`,
+		`CREATE TABLE IF NOT EXISTS "Event" (
+			"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			"title" TEXT NOT NULL,
+			"description" TEXT,
+			"location" TEXT,
+			"startDate" DATETIME NOT NULL,
+			"endDate" DATETIME NOT NULL,
+			"type" TEXT NOT NULL,
+			"maxParticipants" INTEGER,
+			"createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			"updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		)`,
+		`CREATE TABLE IF NOT EXISTS "EventAttendee" (
+			"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			"eventId" INTEGER NOT NULL,
+			"memberId" INTEGER NOT NULL,
+			"status" TEXT NOT NULL,
+			"createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE("eventId","memberId"),
+			FOREIGN KEY ("eventId") REFERENCES "Event" ("id") ON DELETE CASCADE,
+			FOREIGN KEY ("memberId") REFERENCES "Member" ("id") ON DELETE CASCADE
+		)`,
 		`CREATE TABLE IF NOT EXISTS "AuditLog" (
 			"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			"action" TEXT NOT NULL,
@@ -211,4 +233,3 @@ func Migrate(db *sql.DB) error {
 
 	return nil
 }
-

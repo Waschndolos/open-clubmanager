@@ -88,6 +88,7 @@
         "dashboard": "Tableau de bord",
         "members": "Gestion des membres",
         "finance": "Finances",
+        "events": "Événements",
         "settings": "Paramètres",
         "entities": "Entités du club",
         "profile": "Profil",
@@ -118,6 +119,68 @@
             "membersBySection": {
                 "title": "Membres par section"
             }
+        },
+        "nextEvents": {
+            "title": "Prochains événements (30 jours)",
+            "empty": "Aucun événement à venir dans les 30 prochains jours."
+        }
+    },
+    "events": {
+        "title": "Gestion des événements",
+        "loading": "Chargement des événements...",
+        "create": "Créer un événement",
+        "filters": {
+            "startFrom": "Début à partir du",
+            "startTo": "Début jusqu'au",
+            "type": "Type",
+            "allTypes": "Tous les types",
+            "apply": "Appliquer le filtre"
+        },
+        "views": {
+            "list": "Vue liste",
+            "calendar": "Vue calendrier"
+        },
+        "table": {
+            "title": "Titre",
+            "type": "Type",
+            "location": "Lieu",
+            "start": "Début",
+            "end": "Fin",
+            "actions": "Actions"
+        },
+        "dialog": {
+            "createTitle": "Créer un événement",
+            "editTitle": "Modifier l'événement",
+            "title": "Titre",
+            "description": "Description",
+            "location": "Lieu",
+            "startDate": "Date de début",
+            "endDate": "Date de fin",
+            "type": "Type",
+            "maxParticipants": "Participants max."
+        },
+        "types": {
+            "meeting": "Réunion",
+            "training": "Entraînement",
+            "tournament": "Tournoi",
+            "social": "Social",
+            "other": "Autre"
+        },
+        "attendees": {
+            "title": "Participants – {{event}}",
+            "member": "Membre",
+            "status": "Statut de présence",
+            "add": "Ajouter un participant"
+        },
+        "attendance": {
+            "registered": "Inscrit",
+            "attended": "Présent",
+            "absent": "Absent"
+        },
+        "snack": {
+            "created": "Événement créé avec succès.",
+            "updated": "Événement mis à jour avec succès.",
+            "deleted": "Événement supprimé avec succès."
         }
     },
     "tooltips": {

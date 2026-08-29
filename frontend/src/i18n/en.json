@@ -88,6 +88,7 @@
         "dashboard": "Dashboard",
         "members": "Member Management",
         "finance": "Finances",
+        "events": "Events",
         "settings": "Settings",
         "entities": "Club Entities",
         "profile": "Profile",
@@ -118,6 +119,68 @@
             "membersBySection": {
                 "title": "Members by Section"
             }
+        },
+        "nextEvents": {
+            "title": "Next Events (30 days)",
+            "empty": "No upcoming events in the next 30 days."
+        }
+    },
+    "events": {
+        "title": "Event Management",
+        "loading": "Loading events...",
+        "create": "Create Event",
+        "filters": {
+            "startFrom": "Start from",
+            "startTo": "Start to",
+            "type": "Type",
+            "allTypes": "All types",
+            "apply": "Apply filter"
+        },
+        "views": {
+            "list": "List view",
+            "calendar": "Calendar view"
+        },
+        "table": {
+            "title": "Title",
+            "type": "Type",
+            "location": "Location",
+            "start": "Start",
+            "end": "End",
+            "actions": "Actions"
+        },
+        "dialog": {
+            "createTitle": "Create Event",
+            "editTitle": "Edit Event",
+            "title": "Title",
+            "description": "Description",
+            "location": "Location",
+            "startDate": "Start date",
+            "endDate": "End date",
+            "type": "Type",
+            "maxParticipants": "Max participants"
+        },
+        "types": {
+            "meeting": "Meeting",
+            "training": "Training",
+            "tournament": "Tournament",
+            "social": "Social",
+            "other": "Other"
+        },
+        "attendees": {
+            "title": "Attendees – {{event}}",
+            "member": "Member",
+            "status": "Attendance status",
+            "add": "Add attendee"
+        },
+        "attendance": {
+            "registered": "Registered",
+            "attended": "Attended",
+            "absent": "Absent"
+        },
+        "snack": {
+            "created": "Event created successfully.",
+            "updated": "Event updated successfully.",
+            "deleted": "Event deleted successfully."
         }
     },
     "tooltips": {

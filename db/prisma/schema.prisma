@@ -58,6 +58,7 @@ model Member {
   groups          Group[]       @relation("MemberGroups")
   sections        ClubSection[] @relation("MemberSections")
   fees            MemberFee[]
+  eventAttendees  EventAttendee[]
 }
 
 model Role {
@@ -113,6 +114,32 @@ model MemberFee {
   year        Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id              Int             @id @default(autoincrement())
+  title           String
+  description     String?
+  location        String?
+  startDate       DateTime
+  endDate         DateTime
+  type            String // "meeting" | "training" | "tournament" | "social" | "other"
+  maxParticipants Int?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  attendees       EventAttendee[]
+}
+
+model EventAttendee {
+  id        Int      @id @default(autoincrement())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   Int
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId  Int
+  status    String   // "registered" | "attended" | "absent"
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, memberId])
 }
 
 model AuditLog {

@@ -1,4 +1,4 @@
-import { Member, Role, Group, ClubSection } from './types';
+import { Member, Role, Group, ClubSection, Event, EventAttendee, EventAttendanceStatus, EventType } from './types';
 
 export interface MembersClient {
     list(): Promise<Member[]>;
@@ -29,9 +29,21 @@ export interface SectionsClient {
     delete(data: ClubSection): Promise<void>;
 }
 
+export interface EventsClient {
+    list(filters?: { startDateFrom?: string; startDateTo?: string; type?: EventType }): Promise<Event[]>;
+    get(id: number): Promise<Event>;
+    create(data: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>): Promise<Event>;
+    update(id: number, data: Partial<Omit<Event, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Event>;
+    delete(id: number): Promise<void>;
+    listAttendees(eventId: number): Promise<EventAttendee[]>;
+    upsertAttendees(eventId: number, attendees: Array<{ memberId: number; status?: EventAttendanceStatus }>): Promise<void>;
+    removeAttendee(eventId: number, memberId: number): Promise<void>;
+}
+
 export interface DataClient {
     members: MembersClient;
     roles: RolesClient;
     groups: GroupsClient;
     sections: SectionsClient;
+    events: EventsClient;
 }

@@ -88,6 +88,7 @@
         "dashboard": "Startseite",
         "members": "Mitgliederverwaltung",
         "finance": "Finanzen",
+        "events": "Veranstaltungen",
         "settings": "Einstellungen",
         "entities": "Vereinsverwaltung",
         "profile": "Profil",
@@ -118,6 +119,68 @@
             "membersBySection": {
                 "title": "Mitglieder nach Abteilung"
             }
+        },
+        "nextEvents": {
+            "title": "Nächste Veranstaltungen (30 Tage)",
+            "empty": "Keine anstehenden Veranstaltungen in den nächsten 30 Tagen."
+        }
+    },
+    "events": {
+        "title": "Veranstaltungsverwaltung",
+        "loading": "Veranstaltungen werden geladen...",
+        "create": "Veranstaltung erstellen",
+        "filters": {
+            "startFrom": "Start ab",
+            "startTo": "Start bis",
+            "type": "Typ",
+            "allTypes": "Alle Typen",
+            "apply": "Filter anwenden"
+        },
+        "views": {
+            "list": "Listenansicht",
+            "calendar": "Kalenderansicht"
+        },
+        "table": {
+            "title": "Titel",
+            "type": "Typ",
+            "location": "Ort",
+            "start": "Beginn",
+            "end": "Ende",
+            "actions": "Aktionen"
+        },
+        "dialog": {
+            "createTitle": "Veranstaltung erstellen",
+            "editTitle": "Veranstaltung bearbeiten",
+            "title": "Titel",
+            "description": "Beschreibung",
+            "location": "Ort",
+            "startDate": "Startdatum",
+            "endDate": "Enddatum",
+            "type": "Typ",
+            "maxParticipants": "Max. Teilnehmer"
+        },
+        "types": {
+            "meeting": "Versammlung",
+            "training": "Training",
+            "tournament": "Turnier",
+            "social": "Soziales",
+            "other": "Sonstiges"
+        },
+        "attendees": {
+            "title": "Teilnehmer – {{event}}",
+            "member": "Mitglied",
+            "status": "Anwesenheitsstatus",
+            "add": "Teilnehmer hinzufügen"
+        },
+        "attendance": {
+            "registered": "Angemeldet",
+            "attended": "Anwesend",
+            "absent": "Abwesend"
+        },
+        "snack": {
+            "created": "Veranstaltung erfolgreich erstellt.",
+            "updated": "Veranstaltung erfolgreich aktualisiert.",
+            "deleted": "Veranstaltung erfolgreich gelöscht."
         }
     },
     "tooltips": {

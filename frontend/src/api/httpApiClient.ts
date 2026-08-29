@@ -1,5 +1,5 @@
 import api, { BACKEND_URL } from './api';
-import { Member, Role, Group, ClubSection } from './types';
+import { Member, Role, Group, ClubSection, Event, EventAttendee, EventAttendanceStatus, EventType } from './types';
 import { DataClient } from './dataClient';
 
 export const httpApiClient: DataClient = {
@@ -88,6 +88,46 @@ export const httpApiClient: DataClient = {
         },
         delete: async (data: ClubSection): Promise<void> => {
             await api.delete(`/sections/${data.id}`);
+        },
+    },
+
+    events: {
+        list: async (filters?: { startDateFrom?: string; startDateTo?: string; type?: EventType }): Promise<Event[]> => {
+            const params = new URLSearchParams();
+            if (filters?.startDateFrom) params.set('startDateFrom', filters.startDateFrom);
+            if (filters?.startDateTo) params.set('startDateTo', filters.startDateTo);
+            if (filters?.type) params.set('type', filters.type);
+            const query = params.toString();
+            const res = await fetch(`${BACKEND_URL}/events${query ? `?${query}` : ''}`);
+            if (!res.ok) throw new Error('Error fetching events.');
+            return res.json();
+        },
+        get: async (id: number): Promise<Event> => {
+            const res = await fetch(`${BACKEND_URL}/events/${id}`);
+            if (!res.ok) throw new Error(`Error fetching event ${id}.`);
+            return res.json();
+        },
+        create: async (data: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>): Promise<Event> => {
+            const res = await api.post<Event>('/events', data);
+            return res.data;
+        },
+        update: async (id: number, data: Partial<Omit<Event, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Event> => {
+            const res = await api.put<Event>(`/events/${id}`, data);
+            return res.data;
+        },
+        delete: async (id: number): Promise<void> => {
+            await api.delete(`/events/${id}`);
+        },
+        listAttendees: async (eventId: number): Promise<EventAttendee[]> => {
+            const res = await fetch(`${BACKEND_URL}/events/${eventId}/attendees`);
+            if (!res.ok) throw new Error(`Error fetching attendees for event ${eventId}.`);
+            return res.json();
+        },
+        upsertAttendees: async (eventId: number, attendees: Array<{ memberId: number; status?: EventAttendanceStatus }>): Promise<void> => {
+            await api.post(`/events/${eventId}/attendees`, { attendees });
+        },
+        removeAttendee: async (eventId: number, memberId: number): Promise<void> => {
+            await api.delete(`/events/${eventId}/attendees/${memberId}`);
         },
     },
 };
