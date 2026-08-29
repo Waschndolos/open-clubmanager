@@ -1,49 +1,34 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import { useThemeContext } from '../../theme/ThemeContext';
-import { useTheme } from '@mui/material/styles';
 import {Brightness4, Brightness7} from '@mui/icons-material';
 
 /**
- * ThemeToggle component
- * Shows a sun/moon icon depending on the current theme.
- * Animates the icon and provides accessible tooltip.
- * Uses the global theme context.
+ * Compact theme toggle button with a subtle animated icon.
  */
 const ThemeToggle: React.FC = () => {
   const { mode, toggleTheme } = useThemeContext();
-  const theme = useTheme();
 
   return (
     <Tooltip title={mode === 'dark' ? 'Change to light mode' : 'Change to dark mode'}>
       <IconButton
         onClick={toggleTheme}
         color="inherit"
-        sx={{
-          transition: 'color 0.3s',
-          borderRadius: '50%',
-          background: 'none',
-          boxShadow: 'none',
-          '&:hover': {
-            background: 'none',
-            color: theme.palette.primary.main,
-          },
-        }}
+        size="small"
         aria-label="Toggle theme"
       >
         <span
           style={{
             display: 'inline-flex',
-            transition: 'transform 0.5s cubic-bezier(.68,-0.55,.27,1.55)',
-            transform: mode === 'dark' ? 'rotate(-40deg) scale(1.15)' : 'rotate(0deg) scale(1)',
-            filter: 'none',
+            transition: 'transform 0.4s cubic-bezier(.68,-0.55,.27,1.55)',
+            transform: mode === 'dark' ? 'rotate(-30deg) scale(1.1)' : 'rotate(0deg) scale(1)',
           }}
         >
-          {mode === 'dark' ? <Brightness7 fontSize="medium" /> : <Brightness4 fontSize="medium" />}
+          {mode === 'dark' ? <Brightness7 fontSize="small" /> : <Brightness4 fontSize="small" />}
         </span>
       </IconButton>
     </Tooltip>
   );
 };
 
-export default ThemeToggle; 
+export default ThemeToggle;

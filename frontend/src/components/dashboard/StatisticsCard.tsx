@@ -17,7 +17,6 @@ export default function StatisticCard({id, value, details}: StatisticCardProps) 
     const {t} = useTranslation();
     const theme = useTheme();
 
-    // Map card IDs to theme colors
     const getCardColor = () => {
         switch (id) {
             case 1:
@@ -65,25 +64,12 @@ export default function StatisticCard({id, value, details}: StatisticCardProps) 
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
-            background: theme.palette.mode === 'dark'
-                ? '#162122'
-                : '#FFFFFF',
-            backdropFilter: 'blur(12px)',
-            border: theme.palette.mode === 'dark'
-                ? '1px solid #203436'
-                : '1px solid #203436',
-            boxShadow: theme.palette.mode === 'dark'
-                ? '0 8px 24px rgba(0, 0, 0, 0.2)'
-                : '0 6px 20px rgba(0, 0, 0, 0.08)',
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             '&:hover': {
                 transform: 'translateY(-2px)',
                 boxShadow: theme.palette.mode === 'dark'
-                    ? '0 12px 32px rgba(0, 255, 194, 0.15)'
-                    : '0 10px 28px rgba(0, 200, 154, 0.12)',
-                background: theme.palette.mode === 'dark'
-                    ? '#203436'
-                    : '#F0F5F5',
+                    ? '0 12px 32px rgba(0, 212, 170, 0.12)'
+                    : '0 10px 28px rgba(0, 212, 170, 0.1)',
             }
         }}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>

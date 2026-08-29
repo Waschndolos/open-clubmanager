@@ -8,12 +8,10 @@ import {
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {useTranslation} from "react-i18next";
-import {useTheme} from "@mui/material/styles";
 import {useNotification} from "../../context/NotificationContext";
 
 export default function NotificationBell() {
     const { t } = useTranslation();
-    const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -27,43 +25,25 @@ export default function NotificationBell() {
         setAnchorEl(null);
     };
 
-
     return (
         <>
             <IconButton
                 onClick={handleOpen}
                 color="inherit"
-                sx={{
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                        backgroundColor: theme.palette.mode === 'dark'
-                            ? 'rgba(0, 255, 194, 0.1)'
-                            : 'rgba(0, 200, 154, 0.1)',
-                    }
-                }}
+                size="small"
+                aria-label={t('header.notifications.title')}
             >
                 <Badge badgeContent={notifications.length} color="error">
-                    <NotificationsIcon />
+                    <NotificationsIcon fontSize="small" />
                 </Badge>
             </IconButton>
 
-            <Menu 
-                anchorEl={anchorEl} 
-                open={open} 
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
                 onClose={handleClose}
-                slotProps={{
-                    paper: {
-                        sx: {
-                            background: theme.palette.mode === 'dark'
-                                ? '#162122'
-                                : '#FFFFFF',
-                            backdropFilter: 'blur(12px)',
-                            border: theme.palette.mode === 'dark'
-                                ? '1px solid #203436'
-                                : '1px solid #203436',
-                        }
-                    }
-                }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 {notifications.length === 0 ? (
                     <MenuItem disabled>{t("header.notifications.none")}</MenuItem>

@@ -1,17 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  font-family: 'Space Grotesk', 'Poppins', sans-serif;
-
+  font-family: 'Inter', 'Space Grotesk', 'Poppins', sans-serif;
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Remove blue autofill background */
+/* Remove blue autofill background in light mode */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -20,9 +18,8 @@ input:-webkit-autofill:active {
   -webkit-transition: background-color 5000s ease-in-out 0s !important;
 }
 
-/* Remove blue autofill text color and set to dark */
 input:-webkit-autofill {
-  -webkit-text-fill-color: #203436 !important;
+  -webkit-text-fill-color: #1A2E33 !important;
 }
 
 /* Same for dark mode */
@@ -30,7 +27,7 @@ input:-webkit-autofill {
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,
 .dark input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #203436 inset !important;
+  -webkit-box-shadow: 0 0 0 30px #0F1516 inset !important;
   -webkit-transition: background-color 5000s ease-in-out 0s !important;
 }
 
@@ -41,9 +38,13 @@ input:-webkit-autofill {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
 }
 
 .ag-theme-clubmanager-dark {
@@ -51,22 +52,21 @@ body {
   --ag-header-background-color: #0F1516;
   --ag-header-foreground-color: #E8F4F1;
   --ag-foreground-color: #E8F4F1;
-  --ag-border-color: #203436;
+  --ag-border-color: rgba(255, 255, 255, 0.08);
   --ag-disabled-foreground-color: rgba(232, 244, 241, 0.38);
-  --ag-input-border-color: #203436;
+  --ag-input-border-color: rgba(255, 255, 255, 0.1);
   --ag-row-hover-color: #203436;
   --ag-odd-row-background-color: #0F1516;
 }
 
-/* light.css */
 .ag-theme-clubmanager-light {
   --ag-background-color: #FFFFFF;
   --ag-header-background-color: #F8FFFE;
-  --ag-header-foreground-color: #203436;
-  --ag-foreground-color: #203436;
-  --ag-border-color: #203436;
+  --ag-header-foreground-color: #1A2E33;
+  --ag-foreground-color: #1A2E33;
+  --ag-border-color: rgba(32, 52, 54, 0.08);
   --ag-disabled-foreground-color: rgba(32, 52, 54, 0.38);
-  --ag-input-border-color: #203436;
+  --ag-input-border-color: rgba(32, 52, 54, 0.16);
   --ag-row-hover-color: #F0F5F5;
   --ag-odd-row-background-color: #F8FFFE;
 }

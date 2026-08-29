@@ -20,8 +20,6 @@ import {
 import { Visibility, VisibilityOff, AdminPanelSettings } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useThemeContext } from '../../theme/ThemeContext';
-import { useTheme } from '@mui/material/styles';
 import {
     configureDatabase,
     initializeAdmin,
@@ -36,8 +34,6 @@ import { validatePath } from '../../api/validation';
 import loginBg from '../../assets/login_bg.jpeg';
 
 const Setup: React.FC = () => {
-    const { mode } = useThemeContext();
-    const theme = useTheme();
     const { t } = useTranslation();
     const navigate = useNavigate();
 
@@ -95,44 +91,6 @@ const Setup: React.FC = () => {
         ? /^mysqls?:\/\//i.test(currentDatabaseValue)
         : currentDatabaseValue.length > 0;
 
-    const textPrimary = theme.palette.text.primary;
-    const textSecondary = theme.palette.text.secondary;
-    const backgroundLight = mode === 'dark' ? '#162122' : '#FFFFFF';
-
-    const textFieldSx = {
-        '& .MuiInputLabel-root': {
-            color: textSecondary,
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: textSecondary,
-        },
-        '& .MuiOutlinedInput-root': {
-            color: textPrimary,
-            '& fieldset': {
-                borderColor: theme.palette.mode === 'dark'
-                    ? '#203436'
-                    : '#203436',
-            },
-            '&:hover fieldset': {
-                borderColor: '#00FFC2',
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: '#00FFC2',
-                borderWidth: 2,
-            },
-        },
-    };
-
-    const inputSx = {
-        '& input': {
-            transition: 'background-color 5000s ease-in-out 0s',
-            backgroundColor: 'transparent',
-            WebkitTextFillColor: textPrimary,
-            MozTextFillColor: textPrimary,
-            color: textPrimary,
-        },
-    };
-
     const handleConfigureDatabase = async () => {
         setError(null);
         setSubmitting(true);
@@ -145,7 +103,6 @@ const Setup: React.FC = () => {
 
             await configureDatabase(databaseMode, configuredValue);
             setDatabaseConfigured(true);
-
             setCurrentStep(1);
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : t('setup.error.generic'));
@@ -218,6 +175,10 @@ const Setup: React.FC = () => {
                 minHeight: '100vh',
                 minWidth: '100vw',
                 overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                py: 4,
             }}
         >
             <Box
@@ -228,8 +189,8 @@ const Setup: React.FC = () => {
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
-                    filter: 'saturate(1.2) contrast(1.05) brightness(0.78) hue-rotate(-14deg)',
-                    transform: 'scale(1.04)',
+                    filter: 'saturate(1.1) contrast(1.05) brightness(0.65)',
+                    transform: 'scale(1.02)',
                 }}
             />
 
@@ -237,318 +198,248 @@ const Setup: React.FC = () => {
                 sx={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(100deg, rgba(16,20,21,0.28) 0%, rgba(24,30,32,0.44) 50%, rgba(22,28,30,0.78) 100%)',
+                    background: 'linear-gradient(135deg, rgba(15,21,22,0.75) 0%, rgba(22,33,34,0.6) 50%, rgba(15,21,22,0.85) 100%)',
                 }}
             />
 
             <Box
                 sx={{
                     position: 'relative',
-                    minHeight: '100vh',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'stretch',
+                    width: '100%',
+                    maxWidth: 520,
+                    mx: { xs: 2, sm: 3 },
+                    my: 4,
                 }}
             >
-                <Box
+                <Card
                     sx={{
-                        height: '100vh',
-                        width: { xs: '100%', md: '40vw' },
-                        minWidth: { md: 460 },
-                        maxWidth: { md: 760 },
-                        px: { xs: 2, md: 5 },
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        bgcolor: backgroundLight,
-                        borderRight: '1px solid #203436',
-                        backdropFilter: 'blur(14px)',
-                        overflowY: 'auto',
+                        width: '100%',
+                        p: { xs: 3, sm: 4 },
+                        bgcolor: (theme) => theme.palette.mode === 'dark'
+                            ? 'rgba(22, 33, 34, 0.92)'
+                            : 'rgba(255, 255, 255, 0.96)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        boxShadow: '0 24px 60px rgba(0, 0, 0, 0.35)',
+                        backdropFilter: 'blur(16px)',
+                        borderRadius: 4,
                     }}
+                    elevation={0}
                 >
-                    <Card
-                        sx={{
-                            width: '100%',
-                            maxWidth: 520,
-                            p: { xs: 1.5, md: 2 },
-                            bgcolor: 'transparent',
-                            border: 'none',
-                            boxShadow: 'none',
-                        }}
-                        elevation={0}
-                    >
-                        <CardContent>
-                            <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
-                                <AdminPanelSettings
-                                    sx={{
-                                        fontSize: 48,
-                                        color: 'primary.main',
-                                        mb: 1
-                                    }}
-                                />
-                                <Typography
-                                    variant="h5"
-                                    component="h1"
-                                    gutterBottom
-                                    align="center"
-                                    fontWeight={700}
-                                    sx={{ color: textPrimary }}
-                                >
-                                    {t('setup.title')}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    align="center"
-                                >
-                                    {t('setup.description')}
-                                </Typography>
-                            </Box>
+                    <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+                        <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+                            <AdminPanelSettings
+                                sx={{
+                                    fontSize: 48,
+                                    color: 'primary.main',
+                                    mb: 1,
+                                }}
+                            />
+                            <Typography
+                                variant="h4"
+                                component="h1"
+                                fontWeight={800}
+                                sx={{ letterSpacing: '-0.02em', mb: 0.5 }}
+                            >
+                                {t('setup.title')}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" align="center">
+                                {t('setup.description')}
+                            </Typography>
+                        </Box>
 
-                            <Stepper activeStep={currentStep} sx={{ mb: 3 }}>
-                                <Step completed={false}>
-                                    <StepLabel>{t('setup.steps.database')}</StepLabel>
-                                </Step>
-                                <Step completed={false}>
-                                    <StepLabel>{t('setup.steps.createAdmin')}</StepLabel>
-                                </Step>
-                            </Stepper>
+                        <Stepper activeStep={currentStep} sx={{ mb: 3 }}>
+                            <Step completed={false}>
+                                <StepLabel>{t('setup.steps.database')}</StepLabel>
+                            </Step>
+                            <Step completed={false}>
+                                <StepLabel>{t('setup.steps.createAdmin')}</StepLabel>
+                            </Step>
+                        </Stepper>
 
-                            <Box display="flex" flexDirection="column" gap={2}>
-                                {currentStep === 0 && (
-                                    <>
-                                        <ToggleButtonGroup
-                                            value={databaseMode}
-                                            exclusive
-                                            onChange={(_event, value: SetupDatabaseMode | null) => {
-                                                if (value) {
-                                                    setDatabaseMode(value);
-                                                }
-                                            }}
-                                            fullWidth
-                                            color="primary"
-                                        >
-                                            <ToggleButton value="sqlite-local">
-                                                {t('setup.database.localOption')}
-                                            </ToggleButton>
-                                            <ToggleButton value="mysql-shared">
-                                                {t('setup.database.sharedOption')}
-                                            </ToggleButton>
-                                        </ToggleButtonGroup>
-
-                                        <Typography variant="body2" color="text.secondary">
-                                            {isMysqlMode
-                                                ? t('setup.database.sharedHint')
-                                                : t('setup.database.localHint')}
-                                        </Typography>
-
-                                        <TextField
-                                            label={isMysqlMode ? t('setup.database.urlLabel') : t('setup.database.localPathLabel')}
-                                            variant="outlined"
-                                            fullWidth
-                                            value={databaseUrl}
-                                            onChange={(e) => {
-                                                setDatabaseUrl(e.target.value);
-                                                setDatabaseValidationMessage('');
-                                            }}
-                                            onBlur={validateDatabaseInput}
-                                            error={databaseValidationMessage.length > 0 || (databaseUrl.length > 0 && !databaseUrlValid)}
-                                            helperText={
-                                                databaseValidationMessage || (isMysqlMode
-                                                    ? t('setup.database.mysqlPlaceholderHint')
-                                                    : t('setup.database.localPathHint'))
+                        <Box display="flex" flexDirection="column" gap={2}>
+                            {currentStep === 0 && (
+                                <>
+                                    <ToggleButtonGroup
+                                        value={databaseMode}
+                                        exclusive
+                                        onChange={(_event, value: SetupDatabaseMode | null) => {
+                                            if (value) {
+                                                setDatabaseMode(value);
                                             }
-                                            placeholder={isMysqlMode
-                                                ? 'mysql://user:password@localhost:3306/clubmanager'
-                                                : localPathPlaceholder}
-                                            sx={textFieldSx}
-                                            slotProps={{ input: { sx: inputSx } }}
-                                        />
+                                        }}
+                                        fullWidth
+                                        color="primary"
+                                    >
+                                        <ToggleButton value="sqlite-local">
+                                            {t('setup.database.localOption')}
+                                        </ToggleButton>
+                                        <ToggleButton value="mysql-shared">
+                                            {t('setup.database.sharedOption')}
+                                        </ToggleButton>
+                                    </ToggleButtonGroup>
 
-                                        <Button
-                                            variant="contained"
-                                            fullWidth
-                                            onClick={handleConfigureDatabase}
-                                            disabled={submitting || !databaseUrlValid}
-                                            sx={{
-                                                py: 1.2,
-                                                fontWeight: 700,
-                                            }}
-                                        >
-                                            {submitting
-                                                ? t('setup.database.saving')
-                                                : databaseConfigured
-                                                    ? t('setup.database.continueButton')
-                                                    : t('setup.database.saveButton')}
-                                        </Button>
-                                    </>
-                                )}
+                                    <Typography variant="body2" color="text.secondary">
+                                        {isMysqlMode
+                                            ? t('setup.database.sharedHint')
+                                            : t('setup.database.localHint')}
+                                    </Typography>
 
-                                {currentStep === 1 && (
-                                    <>
-                                        <Alert severity="success" variant="outlined">
-                                            {t('setup.database.configured')}
-                                        </Alert>
+                                    <TextField
+                                        label={isMysqlMode ? t('setup.database.urlLabel') : t('setup.database.localPathLabel')}
+                                        variant="outlined"
+                                        fullWidth
+                                        value={databaseUrl}
+                                        onChange={(e) => {
+                                            setDatabaseUrl(e.target.value);
+                                            setDatabaseValidationMessage('');
+                                        }}
+                                        onBlur={validateDatabaseInput}
+                                        error={databaseValidationMessage.length > 0 || (databaseUrl.length > 0 && !databaseUrlValid)}
+                                        helperText={
+                                            databaseValidationMessage || (isMysqlMode
+                                                ? t('setup.database.mysqlPlaceholderHint')
+                                                : t('setup.database.localPathHint'))
+                                        }
+                                        placeholder={isMysqlMode
+                                            ? 'mysql://user:password@localhost:3306/clubmanager'
+                                            : localPathPlaceholder}
+                                    />
 
-                                        <TextField
-                                            label={t('setup.email')}
-                                            variant="outlined"
-                                            fullWidth
-                                            type="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            error={email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
-                                            helperText={email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? t('setup.validation.invalidEmail') : ''}
-                                            sx={textFieldSx}
-                                            slotProps={{ input: { sx: inputSx } }}
-                                        />
+                                    <Button
+                                        variant="contained"
+                                        fullWidth
+                                        size="large"
+                                        onClick={handleConfigureDatabase}
+                                        disabled={submitting || !databaseUrlValid}
+                                    >
+                                        {submitting
+                                            ? t('setup.database.saving')
+                                            : databaseConfigured
+                                                ? t('setup.database.continueButton')
+                                                : t('setup.database.saveButton')}
+                                    </Button>
+                                </>
+                            )}
 
-                                        <TextField
-                                            label={t('setup.password')}
-                                            variant="outlined"
-                                            fullWidth
-                                            type={showPassword ? 'text' : 'password'}
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            error={password.length > 0 && password.length < 8}
-                                            helperText={
-                                                password.length > 0 && password.length < 8
-                                                    ? t('setup.validation.passwordTooShort')
-                                                    : ''
-                                            }
-                                            sx={textFieldSx}
-                                            slotProps={{
-                                                input: {
-                                                    sx: inputSx,
-                                                    endAdornment: (
-                                                        <InputAdornment position="end">
-                                                            <IconButton
-                                                                onClick={() => setShowPassword((prev) => !prev)}
-                                                                edge="end"
-                                                                aria-label="toggle password visibility"
-                                                            >
-                                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                            </IconButton>
-                                                        </InputAdornment>
-                                                    ),
-                                                },
-                                            }}
-                                        />
-
-                                        <TextField
-                                            label={t('setup.confirmPassword')}
-                                            variant="outlined"
-                                            fullWidth
-                                            type={showConfirmPassword ? 'text' : 'password'}
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                            error={confirmPassword.length > 0 && password !== confirmPassword}
-                                            helperText={
-                                                confirmPassword.length > 0 && password !== confirmPassword
-                                                    ? t('setup.validation.passwordMismatch')
-                                                    : ''
-                                            }
-                                            sx={textFieldSx}
-                                            slotProps={{
-                                                input: {
-                                                    sx: inputSx,
-                                                    endAdornment: (
-                                                        <InputAdornment position="end">
-                                                            <IconButton
-                                                                onClick={() => setShowConfirmPassword((prev) => !prev)}
-                                                                edge="end"
-                                                                aria-label="toggle confirm password visibility"
-                                                            >
-                                                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                                                            </IconButton>
-                                                        </InputAdornment>
-                                                    ),
-                                                },
-                                            }}
-                                        />
-
-                                        <FormControlLabel
-                                            control={(
-                                                <Checkbox
-                                                    checked={importDemoData}
-                                                    onChange={(event) => setImportDemoData(event.target.checked)}
-                                                    disabled={submitting}
-                                                />
-                                            )}
-                                            label={t('setup.demoData.label')}
-                                        />
-
-                                        <Typography variant="body2" color="text.secondary">
-                                            {t('setup.demoData.hint')}
-                                        </Typography>
-
-                                        <Button
-                                            variant="contained"
-                                            fullWidth
-                                            onClick={handleSubmit}
-                                            disabled={!canSubmit}
-                                            sx={{
-                                                py: 1.2,
-                                                fontWeight: 700,
-                                            }}
-                                        >
-                                            {submitting
-                                                ? (importDemoData ? t('setup.demoData.seeding') : t('setup.creating'))
-                                                : t('setup.createButton')}
-                                        </Button>
-                                    </>
-                                )}
-
-                                {error && (
-                                    <Alert severity="error" variant="outlined">
-                                        {error}
+                            {currentStep === 1 && (
+                                <>
+                                    <Alert severity="success" variant="outlined">
+                                        {t('setup.database.configured')}
                                     </Alert>
-                                )}
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Box>
 
-                <Box
-                    sx={{
-                        display: { xs: 'none', md: 'flex' },
-                        flex: 1,
-                        px: { md: 7, lg: 10 },
-                        py: { md: 8, lg: 10 },
-                        alignItems: 'flex-end',
-                    }}
-                >
-                    <Box sx={{ maxWidth: 640 }}>
-                        <Typography
-                            variant="h2"
-                            sx={{
-                                color: mode === 'dark' ? '#E8F4F1' : '#203436',
-                                fontWeight: 800,
-                                lineHeight: 1.06,
-                                letterSpacing: '-0.02em',
-                                mb: 2,
-                                textShadow: '0 8px 30px rgba(0,0,0,0.45)',
-                            }}
-                        >
-                            {t('setup.welcomeTitle') || 'Setup'}
-                        </Typography>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                color: mode === 'dark' ? '#A8C5C1' : '#6B8A87',
-                                fontWeight: 400,
-                                lineHeight: 1.5,
-                                textShadow: '0 4px 18px rgba(0,0,0,0.35)',
-                            }}
-                        >
-                            {t('setup.welcomeSubtitle') || 'Konfigurieren Sie Ihren Open ClubManager und erstellen Sie einen Admin-Account.'}
-                        </Typography>
-                    </Box>
-                </Box>
+                                    <TextField
+                                        label={t('setup.email')}
+                                        variant="outlined"
+                                        fullWidth
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        error={email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
+                                        helperText={email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? t('setup.validation.invalidEmail') : ''}
+                                    />
+
+                                    <TextField
+                                        label={t('setup.password')}
+                                        variant="outlined"
+                                        fullWidth
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        error={password.length > 0 && password.length < 8}
+                                        helperText={
+                                            password.length > 0 && password.length < 8
+                                                ? t('setup.validation.passwordTooShort')
+                                                : ''
+                                        }
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            onClick={() => setShowPassword((prev) => !prev)}
+                                                            edge="end"
+                                                            aria-label="toggle password visibility"
+                                                            size="small"
+                                                        >
+                                                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            },
+                                        }}
+                                    />
+
+                                    <TextField
+                                        label={t('setup.confirmPassword')}
+                                        variant="outlined"
+                                        fullWidth
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        error={confirmPassword.length > 0 && password !== confirmPassword}
+                                        helperText={
+                                            confirmPassword.length > 0 && password !== confirmPassword
+                                                ? t('setup.validation.passwordMismatch')
+                                                : ''
+                                        }
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                                            edge="end"
+                                                            aria-label="toggle confirm password visibility"
+                                                            size="small"
+                                                        >
+                                                            {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            },
+                                        }}
+                                    />
+
+                                    <FormControlLabel
+                                        control={(
+                                            <Checkbox
+                                                checked={importDemoData}
+                                                onChange={(event) => setImportDemoData(event.target.checked)}
+                                                disabled={submitting}
+                                            />
+                                        )}
+                                        label={t('setup.demoData.label')}
+                                    />
+
+                                    <Typography variant="body2" color="text.secondary">
+                                        {t('setup.demoData.hint')}
+                                    </Typography>
+
+                                    <Button
+                                        variant="contained"
+                                        fullWidth
+                                        size="large"
+                                        onClick={handleSubmit}
+                                        disabled={!canSubmit}
+                                    >
+                                        {submitting
+                                            ? (importDemoData ? t('setup.demoData.seeding') : t('setup.creating'))
+                                            : t('setup.createButton')}
+                                    </Button>
+                                </>
+                            )}
+
+                            {error && (
+                                <Alert severity="error" variant="outlined">
+                                    {error}
+                                </Alert>
+                            )}
+                        </Box>
+                    </CardContent>
+                </Card>
             </Box>
         </Box>
     );
 };
 
 export default Setup;
-

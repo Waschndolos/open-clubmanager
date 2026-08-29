@@ -20,43 +20,33 @@ export default function AppMenuItem({label, icon, link, collapsed}: MenuItemProp
             selected={isActive}
             sx={{
                 justifyContent: collapsed ? "center" : "flex-start",
+                minHeight: 40,
+                px: collapsed ? 1 : 1.5,
+                py: 0.75,
                 borderRadius: 2,
-                mb: 0.5,
                 transition: 'background 0.2s, color 0.2s',
                 '&:hover': {
                     backgroundColor: (theme) =>
                         theme.palette.mode === 'dark'
-                            ? 'rgba(255,255,255,0.08)'
-                            : 'rgba(0,0,0,0.06)',
-                },
-                '&.Mui-selected': {
-                    backgroundColor: (theme) =>
-                        theme.palette.action.selected,
-                    color: 'primary.main',
-                    '& .MuiListItemIcon-root': {
-                        color: 'primary.main',
-                    },
-                },
-                '&.Mui-selected:hover': {
-                    backgroundColor: (theme) =>
-                        theme.palette.action.hover,
+                            ? 'rgba(255,255,255,0.05)'
+                            : 'rgba(0,0,0,0.04)',
                 },
             }}
         >
-            <Tooltip title={collapsed ? label : ""} placement="right">
-                <ListItemIcon sx={{ minWidth: 0, justifyContent: "center" }}>
+            <Tooltip title={collapsed ? label : ""} placement="right" arrow>
+                <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", color: isActive ? 'primary.main' : 'text.secondary' }}>
                     {icon}
                 </ListItemIcon>
             </Tooltip>
             {!collapsed && (
                 <ListItemText
                     primary={label}
-                    sx={{
-                        whiteSpace: "normal",
-                        wordBreak: "break-word",
-                        ml: 2,
+                    sx={{ ml: 1.5 }}
+                    primaryTypographyProps={{
+                        fontSize: '0.875rem',
+                        fontWeight: isActive ? 600 : 500,
+                        color: isActive ? 'primary.main' : 'text.primary',
                     }}
-                    primaryTypographyProps={{ sx: { fontWeight: isActive ? 600 : 400 } }}
                 />
             )}
         </ListItemButton>

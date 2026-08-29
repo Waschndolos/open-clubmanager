@@ -6,14 +6,10 @@ import {useNavigate, useLocation} from 'react-router-dom';
 import {login} from '../../api/authentication';
 import {getSetupStatus} from '../../api/setup';
 import {useTranslation} from "react-i18next";
-import {useThemeContext} from "../../theme/ThemeContext";
 import {setAccessToken} from "../../api/api";
-import { useTheme } from '@mui/material/styles';
 import loginBg from '../../assets/login_bg.jpeg';
 
 const Login: React.FC = () => {
-    const { mode } = useThemeContext();
-    const theme = useTheme();
     const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,7 +21,6 @@ const Login: React.FC = () => {
     const location = useLocation();
 
     useEffect(() => {
-
         getSetupStatus()
             .then(({ setupRequired }) => {
                 if (setupRequired) {
@@ -60,37 +55,6 @@ const Login: React.FC = () => {
         }
     };
 
-    const textPrimary = theme.palette.text.primary;
-    const textSecondary = theme.palette.text.secondary;
-    const accentStrong = theme.palette.primary.main;
-    const backgroundLight = mode === 'dark' ? '#162122' : '#FFFFFF';
-    const welcomeTextColor = mode === 'dark' ? '#E8F4F1' : '#203436';
-    const welcomeSubtextColor = mode === 'dark' ? '#A8C5C1' : '#6B8A87';
-
-    const textFieldSx = {
-        '& .MuiInputLabel-root': {
-            color: textSecondary,
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: textSecondary,
-        },
-        '& .MuiOutlinedInput-root': {
-            color: textPrimary,
-            '& fieldset': {
-                borderColor: theme.palette.mode === 'dark'
-                    ? '#203436'
-                    : '#203436',
-            },
-            '&:hover fieldset': {
-                borderColor: '#00FFC2',
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: '#00FFC2',
-                borderWidth: 2,
-            },
-        },
-    };
-
     return (
         <Box
             sx={{
@@ -98,6 +62,9 @@ const Login: React.FC = () => {
                 minHeight: '100vh',
                 minWidth: '100vw',
                 overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
             }}
         >
             <Box
@@ -108,8 +75,8 @@ const Login: React.FC = () => {
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
-                    filter: 'saturate(1.2) contrast(1.05) brightness(0.78) hue-rotate(-14deg)',
-                    transform: 'scale(1.04)',
+                    filter: 'saturate(1.1) contrast(1.05) brightness(0.65)',
+                    transform: 'scale(1.02)',
                 }}
             />
 
@@ -117,199 +84,132 @@ const Login: React.FC = () => {
                 sx={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(100deg, rgba(16,20,21,0.28) 0%, rgba(24,30,32,0.44) 50%, rgba(22,28,30,0.78) 100%)',
+                    background: 'linear-gradient(135deg, rgba(15,21,22,0.75) 0%, rgba(22,33,34,0.6) 50%, rgba(15,21,22,0.85) 100%)',
                 }}
             />
 
             <Box
                 sx={{
                     position: 'relative',
-                    minHeight: '100vh',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'stretch',
+                    width: '100%',
+                    maxWidth: 440,
+                    mx: { xs: 2, sm: 3 },
+                    my: 4,
                 }}
             >
-                <Box
+                <Card
                     sx={{
-                        height: '100vh',
-                        width: { xs: '100%', md: '40vw' },
-                        minWidth: { md: 460 },
-                        maxWidth: { md: 760 },
-                        px: { xs: 2, md: 5 },
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        bgcolor: backgroundLight,
-                        borderRight: '1px solid #203436',
-                        backdropFilter: 'blur(14px)',
+                        width: '100%',
+                        p: { xs: 3, sm: 4 },
+                        bgcolor: (theme) => theme.palette.mode === 'dark'
+                            ? 'rgba(22, 33, 34, 0.92)'
+                            : 'rgba(255, 255, 255, 0.96)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        boxShadow: '0 24px 60px rgba(0, 0, 0, 0.35)',
+                        backdropFilter: 'blur(16px)',
+                        borderRadius: 4,
                     }}
+                    elevation={0}
                 >
-                    <Card
-                        sx={{
-                            width: '100%',
-                            maxWidth: 520,
-                            p: { xs: 1.5, md: 2 },
-                            bgcolor: 'transparent',
-                            border: 'none',
-                            boxShadow: 'none',
-                        }}
-                        elevation={0}
-                    >
-                        <CardContent>
+                    <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+                        <Box textAlign="center" mb={3}>
                             <Typography
-                                variant="h5"
+                                variant="h4"
                                 component="h1"
-                                gutterBottom
-                                align="center"
-                                fontWeight={700}
-                                sx={{ color: textPrimary }}
+                                fontWeight={800}
+                                sx={{
+                                    letterSpacing: '-0.02em',
+                                    mb: 1,
+                                }}
                             >
                                 {t('login.title')}
                             </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {t('login.welcomeSubtitle')}
+                            </Typography>
+                        </Box>
 
-                            <Box display="flex" flexDirection="column" gap={2} mt={2} alignItems={"center"}>
-                                {setupComplete && (
-                                    <Alert severity="success" variant="outlined" sx={{ width: '100%' }}>
-                                        {t('login.setupComplete')}
-                                    </Alert>
-                                )}
-                                {setupWarning && (
-                                    <Alert severity="warning" variant="outlined" sx={{ width: '100%' }}>
-                                        {setupWarning}
-                                    </Alert>
-                                )}
-                                <TextField
-                                    label={t('login.email')}
-                                    variant="outlined"
-                                    fullWidth
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                    sx={textFieldSx}
-                                    slotProps={{
-                                        input: {
-                                            sx: {
-                                                '& input': {
-                                                    transition: 'background-color 5000s ease-in-out 0s',
-                                                    backgroundColor: 'transparent',
-                                                    WebkitTextFillColor: textPrimary,
-                                                    MozTextFillColor: textPrimary,
-                                                    color: textPrimary,
-                                                },
-                                            },
-                                        },
-                                    }}
-                                />
+                        <Box display="flex" flexDirection="column" gap={2}>
+                            {setupComplete && (
+                                <Alert severity="success" variant="outlined">
+                                    {t('login.setupComplete')}
+                                </Alert>
+                            )}
+                            {setupWarning && (
+                                <Alert severity="warning" variant="outlined">
+                                    {setupWarning}
+                                </Alert>
+                            )}
 
-                                <TextField
-                                    label={t('login.password')}
-                                    variant="outlined"
-                                    fullWidth
-                                    type={showPassword ? 'text' : 'password'}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                    sx={textFieldSx}
-                                    slotProps={{
-                                        input: {
-                                            sx: {
-                                                '& input': {
-                                                    transition: 'background-color 5000s ease-in-out 0s',
-                                                    backgroundColor: 'transparent',
-                                                    WebkitTextFillColor: textPrimary,
-                                                    MozTextFillColor: textPrimary,
-                                                    color: textPrimary,
-                                                },
-                                            },
-                                            endAdornment: (
-                                                <InputAdornment position="end">
-                                                    <IconButton
-                                                        onClick={() => setShowPassword((prev) => !prev)}
-                                                        edge="end"
-                                                        aria-label="toggle password visibility"
-                                                        sx={{ color: textSecondary }}
-                                                    >
-                                                        {showPassword ? <VisibilityOff/> : <Visibility/>}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
-                                        },
-                                    }}
-                                />
+                            <TextField
+                                label={t('login.email')}
+                                variant="outlined"
+                                fullWidth
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                            />
 
-                                {error && (
-                                    <Typography color="error" variant="body2">
-                                        {error}
-                                    </Typography>
-                                )}
+                            <TextField
+                                label={t('login.password')}
+                                variant="outlined"
+                                fullWidth
+                                type={showPassword ? 'text' : 'password'}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={() => setShowPassword((prev) => !prev)}
+                                                    edge="end"
+                                                    aria-label="toggle password visibility"
+                                                    size="small"
+                                                >
+                                                    {showPassword ? <VisibilityOff fontSize="small"/> : <Visibility fontSize="small"/>}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    },
+                                }}
+                            />
 
-                                <Button
-                                    variant="contained"
-                                    fullWidth
-                                    onClick={handleLogin}
-                                    disabled={!email || !password}
-                                    sx={{
-                                        mt: 0.5,
-                                        py: 1.2,
-                                        fontWeight: 700,
-                                        bgcolor: accentStrong,
-                                        color: '#203436',
-                                        '&:hover': { bgcolor: '#00FFC2' },
-                                    }}
-                                >
-                                    {t('login.loginButton')}
-                                </Button>
+                            {error && (
+                                <Alert severity="error" variant="outlined">
+                                    {error}
+                                </Alert>
+                            )}
 
-                                <Link
-                                    component="button"
-                                    variant="body2"
-                                    onClick={() => navigate('/forgot-password')}
-                                    sx={{ alignSelf: 'center', color: accentStrong, fontWeight: 600 }}
-                                >
-                                    {t('login.forgotPassword')}
-                                </Link>
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Box>
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                size="large"
+                                onClick={handleLogin}
+                                disabled={!email || !password}
+                                sx={{ mt: 0.5 }}
+                            >
+                                {t('login.loginButton')}
+                            </Button>
 
-                <Box
-                    sx={{
-                        display: { xs: 'none', md: 'flex' },
-                        flex: 1,
-                        px: { md: 7, lg: 10 },
-                        py: { md: 8, lg: 10 },
-                        alignItems: 'flex-end',
-                    }}
-                >
-                    <Box sx={{ maxWidth: 640 }}>
-                        <Typography
-                            variant="h2"
-                            sx={{
-                                color: welcomeTextColor,
-                                fontWeight: 800,
-                                lineHeight: 1.06,
-                                letterSpacing: '-0.02em',
-                                mb: 2,
-                                textShadow: '0 8px 30px rgba(0,0,0,0.45)',
-                            }}
-                        >
-                            {t('login.welcomeTitle')}
-                        </Typography>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                color: welcomeSubtextColor,
-                                fontWeight: 400,
-                                lineHeight: 1.5,
-                                textShadow: '0 4px 18px rgba(0,0,0,0.35)',
-                            }}
-                        >
-                            {t('login.welcomeSubtitle')}
-                        </Typography>
-                    </Box>
-                </Box>
+                            <Link
+                                component="button"
+                                variant="body2"
+                                onClick={() => navigate('/forgot-password')}
+                                sx={{
+                                    alignSelf: 'center',
+                                    color: 'primary.main',
+                                    fontWeight: 600,
+                                    textDecoration: 'none',
+                                    '&:hover': { textDecoration: 'underline' },
+                                }}
+                            >
+                                {t('login.forgotPassword')}
+                            </Link>
+                        </Box>
+                    </CardContent>
+                </Card>
             </Box>
         </Box>
     );
