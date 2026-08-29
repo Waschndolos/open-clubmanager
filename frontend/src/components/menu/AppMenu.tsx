@@ -2,7 +2,7 @@ import {Box, List, Typography} from "@mui/material";
 import AppMenuItem from "./AppMenuItem";
 import packageJson from '../../../package.json'
 import {useTranslation} from "react-i18next";
-import {AccountBalance, Badge, GridView, History, Inventory2, ManageAccounts, People, Settings} from "@mui/icons-material";
+import {AccountBalance, Badge, Description, GridView, History, Inventory2, ManageAccounts, People, Settings} from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
 
 type Props = {
@@ -35,6 +35,7 @@ export default function AppMenu({ collapsed }: Props) {
                     <AppMenuItem label={t("menu.finance")} icon={<AccountBalance />} link="finance" collapsed={collapsed} />
                 )}
                 <AppMenuItem label={t("menu.inventory")} icon={<Inventory2 />} link="inventory" collapsed={collapsed} />
+                <AppMenuItem label={t("menu.documents")} icon={<Description />} link="documents" collapsed={collapsed} />
                 <AppMenuItem label={t("menu.entities")} icon={<Badge />} link="entities" collapsed={collapsed} />
                 <AppMenuItem label={t("menu.history")} icon={<History />} link="history" collapsed={collapsed} />
                 {isAdmin && (

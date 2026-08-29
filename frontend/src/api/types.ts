@@ -114,3 +114,17 @@ export type InventoryLoan = {
     notes: string;
     createdAt?: string;
 };
+
+export type ClubDocument = {
+    id: number;
+    title: string;
+    description?: string;
+    category: string;
+    filename: string;
+    storagePath: string;
+    size: number;
+    mimeType: string;
+    uploadedBy: string;
+    createdAt: string;
+    updatedAt: string;
+};

@@ -15,6 +15,7 @@ import { RequireRole } from "../guards/RequireRole";
 import History from "../pages/history/History";
 import Users from "../pages/users/Users";
 import Inventory from "../pages/inventory/Inventory";
+import Documents from "../pages/documents/Documents";
 
 export const router = createBrowserRouter([
     {
@@ -94,6 +95,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth>
             <Inventory />
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "documents",
+        element: (
+          <RequireAuth>
+            <Documents />
           </RequireAuth>
         ),
             },

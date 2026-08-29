@@ -89,6 +89,7 @@
         "members": "Member Management",
         "finance": "Finances",
         "inventory": "Inventory",
+        "documents": "Documents",
         "settings": "Settings",
         "entities": "Club Entities",
         "profile": "Profile",
@@ -463,6 +464,33 @@
             "create": "Create loan",
             "activeTitle": "Currently loaned items",
             "markReturned": "Mark as returned"
+        }
+    },
+    "documents": {
+        "title": "Document Management",
+        "loadError": "Failed to load documents. Please try again.",
+        "search": "Search documents",
+        "categoryFilter": "Filter category",
+        "categoryAll": "All categories",
+        "fields": {
+            "title": "Title",
+            "description": "Description",
+            "category": "Category",
+            "filename": "File name",
+            "size": "Size",
+            "createdAt": "Uploaded at"
+        },
+        "actions": {
+            "download": "Download"
+        },
+        "upload": {
+            "open": "Upload document",
+            "title": "Upload document",
+            "dropzone": "Drag and drop a file here or click to choose one",
+            "submit": "Upload"
+        },
+        "edit": {
+            "title": "Edit metadata"
         }
     },
     "history": {

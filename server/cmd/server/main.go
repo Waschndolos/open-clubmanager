@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -135,6 +136,37 @@ func main() {
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))
+
+	// Documents API endpoints are implemented manually because they use multipart
+	// upload and binary download responses.
+	router.Route("/api/v2/documents", func(r chi.Router) {
+		r.Get("/", bearerAuthRequired(cfg.JWTSecret, api.ListDocuments))
+		r.Post("/", bearerAuthRequired(cfg.JWTSecret, api.UploadDocument))
+		r.Get("/{id}", bearerAuthRequired(cfg.JWTSecret, func(w http.ResponseWriter, r *http.Request) {
+			id, err := strconv.Atoi(chi.URLParam(r, "id"))
+			if err != nil {
+				http.Error(w, "invalid document id", http.StatusBadRequest)
+				return
+			}
+			api.DownloadDocument(w, r, id)
+		}))
+		r.Put("/{id}", bearerAuthRequired(cfg.JWTSecret, func(w http.ResponseWriter, r *http.Request) {
+			id, err := strconv.Atoi(chi.URLParam(r, "id"))
+			if err != nil {
+				http.Error(w, "invalid document id", http.StatusBadRequest)
+				return
+			}
+			api.UpdateDocument(w, r, id)
+		}))
+		r.Delete("/{id}", bearerAuthRequired(cfg.JWTSecret, func(w http.ResponseWriter, r *http.Request) {
+			id, err := strconv.Atoi(chi.URLParam(r, "id"))
+			if err != nil {
+				http.Error(w, "invalid document id", http.StatusBadRequest)
+				return
+			}
+			api.DeleteDocument(w, r, id)
+		}))
+	})
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.Port),

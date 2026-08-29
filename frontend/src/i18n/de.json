@@ -89,6 +89,7 @@
         "members": "Mitgliederverwaltung",
         "finance": "Finanzen",
         "inventory": "Inventar",
+        "documents": "Dokumente",
         "settings": "Einstellungen",
         "entities": "Vereinsverwaltung",
         "profile": "Profil",
@@ -463,6 +464,33 @@
             "create": "Ausleihe erfassen",
             "activeTitle": "Aktuell ausgeliehene Gegenstände",
             "markReturned": "Als zurückgegeben markieren"
+        }
+    },
+    "documents": {
+        "title": "Dokumentenverwaltung",
+        "loadError": "Dokumente konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+        "search": "Dokumente suchen",
+        "categoryFilter": "Kategorie filtern",
+        "categoryAll": "Alle Kategorien",
+        "fields": {
+            "title": "Titel",
+            "description": "Beschreibung",
+            "category": "Kategorie",
+            "filename": "Dateiname",
+            "size": "Größe",
+            "createdAt": "Hochgeladen am"
+        },
+        "actions": {
+            "download": "Herunterladen"
+        },
+        "upload": {
+            "open": "Dokument hochladen",
+            "title": "Dokument hochladen",
+            "dropzone": "Datei hierher ziehen oder klicken, um eine Datei auszuwählen",
+            "submit": "Hochladen"
+        },
+        "edit": {
+            "title": "Metadaten bearbeiten"
         }
     },
     "history": {
