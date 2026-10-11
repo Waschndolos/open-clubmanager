@@ -4,6 +4,7 @@ import NotificationBell from "./NotificationBell";
 import MenuIcon from "@mui/icons-material/Menu";
 import ThemeToggle from "./ThemeToggle";
 import LogoutButton from "./LogoutButton";
+import SyncStatusButton from "./SyncStatusButton";
 import { useTheme } from '@mui/material/styles';
 
 // HeaderProps type
@@ -63,6 +64,7 @@ export default function Header({onToggleSidebar }: HeaderProps) {
                     }}
                 >
                     <ThemeToggle />
+                    <SyncStatusButton />
                     <NotificationBell />
                     <LogoutButton />
                 </Box>

@@ -1,5 +1,6 @@
 import {Box} from "@mui/material";
 import { Outlet } from "react-router";
+import CollaborationBanner from "../collaboration/CollaborationBanner";
 
 export default function Content() {
     return (
@@ -13,6 +14,7 @@ export default function Content() {
             transition: 'background 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             overflowY: 'auto',
         }}>
+            <CollaborationBanner />
             <Outlet></Outlet>
         </Box>
     )

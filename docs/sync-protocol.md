@@ -234,6 +234,7 @@ refuse any later `club.json` with different values.
       "sign_pub": "<b64>",
       "age_recipient": "age1...",
       "person": "Erika Mustermann",
+      "device_name": "Laptop",
       "role": "treasurer",
       "status": "active",
       "added_in": 3
@@ -270,6 +271,9 @@ under the same name, so without this commitment anyone with write access to
 the folder could substitute a scope key they know.)*
 
 `.sig` file: signature by `author` (its `sign_pub`, or `root_sign_pub` for `root`).
+
+`device_name` is optional. It is the name the person gave the device
+(e.g. "Laptop"), so people can tell their devices apart when one is lost.
 
 ### 8.2 Validity
 
@@ -770,7 +774,7 @@ Steps:
    `requests/<device_id>.json`:
    ```json
    { "type": "ocm.join", "club_id": "...", "invite_id": "<b64>", "device_id": "...",
-     "sign_pub": "<b64>", "age_recipient": "age1...", "person": "Erika Mustermann",
+     "sign_pub": "<b64>", "age_recipient": "age1...", "person": "Erika Mustermann", "device_name": "Laptop",
      "proof": "<b64 HMAC-SHA-256(invite_secret_raw_16, join-v1 input below)>" }
    ```
    `requests/<device_id>.json.sig` contains the b64 Ed25519 signature over the

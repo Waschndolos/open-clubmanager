@@ -46,6 +46,27 @@ func (e AppRole) Valid() bool {
 	}
 }
 
+// Defines values for AreaPermission.
+const (
+	None  AreaPermission = "none"
+	Read  AreaPermission = "read"
+	Write AreaPermission = "write"
+)
+
+// Valid indicates whether the value is a known member of the AreaPermission enum.
+func (e AreaPermission) Valid() bool {
+	switch e {
+	case None:
+		return true
+	case Read:
+		return true
+	case Write:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AuditLogAction.
 const (
 	CREATE AuditLogAction = "CREATE"
@@ -61,6 +82,30 @@ func (e AuditLogAction) Valid() bool {
 	case DELETE:
 		return true
 	case UPDATE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CollaborationStatusMode.
+const (
+	CollaborationStatusModeJoining CollaborationStatusMode = "joining"
+	CollaborationStatusModeLocal   CollaborationStatusMode = "local"
+	CollaborationStatusModeMember  CollaborationStatusMode = "member"
+	CollaborationStatusModeRevoked CollaborationStatusMode = "revoked"
+)
+
+// Valid indicates whether the value is a known member of the CollaborationStatusMode enum.
+func (e CollaborationStatusMode) Valid() bool {
+	switch e {
+	case CollaborationStatusModeJoining:
+		return true
+	case CollaborationStatusModeLocal:
+		return true
+	case CollaborationStatusModeMember:
+		return true
+	case CollaborationStatusModeRevoked:
 		return true
 	default:
 		return false
@@ -136,6 +181,27 @@ func (e FinanceTransactionUpdateRequestType) Valid() bool {
 	}
 }
 
+// Defines values for FolderInfoKind.
+const (
+	FolderInfoKindLocal   FolderInfoKind = "local"
+	FolderInfoKindNetwork FolderInfoKind = "network"
+	FolderInfoKindSync    FolderInfoKind = "sync"
+)
+
+// Valid indicates whether the value is a known member of the FolderInfoKind enum.
+func (e FolderInfoKind) Valid() bool {
+	switch e {
+	case FolderInfoKindLocal:
+		return true
+	case FolderInfoKindNetwork:
+		return true
+	case FolderInfoKindSync:
+		return true
+	default:
+		return false
+	}
+}
+
 // AccessTokenResponse defines model for AccessTokenResponse.
 type AccessTokenResponse struct {
 	AccessToken string `json:"accessToken"`
@@ -153,6 +219,35 @@ type AppUser struct {
 	CreatedAt time.Time           `json:"createdAt"`
 	Email     openapi_types.Email `json:"email"`
 	Id        string              `json:"id"`
+}
+
+// ApproveRequest defines model for ApproveRequest.
+type ApproveRequest struct {
+	SafetyCode string `json:"safetyCode"`
+}
+
+// AreaPermission What this device may do in a data area (docs/sync-protocol.md §4).
+type AreaPermission string
+
+// AreaPermissions defines model for AreaPermissions.
+type AreaPermissions struct {
+	// Admin What this device may do in a data area (docs/sync-protocol.md §4).
+	Admin AreaPermission `json:"admin"`
+
+	// Finance What this device may do in a data area (docs/sync-protocol.md §4).
+	Finance AreaPermission `json:"finance"`
+
+	// Inventory What this device may do in a data area (docs/sync-protocol.md §4).
+	Inventory AreaPermission `json:"inventory"`
+
+	// MembersBank What this device may do in a data area (docs/sync-protocol.md §4).
+	MembersBank AreaPermission `json:"membersBank"`
+
+	// MembersContact What this device may do in a data area (docs/sync-protocol.md §4).
+	MembersContact AreaPermission `json:"membersContact"`
+
+	// MembersCore What this device may do in a data area (docs/sync-protocol.md §4).
+	MembersCore AreaPermission `json:"membersCore"`
 }
 
 // AuditLog defines model for AuditLog.
@@ -190,11 +285,93 @@ type Camt053ImportResponse struct {
 	TotalCount           int `json:"totalCount"`
 }
 
+// ChangeDeviceRoleRequest defines model for ChangeDeviceRoleRequest.
+type ChangeDeviceRoleRequest struct {
+	Role string `json:"role"`
+}
+
 // ChangePasswordRequest defines model for ChangePasswordRequest.
 type ChangePasswordRequest struct {
 	CurrentPassword *string `json:"currentPassword,omitempty"`
 	NewPassword     string  `json:"newPassword"`
 }
+
+// CheckFolderRequest defines model for CheckFolderRequest.
+type CheckFolderRequest struct {
+	Path string `json:"path"`
+}
+
+// ClubDevice defines model for ClubDevice.
+type ClubDevice struct {
+	Active     bool    `json:"active"`
+	DeviceId   string  `json:"deviceId"`
+	DeviceName *string `json:"deviceName,omitempty"`
+	Me         bool    `json:"me"`
+	Person     string  `json:"person"`
+	Role       string  `json:"role"`
+}
+
+// ClubInvite defines model for ClubInvite.
+type ClubInvite struct {
+	// Code Only returned when the invite is created.
+	Code      *string    `json:"code,omitempty"`
+	CreatedAt time.Time  `json:"createdAt"`
+	ExpiresAt time.Time  `json:"expiresAt"`
+	Id        string     `json:"id"`
+	Person    string     `json:"person"`
+	Role      string     `json:"role"`
+	UsedAt    *time.Time `json:"usedAt,omitempty"`
+}
+
+// ClubJoinRequest defines model for ClubJoinRequest.
+type ClubJoinRequest struct {
+	DeviceId   string  `json:"deviceId"`
+	DeviceName *string `json:"deviceName,omitempty"`
+
+	// Error Set if the request cannot be approved (unknown, expired or used invite, contested, forged).
+	Error  *string `json:"error,omitempty"`
+	Person string  `json:"person"`
+	Role   *string `json:"role,omitempty"`
+}
+
+// ClubRole defines model for ClubRole.
+type ClubRole struct {
+	Id          string          `json:"id"`
+	Permissions AreaPermissions `json:"permissions"`
+}
+
+// CollaborationStatus defines model for CollaborationStatus.
+type CollaborationStatus struct {
+	BadKeys    int        `json:"badKeys"`
+	ClubId     *string    `json:"clubId,omitempty"`
+	ClubName   *string    `json:"clubName,omitempty"`
+	Conflicts  int        `json:"conflicts"`
+	DeviceId   *string    `json:"deviceId,omitempty"`
+	DeviceName *string    `json:"deviceName,omitempty"`
+	IsAdmin    bool       `json:"isAdmin"`
+	LastError  *string    `json:"lastError,omitempty"`
+	LastSync   *time.Time `json:"lastSync,omitempty"`
+
+	// Locked Device keys exist but are locked until the user who set up collaboration logs in.
+	Locked bool `json:"locked"`
+
+	// LostChanges Own ACL changes that lost against a concurrent change and must be redone.
+	LostChanges     int                     `json:"lostChanges"`
+	Mode            CollaborationStatusMode `json:"mode"`
+	PendingChanges  int                     `json:"pendingChanges"`
+	PendingRequests int                     `json:"pendingRequests"`
+	Permissions     AreaPermissions         `json:"permissions"`
+	Person          *string                 `json:"person,omitempty"`
+	Role            *string                 `json:"role,omitempty"`
+
+	// StorageError The storage location could not be opened.
+	StorageError *bool   `json:"storageError,omitempty"`
+	StoragePath  *string `json:"storagePath,omitempty"`
+	Syncing      bool    `json:"syncing"`
+}
+
+// CollaborationStatusMode defines model for CollaborationStatus.Mode.
+type CollaborationStatusMode string
 
 // ConfigureDatabaseRequest defines model for ConfigureDatabaseRequest.
 type ConfigureDatabaseRequest struct {
@@ -213,6 +390,33 @@ type CreateAppUserRequest struct {
 	AppRole  AppRole             `json:"appRole"`
 	Email    openapi_types.Email `json:"email"`
 	Password string              `json:"password"`
+}
+
+// CreateClubRequest defines model for CreateClubRequest.
+type CreateClubRequest struct {
+	ClubName   string `json:"clubName"`
+	DeviceName string `json:"deviceName"`
+
+	// Folder Parent folder; the club gets its own subfolder in it.
+	Folder string `json:"folder"`
+
+	// Password Login password of the current user; protects the device keys.
+	Password string `json:"password"`
+	Person   string `json:"person"`
+}
+
+// CreateClubResponse defines model for CreateClubResponse.
+type CreateClubResponse struct {
+	Path string `json:"path"`
+
+	// RecoveryKit Shown once
+	RecoveryKit string `json:"recoveryKit"`
+}
+
+// CreateInviteRequest defines model for CreateInviteRequest.
+type CreateInviteRequest struct {
+	Person string `json:"person"`
+	Role   string `json:"role"`
 }
 
 // DatabaseMode defines model for DatabaseMode.
@@ -294,6 +498,25 @@ type FinanceTransactionUpdateRequest struct {
 // FinanceTransactionUpdateRequestType defines model for FinanceTransactionUpdateRequest.Type.
 type FinanceTransactionUpdateRequestType string
 
+// FolderClub defines model for FolderClub.
+type FolderClub struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
+}
+
+// FolderInfo defines model for FolderInfo.
+type FolderInfo struct {
+	Club        *FolderClub    `json:"club,omitempty"`
+	ClubsInside []FolderClub   `json:"clubsInside"`
+	Kind        FolderInfoKind `json:"kind"`
+	Path        string         `json:"path"`
+	Provider    *string        `json:"provider,omitempty"`
+	Writable    bool           `json:"writable"`
+}
+
+// FolderInfoKind defines model for FolderInfo.Kind.
+type FolderInfoKind string
+
 // ForgotPasswordRequest defines model for ForgotPasswordRequest.
 type ForgotPasswordRequest struct {
 	Email openapi_types.Email `json:"email"`
@@ -373,6 +596,23 @@ type InventoryLoanUpdateRequest struct {
 	MemberId   *string    `json:"memberId,omitempty"`
 	Notes      *string    `json:"notes,omitempty"`
 	ReturnedAt *time.Time `json:"returnedAt,omitempty"`
+}
+
+// JoinClubRequest defines model for JoinClubRequest.
+type JoinClubRequest struct {
+	Code       string `json:"code"`
+	DeviceName string `json:"deviceName"`
+	Folder     string `json:"folder"`
+	Password   string `json:"password"`
+	Person     string `json:"person"`
+
+	// ReplaceLocalData Back up and clear existing local data before joining.
+	ReplaceLocalData *bool `json:"replaceLocalData,omitempty"`
+}
+
+// LocalDataResponse defines model for LocalDataResponse.
+type LocalDataResponse struct {
+	HasLocalData bool `json:"hasLocalData"`
 }
 
 // LoginRequest defines model for LoginRequest.
@@ -551,10 +791,25 @@ type NamedEntityReference struct {
 // NamedEntityUpdateRequest defines model for NamedEntityUpdateRequest.
 type NamedEntityUpdateRequest = NamedEntityCreateRequest
 
+// RecoverRequest defines model for RecoverRequest.
+type RecoverRequest struct {
+	DeviceName       string  `json:"deviceName"`
+	Folder           *string `json:"folder,omitempty"`
+	Password         string  `json:"password"`
+	Person           string  `json:"person"`
+	RecoveryKit      string  `json:"recoveryKit"`
+	ReplaceLocalData *bool   `json:"replaceLocalData,omitempty"`
+}
+
 // ResetPasswordRequest defines model for ResetPasswordRequest.
 type ResetPasswordRequest struct {
 	NewPassword string `json:"newPassword"`
 	Token       string `json:"token"`
+}
+
+// SafetyCodeResponse defines model for SafetyCodeResponse.
+type SafetyCodeResponse struct {
+	SafetyCode string `json:"safetyCode"`
 }
 
 // SetDbPathRequest defines model for SetDbPathRequest.
@@ -592,6 +847,16 @@ type Statistic struct {
 // SuccessResponse defines model for SuccessResponse.
 type SuccessResponse struct {
 	Success bool `json:"success"`
+}
+
+// SyncConflict defines model for SyncConflict.
+type SyncConflict struct {
+	Column     string    `json:"column"`
+	DetectedAt time.Time `json:"detectedAt"`
+	KeptRowId  string    `json:"keptRowId"`
+	RowId      string    `json:"rowId"`
+	Table      string    `json:"table"`
+	Value      string    `json:"value"`
 }
 
 // UpdateAppPreferenceRequest defines model for UpdateAppPreferenceRequest.
@@ -709,6 +974,27 @@ type LoginJSONRequestBody = LoginRequest
 
 // ResetPasswordJSONRequestBody defines body for ResetPassword for application/json ContentType.
 type ResetPasswordJSONRequestBody = ResetPasswordRequest
+
+// CreateCollaborationClubJSONRequestBody defines body for CreateCollaborationClub for application/json ContentType.
+type CreateCollaborationClubJSONRequestBody = CreateClubRequest
+
+// ChangeCollaborationDeviceRoleJSONRequestBody defines body for ChangeCollaborationDeviceRole for application/json ContentType.
+type ChangeCollaborationDeviceRoleJSONRequestBody = ChangeDeviceRoleRequest
+
+// CheckCollaborationFolderJSONRequestBody defines body for CheckCollaborationFolder for application/json ContentType.
+type CheckCollaborationFolderJSONRequestBody = CheckFolderRequest
+
+// CreateCollaborationInviteJSONRequestBody defines body for CreateCollaborationInvite for application/json ContentType.
+type CreateCollaborationInviteJSONRequestBody = CreateInviteRequest
+
+// JoinCollaborationClubJSONRequestBody defines body for JoinCollaborationClub for application/json ContentType.
+type JoinCollaborationClubJSONRequestBody = JoinClubRequest
+
+// RecoverCollaborationClubJSONRequestBody defines body for RecoverCollaborationClub for application/json ContentType.
+type RecoverCollaborationClubJSONRequestBody = RecoverRequest
+
+// ApproveCollaborationRequestJSONRequestBody defines body for ApproveCollaborationRequest for application/json ContentType.
+type ApproveCollaborationRequestJSONRequestBody = ApproveRequest
 
 // CreateMemberFeeJSONRequestBody defines body for CreateMemberFee for application/json ContentType.
 type CreateMemberFeeJSONRequestBody = MemberFeeCreateRequest
@@ -976,6 +1262,66 @@ type ServerInterface interface {
 	// Reset password using a valid reset token
 	// (POST /auth/reset-password)
 	ResetPassword(w http.ResponseWriter, r *http.Request)
+	// Create a club for collaboration
+	// (POST /collaboration/club)
+	CreateCollaborationClub(w http.ResponseWriter, r *http.Request)
+	// Duplicate values found after synchronizing (docs/sync-protocol.md §14.2)
+	// (GET /collaboration/conflicts)
+	ListCollaborationConflicts(w http.ResponseWriter, r *http.Request)
+	// People and devices of the club
+	// (GET /collaboration/devices)
+	ListCollaborationDevices(w http.ResponseWriter, r *http.Request)
+	// Remove a device from the club
+	// (POST /collaboration/devices/{deviceId}/revoke)
+	RevokeCollaborationDevice(w http.ResponseWriter, r *http.Request, deviceId string)
+	// Change the role of a device
+	// (PUT /collaboration/devices/{deviceId}/role)
+	ChangeCollaborationDeviceRole(w http.ResponseWriter, r *http.Request, deviceId string)
+	// Folders of sync clients found on this computer
+	// (GET /collaboration/folders)
+	ListCollaborationFolders(w http.ResponseWriter, r *http.Request)
+	// Check a folder chosen by the user
+	// (POST /collaboration/folders/check)
+	CheckCollaborationFolder(w http.ResponseWriter, r *http.Request)
+	// Invites created on this device
+	// (GET /collaboration/invites)
+	ListCollaborationInvites(w http.ResponseWriter, r *http.Request)
+	// Invite a person
+	// (POST /collaboration/invites)
+	CreateCollaborationInvite(w http.ResponseWriter, r *http.Request)
+	// Withdraw an unused invite
+	// (DELETE /collaboration/invites/{inviteId})
+	WithdrawCollaborationInvite(w http.ResponseWriter, r *http.Request, inviteId string)
+	// Ask to join a club with an invite code
+	// (POST /collaboration/join)
+	JoinCollaborationClub(w http.ResponseWriter, r *http.Request)
+	// Safety code of this device while its join request is pending
+	// (GET /collaboration/join/safety-code)
+	GetCollaborationSafetyCode(w http.ResponseWriter, r *http.Request)
+	// Whether this device holds data that joining would replace
+	// (GET /collaboration/local-data)
+	GetCollaborationLocalData(w http.ResponseWriter, r *http.Request)
+	// Use the recovery kit to become an admin device
+	// (POST /collaboration/recover)
+	RecoverCollaborationClub(w http.ResponseWriter, r *http.Request)
+	// Pending join requests (admin devices)
+	// (GET /collaboration/requests)
+	ListCollaborationRequests(w http.ResponseWriter, r *http.Request)
+	// Approve a join request with the safety code read out by the new member
+	// (POST /collaboration/requests/{deviceId}/approve)
+	ApproveCollaborationRequest(w http.ResponseWriter, r *http.Request, deviceId string)
+	// Reject a join request
+	// (POST /collaboration/requests/{deviceId}/reject)
+	RejectCollaborationRequest(w http.ResponseWriter, r *http.Request, deviceId string)
+	// Roles and what they may see and change
+	// (GET /collaboration/roles)
+	ListCollaborationRoles(w http.ResponseWriter, r *http.Request)
+	// Collaboration status of this device
+	// (GET /collaboration/status)
+	GetCollaborationStatus(w http.ResponseWriter, r *http.Request)
+	// Synchronize now
+	// (POST /collaboration/sync)
+	SyncCollaboration(w http.ResponseWriter, r *http.Request)
 	// List member fees
 	// (GET /finance/memberfees)
 	ListMemberFees(w http.ResponseWriter, r *http.Request)
@@ -1222,6 +1568,126 @@ func (_ Unimplemented) RefreshAccessToken(w http.ResponseWriter, r *http.Request
 // Reset password using a valid reset token
 // (POST /auth/reset-password)
 func (_ Unimplemented) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a club for collaboration
+// (POST /collaboration/club)
+func (_ Unimplemented) CreateCollaborationClub(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Duplicate values found after synchronizing (docs/sync-protocol.md §14.2)
+// (GET /collaboration/conflicts)
+func (_ Unimplemented) ListCollaborationConflicts(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// People and devices of the club
+// (GET /collaboration/devices)
+func (_ Unimplemented) ListCollaborationDevices(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Remove a device from the club
+// (POST /collaboration/devices/{deviceId}/revoke)
+func (_ Unimplemented) RevokeCollaborationDevice(w http.ResponseWriter, r *http.Request, deviceId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Change the role of a device
+// (PUT /collaboration/devices/{deviceId}/role)
+func (_ Unimplemented) ChangeCollaborationDeviceRole(w http.ResponseWriter, r *http.Request, deviceId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Folders of sync clients found on this computer
+// (GET /collaboration/folders)
+func (_ Unimplemented) ListCollaborationFolders(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Check a folder chosen by the user
+// (POST /collaboration/folders/check)
+func (_ Unimplemented) CheckCollaborationFolder(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Invites created on this device
+// (GET /collaboration/invites)
+func (_ Unimplemented) ListCollaborationInvites(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Invite a person
+// (POST /collaboration/invites)
+func (_ Unimplemented) CreateCollaborationInvite(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Withdraw an unused invite
+// (DELETE /collaboration/invites/{inviteId})
+func (_ Unimplemented) WithdrawCollaborationInvite(w http.ResponseWriter, r *http.Request, inviteId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Ask to join a club with an invite code
+// (POST /collaboration/join)
+func (_ Unimplemented) JoinCollaborationClub(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Safety code of this device while its join request is pending
+// (GET /collaboration/join/safety-code)
+func (_ Unimplemented) GetCollaborationSafetyCode(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Whether this device holds data that joining would replace
+// (GET /collaboration/local-data)
+func (_ Unimplemented) GetCollaborationLocalData(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Use the recovery kit to become an admin device
+// (POST /collaboration/recover)
+func (_ Unimplemented) RecoverCollaborationClub(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Pending join requests (admin devices)
+// (GET /collaboration/requests)
+func (_ Unimplemented) ListCollaborationRequests(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Approve a join request with the safety code read out by the new member
+// (POST /collaboration/requests/{deviceId}/approve)
+func (_ Unimplemented) ApproveCollaborationRequest(w http.ResponseWriter, r *http.Request, deviceId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Reject a join request
+// (POST /collaboration/requests/{deviceId}/reject)
+func (_ Unimplemented) RejectCollaborationRequest(w http.ResponseWriter, r *http.Request, deviceId string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Roles and what they may see and change
+// (GET /collaboration/roles)
+func (_ Unimplemented) ListCollaborationRoles(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Collaboration status of this device
+// (GET /collaboration/status)
+func (_ Unimplemented) GetCollaborationStatus(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Synchronize now
+// (POST /collaboration/sync)
+func (_ Unimplemented) SyncCollaboration(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1749,6 +2215,466 @@ func (siw *ServerInterfaceWrapper) ResetPassword(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ResetPassword(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateCollaborationClub operation middleware
+func (siw *ServerInterfaceWrapper) CreateCollaborationClub(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateCollaborationClub(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCollaborationConflicts operation middleware
+func (siw *ServerInterfaceWrapper) ListCollaborationConflicts(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCollaborationConflicts(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCollaborationDevices operation middleware
+func (siw *ServerInterfaceWrapper) ListCollaborationDevices(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCollaborationDevices(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RevokeCollaborationDevice operation middleware
+func (siw *ServerInterfaceWrapper) RevokeCollaborationDevice(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "deviceId" -------------
+	var deviceId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "deviceId", chi.URLParam(r, "deviceId"), &deviceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "deviceId", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RevokeCollaborationDevice(w, r, deviceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ChangeCollaborationDeviceRole operation middleware
+func (siw *ServerInterfaceWrapper) ChangeCollaborationDeviceRole(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "deviceId" -------------
+	var deviceId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "deviceId", chi.URLParam(r, "deviceId"), &deviceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "deviceId", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ChangeCollaborationDeviceRole(w, r, deviceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCollaborationFolders operation middleware
+func (siw *ServerInterfaceWrapper) ListCollaborationFolders(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCollaborationFolders(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CheckCollaborationFolder operation middleware
+func (siw *ServerInterfaceWrapper) CheckCollaborationFolder(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CheckCollaborationFolder(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCollaborationInvites operation middleware
+func (siw *ServerInterfaceWrapper) ListCollaborationInvites(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCollaborationInvites(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateCollaborationInvite operation middleware
+func (siw *ServerInterfaceWrapper) CreateCollaborationInvite(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateCollaborationInvite(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// WithdrawCollaborationInvite operation middleware
+func (siw *ServerInterfaceWrapper) WithdrawCollaborationInvite(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "inviteId" -------------
+	var inviteId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "inviteId", chi.URLParam(r, "inviteId"), &inviteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "inviteId", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.WithdrawCollaborationInvite(w, r, inviteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// JoinCollaborationClub operation middleware
+func (siw *ServerInterfaceWrapper) JoinCollaborationClub(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.JoinCollaborationClub(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetCollaborationSafetyCode operation middleware
+func (siw *ServerInterfaceWrapper) GetCollaborationSafetyCode(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCollaborationSafetyCode(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetCollaborationLocalData operation middleware
+func (siw *ServerInterfaceWrapper) GetCollaborationLocalData(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCollaborationLocalData(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RecoverCollaborationClub operation middleware
+func (siw *ServerInterfaceWrapper) RecoverCollaborationClub(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RecoverCollaborationClub(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCollaborationRequests operation middleware
+func (siw *ServerInterfaceWrapper) ListCollaborationRequests(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCollaborationRequests(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ApproveCollaborationRequest operation middleware
+func (siw *ServerInterfaceWrapper) ApproveCollaborationRequest(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "deviceId" -------------
+	var deviceId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "deviceId", chi.URLParam(r, "deviceId"), &deviceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "deviceId", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ApproveCollaborationRequest(w, r, deviceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RejectCollaborationRequest operation middleware
+func (siw *ServerInterfaceWrapper) RejectCollaborationRequest(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "deviceId" -------------
+	var deviceId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "deviceId", chi.URLParam(r, "deviceId"), &deviceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "deviceId", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RejectCollaborationRequest(w, r, deviceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListCollaborationRoles operation middleware
+func (siw *ServerInterfaceWrapper) ListCollaborationRoles(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCollaborationRoles(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetCollaborationStatus operation middleware
+func (siw *ServerInterfaceWrapper) GetCollaborationStatus(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCollaborationStatus(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SyncCollaboration operation middleware
+func (siw *ServerInterfaceWrapper) SyncCollaboration(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SyncCollaboration(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3476,6 +4402,66 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/auth/reset-password", wrapper.ResetPassword)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/club", wrapper.CreateCollaborationClub)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collaboration/conflicts", wrapper.ListCollaborationConflicts)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collaboration/devices", wrapper.ListCollaborationDevices)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/devices/{deviceId}/revoke", wrapper.RevokeCollaborationDevice)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/collaboration/devices/{deviceId}/role", wrapper.ChangeCollaborationDeviceRole)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collaboration/folders", wrapper.ListCollaborationFolders)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/folders/check", wrapper.CheckCollaborationFolder)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collaboration/invites", wrapper.ListCollaborationInvites)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/invites", wrapper.CreateCollaborationInvite)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/collaboration/invites/{inviteId}", wrapper.WithdrawCollaborationInvite)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/join", wrapper.JoinCollaborationClub)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collaboration/join/safety-code", wrapper.GetCollaborationSafetyCode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collaboration/local-data", wrapper.GetCollaborationLocalData)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/recover", wrapper.RecoverCollaborationClub)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collaboration/requests", wrapper.ListCollaborationRequests)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/requests/{deviceId}/approve", wrapper.ApproveCollaborationRequest)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/requests/{deviceId}/reject", wrapper.RejectCollaborationRequest)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collaboration/roles", wrapper.ListCollaborationRoles)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collaboration/status", wrapper.GetCollaborationStatus)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/sync", wrapper.SyncCollaboration)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/finance/memberfees", wrapper.ListMemberFees)
 	})
 	r.Group(func(r chi.Router) {
@@ -4041,6 +5027,1103 @@ func (response ResetPassword500JSONResponse) VisitResetPasswordResponse(w http.R
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCollaborationClubRequestObject struct {
+	Body *CreateCollaborationClubJSONRequestBody
+}
+
+type CreateCollaborationClubResponseObject interface {
+	VisitCreateCollaborationClubResponse(w http.ResponseWriter) error
+}
+
+type CreateCollaborationClub201JSONResponse CreateClubResponse
+
+func (response CreateCollaborationClub201JSONResponse) VisitCreateCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCollaborationClub400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response CreateCollaborationClub400JSONResponse) VisitCreateCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCollaborationClub401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response CreateCollaborationClub401JSONResponse) VisitCreateCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCollaborationClub403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response CreateCollaborationClub403JSONResponse) VisitCreateCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCollaborationClub409JSONResponse struct{ ConflictJSONResponse }
+
+func (response CreateCollaborationClub409JSONResponse) VisitCreateCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationConflictsRequestObject struct {
+}
+
+type ListCollaborationConflictsResponseObject interface {
+	VisitListCollaborationConflictsResponse(w http.ResponseWriter) error
+}
+
+type ListCollaborationConflicts200JSONResponse []SyncConflict
+
+func (response ListCollaborationConflicts200JSONResponse) VisitListCollaborationConflictsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationConflicts401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ListCollaborationConflicts401JSONResponse) VisitListCollaborationConflictsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationDevicesRequestObject struct {
+}
+
+type ListCollaborationDevicesResponseObject interface {
+	VisitListCollaborationDevicesResponse(w http.ResponseWriter) error
+}
+
+type ListCollaborationDevices200JSONResponse []ClubDevice
+
+func (response ListCollaborationDevices200JSONResponse) VisitListCollaborationDevicesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationDevices401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ListCollaborationDevices401JSONResponse) VisitListCollaborationDevicesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeCollaborationDeviceRequestObject struct {
+	DeviceId string `json:"deviceId"`
+}
+
+type RevokeCollaborationDeviceResponseObject interface {
+	VisitRevokeCollaborationDeviceResponse(w http.ResponseWriter) error
+}
+
+type RevokeCollaborationDevice204Response = NoContentResponse
+
+func (response RevokeCollaborationDevice204Response) VisitRevokeCollaborationDeviceResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type RevokeCollaborationDevice401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response RevokeCollaborationDevice401JSONResponse) VisitRevokeCollaborationDeviceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeCollaborationDevice403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response RevokeCollaborationDevice403JSONResponse) VisitRevokeCollaborationDeviceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeCollaborationDevice404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response RevokeCollaborationDevice404JSONResponse) VisitRevokeCollaborationDeviceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeCollaborationDevice409JSONResponse struct{ ConflictJSONResponse }
+
+func (response RevokeCollaborationDevice409JSONResponse) VisitRevokeCollaborationDeviceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChangeCollaborationDeviceRoleRequestObject struct {
+	DeviceId string `json:"deviceId"`
+	Body     *ChangeCollaborationDeviceRoleJSONRequestBody
+}
+
+type ChangeCollaborationDeviceRoleResponseObject interface {
+	VisitChangeCollaborationDeviceRoleResponse(w http.ResponseWriter) error
+}
+
+type ChangeCollaborationDeviceRole204Response = NoContentResponse
+
+func (response ChangeCollaborationDeviceRole204Response) VisitChangeCollaborationDeviceRoleResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type ChangeCollaborationDeviceRole400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response ChangeCollaborationDeviceRole400JSONResponse) VisitChangeCollaborationDeviceRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChangeCollaborationDeviceRole401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ChangeCollaborationDeviceRole401JSONResponse) VisitChangeCollaborationDeviceRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChangeCollaborationDeviceRole403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response ChangeCollaborationDeviceRole403JSONResponse) VisitChangeCollaborationDeviceRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChangeCollaborationDeviceRole404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response ChangeCollaborationDeviceRole404JSONResponse) VisitChangeCollaborationDeviceRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChangeCollaborationDeviceRole409JSONResponse struct{ ConflictJSONResponse }
+
+func (response ChangeCollaborationDeviceRole409JSONResponse) VisitChangeCollaborationDeviceRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationFoldersRequestObject struct {
+}
+
+type ListCollaborationFoldersResponseObject interface {
+	VisitListCollaborationFoldersResponse(w http.ResponseWriter) error
+}
+
+type ListCollaborationFolders200JSONResponse []FolderInfo
+
+func (response ListCollaborationFolders200JSONResponse) VisitListCollaborationFoldersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationFolders401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ListCollaborationFolders401JSONResponse) VisitListCollaborationFoldersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckCollaborationFolderRequestObject struct {
+	Body *CheckCollaborationFolderJSONRequestBody
+}
+
+type CheckCollaborationFolderResponseObject interface {
+	VisitCheckCollaborationFolderResponse(w http.ResponseWriter) error
+}
+
+type CheckCollaborationFolder200JSONResponse FolderInfo
+
+func (response CheckCollaborationFolder200JSONResponse) VisitCheckCollaborationFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckCollaborationFolder400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response CheckCollaborationFolder400JSONResponse) VisitCheckCollaborationFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckCollaborationFolder401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response CheckCollaborationFolder401JSONResponse) VisitCheckCollaborationFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckCollaborationFolder404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response CheckCollaborationFolder404JSONResponse) VisitCheckCollaborationFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationInvitesRequestObject struct {
+}
+
+type ListCollaborationInvitesResponseObject interface {
+	VisitListCollaborationInvitesResponse(w http.ResponseWriter) error
+}
+
+type ListCollaborationInvites200JSONResponse []ClubInvite
+
+func (response ListCollaborationInvites200JSONResponse) VisitListCollaborationInvitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationInvites401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ListCollaborationInvites401JSONResponse) VisitListCollaborationInvitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationInvites403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response ListCollaborationInvites403JSONResponse) VisitListCollaborationInvitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCollaborationInviteRequestObject struct {
+	Body *CreateCollaborationInviteJSONRequestBody
+}
+
+type CreateCollaborationInviteResponseObject interface {
+	VisitCreateCollaborationInviteResponse(w http.ResponseWriter) error
+}
+
+type CreateCollaborationInvite201JSONResponse ClubInvite
+
+func (response CreateCollaborationInvite201JSONResponse) VisitCreateCollaborationInviteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCollaborationInvite400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response CreateCollaborationInvite400JSONResponse) VisitCreateCollaborationInviteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCollaborationInvite401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response CreateCollaborationInvite401JSONResponse) VisitCreateCollaborationInviteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateCollaborationInvite403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response CreateCollaborationInvite403JSONResponse) VisitCreateCollaborationInviteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawCollaborationInviteRequestObject struct {
+	InviteId string `json:"inviteId"`
+}
+
+type WithdrawCollaborationInviteResponseObject interface {
+	VisitWithdrawCollaborationInviteResponse(w http.ResponseWriter) error
+}
+
+type WithdrawCollaborationInvite204Response = NoContentResponse
+
+func (response WithdrawCollaborationInvite204Response) VisitWithdrawCollaborationInviteResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type WithdrawCollaborationInvite401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response WithdrawCollaborationInvite401JSONResponse) VisitWithdrawCollaborationInviteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawCollaborationInvite403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response WithdrawCollaborationInvite403JSONResponse) VisitWithdrawCollaborationInviteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawCollaborationInvite404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response WithdrawCollaborationInvite404JSONResponse) VisitWithdrawCollaborationInviteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type JoinCollaborationClubRequestObject struct {
+	Body *JoinCollaborationClubJSONRequestBody
+}
+
+type JoinCollaborationClubResponseObject interface {
+	VisitJoinCollaborationClubResponse(w http.ResponseWriter) error
+}
+
+type JoinCollaborationClub201JSONResponse SafetyCodeResponse
+
+func (response JoinCollaborationClub201JSONResponse) VisitJoinCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type JoinCollaborationClub400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response JoinCollaborationClub400JSONResponse) VisitJoinCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type JoinCollaborationClub401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response JoinCollaborationClub401JSONResponse) VisitJoinCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type JoinCollaborationClub403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response JoinCollaborationClub403JSONResponse) VisitJoinCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type JoinCollaborationClub409JSONResponse struct{ ConflictJSONResponse }
+
+func (response JoinCollaborationClub409JSONResponse) VisitJoinCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetCollaborationSafetyCodeRequestObject struct {
+}
+
+type GetCollaborationSafetyCodeResponseObject interface {
+	VisitGetCollaborationSafetyCodeResponse(w http.ResponseWriter) error
+}
+
+type GetCollaborationSafetyCode200JSONResponse SafetyCodeResponse
+
+func (response GetCollaborationSafetyCode200JSONResponse) VisitGetCollaborationSafetyCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetCollaborationSafetyCode401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response GetCollaborationSafetyCode401JSONResponse) VisitGetCollaborationSafetyCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetCollaborationSafetyCode409JSONResponse struct{ ConflictJSONResponse }
+
+func (response GetCollaborationSafetyCode409JSONResponse) VisitGetCollaborationSafetyCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetCollaborationLocalDataRequestObject struct {
+}
+
+type GetCollaborationLocalDataResponseObject interface {
+	VisitGetCollaborationLocalDataResponse(w http.ResponseWriter) error
+}
+
+type GetCollaborationLocalData200JSONResponse LocalDataResponse
+
+func (response GetCollaborationLocalData200JSONResponse) VisitGetCollaborationLocalDataResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetCollaborationLocalData401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response GetCollaborationLocalData401JSONResponse) VisitGetCollaborationLocalDataResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RecoverCollaborationClubRequestObject struct {
+	Body *RecoverCollaborationClubJSONRequestBody
+}
+
+type RecoverCollaborationClubResponseObject interface {
+	VisitRecoverCollaborationClubResponse(w http.ResponseWriter) error
+}
+
+type RecoverCollaborationClub200JSONResponse CollaborationStatus
+
+func (response RecoverCollaborationClub200JSONResponse) VisitRecoverCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RecoverCollaborationClub400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response RecoverCollaborationClub400JSONResponse) VisitRecoverCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RecoverCollaborationClub401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response RecoverCollaborationClub401JSONResponse) VisitRecoverCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RecoverCollaborationClub403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response RecoverCollaborationClub403JSONResponse) VisitRecoverCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RecoverCollaborationClub409JSONResponse struct{ ConflictJSONResponse }
+
+func (response RecoverCollaborationClub409JSONResponse) VisitRecoverCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationRequestsRequestObject struct {
+}
+
+type ListCollaborationRequestsResponseObject interface {
+	VisitListCollaborationRequestsResponse(w http.ResponseWriter) error
+}
+
+type ListCollaborationRequests200JSONResponse []ClubJoinRequest
+
+func (response ListCollaborationRequests200JSONResponse) VisitListCollaborationRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationRequests401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ListCollaborationRequests401JSONResponse) VisitListCollaborationRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ApproveCollaborationRequestRequestObject struct {
+	DeviceId string `json:"deviceId"`
+	Body     *ApproveCollaborationRequestJSONRequestBody
+}
+
+type ApproveCollaborationRequestResponseObject interface {
+	VisitApproveCollaborationRequestResponse(w http.ResponseWriter) error
+}
+
+type ApproveCollaborationRequest204Response = NoContentResponse
+
+func (response ApproveCollaborationRequest204Response) VisitApproveCollaborationRequestResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type ApproveCollaborationRequest401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ApproveCollaborationRequest401JSONResponse) VisitApproveCollaborationRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ApproveCollaborationRequest403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response ApproveCollaborationRequest403JSONResponse) VisitApproveCollaborationRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ApproveCollaborationRequest404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response ApproveCollaborationRequest404JSONResponse) VisitApproveCollaborationRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ApproveCollaborationRequest409JSONResponse struct{ ConflictJSONResponse }
+
+func (response ApproveCollaborationRequest409JSONResponse) VisitApproveCollaborationRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ApproveCollaborationRequest422JSONResponse ErrorResponse
+
+func (response ApproveCollaborationRequest422JSONResponse) VisitApproveCollaborationRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectCollaborationRequestRequestObject struct {
+	DeviceId string `json:"deviceId"`
+}
+
+type RejectCollaborationRequestResponseObject interface {
+	VisitRejectCollaborationRequestResponse(w http.ResponseWriter) error
+}
+
+type RejectCollaborationRequest204Response = NoContentResponse
+
+func (response RejectCollaborationRequest204Response) VisitRejectCollaborationRequestResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type RejectCollaborationRequest401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response RejectCollaborationRequest401JSONResponse) VisitRejectCollaborationRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectCollaborationRequest403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response RejectCollaborationRequest403JSONResponse) VisitRejectCollaborationRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectCollaborationRequest404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response RejectCollaborationRequest404JSONResponse) VisitRejectCollaborationRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationRolesRequestObject struct {
+}
+
+type ListCollaborationRolesResponseObject interface {
+	VisitListCollaborationRolesResponse(w http.ResponseWriter) error
+}
+
+type ListCollaborationRoles200JSONResponse []ClubRole
+
+func (response ListCollaborationRoles200JSONResponse) VisitListCollaborationRolesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCollaborationRoles401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ListCollaborationRoles401JSONResponse) VisitListCollaborationRolesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetCollaborationStatusRequestObject struct {
+}
+
+type GetCollaborationStatusResponseObject interface {
+	VisitGetCollaborationStatusResponse(w http.ResponseWriter) error
+}
+
+type GetCollaborationStatus200JSONResponse CollaborationStatus
+
+func (response GetCollaborationStatus200JSONResponse) VisitGetCollaborationStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetCollaborationStatus401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response GetCollaborationStatus401JSONResponse) VisitGetCollaborationStatusResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SyncCollaborationRequestObject struct {
+}
+
+type SyncCollaborationResponseObject interface {
+	VisitSyncCollaborationResponse(w http.ResponseWriter) error
+}
+
+type SyncCollaboration200JSONResponse CollaborationStatus
+
+func (response SyncCollaboration200JSONResponse) VisitSyncCollaborationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SyncCollaboration401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response SyncCollaboration401JSONResponse) VisitSyncCollaborationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
 	_, err := buf.WriteTo(w)
 	return err
 }
@@ -7231,6 +9314,66 @@ type StrictServerInterface interface {
 	// Reset password using a valid reset token
 	// (POST /auth/reset-password)
 	ResetPassword(ctx context.Context, request ResetPasswordRequestObject) (ResetPasswordResponseObject, error)
+	// Create a club for collaboration
+	// (POST /collaboration/club)
+	CreateCollaborationClub(ctx context.Context, request CreateCollaborationClubRequestObject) (CreateCollaborationClubResponseObject, error)
+	// Duplicate values found after synchronizing (docs/sync-protocol.md §14.2)
+	// (GET /collaboration/conflicts)
+	ListCollaborationConflicts(ctx context.Context, request ListCollaborationConflictsRequestObject) (ListCollaborationConflictsResponseObject, error)
+	// People and devices of the club
+	// (GET /collaboration/devices)
+	ListCollaborationDevices(ctx context.Context, request ListCollaborationDevicesRequestObject) (ListCollaborationDevicesResponseObject, error)
+	// Remove a device from the club
+	// (POST /collaboration/devices/{deviceId}/revoke)
+	RevokeCollaborationDevice(ctx context.Context, request RevokeCollaborationDeviceRequestObject) (RevokeCollaborationDeviceResponseObject, error)
+	// Change the role of a device
+	// (PUT /collaboration/devices/{deviceId}/role)
+	ChangeCollaborationDeviceRole(ctx context.Context, request ChangeCollaborationDeviceRoleRequestObject) (ChangeCollaborationDeviceRoleResponseObject, error)
+	// Folders of sync clients found on this computer
+	// (GET /collaboration/folders)
+	ListCollaborationFolders(ctx context.Context, request ListCollaborationFoldersRequestObject) (ListCollaborationFoldersResponseObject, error)
+	// Check a folder chosen by the user
+	// (POST /collaboration/folders/check)
+	CheckCollaborationFolder(ctx context.Context, request CheckCollaborationFolderRequestObject) (CheckCollaborationFolderResponseObject, error)
+	// Invites created on this device
+	// (GET /collaboration/invites)
+	ListCollaborationInvites(ctx context.Context, request ListCollaborationInvitesRequestObject) (ListCollaborationInvitesResponseObject, error)
+	// Invite a person
+	// (POST /collaboration/invites)
+	CreateCollaborationInvite(ctx context.Context, request CreateCollaborationInviteRequestObject) (CreateCollaborationInviteResponseObject, error)
+	// Withdraw an unused invite
+	// (DELETE /collaboration/invites/{inviteId})
+	WithdrawCollaborationInvite(ctx context.Context, request WithdrawCollaborationInviteRequestObject) (WithdrawCollaborationInviteResponseObject, error)
+	// Ask to join a club with an invite code
+	// (POST /collaboration/join)
+	JoinCollaborationClub(ctx context.Context, request JoinCollaborationClubRequestObject) (JoinCollaborationClubResponseObject, error)
+	// Safety code of this device while its join request is pending
+	// (GET /collaboration/join/safety-code)
+	GetCollaborationSafetyCode(ctx context.Context, request GetCollaborationSafetyCodeRequestObject) (GetCollaborationSafetyCodeResponseObject, error)
+	// Whether this device holds data that joining would replace
+	// (GET /collaboration/local-data)
+	GetCollaborationLocalData(ctx context.Context, request GetCollaborationLocalDataRequestObject) (GetCollaborationLocalDataResponseObject, error)
+	// Use the recovery kit to become an admin device
+	// (POST /collaboration/recover)
+	RecoverCollaborationClub(ctx context.Context, request RecoverCollaborationClubRequestObject) (RecoverCollaborationClubResponseObject, error)
+	// Pending join requests (admin devices)
+	// (GET /collaboration/requests)
+	ListCollaborationRequests(ctx context.Context, request ListCollaborationRequestsRequestObject) (ListCollaborationRequestsResponseObject, error)
+	// Approve a join request with the safety code read out by the new member
+	// (POST /collaboration/requests/{deviceId}/approve)
+	ApproveCollaborationRequest(ctx context.Context, request ApproveCollaborationRequestRequestObject) (ApproveCollaborationRequestResponseObject, error)
+	// Reject a join request
+	// (POST /collaboration/requests/{deviceId}/reject)
+	RejectCollaborationRequest(ctx context.Context, request RejectCollaborationRequestRequestObject) (RejectCollaborationRequestResponseObject, error)
+	// Roles and what they may see and change
+	// (GET /collaboration/roles)
+	ListCollaborationRoles(ctx context.Context, request ListCollaborationRolesRequestObject) (ListCollaborationRolesResponseObject, error)
+	// Collaboration status of this device
+	// (GET /collaboration/status)
+	GetCollaborationStatus(ctx context.Context, request GetCollaborationStatusRequestObject) (GetCollaborationStatusResponseObject, error)
+	// Synchronize now
+	// (POST /collaboration/sync)
+	SyncCollaboration(ctx context.Context, request SyncCollaborationRequestObject) (SyncCollaborationResponseObject, error)
 	// List member fees
 	// (GET /finance/memberfees)
 	ListMemberFees(ctx context.Context, request ListMemberFeesRequestObject) (ListMemberFeesResponseObject, error)
@@ -7652,6 +9795,545 @@ func (sh *strictHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ResetPasswordResponseObject); ok {
 		if err := validResponse.VisitResetPasswordResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateCollaborationClub operation middleware
+func (sh *strictHandler) CreateCollaborationClub(w http.ResponseWriter, r *http.Request) {
+	var request CreateCollaborationClubRequestObject
+
+	var body CreateCollaborationClubJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateCollaborationClub(ctx, request.(CreateCollaborationClubRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateCollaborationClub")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateCollaborationClubResponseObject); ok {
+		if err := validResponse.VisitCreateCollaborationClubResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCollaborationConflicts operation middleware
+func (sh *strictHandler) ListCollaborationConflicts(w http.ResponseWriter, r *http.Request) {
+	var request ListCollaborationConflictsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCollaborationConflicts(ctx, request.(ListCollaborationConflictsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCollaborationConflicts")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCollaborationConflictsResponseObject); ok {
+		if err := validResponse.VisitListCollaborationConflictsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCollaborationDevices operation middleware
+func (sh *strictHandler) ListCollaborationDevices(w http.ResponseWriter, r *http.Request) {
+	var request ListCollaborationDevicesRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCollaborationDevices(ctx, request.(ListCollaborationDevicesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCollaborationDevices")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCollaborationDevicesResponseObject); ok {
+		if err := validResponse.VisitListCollaborationDevicesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RevokeCollaborationDevice operation middleware
+func (sh *strictHandler) RevokeCollaborationDevice(w http.ResponseWriter, r *http.Request, deviceId string) {
+	var request RevokeCollaborationDeviceRequestObject
+
+	request.DeviceId = deviceId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RevokeCollaborationDevice(ctx, request.(RevokeCollaborationDeviceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RevokeCollaborationDevice")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RevokeCollaborationDeviceResponseObject); ok {
+		if err := validResponse.VisitRevokeCollaborationDeviceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ChangeCollaborationDeviceRole operation middleware
+func (sh *strictHandler) ChangeCollaborationDeviceRole(w http.ResponseWriter, r *http.Request, deviceId string) {
+	var request ChangeCollaborationDeviceRoleRequestObject
+
+	request.DeviceId = deviceId
+
+	var body ChangeCollaborationDeviceRoleJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ChangeCollaborationDeviceRole(ctx, request.(ChangeCollaborationDeviceRoleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ChangeCollaborationDeviceRole")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ChangeCollaborationDeviceRoleResponseObject); ok {
+		if err := validResponse.VisitChangeCollaborationDeviceRoleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCollaborationFolders operation middleware
+func (sh *strictHandler) ListCollaborationFolders(w http.ResponseWriter, r *http.Request) {
+	var request ListCollaborationFoldersRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCollaborationFolders(ctx, request.(ListCollaborationFoldersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCollaborationFolders")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCollaborationFoldersResponseObject); ok {
+		if err := validResponse.VisitListCollaborationFoldersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CheckCollaborationFolder operation middleware
+func (sh *strictHandler) CheckCollaborationFolder(w http.ResponseWriter, r *http.Request) {
+	var request CheckCollaborationFolderRequestObject
+
+	var body CheckCollaborationFolderJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CheckCollaborationFolder(ctx, request.(CheckCollaborationFolderRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CheckCollaborationFolder")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CheckCollaborationFolderResponseObject); ok {
+		if err := validResponse.VisitCheckCollaborationFolderResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCollaborationInvites operation middleware
+func (sh *strictHandler) ListCollaborationInvites(w http.ResponseWriter, r *http.Request) {
+	var request ListCollaborationInvitesRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCollaborationInvites(ctx, request.(ListCollaborationInvitesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCollaborationInvites")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCollaborationInvitesResponseObject); ok {
+		if err := validResponse.VisitListCollaborationInvitesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateCollaborationInvite operation middleware
+func (sh *strictHandler) CreateCollaborationInvite(w http.ResponseWriter, r *http.Request) {
+	var request CreateCollaborationInviteRequestObject
+
+	var body CreateCollaborationInviteJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateCollaborationInvite(ctx, request.(CreateCollaborationInviteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateCollaborationInvite")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateCollaborationInviteResponseObject); ok {
+		if err := validResponse.VisitCreateCollaborationInviteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// WithdrawCollaborationInvite operation middleware
+func (sh *strictHandler) WithdrawCollaborationInvite(w http.ResponseWriter, r *http.Request, inviteId string) {
+	var request WithdrawCollaborationInviteRequestObject
+
+	request.InviteId = inviteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.WithdrawCollaborationInvite(ctx, request.(WithdrawCollaborationInviteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "WithdrawCollaborationInvite")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(WithdrawCollaborationInviteResponseObject); ok {
+		if err := validResponse.VisitWithdrawCollaborationInviteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// JoinCollaborationClub operation middleware
+func (sh *strictHandler) JoinCollaborationClub(w http.ResponseWriter, r *http.Request) {
+	var request JoinCollaborationClubRequestObject
+
+	var body JoinCollaborationClubJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.JoinCollaborationClub(ctx, request.(JoinCollaborationClubRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "JoinCollaborationClub")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(JoinCollaborationClubResponseObject); ok {
+		if err := validResponse.VisitJoinCollaborationClubResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetCollaborationSafetyCode operation middleware
+func (sh *strictHandler) GetCollaborationSafetyCode(w http.ResponseWriter, r *http.Request) {
+	var request GetCollaborationSafetyCodeRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetCollaborationSafetyCode(ctx, request.(GetCollaborationSafetyCodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetCollaborationSafetyCode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetCollaborationSafetyCodeResponseObject); ok {
+		if err := validResponse.VisitGetCollaborationSafetyCodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetCollaborationLocalData operation middleware
+func (sh *strictHandler) GetCollaborationLocalData(w http.ResponseWriter, r *http.Request) {
+	var request GetCollaborationLocalDataRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetCollaborationLocalData(ctx, request.(GetCollaborationLocalDataRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetCollaborationLocalData")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetCollaborationLocalDataResponseObject); ok {
+		if err := validResponse.VisitGetCollaborationLocalDataResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RecoverCollaborationClub operation middleware
+func (sh *strictHandler) RecoverCollaborationClub(w http.ResponseWriter, r *http.Request) {
+	var request RecoverCollaborationClubRequestObject
+
+	var body RecoverCollaborationClubJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RecoverCollaborationClub(ctx, request.(RecoverCollaborationClubRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RecoverCollaborationClub")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RecoverCollaborationClubResponseObject); ok {
+		if err := validResponse.VisitRecoverCollaborationClubResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCollaborationRequests operation middleware
+func (sh *strictHandler) ListCollaborationRequests(w http.ResponseWriter, r *http.Request) {
+	var request ListCollaborationRequestsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCollaborationRequests(ctx, request.(ListCollaborationRequestsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCollaborationRequests")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCollaborationRequestsResponseObject); ok {
+		if err := validResponse.VisitListCollaborationRequestsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ApproveCollaborationRequest operation middleware
+func (sh *strictHandler) ApproveCollaborationRequest(w http.ResponseWriter, r *http.Request, deviceId string) {
+	var request ApproveCollaborationRequestRequestObject
+
+	request.DeviceId = deviceId
+
+	var body ApproveCollaborationRequestJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ApproveCollaborationRequest(ctx, request.(ApproveCollaborationRequestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ApproveCollaborationRequest")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ApproveCollaborationRequestResponseObject); ok {
+		if err := validResponse.VisitApproveCollaborationRequestResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RejectCollaborationRequest operation middleware
+func (sh *strictHandler) RejectCollaborationRequest(w http.ResponseWriter, r *http.Request, deviceId string) {
+	var request RejectCollaborationRequestRequestObject
+
+	request.DeviceId = deviceId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RejectCollaborationRequest(ctx, request.(RejectCollaborationRequestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RejectCollaborationRequest")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RejectCollaborationRequestResponseObject); ok {
+		if err := validResponse.VisitRejectCollaborationRequestResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCollaborationRoles operation middleware
+func (sh *strictHandler) ListCollaborationRoles(w http.ResponseWriter, r *http.Request) {
+	var request ListCollaborationRolesRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCollaborationRoles(ctx, request.(ListCollaborationRolesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCollaborationRoles")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCollaborationRolesResponseObject); ok {
+		if err := validResponse.VisitListCollaborationRolesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetCollaborationStatus operation middleware
+func (sh *strictHandler) GetCollaborationStatus(w http.ResponseWriter, r *http.Request) {
+	var request GetCollaborationStatusRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetCollaborationStatus(ctx, request.(GetCollaborationStatusRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetCollaborationStatus")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetCollaborationStatusResponseObject); ok {
+		if err := validResponse.VisitGetCollaborationStatusResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SyncCollaboration operation middleware
+func (sh *strictHandler) SyncCollaboration(w http.ResponseWriter, r *http.Request) {
+	var request SyncCollaborationRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SyncCollaboration(ctx, request.(SyncCollaborationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SyncCollaboration")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SyncCollaborationResponseObject); ok {
+		if err := validResponse.VisitSyncCollaborationResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

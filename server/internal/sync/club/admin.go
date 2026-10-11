@@ -274,7 +274,7 @@ func (c *Club) acceptedCutoff(ctx context.Context, head *acl.Version, deviceID s
 // a version signed by the root key adds the device (or changes its role) to
 // an admin role, and the keys it lacks are taken from the root's key files.
 // The root key is wiped from memory afterwards.
-func (c *Club) Recover(ctx context.Context, kitText, person string) (*acl.Version, error) {
+func (c *Club) Recover(ctx context.Context, kitText, person, deviceName string) (*acl.Version, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	kit, err := c.openKit(kitText)
@@ -289,7 +289,7 @@ func (c *Club) Recover(ctx context.Context, kitText, person string) (*acl.Versio
 		case d == nil:
 			next.Devices = append(next.Devices, acl.Device{
 				DeviceID: c.dev.ID, SignPub: c.dev.SignPubB64(), AgeRecipient: c.dev.AgeRecipient(),
-				Person: person, Role: role, Status: acl.StatusActive, AddedIn: next.Version,
+				Person: person, DeviceName: deviceName, Role: role, Status: acl.StatusActive, AddedIn: next.Version,
 			})
 		case !d.Active():
 			return ErrDeviceRevoked
@@ -350,7 +350,7 @@ func adminRole(a *acl.ACL) string {
 
 // RecoverNew joins a club with the recovery kit on a device that has no club
 // yet, e.g. after all admin devices were lost (§17.5 "or a new device").
-func RecoverNew(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.Transport, kitText, person string) (*Club, *acl.Version, error) {
+func RecoverNew(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.Transport, kitText, person, deviceName string) (*Club, *acl.Version, error) {
 	if err := requireNoClub(ctx, conn); err != nil {
 		return nil, nil, err
 	}
@@ -373,7 +373,7 @@ func RecoverNew(ctx context.Context, conn *sql.DB, dev *identity.Device, tr tran
 		g.ClubID, g.Name, g.RootSignPub, g.RootAgeRecipient, gRaw, gSig, StatusJoining); err != nil {
 		return nil, nil, err
 	}
-	v, err := c.Recover(ctx, kitText, person)
+	v, err := c.Recover(ctx, kitText, person, deviceName)
 	if err != nil {
 		return nil, nil, err
 	}

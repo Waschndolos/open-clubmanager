@@ -64,7 +64,7 @@ func folder(t *testing.T, dir string) transport.Transport {
 
 func (n *node) create(clubName string) *identity.RecoveryKit {
 	n.t.Helper()
-	c, kit, err := Create(ctx, n.conn, n.dev, n.tr, clubName, "Person "+n.name)
+	c, kit, err := Create(ctx, n.conn, n.dev, n.tr, clubName, "Person "+n.name, "Laptop")
 	if err != nil {
 		n.t.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func (n *node) create(clubName string) *identity.RecoveryKit {
 
 func (n *node) join(code string) string {
 	n.t.Helper()
-	c, safety, err := Join(ctx, n.conn, n.dev, n.tr, code, "Person "+n.name)
+	c, safety, err := Join(ctx, n.conn, n.dev, n.tr, code, "Person "+n.name, "Laptop")
 	if err != nil {
 		n.t.Fatalf("%s join: %v", n.name, err)
 	}
@@ -162,7 +162,7 @@ func TestMultiDeviceLifecycle(t *testing.T) {
 			}
 		}
 	}
-	if _, _, err := Create(ctx, a.conn, a.dev, a.tr, "Second", "x"); !errors.Is(err, ErrAlreadyInClub) {
+	if _, _, err := Create(ctx, a.conn, a.dev, a.tr, "Second", "x", ""); !errors.Is(err, ErrAlreadyInClub) {
 		t.Errorf("second club: %v", err)
 	}
 

@@ -1,5 +1,5 @@
 import {
-    Accordion, AccordionDetails,
+    Accordion, AccordionDetails, Box,
     AccordionSummary,
     Autocomplete,
     Button,
@@ -22,6 +22,8 @@ import {fetchSections} from "../../api/sections";
 import dayjs from "dayjs";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {useCollaboration, usePermission} from "../../context/CollaborationContext";
+import {useRoleName} from "../../components/collaboration/common";
 
 type Props = {
     member: Member;
@@ -34,6 +36,19 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
     const {t} = useTranslation();
     const [formData, setFormData] = useState<Member>({...member});
     const [expandedPanel, setExpandedPanel] = useState<string | false>('personal');
+
+    // In a collaboration club the device's role decides which member data is
+    // shown and editable (UX F10): hidden areas are not rendered at all,
+    // read-only areas are disabled.
+    const core = usePermission('membersCore');
+    const contact = usePermission('membersContact');
+    const bank = usePermission('membersBank');
+    const coreRO = core !== 'write';
+    const contactRO = contact !== 'write';
+    const bankRO = bank !== 'write';
+    const canSave = !coreRO || !contactRO || !bankRO;
+    const {status} = useCollaboration();
+    const roleName = useRoleName();
     const [allRoles, setAllRoles] = useState<Role[]>([]);
     const [allGroups, setAllGroups] = useState<Group[]>([]);
     const [allSections, setAllSections] = useState<ClubSection[]>([]);
@@ -69,47 +84,51 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.number")}
                                                                         value={formData.number ?? ''}
-                                                                        onChange={(e) => handleChange("number", e.target.value)}/></Grid>
-                                <Grid size={{xs: 12, sm: 6}}><TextField fullWidth required
+                                                                        onChange={(e) => handleChange("number", e.target.value)} disabled={coreRO}/></Grid>
+                                {contact !== 'none' && <Grid size={{xs: 12, sm: 6}}><TextField fullWidth required
                                                                         label={t("members.table.header.email")}
                                                                         value={formData.email ?? ''}
-                                                                        onChange={(e) => handleChange("email", e.target.value)}/></Grid>
+                                                                        onChange={(e) => handleChange("email", e.target.value)} disabled={contactRO}/></Grid>}
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.firstName")}
                                                                         value={formData.firstName ?? ''}
-                                                                        onChange={(e) => handleChange("firstName", e.target.value)}/></Grid>
+                                                                        onChange={(e) => handleChange("firstName", e.target.value)} disabled={coreRO}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.lastName")}
                                                                         value={formData.lastName ?? ''}
-                                                                        onChange={(e) => handleChange("lastName", e.target.value)}/></Grid>
+                                                                        onChange={(e) => handleChange("lastName", e.target.value)} disabled={coreRO}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}>
                                     <DatePicker sx={{xs: 12, sm: 6}}
                                                 label={t("members.table.header.birthday")}
                                                 value={formData.birthday ? dayjs(formData.birthday) : null}
                                                 onChange={(date) => handleChange("birthday", date?.toISOString())}
+                                                disabled={coreRO}
                                     />
                                 </Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.comment")}
                                                                         value={formData.comment ?? ''}
-                                                                        onChange={(e) => handleChange("comment", e.target.value)}/></Grid>
+                                                                        onChange={(e) => handleChange("comment", e.target.value)} disabled={coreRO}/></Grid>
+                                {contact !== 'none' && <>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.phone")}
                                                                         value={formData.phone ?? ''}
-                                                                        onChange={(e) => handleChange("phone", e.target.value)}/></Grid>
+                                                                        onChange={(e) => handleChange("phone", e.target.value)} disabled={contactRO}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.phoneMobile")}
                                                                         value={formData.phoneMobile ?? ''}
-                                                                        onChange={(e) => handleChange("phoneMobile", e.target.value)}/></Grid>
+                                                                        onChange={(e) => handleChange("phoneMobile", e.target.value)} disabled={contactRO}/></Grid>
+                                </>}
                             </Grid>
                         </AccordionDetails>
                     </Accordion>
 
-                    <Accordion expanded={expandedPanel === 'address'} onChange={handleAccordionChange('address')}>
+                    {contact !== 'none' && <Accordion expanded={expandedPanel === 'address'} onChange={handleAccordionChange('address')}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon/>} >
                             <Typography>{t("members.dialogs.sections.address")}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
+                            <Box component="fieldset" disabled={contactRO} sx={{border: 0, p: 0, m: 0, minWidth: 0}}>
                             <Grid container spacing={2}>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.street")}
@@ -127,14 +146,17 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                                                                         value={formData.state ?? ''}
                                                                         onChange={(e) => handleChange("state", e.target.value)}/></Grid>
                             </Grid>
+                        </Box>
                         </AccordionDetails>
-                    </Accordion>
+                    </Accordion>}
 
-                    <Accordion expanded={expandedPanel === 'bank'} onChange={handleAccordionChange('bank')}>
+                    {bank !== 'none' && <Accordion expanded={expandedPanel === 'bank'} onChange={handleAccordionChange('bank')}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
                             <Typography>{t("members.dialogs.sections.bank")}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
+                            {bankRO && <Typography variant="body2" color="text.secondary" sx={{mb: 1}}>{t("collaboration.readOnly", {role: roleName(status?.role)})}</Typography>}
+                            <Box component="fieldset" disabled={bankRO} sx={{border: 0, p: 0, m: 0, minWidth: 0}}>
                             <Grid container spacing={2}>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.accountHolder")}
@@ -159,8 +181,9 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                                     />
                                 </Grid>
                             </Grid>
+                        </Box>
                         </AccordionDetails>
-                    </Accordion>
+                    </Accordion>}
 
 
                     <Accordion expanded={expandedPanel === 'membership'} onChange={handleAccordionChange('membership')}>
@@ -168,6 +191,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                             <Typography>{t("members.dialogs.sections.membership")}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
+                            <Box component="fieldset" disabled={coreRO} sx={{border: 0, p: 0, m: 0, minWidth: 0}}>
                             <Grid container spacing={2}>
                                 <DatePicker
                                     label={t("members.table.header.entryDate")}
@@ -180,6 +204,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                                     onChange={(date) => handleChange("exitDate", date?.toISOString())}
                                 />
                             </Grid>
+                        </Box>
                         </AccordionDetails>
                     </Accordion>
 
@@ -189,6 +214,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                             <Typography>{t("members.dialogs.sections.entities")}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
+                            <Box component="fieldset" disabled={coreRO} sx={{border: 0, p: 0, m: 0, minWidth: 0}}>
                             <Grid container spacing={2} sx={{mt: 3}}>
                                 <Grid size={{xs: 12, sm: 6}}>
                                     <Autocomplete
@@ -242,6 +268,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                                     />
                                 </Grid>
                             </Grid>
+                        </Box>
                         </AccordionDetails>
                     </Accordion>
 
@@ -251,8 +278,9 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                     <Button onClick={onClose}>{t("buttons.abort")}</Button>
                     <Button
                         variant="contained"
+                        disabled={!canSave}
                         onClick={() => {
-                            if (!formData.email) return;
+                            if (contact !== 'none' && !formData.email) return;
                             const payload = {
                                 ...formData,
                                 roleIds: formData.roles?.map(r => r.id),

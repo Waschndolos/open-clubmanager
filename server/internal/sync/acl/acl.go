@@ -37,10 +37,12 @@ type Device struct {
 	SignPub      string `json:"sign_pub"`
 	AgeRecipient string `json:"age_recipient"`
 	Person       string `json:"person"`
-	Role         string `json:"role"`
-	Status       string `json:"status"`
-	AddedIn      uint64 `json:"added_in"`
-	RevokedIn    uint64 `json:"revoked_in,omitempty"`
+	// DeviceName is the name the person gave the device ("Laptop").
+	DeviceName string `json:"device_name,omitempty"`
+	Role       string `json:"role"`
+	Status     string `json:"status"`
+	AddedIn    uint64 `json:"added_in"`
+	RevokedIn  uint64 `json:"revoked_in,omitempty"`
 	// Cutoff is the highest seq per scope that is still accepted from a
 	// revoked device (§13.2 rule 6). A scope missing here has cutoff 0.
 	Cutoff map[db.Scope]uint64 `json:"cutoff,omitempty"`

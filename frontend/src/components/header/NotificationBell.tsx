@@ -9,6 +9,8 @@ import {
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {useTranslation} from "react-i18next";
 import {useNotification} from "../../context/NotificationContext";
+import {useNavigate} from "react-router-dom";
+import {useCollaboration} from "../../context/CollaborationContext";
 
 export default function NotificationBell() {
     const { t } = useTranslation();
@@ -16,6 +18,32 @@ export default function NotificationBell() {
     const open = Boolean(anchorEl);
 
     const { notifications, clearNotifications } = useNotification();
+    const navigate = useNavigate();
+    const { status } = useCollaboration();
+
+    // Collaboration items link to where they are resolved (UX §3).
+    const collabItems: { id: string; message: string; link: string }[] = [];
+    if (status && status.mode !== 'local') {
+        if (status.pendingRequests > 0) {
+            collabItems.push({ id: 'requests', message: t('collaboration.popover.requests', { count: status.pendingRequests }), link: '/collaboration?tab=people' });
+        }
+        if (status.conflicts > 0) {
+            collabItems.push({ id: 'conflicts', message: t('collaboration.popover.conflicts', { count: status.conflicts }), link: '/collaboration/conflicts' });
+        }
+        if (status.locked) {
+            collabItems.push({ id: 'locked', message: t('collaboration.status.locked'), link: '/collaboration' });
+        }
+        if (status.mode === 'revoked') {
+            collabItems.push({ id: 'revoked', message: t('collaboration.status.revoked'), link: '/collaboration' });
+        }
+        if (status.lostChanges > 0) {
+            collabItems.push({ id: 'lost', message: t('collaboration.popover.lostChanges'), link: '/collaboration?tab=people' });
+        }
+        if (status.badKeys > 0) {
+            collabItems.push({ id: 'keys', message: t('collaboration.popover.badKeys'), link: '/collaboration' });
+        }
+    }
+    const count = notifications.length + collabItems.length;
 
     const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -33,7 +61,7 @@ export default function NotificationBell() {
                 size="small"
                 aria-label={t('header.notifications.title')}
             >
-                <Badge badgeContent={notifications.length} color="error">
+                <Badge badgeContent={count} color="error">
                     <NotificationsIcon fontSize="small" />
                 </Badge>
             </IconButton>
@@ -45,7 +73,12 @@ export default function NotificationBell() {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-                {notifications.length === 0 ? (
+                {collabItems.map((item) => (
+                    <MenuItem key={item.id} onClick={() => { handleClose(); navigate(item.link); }} sx={{ whiteSpace: 'normal', maxWidth: 360 }}>
+                        <ListItemText primary={item.message} />
+                    </MenuItem>
+                ))}
+                {count === 0 ? (
                     <MenuItem disabled>{t("header.notifications.none")}</MenuItem>
                 ) : (
                     notifications.map((note) => (

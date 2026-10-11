@@ -24,6 +24,8 @@ import {
     getSetupStatus,
 } from '../../api/setup';
 import { login } from '../../api/authentication';
+import { useAuth } from '../../context/AuthContext';
+import { ChoiceCard } from '../../components/collaboration/common';
 import { setAccessToken } from '../../api/api';
 import { seedSetupDemoData } from '../../api/setupDemoData';
 import { getDatabaseSettings } from '../../api/settings';
@@ -46,6 +48,15 @@ const Setup: React.FC = () => {
     const [databaseConfigured, setDatabaseConfigured] = useState(false);
     const [databaseValidationMessage, setDatabaseValidationMessage] = useState('');
     const [importDemoData, setImportDemoData] = useState(false);
+    // How the club will be managed (UX F1). Collaboration modes continue in
+    // their wizard after the local account exists.
+    const [usage, setUsage] = useState<'local' | 'create' | 'join' | 'recover'>('local');
+    const { setAccessToken: setAuthAccessToken } = useAuth();
+
+    // Demo data must not end up in a shared club.
+    useEffect(() => {
+        if (usage !== 'local') setImportDemoData(false);
+    }, [usage]);
 
     const isWindowsClient = typeof navigator !== 'undefined' && /windows/i.test(navigator.userAgent);
     const localPathPlaceholder = isWindowsClient
@@ -91,7 +102,7 @@ const Setup: React.FC = () => {
 
             await configureDatabase(configuredValue);
             setDatabaseConfigured(true);
-            setCurrentStep(1);
+            setCurrentStep(2);
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : t('setup.error.generic'));
         } finally {
@@ -125,6 +136,14 @@ const Setup: React.FC = () => {
         setSubmitting(true);
         try {
             await initializeAdmin(email, password);
+
+            if (usage !== 'local') {
+                const { accessToken } = await login(email, password);
+                setAccessToken(accessToken);
+                setAuthAccessToken(accessToken);
+                navigate(`/collaboration/${usage}`, { replace: true });
+                return;
+            }
 
             let setupWarning: string | undefined;
             if (importDemoData) {
@@ -228,6 +247,9 @@ const Setup: React.FC = () => {
 
                         <Stepper activeStep={currentStep} sx={{ mb: 3 }}>
                             <Step completed={false}>
+                                <StepLabel>{t('collaboration.setup.stepUsage')}</StepLabel>
+                            </Step>
+                            <Step completed={false}>
                                 <StepLabel>{t('setup.steps.database')}</StepLabel>
                             </Step>
                             <Step completed={false}>
@@ -237,6 +259,30 @@ const Setup: React.FC = () => {
 
                         <Box display="flex" flexDirection="column" gap={2}>
                             {currentStep === 0 && (
+                                <>
+                                    <Typography sx={{ fontWeight: 600 }}>{t('collaboration.setup.question')}</Typography>
+                                    <ChoiceCard selected={usage === 'local'} onSelect={() => setUsage('local')}
+                                                title={t('collaboration.setup.local')} description={t('collaboration.setup.localDesc')} />
+                                    <ChoiceCard selected={usage === 'create'} onSelect={() => setUsage('create')}
+                                                title={t('collaboration.setup.create')} description={t('collaboration.setup.createDesc')} />
+                                    <ChoiceCard selected={usage === 'join'} onSelect={() => setUsage('join')}
+                                                title={t('collaboration.setup.join')} description={t('collaboration.setup.joinDesc')} />
+                                    {usage !== 'local' && (
+                                        <Alert severity="info" variant="outlined">{t('collaboration.setup.accountFirst')}</Alert>
+                                    )}
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
+                                        <Button size="small" onClick={() => setUsage('recover')}
+                                                variant={usage === 'recover' ? 'outlined' : 'text'}>
+                                            {t('collaboration.setup.recover')}
+                                        </Button>
+                                        <Button variant="contained" size="large" onClick={() => setCurrentStep(1)}>
+                                            {t('buttons.next')}
+                                        </Button>
+                                    </Box>
+                                </>
+                            )}
+
+                            {currentStep === 1 && (
                                 <>
                                     <Typography variant="body2" color="text.secondary">
                                         {t('setup.database.localHint')}
@@ -259,6 +305,9 @@ const Setup: React.FC = () => {
                                         placeholder={localPathPlaceholder}
                                     />
 
+                                    <Button onClick={() => setCurrentStep(0)} disabled={submitting} sx={{ alignSelf: 'flex-start' }}>
+                                        {t('buttons.back')}
+                                    </Button>
                                     <Button
                                         variant="contained"
                                         fullWidth
@@ -275,7 +324,7 @@ const Setup: React.FC = () => {
                                 </>
                             )}
 
-                            {currentStep === 1 && (
+                            {currentStep === 2 && (
                                 <>
                                     <Alert severity="success" variant="outlined">
                                         {t('setup.database.configured')}
@@ -354,6 +403,7 @@ const Setup: React.FC = () => {
                                         }}
                                     />
 
+                                    {usage === 'local' ? (<>
                                     <FormControlLabel
                                         control={(
                                             <Checkbox
@@ -368,6 +418,11 @@ const Setup: React.FC = () => {
                                     <Typography variant="body2" color="text.secondary">
                                         {t('setup.demoData.hint')}
                                     </Typography>
+                                    </>) : (
+                                        <Typography variant="body2" color="text.secondary">
+                                            {t('collaboration.setup.demoOnlyLocal')}
+                                        </Typography>
+                                    )}
 
                                     <Button
                                         variant="contained"
