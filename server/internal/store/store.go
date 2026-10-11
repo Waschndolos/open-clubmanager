@@ -2,8 +2,10 @@
 // It owns all SQL; handlers translate between its types and the API types.
 //
 // Rows of synced tables are never deleted: Delete methods set deleted_at
-// (a tombstone the future sync layer replicates) and every read filters on
-// deleted_at IS NULL. All writes bump updated_at.
+// (a tombstone the sync layer replicates) and every read filters on
+// deleted_at IS NULL. Writes to synced tables go through a writer (see
+// syncwrite.go), which bumps updated_at and records field clocks and outbox
+// ops in the same transaction.
 package store
 
 import (
@@ -17,12 +19,13 @@ import (
 	sqlite3 "modernc.org/sqlite/lib"
 
 	"github.com/Waschndolos/open-clubmanager/server/internal/db"
+	"github.com/Waschndolos/open-clubmanager/server/internal/sync/hlc"
 )
 
 var (
 	// ErrNotFound is returned when the requested (live) row does not exist.
 	ErrNotFound = errors.New("not found")
-	// ErrConflict is returned when a write violates a uniqueness constraint.
+	// ErrConflict is returned when a write violates a uniqueness rule.
 	ErrConflict = errors.New("conflict")
 	// ErrInvalidReference is returned when a write references a row that does
 	// not exist.
@@ -32,11 +35,13 @@ var (
 // Store provides typed access to the database.
 type Store struct {
 	db *sql.DB
+	// clock is the device's HLC; its value is persisted in sync_device.
+	clock *hlc.Clock
 }
 
 // New wraps an open database (see db.Open).
 func New(conn *sql.DB) *Store {
-	return &Store{db: conn}
+	return &Store{db: conn, clock: hlc.New(hlc.Timestamp{})}
 }
 
 // inTx runs fn in a transaction, committing when it returns nil.
@@ -156,29 +161,22 @@ func stringArgs(ids []string) []any {
 	return args
 }
 
-type execer interface {
-	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
-}
-
 // setLinks makes the live links in a member_* link table from fixedCol=fixedID
 // exactly the given otherIDs: missing links are tombstoned, new ones inserted
 // and previously tombstoned ones revived.
-func setLinks(ctx context.Context, tx execer, table, fixedCol, fixedID, otherCol string, otherIDs []string, now string) error {
-	args := append([]any{now, now, fixedID}, stringArgs(otherIDs)...)
-	query := `UPDATE ` + table + ` SET deleted_at = ?, updated_at = ? WHERE ` + fixedCol + ` = ? AND deleted_at IS NULL`
+func setLinks(w *writer, table, fixedCol, fixedID, otherCol string, otherIDs []string, now string) error {
+	where := fixedCol + ` = ? AND deleted_at IS NULL`
+	args := []any{fixedID}
 	if len(otherIDs) > 0 {
-		query += ` AND ` + otherCol + ` NOT IN (` + placeholders(len(otherIDs)) + `)`
+		where += ` AND ` + otherCol + ` NOT IN (` + placeholders(len(otherIDs)) + `)`
+		args = append(args, stringArgs(otherIDs)...)
 	}
-	if _, err := tx.ExecContext(ctx, query, args...); err != nil {
-		return mapErr(err)
+	if _, err := w.update(table, where, args, row{"deleted_at": now}); err != nil {
+		return err
 	}
 	for _, id := range otherIDs {
-		_, err := tx.ExecContext(ctx,
-			`INSERT INTO `+table+` (`+fixedCol+`, `+otherCol+`, updated_at) VALUES (?, ?, ?)
-			 ON CONFLICT DO UPDATE SET deleted_at = NULL, updated_at = excluded.updated_at WHERE deleted_at IS NOT NULL`,
-			fixedID, id, now)
-		if err != nil {
-			return mapErr(err)
+		if err := w.upsert(table, row{fixedCol: fixedID, otherCol: id}, row{"deleted_at": nil}); err != nil {
+			return err
 		}
 	}
 	return nil

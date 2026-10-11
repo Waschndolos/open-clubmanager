@@ -8,8 +8,9 @@ import (
 	"github.com/Waschndolos/open-clubmanager/server/internal/db"
 )
 
-// User is an application login stored in the database (scope admin). The
-// administrator from config.json is not a row here.
+// User is an application login stored in the database. users is local to this
+// device and never synced. The administrator from config.json is not a row
+// here.
 type User struct {
 	ID           string
 	Email        string

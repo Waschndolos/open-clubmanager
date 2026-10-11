@@ -307,12 +307,15 @@ root-signed fork resolution under [§8.3](#83-concurrent-acl-edits).
 A new device has no prior high-water mark. During enrollment, the approving
 admin MUST provide an authenticated out-of-band checkpoint containing
 `club_id`, `root_sign_pub`, the latest ACL version and full hash, plus
-per-scope/per-stream sequence and complete-file-hash frontiers (or the hashes
-and frontiers of the starting snapshots). The new device pins these values and
+for each readable scope the SHA-256 hash of the complete newest valid
+snapshot file known to the admin and its frontiers, or (if there is no
+snapshot) per-stream sequence
+and complete-file-hash frontiers through which the retained history can be
+replayed. The checkpoint MUST identify which case applies to each scope.
+Frontier sequence `0` has a `null` hash. The new device pins these values and
 MUST NOT infer the current state solely from the files returned by the
 transport. This protects against rollback relative to the admin's checkpoint;
-frontier sequence `0` has a `null` hash. Folder-only transports cannot prove
-that no later files are being withheld.
+folder-only transports cannot prove that no later files are being withheld.
 
 ## 9. Scope keys and epochs
 
@@ -466,6 +469,11 @@ if r.ms <= now_ms() + MAX_DRIFT: hlc = max(hlc, r)   # then tick as above for th
   generations outrank every HLC in older generations; affected values may need
   to be reviewed and re-entered. This is recovery, not prevention.
 - If the counter overflows, the device waits for the next millisecond.
+- **Every op gets its own tick**, also when several ops are written in the
+  same database transaction. Two ops of one device therefore never share an
+  HLC, and two writes to the same field within one transaction cannot tie.
+- Ops in a segment MUST be ordered by ascending `hlc`. `hlc_min` and
+  `hlc_max` in the header are the first and last of them.
 
 ## 13. Applying changes
 
@@ -477,13 +485,16 @@ For each scope the device can read, the device:
 3. processes them strictly in `seq` order.
 
 A gap (missing `seq`) stops that stream until the missing file appears.
-On first sync, the device MUST reconstruct state from a snapshot matching the
-pinned enrollment checkpoint ([§8.4](#84-rollback-protection)) or replay each
-stream from sequence 1 through its checkpoint frontier and verify the pinned
-hash. It MUST NOT skip directly to a checkpoint frontier without a matching
-snapshot. After verifying the checkpoint, it records those frontiers and
-applies later segments normally. Missing or mismatched checkpoint data leaves
-the scope incomplete; the device MUST NOT silently select an older state.
+On first sync, the device MUST load and verify the snapshot whose full file
+hash is pinned for that scope in its enrollment checkpoint
+([§8.4](#84-rollback-protection)), then apply segments after its recorded
+positions. If the checkpoint specifies no snapshot, the device MUST replay
+each stream from sequence 1 through its checkpoint frontier and verify the
+pinned hash. It MUST NOT skip directly to a checkpoint frontier without the
+checkpointed snapshot or a complete replay. After verifying the checkpoint,
+it records those frontiers and applies later segments normally. Missing or
+mismatched checkpoint data leaves the scope incomplete; the device MUST NOT
+silently select an older state.
 
 ### 13.2 Verification
 
@@ -634,6 +645,13 @@ prevents duplicates whenever it can see them.
   it. An older snapshot MAY be used as a rebuild base only if its frontiers for
   revoked devices do not exceed their cutoffs and the remaining prefixes are
   replayed and checked against the cutoff hashes.
+- A device that joins a club MUST load the newest valid snapshot of each scope
+  it can read that is named by its authenticated enrollment checkpoint. It
+  MUST verify the snapshot as specified above and then apply segments after
+  the recorded positions. If the checkpoint names no snapshot for a scope,
+  the device MUST replay the retained segment history through the checkpoint
+  frontiers; it MUST NOT skip data that exists only in a snapshot, such as the
+  initial snapshot ([§15.4](#154-initial-snapshot)).
 - Admin devices SHOULD write a snapshot per scope when more than 1,000
   segments have accumulated since the last one, or once a month.
 
@@ -662,6 +680,30 @@ The documentation for clubs MUST mention this.
 Retention periods for finance records (§ 147 AO: 10 years) take precedence
 over erasure. The UI MUST warn before purging finance data.
 
+### 15.4 Initial snapshot
+
+A club is usually created on a device that already holds data from local
+mode. These rows were written before sync existed: they have no field clocks
+from the club's history, and changes in `sync_outbox` from before the club
+was created are not part of any stream.
+
+When a club is created ([§17.1](#171-creating-a-club)), the device therefore:
+1. Assigns a field clock to every column of every row in synced tables that
+   has none, all with the same HLC `G` (the club creation time) and its own
+   `device_id`. Existing clocks are kept.
+2. Clears `sync_outbox`. Every change in it is already in the local tables
+   and therefore in the snapshot.
+3. Writes one snapshot per scope with epoch 1 and an empty `streams` map.
+4. Sets the next `seq` of every scope to 1. The first segment after the
+   snapshot has `prev: null`.
+
+The snapshot is the starting state for all other devices. Its rows behave
+like any other data: later ops change them by normal LWW, since every
+later HLC is greater than `G`.
+
+A club created on an empty database still writes the (empty) initial
+snapshots, so joining devices always find one.
+
 ## 16. Schema evolution
 
 - `schema` in segment headers is the app's sync schema version (integer).
@@ -682,8 +724,16 @@ over erasure. The UI MUST warn before purging finance data.
 1. Generate device keys and root key.
 2. Write `club.json` + signature, ACL version 1 (the device as `board`), keys
    for epoch 1 of all scopes for the device and `root`.
-3. Show the recovery kit. The user MUST confirm they printed or saved it.
+3. Write the initial snapshots ([§15.4](#154-initial-snapshot)).
+4. Show the recovery kit. The user MUST confirm they printed or saved it.
    Then delete the root private key from the device.
+
+**Joining with existing local data:** a device that joins a club
+([§17.2](#172-inviting-a-device)) MUST start with empty synced tables.
+Merging two independent data sets is not supported in version 1. If the
+device holds local data, the app MUST offer to export or back it up, and
+then clears the synced tables and `sync_outbox` before applying the club's
+snapshots.
 
 ### 17.2 Inviting a device
 
