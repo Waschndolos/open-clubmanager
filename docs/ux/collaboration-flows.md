@@ -262,7 +262,7 @@ Das geht nicht über Open ClubManager, sondern bei eurem Anbieter.
 ```
 Einladung für Erika Mustermann (Kassierer)
 
-  [QR-Code]     7K2P-QX9M-4TFA-W3RB-NC5H-Y8LD     [Kopieren]
+  [QR-Code]     7K2P-QX3M-4TFA-W3RB-NC5H-Y6LD     [Kopieren]
 
 Schicke Erika diesen Code, z. B. per E-Mail oder Messenger.
 Er ist 7 Tage gültig und kann nur einmal verwendet werden.
@@ -579,7 +579,7 @@ Settings → Zusammenarbeit → „Dieses Gerät abmelden“.
 Decided after the first draft:
 
 1. **Short invite code.** The code contains only the invite id and secret
-   (24 characters, e.g. `7K2P-QX9M-4TFA-W3RB-NC5H-Y8LD`). The club is found
+   (24 characters, e.g. `7K2P-QX3M-4TFA-W3RB-NC5H-Y6LD`). The club is found
    through the storage location; for WebDAV and server a QR code or link
    carries the address. Spec §17.2 is updated accordingly.
 2. **One club per device in v1.** If a device that already belongs to a club

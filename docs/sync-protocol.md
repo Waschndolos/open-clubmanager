@@ -743,7 +743,8 @@ Steps:
    - `invite_secret`, 10 random bytes (80 bits).
    It stores the intended role and expiry date (default 7 days) **locally** and
    shows an **invite code**: `invite_id || invite_secret` as 24 characters of
-   uppercase base32 in groups of four, e.g. `7K2P-QX9M-4TFA-W3RB-NC5H-Y8LD`.
+   uppercase base32 (RFC 4648 alphabet A–Z and 2–7, no padding) in groups
+   of four, e.g. `7K2P-QX3M-4TFA-W3RB-NC5H-Y6LD`.
    - The code does not contain the club id or the storage location, so it
      stays short enough to type. The joining device learns the club from
      `club.json` in the storage location the person selects.
