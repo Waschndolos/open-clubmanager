@@ -37,7 +37,6 @@ type Config struct {
 	Port           int                    `json:"port"`
 	BindAddress    string                 `json:"bindAddress,omitempty"`
 	DatabasePath   string                 `json:"databasePath"`
-	DatabaseURL    string                 `json:"databaseUrl"`
 	JWTSecret      string                 `json:"jwtSecret,omitempty"`
 	AdminEmail     string                 `json:"adminEmail"`
 	AdminPassword  string                 `json:"adminPasswordHash"`
@@ -123,10 +122,6 @@ func Load() (Config, error) {
 
 	if value := os.Getenv("DATABASE_PATH"); value != "" {
 		cfg.DatabasePath = value
-	}
-
-	if value := os.Getenv("DATABASE_URL"); value != "" {
-		cfg.DatabaseURL = value
 	}
 
 	if value := os.Getenv("JWT_SECRET"); value != "" {

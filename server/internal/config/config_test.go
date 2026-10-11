@@ -44,7 +44,7 @@ func TestLoadOrCreateSecretGeneratesAndReuses(t *testing.T) {
 }
 
 func clearEnv(t *testing.T) {
-	for _, k := range []string{"PORT", "BIND_ADDRESS", "JWT_SECRET", "JWT_ACCESS_SECRET", "JWT_SECRET_FILE", "DATABASE_PATH", "DATABASE_URL"} {
+	for _, k := range []string{"PORT", "BIND_ADDRESS", "JWT_SECRET", "JWT_ACCESS_SECRET", "JWT_SECRET_FILE", "DATABASE_PATH"} {
 		t.Setenv(k, "")
 	}
 }

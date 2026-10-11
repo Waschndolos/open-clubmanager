@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
@@ -73,44 +72,20 @@ func main() {
 	}
 
 	// Open the database if already configured (e.g. on subsequent launches).
-	var db *sql.DB
-	if cfg.DatabasePath != "" || cfg.DatabaseURL != "" {
-		mode := "sqlite-local"
-		dsn := cfg.DatabasePath
-		if cfg.DatabaseURL != "" {
-			mode = "mysql-shared"
-			dsn = cfg.DatabaseURL
-		}
-
-		if mode == "sqlite-local" {
-			sqlitePath := strings.TrimPrefix(dsn, "file:")
-			sqlitePath = strings.TrimPrefix(sqlitePath, "//")
-			sqlitePath = filepath.Clean(sqlitePath)
-			if _, statErr := os.Stat(sqlitePath); os.IsNotExist(statErr) {
-				log.Printf("warning: sqlite database missing at %s; skipping auto-open to force setup", sqlitePath)
-			} else if statErr != nil {
-				log.Printf("warning: failed to stat sqlite database %s: %v", sqlitePath, statErr)
-			} else {
-				if opened, dbErr := dbpkg.Open(mode, dsn); dbErr == nil {
-					if migrateErr := dbpkg.Migrate(opened); migrateErr != nil {
-						log.Printf("warning: database migration failed: %v", migrateErr)
-					} else {
-						db = opened
-					}
-				} else {
-					log.Printf("warning: failed to open database: %v", dbErr)
-				}
-			}
+	// A missing file is not created here so that the first-run setup decides
+	// where the database lives.
+	var conn *sql.DB
+	if cfg.DatabasePath != "" {
+		sqlitePath := dbpkg.CleanPath(cfg.DatabasePath)
+		if _, statErr := os.Stat(sqlitePath); os.IsNotExist(statErr) {
+			log.Printf("warning: sqlite database missing at %s; skipping auto-open to force setup", sqlitePath)
+		} else if statErr != nil {
+			log.Printf("warning: failed to stat sqlite database %s: %v", sqlitePath, statErr)
+		} else if opened, dbErr := dbpkg.Open(context.Background(), sqlitePath); dbErr != nil {
+			log.Printf("warning: failed to open database: %v", dbErr)
 		} else {
-			if opened, dbErr := dbpkg.Open(mode, dsn); dbErr == nil {
-				if migrateErr := dbpkg.Migrate(opened); migrateErr != nil {
-					log.Printf("warning: database migration failed: %v", migrateErr)
-				} else {
-					db = opened
-				}
-			} else {
-				log.Printf("warning: failed to open database: %v", dbErr)
-			}
+			conn = opened
+			defer conn.Close()
 		}
 	}
 
@@ -121,7 +96,7 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(corsMiddleware)
 
-	api := handlers.New(&cfg, db)
+	api := handlers.New(&cfg, conn)
 	openapi.HandlerWithOptions(api, openapi.ChiServerOptions{
 		BaseURL:     "/api/v2",
 		BaseRouter:  router,

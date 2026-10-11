@@ -82,7 +82,7 @@ components:
 
     DatabaseMode:
       type: string
-      enum: [sqlite-local, mysql-shared]
+      enum: [sqlite-local]
 
     SetupStatus:
       type: object
@@ -214,7 +214,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         email:
           type: string
           format: email
@@ -265,7 +265,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         name:
           type: string
       required: [id, name]
@@ -275,7 +275,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
       required: [id]
       additionalProperties: false
 
@@ -297,7 +297,7 @@ components:
         memberIds:
           type: array
           items:
-            type: integer
+            type: string
       required: [memberIds]
       additionalProperties: false
 
@@ -305,7 +305,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         versionToken:
           type: string
         number:
@@ -484,15 +484,15 @@ components:
         roleIds:
           type: array
           items:
-            type: integer
+            type: string
         groupIds:
           type: array
           items:
-            type: integer
+            type: string
         sectionIds:
           type: array
           items:
-            type: integer
+            type: string
         roles:
           type: array
           items:
@@ -540,9 +540,9 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         userId:
-          type: integer
+          type: string
         key:
           type: string
         value:
@@ -682,7 +682,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         date:
           type: string
           format: date-time
@@ -815,7 +815,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         firstName:
           type: string
         lastName:
@@ -829,9 +829,9 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         memberId:
-          type: integer
+          type: string
         amount:
           type: number
         dueDate:
@@ -865,7 +865,7 @@ components:
       type: object
       properties:
         memberId:
-          type: integer
+          type: string
         amount:
           type: number
         dueDate:
@@ -889,7 +889,7 @@ components:
       type: object
       properties:
         memberId:
-          type: integer
+          type: string
         amount:
           type: number
         dueDate:
@@ -911,7 +911,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         name:
           type: string
         description:
@@ -1007,11 +1007,11 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         itemId:
-          type: integer
+          type: string
         memberId:
-          type: integer
+          type: string
         loanedAt:
           type: string
           format: date-time
@@ -1040,9 +1040,9 @@ components:
       type: object
       properties:
         itemId:
-          type: integer
+          type: string
         memberId:
-          type: integer
+          type: string
         loanedAt:
           type: string
           format: date-time
@@ -1062,9 +1062,9 @@ components:
       type: object
       properties:
         itemId:
-          type: integer
+          type: string
         memberId:
-          type: integer
+          type: string
         loanedAt:
           type: string
           format: date-time
@@ -1083,14 +1083,14 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         action:
           type: string
           enum: [CREATE, UPDATE, DELETE]
         entity:
           type: string
         entityId:
-          type: integer
+          type: string
         userId:
           type: string
         data:
@@ -1456,7 +1456,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     get:
       tags: [members]
       summary: Get a member by id
@@ -1571,7 +1571,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [roles]
       summary: Update a role
@@ -1607,7 +1607,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     get:
       tags: [roles]
       summary: Get members of a role
@@ -1693,7 +1693,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [groups]
       summary: Update a group
@@ -1729,7 +1729,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     get:
       tags: [groups]
       summary: Get members of a group
@@ -1815,7 +1815,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [sections]
       summary: Update a section
@@ -1851,7 +1851,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     get:
       tags: [sections]
       summary: Get members of a section
@@ -2221,7 +2221,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [finance]
       summary: Update a finance transaction
@@ -2342,7 +2342,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [finance]
       summary: Update a member fee
@@ -2463,7 +2463,7 @@ paths:
       in: path
       required: true
       schema:
-        type: integer
+        type: string
     get:
       tags:
       - inventory
@@ -2583,7 +2583,7 @@ paths:
       in: path
       required: true
       schema:
-        type: integer
+        type: string
     get:
       tags:
       - inventory
@@ -2728,7 +2728,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [users]
       summary: Update an app user
