@@ -1,10 +1,12 @@
 import { Box, Typography } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import BrandMark from "../common/BrandMark";
 import ThemeToggle from "../header/ThemeToggle";
+import { tokens } from "../../theme/createAppTheme";
+import { driftA, driftB, fadeIn, gridPan, pulseRing, reveal, slideInLeft } from "./authAnimations";
 
 type AuthLayoutProps = {
     title: string;
@@ -19,13 +21,28 @@ type AuthLayoutProps = {
 /**
  * Split-screen frame for login, password reset and first-time setup:
  * a brand panel that says what the app is for, and a calm form column.
- * The panel is pure CSS (glowing gradients and a grid) so no image has to
- * be shipped. Below the md breakpoint the panel is dropped and the form stands alone.
+ * The panel is pure CSS (drifting orbs, a moving grid and a cursor spotlight)
+ * so no image has to be shipped. Below the md breakpoint the panel is dropped and the form stands alone.
  */
 export default function AuthLayout({ title, subtitle, eyebrow, children, formWidth = 400 }: AuthLayoutProps) {
     const { t } = useTranslation();
     const theme = useTheme();
     const points = t("auth.brand.points", { returnObjects: true }) as string[];
+    const asideRef = useRef<HTMLElement>(null);
+    const glow = tokens.dark;
+
+    // Cursor spotlight: write CSS variables directly, no React re-renders on mousemove.
+    const handlePointerMove = (e: React.PointerEvent<HTMLElement>) => {
+        const el = asideRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        el.style.setProperty("--mx", `${x}px`);
+        el.style.setProperty("--my", `${y}px`);
+        el.style.setProperty("--px", `${(x / rect.width - 0.5) * 2}`);
+        el.style.setProperty("--py", `${(y / rect.height - 0.5) * 2}`);
+    };
 
     return (
         <Box
@@ -38,7 +55,13 @@ export default function AuthLayout({ title, subtitle, eyebrow, children, formWid
         >
             <Box
                 component="aside"
+                ref={asideRef}
+                onPointerMove={handlePointerMove}
                 sx={{
+                    "--mx": "50%",
+                    "--my": "50%",
+                    "--px": "0",
+                    "--py": "0",
                     display: { xs: "none", md: "flex" },
                     position: "relative",
                     flexDirection: "column",
@@ -47,63 +70,72 @@ export default function AuthLayout({ title, subtitle, eyebrow, children, formWid
                     color: "#FFFFFF",
                     overflow: "hidden",
                     isolation: "isolate",
-                    backgroundColor: "#0A1F18",
-                    backgroundImage: `radial-gradient(120% 80% at 0% 0%, ${alpha("#2F7A60", 0.55)} 0%, transparent 60%), linear-gradient(160deg, #0F2E24 0%, #0A1F18 55%, #07150F 100%)`,
-                    "@keyframes authDrift": {
-                        "0%": { transform: "translate3d(0, 0, 0) scale(1)" },
-                        "50%": { transform: "translate3d(-6%, 5%, 0) scale(1.12)" },
-                        "100%": { transform: "translate3d(0, 0, 0) scale(1)" },
-                    },
-                    "& > .auth-fx": { position: "absolute", pointerEvents: "none", zIndex: -1 },
-                    "@media (prefers-reduced-motion: reduce)": {
-                        "& .auth-anim": { animation: "none !important" },
+                    backgroundColor: "#143D30",
+                    animation: `${fadeIn} 0.9s ease both`,
+                    // Deep club-green gradient base
+                    "&::after": {
+                        content: '""',
+                        position: "absolute",
+                        inset: 0,
+                        zIndex: -3,
+                        backgroundImage: `linear-gradient(160deg, #143D30 0%, #0E2A21 55%, #0B211A 100%)`,
                     },
                 }}
             >
-                {/* Ember glow */}
-                <Box
-                    className="auth-fx auth-anim"
-                    aria-hidden
-                    sx={{
-                        width: "110%",
-                        aspectRatio: "1",
-                        right: "-35%",
-                        bottom: "-45%",
-                        borderRadius: "50%",
-                        background: `radial-gradient(circle at 50% 50%, ${alpha("#FFC247", 1)} 0%, ${alpha("#F0731F", 0.85)} 25%, ${alpha("#C2410C", 0.45)} 50%, transparent 72%)`,
-                        filter: "blur(18px)",
-                        animation: "authDrift 16s ease-in-out infinite",
-                    }}
-                />
-                <Box
-                    className="auth-fx auth-anim"
-                    aria-hidden
-                    sx={{
-                        width: "60%",
-                        aspectRatio: "1",
-                        left: "-25%",
-                        top: "30%",
-                        borderRadius: "50%",
-                        background: `radial-gradient(circle, ${alpha("#5BC49A", 0.4)} 0%, transparent 65%)`,
-                        filter: "blur(40px)",
-                        animation: "authDrift 22s ease-in-out infinite reverse",
-                    }}
-                />
-                {/* Fine grid, fading out towards the bottom */}
-                <Box
-                    className="auth-fx"
-                    aria-hidden
-                    sx={{
-                        inset: 0,
-                        backgroundImage: `linear-gradient(${alpha("#FFFFFF", 0.06)} 1px, transparent 1px), linear-gradient(90deg, ${alpha("#FFFFFF", 0.06)} 1px, transparent 1px)`,
-                        backgroundSize: "44px 44px",
-                        maskImage: "linear-gradient(180deg, #000 0%, transparent 75%)",
-                        WebkitMaskImage: "linear-gradient(180deg, #000 0%, transparent 75%)",
-                    }}
-                />
-                <BrandMark inverted size={36} />
+                {/* Drifting colour orbs (club green + pennant amber) */}
+                <Box aria-hidden sx={{ position: "absolute", inset: 0, zIndex: -2, pointerEvents: "none", mixBlendMode: "screen" }}>
+                    <Box
+                        sx={{
+                            position: "absolute", top: "-10%", left: "-15%", width: "75%", aspectRatio: "1",
+                            borderRadius: "50%", filter: "blur(70px)", opacity: 0.45,
+                            background: `radial-gradient(circle, ${glow.primary} 0%, transparent 68%)`,
+                            animation: `${driftA} 22s ease-in-out infinite`,
+                        }}
+                    />
+                    <Box
+                        sx={{
+                            position: "absolute", bottom: "-18%", right: "-20%", width: "70%", aspectRatio: "1",
+                            borderRadius: "50%", filter: "blur(80px)", opacity: 0.32,
+                            background: `radial-gradient(circle, ${glow.accent} 0%, transparent 68%)`,
+                            animation: `${driftB} 26s ease-in-out infinite`,
+                        }}
+                    />
+                </Box>
 
-                <Box sx={{ maxWidth: 440 }}>
+                {/* Moving grid, faded out towards the edges */}
+                <Box
+                    aria-hidden
+                    sx={{
+                        position: "absolute", inset: 0, zIndex: -1, pointerEvents: "none", opacity: 0.5,
+                        backgroundImage: `linear-gradient(${alpha("#FFFFFF", 0.07)} 1px, transparent 1px), linear-gradient(90deg, ${alpha("#FFFFFF", 0.07)} 1px, transparent 1px)`,
+                        backgroundSize: "48px 48px",
+                        animation: `${gridPan} 14s linear infinite`,
+                        maskImage: "radial-gradient(ellipse 75% 65% at 50% 45%, #000 20%, transparent 100%)",
+                        WebkitMaskImage: "radial-gradient(ellipse 75% 65% at 50% 45%, #000 20%, transparent 100%)",
+                    }}
+                />
+
+                {/* Cursor spotlight */}
+                <Box
+                    aria-hidden
+                    sx={{
+                        position: "absolute", inset: 0, zIndex: -1, pointerEvents: "none",
+                        background: `radial-gradient(420px circle at var(--mx) var(--my), ${alpha(glow.primaryLight, 0.2)}, transparent 70%)`,
+                        transition: "background 0.15s linear",
+                    }}
+                />
+
+                <Box sx={{ animation: reveal(0.15, slideInLeft), width: "fit-content" }}>
+                    <BrandMark inverted animated size={36} />
+                </Box>
+
+                <Box
+                    sx={{
+                        maxWidth: 440,
+                        transform: "translate3d(calc(var(--px) * -8px), calc(var(--py) * -6px), 0)",
+                        transition: "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+                    }}
+                >
                     <Typography
                         component="p"
                         sx={{
@@ -113,15 +145,30 @@ export default function AuthLayout({ title, subtitle, eyebrow, children, formWid
                             lineHeight: 1.05,
                             letterSpacing: "-0.03em",
                             mb: 3,
+                            animation: reveal(0.3, undefined, 1),
                         }}
                     >
                         {t("auth.brand.tagline")}
                     </Typography>
                     {Array.isArray(points) && (
                         <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0, display: "grid", gap: 1.25 }}>
-                            {points.map((point) => (
-                                <Box component="li" key={point} sx={{ display: "flex", gap: 1.25, alignItems: "flex-start" }}>
-                                    <CheckRoundedIcon sx={{ fontSize: 20, mt: "1px", color: theme.custom.accent }} />
+                            {points.map((point, i) => (
+                                <Box
+                                    component="li"
+                                    key={point}
+                                    sx={{ display: "flex", gap: 1.25, alignItems: "flex-start", animation: reveal(0.55 + i * 0.14, slideInLeft) }}
+                                >
+                                    <Box sx={{ position: "relative", display: "grid", placeItems: "center", mt: "1px", flexShrink: 0 }}>
+                                        <Box
+                                            aria-hidden
+                                            sx={{
+                                                position: "absolute", width: 20, height: 20, borderRadius: "50%",
+                                                border: `1.5px solid ${theme.custom.accent}`,
+                                                animation: `${pulseRing} 3.2s ease-out ${1.2 + i * 0.6}s infinite`,
+                                            }}
+                                        />
+                                        <CheckRoundedIcon sx={{ fontSize: 20, color: theme.custom.accent }} />
+                                    </Box>
                                     <Typography sx={{ color: alpha("#FFFFFF", 0.86), fontSize: "0.975rem" }}>{point}</Typography>
                                 </Box>
                             ))}
@@ -140,7 +187,7 @@ export default function AuthLayout({ title, subtitle, eyebrow, children, formWid
                     py: { xs: 2.5, sm: 3 },
                 }}
             >
-                <Box sx={{ display: "flex", alignItems: "center", justifyContent: { xs: "space-between", md: "flex-end" } }}>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: { xs: "space-between", md: "flex-end" }, animation: reveal(0.2, fadeIn, 0.8) }}>
                     <Box sx={{ display: { xs: "block", md: "none" } }}>
                         <BrandMark size={30} />
                     </Box>
@@ -149,12 +196,12 @@ export default function AuthLayout({ title, subtitle, eyebrow, children, formWid
 
                 <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", py: { xs: 4, md: 6 } }}>
                     <Box sx={{ width: "100%", maxWidth: formWidth }}>
-                        {eyebrow && <Box sx={{ mb: 2.5 }}>{eyebrow}</Box>}
-                        <Typography variant="h4" component="h1" sx={{ mb: subtitle ? 1 : 3.5 }}>
+                        {eyebrow && <Box sx={{ mb: 2.5, animation: reveal(0.2) }}>{eyebrow}</Box>}
+                        <Typography variant="h4" component="h1" sx={{ mb: subtitle ? 1 : 3.5, animation: reveal(0.25) }}>
                             {title}
                         </Typography>
                         {subtitle && (
-                            <Typography color="text.secondary" sx={{ mb: 3.5, maxWidth: "60ch" }}>
+                            <Typography color="text.secondary" sx={{ mb: 3.5, maxWidth: "60ch", animation: reveal(0.35) }}>
                                 {subtitle}
                             </Typography>
                         )}

@@ -341,7 +341,7 @@ npm run build
 
 > **Note:** Before the first build, generate the Tauri icon set from the project icon:
 > ```bash
-> npx tauri icon assets/clubmanager-icon.ico
+> npx tauri icon assets/clubmanager-icon.png
 > ```
 
 ---

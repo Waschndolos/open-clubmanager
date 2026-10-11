@@ -1,19 +1,31 @@
 import { Box, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { keyframes, useTheme } from "@mui/material/styles";
+
+const drawRing = keyframes`
+    from { stroke-dashoffset: 100; }
+    to { stroke-dashoffset: 0; }
+`;
+const popDot = keyframes`
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.35); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+`;
 
 type BrandMarkProps = {
-    /** Hide the wordmark and show only the pennant badge. */
+    /** Hide the wordmark and show only the badge. */
     compact?: boolean;
     /** Render light-on-dark, e.g. on top of a photo. */
     inverted?: boolean;
     size?: number;
+    /** Draw the ring and pop the dot in on mount. */
+    animated?: boolean;
 };
 
-/** Pennant badge plus wordmark. The pennant is the club's flag on the clubhouse. */
-export default function BrandMark({ compact = false, inverted = false, size = 32 }: BrandMarkProps) {
+/** Badge plus wordmark: an open "C" for club, with the accent dot sitting in the opening. */
+export default function BrandMark({ compact = false, inverted = false, size = 32, animated = false }: BrandMarkProps) {
     const theme = useTheme();
     const badge = inverted ? "#FFFFFF" : theme.palette.primary.main;
-    const pole = inverted ? theme.palette.primary.dark : theme.palette.primary.contrastText;
+    const ring = inverted ? theme.palette.primary.dark : theme.palette.primary.contrastText;
 
     return (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, minWidth: 0 }}>
@@ -24,8 +36,23 @@ export default function BrandMark({ compact = false, inverted = false, size = 32
                 sx={{ width: size, height: size, flexShrink: 0, display: "block" }}
             >
                 <rect width="32" height="32" rx="8" fill={badge} />
-                <rect x="9" y="7" width="2.2" height="18" rx="1.1" fill={pole} />
-                <path d="M11.2 8.2 L24 12.6 L11.2 17 Z" fill={theme.custom.accent} />
+                <path
+                    d="M22.51 21.46 A8.5 8.5 0 1 1 22.51 10.54"
+                    pathLength={100}
+                    fill="none"
+                    stroke={ring}
+                    strokeWidth={3.4}
+                    strokeLinecap="round"
+                    strokeDasharray={100}
+                    style={animated ? { animation: `${drawRing} 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both` } : undefined}
+                />
+                <circle
+                    cx={24.6}
+                    cy={16}
+                    r={2.3}
+                    fill={theme.custom.accent}
+                    style={animated ? { transformBox: "fill-box", transformOrigin: "center", animation: `${popDot} 0.5s ease-out 1.2s both` } : undefined}
+                />
             </Box>
             {!compact && (
                 <Typography
