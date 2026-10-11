@@ -11,6 +11,21 @@
         "json": "Données lisibles par machine (JSON)",
         "failed": "L'export des données n'a pas pu être créé."
     },
+    "search": {
+        "label": "Recherche",
+        "open": "Rechercher (Ctrl+K)",
+        "placeholder": "Rechercher pages, membres, actions…",
+        "empty": "Aucun résultat",
+        "groups": {
+            "actions": "Actions rapides",
+            "members": "Membres",
+            "pages": "Pages"
+        },
+        "actions": {
+            "newMember": "Nouveau membre",
+            "sync": "Synchroniser"
+        }
+    },
     "logout": {
         "tooltip": "Déconnexion"
     },

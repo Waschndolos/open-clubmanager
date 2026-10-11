@@ -11,6 +11,21 @@
         "json": "Machine-readable data (JSON)",
         "failed": "The data export could not be created."
     },
+    "search": {
+        "label": "Search",
+        "open": "Search (Ctrl+K)",
+        "placeholder": "Search pages, members, actions…",
+        "empty": "No results",
+        "groups": {
+            "actions": "Quick actions",
+            "members": "Members",
+            "pages": "Pages"
+        },
+        "actions": {
+            "newMember": "New member",
+            "sync": "Sync now"
+        }
+    },
     "logout": {
         "tooltip": "Logout"
     },
