@@ -20,11 +20,14 @@ That's where Open ClubManager comes in.
 
 This project aims to provide a free, open source, and easy-to-use management tool for small to medium-sized clubs. It's designed to work out of the box — no cloud infrastructure, no complicated database setup.
 
-Instead, Open ClubManager uses a lightweight SQLite database, which can either:
+Open ClubManager supports two modes:
 
-    be stored locally (ideal if you're managing the club on your own), or
+* **Local** – one person manages the club on one computer. Data lives in a local SQLite database.
+* **Collaboration** – board, treasurer, secretary and coaches work on the same data, even if they are not on the same network. Each device keeps its own local database and syncs **encrypted, signed changes** through storage the club already has (a Nextcloud/OneDrive/Dropbox folder or WebDAV), or through an optional, easy-to-host Open ClubManager server.
 
-    placed on a shared network drive, so that multiple team members (e.g. treasurer, board, secretary) can access and update the same data.
+Access rights are enforced technically, not just hidden in the UI: e.g. a coach cannot read members' bank details, because their device never receives the key for that data.
+
+> 🚧 Collaboration mode is being built. See [ADR 0001: Collaboration and sync architecture](docs/adr/0001-collaboration-and-sync-architecture.md) for the design and why we decided against putting a database file on a shared drive.
 
 The goal is to reduce complexity and cost — and to empower small clubs to manage themselves better without needing tech expertise or subscriptions.
 
@@ -46,7 +49,9 @@ Open ClubManager runs exclusively with the backend API and a database.
 * 🧑‍🤝‍🧑 Manage members, roles, groups, and sections
 * 📄 Track addresses, banking information, SEPA mandates
 * 🗓️ Record entry/exit dates, comments, and status
-* 🔒 Local database (SQLite) – no cloud dependency
+* 🔒 Local-first: SQLite on every device, works offline
+* 🔄 Collaboration via encrypted sync over a shared folder, WebDAV or an optional server *(in progress)*
+* 🛡️ Role-based access enforced by encryption *(in progress)*
 * 🎨 React + TypeScript frontend
 * ⚙️ Go + Chi backend
 * 🖥️ Tauri 2 desktop shell (~10 MB bundle)
@@ -59,7 +64,7 @@ Open ClubManager runs exclusively with the backend API and a database.
 * **Frontend**: React, TypeScript, Axios, Vite
 * **Backend**: Go, Chi, oapi-codegen
 * **Desktop**: Tauri 2 (Rust)
-* **Database**: SQLite / MySQL
+* **Database**: SQLite (MySQL support will be removed, see [ADR 0001](docs/adr/0001-collaboration-and-sync-architecture.md))
 * **Dev Tools**: go toolchain, npm, Rust/Cargo, WebStorm/VS Code
 
 ---
@@ -69,7 +74,8 @@ Open ClubManager runs exclusively with the backend API and a database.
 ```
 /clubmanager
 ├── assets/          # App icons
-├── db/              # Prisma schemas + migrations
+├── db/              # Prisma schemas + migrations (to be replaced by embedded Go migrations)
+├── docs/adr/        # Architecture decision records
 ├── server/          # Go API + Chi router
 │   ├── cmd/server/  # binary entry point
 │   └── internal/    # generated OpenAPI bindings + handlers
