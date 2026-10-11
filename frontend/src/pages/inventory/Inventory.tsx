@@ -117,7 +117,7 @@ function LoanDialog({ items, members, onClose, onSave }: LoanDialogProps) {
                         <Select
                             label={t('inventory.fields.item')}
                             value={form.itemId ?? ''}
-                            onChange={(e) => setField('itemId', Number(e.target.value))}
+                            onChange={(e) => setField('itemId', e.target.value)}
                         >
                             {items.map((item) => (
                                 <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
@@ -129,7 +129,7 @@ function LoanDialog({ items, members, onClose, onSave }: LoanDialogProps) {
                         <Select
                             label={t('inventory.fields.member')}
                             value={form.memberId ?? ''}
-                            onChange={(e) => setField('memberId', Number(e.target.value))}
+                            onChange={(e) => setField('memberId', e.target.value)}
                         >
                             {members.map((member) => (
                                 <MenuItem key={member.id} value={member.id}>
@@ -234,8 +234,8 @@ export default function Inventory() {
     const saveLoan = async (loan: Partial<InventoryLoan>) => {
         try {
             const created = await createInventoryLoan({
-                itemId: loan.itemId as number,
-                memberId: loan.memberId as number,
+                itemId: loan.itemId as string,
+                memberId: loan.memberId as string,
                 loanedAt: (loan.loanedAt as string) || new Date().toISOString(),
                 dueDate: loan.dueDate ?? null,
                 notes: (loan.notes as string) || '',
@@ -258,7 +258,7 @@ export default function Inventory() {
         }
     };
 
-    const handleDeleteItem = async (id: number) => {
+    const handleDeleteItem = async (id: string) => {
         try {
             await deleteInventoryItem(id);
             setItems((prev) => prev.filter((entry) => entry.id !== id));
@@ -305,14 +305,14 @@ export default function Inventory() {
             headerName: t('inventory.fields.item'),
             flex: 1.2,
             minWidth: 160,
-            valueGetter: (value: number) => itemById.get(value)?.name ?? value,
+            valueGetter: (value: string) => itemById.get(value)?.name ?? value,
         },
         {
             field: 'memberId',
             headerName: t('inventory.fields.member'),
             flex: 1.4,
             minWidth: 190,
-            valueGetter: (value: number) => {
+            valueGetter: (value: string) => {
                 const member = memberById.get(value);
                 return member ? `${member.firstName} ${member.lastName}` : value;
             },

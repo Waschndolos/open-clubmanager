@@ -12,7 +12,7 @@ import PageHeader from "../../components/common/PageHeader";
 
 export function createEmptyMember(): Member {
     return {
-        id: 0,
+        id: "",
         email: "",
         number: 0,
         firstName: "",

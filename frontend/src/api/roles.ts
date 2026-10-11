@@ -9,12 +9,12 @@ export const createRole = entityApi.create;
 export const updateRole = entityApi.update;
 export const deleteRole = entityApi.delete;
 
-export async function fetchRoleMembers(id: number): Promise<MemberSummary[]> {
+export async function fetchRoleMembers(id: string): Promise<MemberSummary[]> {
     const res = await fetch(`${BACKEND_URL}/roles/${id}/members`);
     if (!res.ok) throw new Error(`Error fetching members for role ${id}.`);
     return res.json();
 }
 
-export async function assignRoleMembers(id: number, memberIds: number[]): Promise<void> {
+export async function assignRoleMembers(id: string, memberIds: string[]): Promise<void> {
     await api.put(`/roles/${id}/members`, { memberIds });
 }

@@ -1,5 +1,5 @@
 export interface Id {
-    id: number;
+    id: string;
 }
 
 export interface NamedArtifact extends Id {
@@ -12,14 +12,14 @@ export interface MemberContainingNamedArtifact extends NamedArtifact {
 }
 
 export type MemberSummary = {
-    id: number;
+    id: string;
     number: number;
     firstName: string;
     lastName: string;
 };
 
 export type Member = {
-    id: number;
+    id: string;
     versionToken?: string;
     number?: number;
     firstName?: string;
@@ -54,14 +54,14 @@ export type ClubSection = MemberContainingNamedArtifact
 export type AppRole = 'ADMIN' | 'TREASURER' | 'SECRETARY' | 'READONLY';
 
 export type AppUser = {
-    id: number;
+    id: string;
     email: string;
     appRole: AppRole;
     createdAt: string;
 };
 
 export type FinanceTransaction = {
-    id: number;
+    id: string;
     date: string;
     description: string;
     amount: number;
@@ -73,10 +73,10 @@ export type FinanceTransaction = {
 };
 
 export type MemberFee = {
-    id: number;
-    memberId: number;
+    id: string;
+    memberId: string;
     member?: {
-        id: number;
+        id: string;
         firstName: string;
         lastName: string;
         number: number;
@@ -91,7 +91,7 @@ export type MemberFee = {
 };
 
 export type InventoryItem = {
-    id: number;
+    id: string;
     name: string;
     description?: string;
     serialNumber?: string;
@@ -105,9 +105,9 @@ export type InventoryItem = {
 };
 
 export type InventoryLoan = {
-    id: number;
-    itemId: number;
-    memberId: number;
+    id: string;
+    itemId: string;
+    memberId: string;
     loanedAt: string;
     dueDate?: string | null;
     returnedAt?: string | null;

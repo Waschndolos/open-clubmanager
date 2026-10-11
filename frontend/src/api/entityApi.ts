@@ -1,7 +1,7 @@
 import api from './api';
 import { BACKEND_URL } from './api';
 
-export function createEntityApi<T extends { id: number }>(endpoint: string) {
+export function createEntityApi<T extends { id: string }>(endpoint: string) {
     const baseUrl = `/${endpoint}`;
     const fullUrl = `${BACKEND_URL}/${endpoint}`;
 

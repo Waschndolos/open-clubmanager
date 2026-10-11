@@ -2,7 +2,7 @@ import { Member, Role, Group, ClubSection } from './types';
 
 export interface MembersClient {
     list(): Promise<Member[]>;
-    get(id: number): Promise<Member>;
+    get(id: string): Promise<Member>;
     create(data: Omit<Member, 'id'>): Promise<Member>;
     update(data: Member): Promise<Member>;
     delete(members: Member[]): Promise<void>;

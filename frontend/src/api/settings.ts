@@ -2,7 +2,8 @@ import {BACKEND_URL} from "./api";
 
 const BASE_URL = `${BACKEND_URL}/settings`;
 
-export type DatabaseMode = 'sqlite-local' | 'mysql-shared';
+// Only local SQLite databases are supported.
+export type DatabaseMode = 'sqlite-local';
 
 export interface DatabaseSettings {
     mode: DatabaseMode;

@@ -10,7 +10,7 @@ export const httpApiClient: DataClient = {
             const payload = await res.json() as { items?: Member[] } | Member[];
             return Array.isArray(payload) ? payload : (payload.items ?? []);
         },
-        get: async (id: number): Promise<Member> => {
+        get: async (id: string): Promise<Member> => {
             const res = await fetch(`${BACKEND_URL}/members/${id}`);
             if (!res.ok) throw new Error(`Error fetching member ${id}.`);
             return res.json();

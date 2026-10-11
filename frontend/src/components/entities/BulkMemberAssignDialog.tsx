@@ -25,7 +25,7 @@ type BulkMemberAssignDialogProps = {
     open: boolean;
     entityName: string;
     fetchAssignedMembers: () => Promise<MemberSummary[]>;
-    onSave: (memberIds: number[]) => Promise<void>;
+    onSave: (memberIds: string[]) => Promise<void>;
     onClose: () => void;
 };
 
@@ -38,7 +38,7 @@ export function BulkMemberAssignDialog({
 }: BulkMemberAssignDialogProps) {
     const { t } = useTranslation();
     const [allMembers, setAllMembers] = useState<Member[]>([]);
-    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -66,7 +66,7 @@ export function BulkMemberAssignDialog({
         );
     }, [allMembers, search]);
 
-    const toggleMember = (id: number) => {
+    const toggleMember = (id: string) => {
         setSelectedIds((prev) => {
             const next = new Set(prev);
             if (next.has(id)) {

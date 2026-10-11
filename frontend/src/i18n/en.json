@@ -50,14 +50,9 @@
             "login": "Sign In"
         },
         "database": {
-            "localOption": "Work locally (SQLite)",
-            "sharedOption": "Work with multiple users (MySQL)",
             "localHint": "Data is stored in a file on this computer.",
-            "sharedHint": "Data is stored in a shared MySQL database for multiple users.",
             "localPathLabel": "SQLite database path",
             "localPathHint": "Examples: ./clubmanager.db, /home/user/clubmanager.db, or C:\\Users\\Name\\clubmanager.db",
-            "urlLabel": "MySQL database URL",
-            "mysqlPlaceholderHint": "Example: mysql://user:pass@host:3306/clubmanager",
             "saveButton": "Save database mode",
             "continueButton": "Continue",
             "saving": "Saving...",
@@ -77,8 +72,7 @@
         "validation": {
             "invalidEmail": "Please enter a valid email address.",
             "passwordTooShort": "Password must be at least 8 characters long.",
-            "passwordMismatch": "Passwords do not match.",
-            "invalidMysqlUrl": "Please enter a valid MySQL URL (mysql:// or mysqls://)."
+            "passwordMismatch": "Passwords do not match."
         },
         "error": {
             "generic": "An error occurred. Please try again."
@@ -274,7 +268,6 @@
                 "cannotcreate": "A database cannot be created at the specified path.",
                 "required": "The database path is required.",
                 "invalidsqliteurl": "Please enter a valid SQLite URL (file:...).",
-                "invalidmysqlurl": "Please enter a valid MySQL URL (mysql:// or mysqls://).",
                 "invalidmode": "Invalid database mode."
             },
             "success": {
@@ -282,15 +275,9 @@
                 "valid": "The database path is valid."
             }
         },
-        "databaseModes": {
-            "sqliteLocal": "Local (SQLite)",
-            "mysqlShared": "Multi-user (MySQL)"
-        },
         "labels": {
             "language": "Language",
             "dbPath": "Database Path",
-            "dbUrl": "Database URL",
-            "databaseMode": "Database Mode",
             "save": "Database Path",
             "saveSuccess": "Settings saved successfully!",
             "saveFails": "Failed to save settings!"
@@ -298,7 +285,6 @@
         "backup": {
             "title": "Data Backup",
             "description": "Create a backup of your database or restore an existing backup.",
-            "mysqlHint": "In multi-user mode (MySQL), backups are handled by the database server itself.",
             "backupButton": "Back up now",
             "backupSuccess": "Backup created successfully.",
             "backupError": "Failed to create backup.",

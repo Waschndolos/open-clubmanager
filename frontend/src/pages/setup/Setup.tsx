@@ -14,8 +14,6 @@ import {
     Stepper,
     Step,
     StepLabel,
-    ToggleButton,
-    ToggleButtonGroup,
 } from '@mui/material';
 import { Visibility, VisibilityOff, AdminPanelSettings } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +22,6 @@ import {
     configureDatabase,
     initializeAdmin,
     getSetupStatus,
-    SetupDatabaseMode,
 } from '../../api/setup';
 import { login } from '../../api/authentication';
 import { setAccessToken } from '../../api/api';
@@ -45,7 +42,6 @@ const Setup: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
-    const [databaseMode, setDatabaseMode] = useState<SetupDatabaseMode>('sqlite-local');
     const [databaseUrl, setDatabaseUrl] = useState('');
     const [databaseConfigured, setDatabaseConfigured] = useState(false);
     const [databaseValidationMessage, setDatabaseValidationMessage] = useState('');
@@ -58,22 +54,19 @@ const Setup: React.FC = () => {
 
     useEffect(() => {
         getSetupStatus()
-            .then(({ setupRequired, databaseConfigured: isConfigured, databaseMode: mode }) => {
+            .then(({ setupRequired, databaseConfigured: isConfigured }) => {
                 if (!setupRequired) {
                     navigate('/login', { replace: true });
                     return;
                 }
 
-                setDatabaseMode(mode);
                 setDatabaseConfigured(isConfigured);
                 return getDatabaseSettings()
                     .then(({ databaseUrl: url }) => {
                         setDatabaseUrl(url);
                     })
                     .catch(() => {
-                        if (mode === 'sqlite-local') {
-                            setDatabaseUrl('file:./clubmanager.db');
-                        }
+                        setDatabaseUrl('file:./clubmanager.db');
                     });
             })
             .catch(() => {
@@ -85,23 +78,18 @@ const Setup: React.FC = () => {
     const passwordLongEnough = password.length >= 8;
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const canSubmit = emailValid && passwordLongEnough && passwordsMatch && !submitting;
-    const isMysqlMode = databaseMode === 'mysql-shared';
     const currentDatabaseValue = databaseUrl.trim();
-    const databaseUrlValid = isMysqlMode
-        ? /^mysqls?:\/\//i.test(currentDatabaseValue)
-        : currentDatabaseValue.length > 0;
+    const databaseUrlValid = currentDatabaseValue.length > 0;
 
     const handleConfigureDatabase = async () => {
         setError(null);
         setSubmitting(true);
         try {
-            const configuredValue = isMysqlMode
+            const configuredValue = currentDatabaseValue.startsWith('file:')
                 ? currentDatabaseValue
-                : currentDatabaseValue.startsWith('file:')
-                    ? currentDatabaseValue
-                    : `file:${currentDatabaseValue}`;
+                : `file:${currentDatabaseValue}`;
 
-            await configureDatabase(databaseMode, configuredValue);
+            await configureDatabase(configuredValue);
             setDatabaseConfigured(true);
             setCurrentStep(1);
         } catch (e: unknown) {
@@ -118,15 +106,6 @@ const Setup: React.FC = () => {
         }
 
         try {
-            if (isMysqlMode) {
-                setDatabaseValidationMessage(
-                    /^mysqls?:\/\//i.test(currentDatabaseValue)
-                        ? ''
-                        : t('settings.validatíon.error.invalidmysqlurl')
-                );
-                return;
-            }
-
             const localPath = currentDatabaseValue.startsWith('file:')
                 ? currentDatabaseValue.replace('file:', '').replace(/^\/\//, '')
                 : currentDatabaseValue;
@@ -259,33 +238,12 @@ const Setup: React.FC = () => {
                         <Box display="flex" flexDirection="column" gap={2}>
                             {currentStep === 0 && (
                                 <>
-                                    <ToggleButtonGroup
-                                        value={databaseMode}
-                                        exclusive
-                                        onChange={(_event, value: SetupDatabaseMode | null) => {
-                                            if (value) {
-                                                setDatabaseMode(value);
-                                            }
-                                        }}
-                                        fullWidth
-                                        color="primary"
-                                    >
-                                        <ToggleButton value="sqlite-local">
-                                            {t('setup.database.localOption')}
-                                        </ToggleButton>
-                                        <ToggleButton value="mysql-shared">
-                                            {t('setup.database.sharedOption')}
-                                        </ToggleButton>
-                                    </ToggleButtonGroup>
-
                                     <Typography variant="body2" color="text.secondary">
-                                        {isMysqlMode
-                                            ? t('setup.database.sharedHint')
-                                            : t('setup.database.localHint')}
+                                        {t('setup.database.localHint')}
                                     </Typography>
 
                                     <TextField
-                                        label={isMysqlMode ? t('setup.database.urlLabel') : t('setup.database.localPathLabel')}
+                                        label={t('setup.database.localPathLabel')}
                                         variant="outlined"
                                         fullWidth
                                         value={databaseUrl}
@@ -296,13 +254,9 @@ const Setup: React.FC = () => {
                                         onBlur={validateDatabaseInput}
                                         error={databaseValidationMessage.length > 0 || (databaseUrl.length > 0 && !databaseUrlValid)}
                                         helperText={
-                                            databaseValidationMessage || (isMysqlMode
-                                                ? t('setup.database.mysqlPlaceholderHint')
-                                                : t('setup.database.localPathHint'))
+                                            databaseValidationMessage || t('setup.database.localPathHint')
                                         }
-                                        placeholder={isMysqlMode
-                                            ? 'mysql://user:password@localhost:3306/clubmanager'
-                                            : localPathPlaceholder}
+                                        placeholder={localPathPlaceholder}
                                     />
 
                                     <Button

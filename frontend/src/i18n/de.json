@@ -50,14 +50,9 @@
             "login": "Anmelden"
         },
         "database": {
-            "localOption": "Lokal arbeiten (SQLite)",
-            "sharedOption": "Mit mehreren arbeiten (MySQL)",
             "localHint": "Die Daten werden in einer Datei auf diesem Computer gespeichert.",
-            "sharedHint": "Die Daten liegen in einer gemeinsamen MySQL-Datenbank für mehrere Personen.",
             "localPathLabel": "SQLite-Datenbankpfad",
             "localPathHint": "Beispiele: ./clubmanager.db, /home/user/clubmanager.db oder C:\\Users\\Name\\clubmanager.db",
-            "urlLabel": "MySQL Datenbank-URL",
-            "mysqlPlaceholderHint": "Beispiel: mysql://user:pass@host:3306/clubmanager",
             "saveButton": "Datenbankmodus speichern",
             "continueButton": "Weiter",
             "saving": "Speichern...",
@@ -77,8 +72,7 @@
         "validation": {
             "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
             "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
-            "passwordMismatch": "Die Passwörter stimmen nicht überein.",
-            "invalidMysqlUrl": "Bitte geben Sie eine gueltige MySQL-URL ein (mysql:// oder mysqls://)."
+            "passwordMismatch": "Die Passwörter stimmen nicht überein."
         },
         "error": {
             "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
@@ -274,7 +268,6 @@
                 "cannotcreate": "An dem angegebenen Pfad kann keine Datenbank erstellt werden.",
                 "required": "Der Datenbankpfad ist erforderlich.",
                 "invalidsqliteurl": "Bitte geben Sie eine gültige SQLite-URL ein (file:...).",
-                "invalidmysqlurl": "Bitte geben Sie eine gültige MySQL-URL ein (mysql:// oder mysqls://).",
                 "invalidmode": "Ungültiger Datenbankmodus."
             },
             "success": {
@@ -282,15 +275,9 @@
                 "valid": "Der Datenbankpfad ist gültig."
             }
         },
-        "databaseModes": {
-            "sqliteLocal": "Lokal (SQLite)",
-            "mysqlShared": "Mehrbenutzer (MySQL)"
-        },
         "labels": {
             "language": "Sprache",
             "dbPath": "Datenbankpfad",
-            "dbUrl": "Datenbank-URL",
-            "databaseMode": "Datenbankmodus",
             "save": "Speichern",
             "saveSuccess": "Einstellungen erfolgreich gespeichert!",
             "saveFails": "Fehler beim Speichern der Einstellungen!"
@@ -298,7 +285,6 @@
         "backup": {
             "title": "Datensicherung",
             "description": "Erstellen Sie eine Sicherung Ihrer Datenbank oder stellen Sie eine vorhandene Sicherung wieder her.",
-            "mysqlHint": "Im Mehrbenutzer-Modus (MySQL) wird die Datensicherung über das Datenbanksystem selbst vorgenommen.",
             "backupButton": "Jetzt sichern",
             "backupSuccess": "Datensicherung erfolgreich erstellt.",
             "backupError": "Fehler beim Erstellen der Datensicherung.",

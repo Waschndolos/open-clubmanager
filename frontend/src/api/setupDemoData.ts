@@ -28,7 +28,7 @@ export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
         { number: 1003, firstName: 'Clara', lastName: 'Fischer', email: 'clara.fischer@example.org' },
     ];
 
-    const createdMembers = [] as Array<{ id: number }>;
+    const createdMembers = [] as Array<{ id: string }>;
     for (const member of sampleMembers) {
         const created = await createMember(member);
         createdMembers.push({ id: created.id });

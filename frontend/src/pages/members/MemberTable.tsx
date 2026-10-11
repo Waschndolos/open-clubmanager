@@ -134,16 +134,16 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
         setEditingMember(null);
     };
 
-    async function resolveEntityIds<T extends { id: number; name: string }>(
+    async function resolveEntityIds<T extends { id: string; name: string }>(
         value: T[] | string | undefined,
         existingList: T[],
         createFn: (data: { name: string }) => Promise<T>
-    ): Promise<number[]> {
+    ): Promise<string[]> {
         if (value === undefined || value === null) return [];
 
         if (typeof value === 'string') {
             const names = value.split(',').map((s) => s.trim()).filter(Boolean);
-            const ids: number[] = [];
+            const ids: string[] = [];
             for (const name of names) {
                 const found = existingList.find((e) => e.name === name);
                 if (found) {
@@ -183,9 +183,9 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
             fetchSections(),
         ]);
 
-        const rolesList = [...allRoles] as { id: number; name: string }[];
-        const groupsList = [...allGroups] as { id: number; name: string }[];
-        const sectionsList = [...allSections] as { id: number; name: string }[];
+        const rolesList = [...allRoles] as { id: string; name: string }[];
+        const groupsList = [...allGroups] as { id: string; name: string }[];
+        const sectionsList = [...allSections] as { id: string; name: string }[];
 
         for (const member of imported) {
             const matchValue = getImportMatchValue(member, matchField);
@@ -194,17 +194,17 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
             i++;
 
             const roleIds = await resolveEntityIds(
-                member.roles as unknown as { id: number; name: string }[] | string | undefined,
+                member.roles as unknown as { id: string; name: string }[] | string | undefined,
                 rolesList,
                 (data) => createRole(data as unknown as Omit<Role, 'id'>)
             );
             const groupIds = await resolveEntityIds(
-                member.groups as unknown as { id: number; name: string }[] | string | undefined,
+                member.groups as unknown as { id: string; name: string }[] | string | undefined,
                 groupsList,
                 (data) => createGroup(data as unknown as Omit<Group, 'id'>)
             );
             const sectionIds = await resolveEntityIds(
-                member.sections as unknown as { id: number; name: string }[] | string | undefined,
+                member.sections as unknown as { id: string; name: string }[] | string | undefined,
                 sectionsList,
                 (data) => createSection(data as unknown as Omit<ClubSection, 'id'>)
             );

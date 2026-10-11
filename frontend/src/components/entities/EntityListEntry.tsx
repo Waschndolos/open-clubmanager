@@ -18,7 +18,7 @@ import { MemberSummary } from "../../api/types";
 import { BulkMemberAssignDialog } from "./BulkMemberAssignDialog";
 
 export type Entity = {
-    id: number;
+    id: string;
     name: string;
     description?: string;
 };
@@ -31,8 +31,8 @@ type EntityListEntryProps<T extends Entity> = {
         name?: string;
         description?: string;
     };
-    fetchMembersFn?: (id: number) => Promise<MemberSummary[]>;
-    assignMembersFn?: (id: number, memberIds: number[]) => Promise<void>;
+    fetchMembersFn?: (id: string) => Promise<MemberSummary[]>;
+    assignMembersFn?: (id: string, memberIds: string[]) => Promise<void>;
 };
 
 export function EntityListEntry<T extends Entity>({

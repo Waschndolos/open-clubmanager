@@ -2,7 +2,8 @@ import { BACKEND_V2_URL } from './baseUrl';
 
 const SETUP_URL = `${BACKEND_V2_URL}/setup`;
 
-export type SetupDatabaseMode = 'sqlite-local' | 'mysql-shared';
+// Only local SQLite databases are supported.
+export type SetupDatabaseMode = 'sqlite-local';
 
 export interface SetupStatusResponse {
     setupRequired: boolean;
@@ -17,7 +18,8 @@ export async function getSetupStatus(): Promise<SetupStatusResponse> {
     return res.json();
 }
 
-export async function configureDatabase(mode: SetupDatabaseMode, databaseUrl?: string): Promise<void> {
+export async function configureDatabase(databaseUrl?: string): Promise<void> {
+    const mode: SetupDatabaseMode = 'sqlite-local';
     const res = await fetch(`${SETUP_URL}/configure-database`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

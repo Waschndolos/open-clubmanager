@@ -14,14 +14,14 @@ export async function createInventoryItem(
 }
 
 export async function updateInventoryItem(
-    id: number,
+    id: string,
     data: Partial<Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>>
 ): Promise<InventoryItem> {
     const res = await api.put<InventoryItem>(`/inventory/items/${id}`, data);
     return res.data;
 }
 
-export async function deleteInventoryItem(id: number): Promise<void> {
+export async function deleteInventoryItem(id: string): Promise<void> {
     await api.delete(`/inventory/items/${id}`);
 }
 
@@ -32,8 +32,8 @@ export async function fetchInventoryLoans(): Promise<InventoryLoan[]> {
 
 export async function createInventoryLoan(
     data: {
-        itemId: number;
-        memberId: number;
+        itemId: string;
+        memberId: string;
         loanedAt: string;
         dueDate?: string | null;
         notes: string;
@@ -44,13 +44,13 @@ export async function createInventoryLoan(
 }
 
 export async function updateInventoryLoan(
-    id: number,
+    id: string,
     data: Partial<Omit<InventoryLoan, 'id' | 'createdAt'>>
 ): Promise<InventoryLoan> {
     const res = await api.put<InventoryLoan>(`/inventory/loans/${id}`, data);
     return res.data;
 }
 
-export async function deleteInventoryLoan(id: number): Promise<void> {
+export async function deleteInventoryLoan(id: string): Promise<void> {
     await api.delete(`/inventory/loans/${id}`);
 }
