@@ -3,6 +3,7 @@ import {useTranslation} from "react-i18next";
 import React, {useEffect, useMemo, useState} from "react";
 import {ClubSection, Group, Member, Role} from "../../api/types";
 import {Delete, FileDownload, FileUpload} from "@mui/icons-material";
+import DataExportButton from "./DataExportButton";
 import {EditMemberDialog} from "./EditMemberDialog";
 import EditIcon from '@mui/icons-material/Edit';
 import {createMember, deleteMembers, updateMember} from "../../api/members";
@@ -262,6 +263,7 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
                             <Delete/>
                         </IconButton>
                     </Tooltip>
+                    <DataExportButton member={selectedMembers?.length === 1 ? selectedMembers[0] : null}/>
                     <Tooltip title={t("tooltips.export")}>
                         <IconButton onClick={handleExport} color={"primary"}>
                             <FileDownload/>

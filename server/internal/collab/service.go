@@ -419,3 +419,13 @@ func (s *Service) openClub() (*club.Club, error) {
 	}
 	return s.club, nil
 }
+
+// CanRead reports whether this device may read data of scope sc. In local
+// mode everything is readable; in a club the ACL decides.
+func (s *Service) CanRead(ctx context.Context, sc db.Scope) bool {
+	st, err := s.Status(ctx)
+	if err != nil {
+		return true
+	}
+	return st.Permissions[sc] == PermRead || st.Permissions[sc] == PermWrite
+}
