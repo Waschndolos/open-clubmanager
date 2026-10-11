@@ -44,7 +44,10 @@ In desktop mode the Go sidecar listens on `127.0.0.1` only.
 
 ### 2. Sync through immutable change files
 
-Devices do not share a database. They exchange **change operations**:
+Devices do not share a database. They exchange **change operations**. The
+layout below is illustrative; the normative format is in the
+[sync protocol specification](../sync-protocol.md), which replaces the
+mutable `club.json` ACL with an immutable, versioned ACL chain.
 
 ```
 /clubmanager-sync/
