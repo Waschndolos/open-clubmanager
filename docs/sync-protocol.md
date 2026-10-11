@@ -171,6 +171,7 @@ acl/<version>-<hash>.json                     ACL versions (immutable)
 acl/<version>-<hash>.json.sig
 keys/<scope>/<epoch>/<recipient-id>.age       wrapped scope keys
 requests/<device_id>.json                     join requests
+requests/<device_id>.json.sig                 signature of the join request
 segments/<device_id>/<scope>/<seq>.seg        change segments
 snapshots/<scope>/<epoch>/<hlc>-<device_id>.snap
 ```
@@ -250,9 +251,19 @@ refuse any later `club.json` with different values.
     }
   ],
   "epochs": { "members.core": 2, "members.contact": 1, "members.bank": 2, "finance": 1, "inventory": 1, "admin": 1 },
+  "key_checks": { "members.core": ["sha256:<b64 for epoch 1>", "sha256:<b64 for epoch 2>"], "...": [] },
   "min_schema": 1
 }
 ```
+
+`key_checks[S][e-1]` commits to `K(S,e)`: `sha256:<b64>` of the UTF-8 bytes
+`"ocm.key-check.v1\n" + S + "\n" + e + "\n"` (with `e` in decimal)
+followed by the 32 key bytes. A device MUST compare every key it unwraps
+with this value and MUST NOT use a key that does not match. *(Added during
+implementation of the identity layer, pending the review in issue #130: key
+files are not signed, and a sync client replaces a file another client wrote
+under the same name, so without this commitment anyone with write access to
+the folder could substitute a scope key they know.)*
 
 `.sig` file: signature by `author` (its `sign_pub`, or `root_sign_pub` for `root`).
 
@@ -262,7 +273,8 @@ ACL version `n` is valid if all of the following hold:
 1. Version 1 has `prev: null` and is signed by the root key.
 2. For `n > 1`, `prev` is the hash of a valid version `n-1`.
 3. The author is `root`, or a device that is `active` with `rw` on `admin` in version `n-1`.
-4. `epochs` never decrease from `n-1` to `n`.
+4. `epochs` never decrease from `n-1` to `n`. `key_checks[S]` has exactly
+   `epochs[S]` entries, and the entries of version `n-1` are unchanged.
 5. Revoked devices stay listed and are never reactivated. To re-add a person,
    add a new device.
 6. Role definitions satisfy the scope dependencies of [§4.1](#41-scopes).
@@ -584,7 +596,9 @@ Steps:
    - `invite_secret`, 16 random bytes.
    It stores the intended role and expiry date (default 7 days) **locally** and
    shows an invite code (text and QR) that contains: `club_id`, `invite_id`,
-   `invite_secret`, and the transport hint (WebDAV URL or "shared folder").
+   `invite_secret`, the transport hint (WebDAV URL or "shared folder"), and
+   `root_sign_pub`, which the new device compares with `club.json` before
+   pinning it *(added during implementation, pending #130)*.
 2. **Access to storage:** the person must get access to the shared folder or
    WebDAV share through the storage provider. This is outside the app, and
    the app explains it.
@@ -595,7 +609,7 @@ Steps:
      "sign_pub": "<b64>", "age_recipient": "age1...", "person": "Erika Mustermann",
      "proof": "<b64 HMAC-SHA-256(invite_secret, invite_id || sign_pub || age_recipient)>" }
    ```
-   plus a signature with its own `sign_priv`.
+   plus a signature with its own `sign_priv` in `requests/<device_id>.json.sig`.
 4. **Admin device checks the request:**
    - The proof must verify against a known, unexpired invite.
    - The invite must be unused.
