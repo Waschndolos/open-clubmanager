@@ -225,10 +225,10 @@ func TestRecovery(t *testing.T) {
 
 	// All admin devices are lost; a new device recovers with the kit.
 	e := newNode(t, "e", mem)
-	if _, _, err := RecoverNew(ctx, e.conn, e.dev, mem, strings.Replace(kitText, "root-age-key: AGE", "root-age-key: XGE", 1), "Eva"); err == nil {
+	if _, _, err := RecoverNew(ctx, e.conn, e.dev, mem, strings.Replace(kitText, "root-age-key: AGE", "root-age-key: XGE", 1), "Eva", "PC"); err == nil {
 		t.Fatal("damaged kit accepted")
 	}
-	ce, v, err := RecoverNew(ctx, e.conn, e.dev, mem, kitText, "Eva")
+	ce, v, err := RecoverNew(ctx, e.conn, e.dev, mem, kitText, "Eva", "PC")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -255,7 +255,7 @@ func TestRecovery(t *testing.T) {
 	}
 
 	// b uses the kit on its existing device and becomes admin.
-	if _, err := b.club.Recover(ctx, kitText, ""); err != nil {
+	if _, err := b.club.Recover(ctx, kitText, "", ""); err != nil {
 		t.Fatal(err)
 	}
 	if !b.club.Head().IsAdmin(b.dev.ID) || b.club.Head().Device(b.dev.ID).Role != acl.RoleBoard {
@@ -264,7 +264,7 @@ func TestRecovery(t *testing.T) {
 	b.key(db.ScopeFinance, b.club.Head().Epochs[db.ScopeFinance])
 
 	// A revoked device cannot recover itself (§8.2 rule 5).
-	if _, err := a.club.Recover(ctx, kitText, ""); !errors.Is(err, ErrDeviceRevoked) {
+	if _, err := a.club.Recover(ctx, kitText, "", ""); !errors.Is(err, ErrDeviceRevoked) {
 		t.Errorf("revoked device recovered: %v", err)
 	}
 
@@ -278,7 +278,7 @@ func TestRecovery(t *testing.T) {
 	okit := other.create("FC")
 	otherText := okit.Text()
 	okit.Wipe()
-	if _, err := b.club.Recover(ctx, otherText, ""); !errors.Is(err, ErrKitMismatch) {
+	if _, err := b.club.Recover(ctx, otherText, "", ""); !errors.Is(err, ErrKitMismatch) {
 		t.Errorf("other club's kit: %v", err)
 	}
 }

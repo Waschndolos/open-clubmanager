@@ -15,6 +15,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/Waschndolos/open-clubmanager/server/internal/auth"
+	"github.com/Waschndolos/open-clubmanager/server/internal/collab"
 	"github.com/Waschndolos/open-clubmanager/server/internal/config"
 	dbpkg "github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
@@ -29,6 +30,8 @@ type API struct {
 	dbMu sync.RWMutex
 	conn *sql.DB
 	st   *store.Store
+
+	collab *collab.Service
 }
 
 // New creates the API. conn may be nil when no database is configured yet.
@@ -41,6 +44,7 @@ func New(cfg *config.Config, conn *sql.DB) *API {
 	if conn != nil {
 		a.conn, a.st = conn, store.New(conn)
 	}
+	a.collab = newCollab(a)
 	return a
 }
 
@@ -256,6 +260,14 @@ func (a *API) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to create access token"})
 		return
+	}
+
+	// The device keys of collaboration mode are protected with the login
+	// password; unlock them now. A failure only leaves them locked.
+	if a.store() != nil {
+		if err := a.collab.Unlock(r.Context(), req.Password); err != nil {
+			log.Printf("collaboration: unlock device keys: %v", err)
+		}
 	}
 
 	writeJSON(w, http.StatusOK, openapi.AccessTokenResponse{AccessToken: token})

@@ -102,7 +102,7 @@ func (c *Club) Device() *identity.Device { return c.dev }
 // The returned kit holds the root private key. It is not stored anywhere; the
 // caller shows kit.Text(), lets the user confirm they printed or saved it and
 // then calls kit.Wipe().
-func Create(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.Transport, name, person string) (*Club, *identity.RecoveryKit, error) {
+func Create(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.Transport, name, person, deviceName string) (*Club, *identity.RecoveryKit, error) {
 	if err := requireNoClub(ctx, conn); err != nil {
 		return nil, nil, err
 	}
@@ -150,7 +150,7 @@ func Create(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transpor
 		Roles:      acl.DefaultRoles(),
 		Devices: []acl.Device{{
 			DeviceID: dev.ID, SignPub: dev.SignPubB64(), AgeRecipient: dev.AgeRecipient(),
-			Person: person, Role: acl.RoleBoard, Status: acl.StatusActive, AddedIn: 1,
+			Person: person, DeviceName: deviceName, Role: acl.RoleBoard, Status: acl.StatusActive, AddedIn: 1,
 		}},
 		Epochs:    map[db.Scope]uint64{},
 		KeyChecks: map[db.Scope][]string{},

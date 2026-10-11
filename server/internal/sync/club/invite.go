@@ -133,6 +133,22 @@ func (c *Club) CreateInvite(ctx context.Context, role, person string, ttl time.D
 	return inv, nil
 }
 
+// ErrNoInvite is returned when withdrawing an invite that does not exist.
+var ErrNoInvite = errors.New("club: no such invite")
+
+// WithdrawInvite deletes an unused invite, so requests using its code are
+// no longer accepted. inviteID is the b64 id as returned by Invites.
+func (c *Club) WithdrawInvite(ctx context.Context, inviteID string) error {
+	res, err := c.db.ExecContext(ctx, `DELETE FROM sync_invites WHERE invite_id = ? AND used_at IS NULL`, inviteID)
+	if err != nil {
+		return err
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return ErrNoInvite
+	}
+	return nil
+}
+
 // Invites lists the invites this device created, newest first.
 func (c *Club) Invites(ctx context.Context) ([]Invite, error) {
 	rows, err := c.db.QueryContext(ctx,
@@ -199,6 +215,7 @@ type joinRequest struct {
 	SignPub      string `json:"sign_pub"`
 	AgeRecipient string `json:"age_recipient"`
 	Person       string `json:"person"`
+	DeviceName   string `json:"device_name,omitempty"`
 	Proof        string `json:"proof"`
 }
 
@@ -221,7 +238,7 @@ func Proof(secret, inviteID []byte, signPub ed25519.PublicKey, ageRecipient stri
 // that club.json (trust on first use: the code does not name the club) and
 // returns the club in status joining plus the safety code to
 // compare with the admin. Refresh picks up the approval.
-func Join(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.Transport, code, person string) (*Club, string, error) {
+func Join(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.Transport, code, person, deviceName string) (*Club, string, error) {
 	inviteID, secret, err := ParseInviteCode(code)
 	if err != nil {
 		return nil, "", err
@@ -239,7 +256,7 @@ func Join(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.
 	}
 	req := joinRequest{
 		Type: joinType, ClubID: g.ClubID, InviteID: wire.EncodeB64(inviteID), DeviceID: dev.ID,
-		SignPub: dev.SignPubB64(), AgeRecipient: dev.AgeRecipient(), Person: person,
+		SignPub: dev.SignPubB64(), AgeRecipient: dev.AgeRecipient(), Person: person, DeviceName: deviceName,
 		Proof: wire.EncodeB64(Proof(secret, inviteID, dev.SignPub(), dev.AgeRecipient())),
 	}
 	raw, err := json.MarshalIndent(req, "", "  ")
@@ -285,6 +302,7 @@ type JoinRequest struct {
 	SignPub      string
 	AgeRecipient string
 	Person       string
+	DeviceName   string
 	InviteID     string
 	// Role is the role of the invite, if the invite is known.
 	Role string
@@ -372,7 +390,7 @@ func (c *Club) checkRequest(ctx context.Context, head *acl.Version, fileDeviceID
 		out.Err = ErrBadRequest
 		return out
 	}
-	out.SignPub, out.AgeRecipient, out.Person, out.InviteID = req.SignPub, req.AgeRecipient, req.Person, req.InviteID
+	out.SignPub, out.AgeRecipient, out.Person, out.DeviceName, out.InviteID = req.SignPub, req.AgeRecipient, req.Person, req.DeviceName, req.InviteID
 	out.SafetyCode = identity.SafetyCode(pub, req.AgeRecipient)
 	if head.Device(req.DeviceID) != nil {
 		out.Err = ErrAlreadyListed
@@ -437,7 +455,7 @@ func (c *Club) Approve(ctx context.Context, deviceID string) (*acl.Version, erro
 		}
 		next.Devices = append(next.Devices, acl.Device{
 			DeviceID: req.DeviceID, SignPub: req.SignPub, AgeRecipient: req.AgeRecipient,
-			Person: req.Person, Role: req.Role, Status: acl.StatusActive, AddedIn: next.Version,
+			Person: req.Person, DeviceName: req.DeviceName, Role: req.Role, Status: acl.StatusActive, AddedIn: next.Version,
 		})
 		return nil
 	})

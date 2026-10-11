@@ -51,10 +51,10 @@ func TestJoinRequiresEmptyTables(t *testing.T) {
 	code := a.invite(acl.RoleCoach)
 
 	b.conn.Exec(`INSERT INTO roles (id, name, updated_at) VALUES ('r1', 'Trainer', '2026-01-01T00:00:00.000Z')`)
-	if _, _, err := Join(ctx, b.conn, b.dev, mem, code, "b"); !errors.Is(err, ErrLocalData) {
+	if _, _, err := Join(ctx, b.conn, b.dev, mem, code, "b", ""); !errors.Is(err, ErrLocalData) {
 		t.Fatalf("join with local data: %v", err)
 	}
-	if _, _, err := RecoverNew(ctx, b.conn, b.dev, mem, "irrelevant", "b"); !errors.Is(err, ErrLocalData) {
+	if _, _, err := RecoverNew(ctx, b.conn, b.dev, mem, "irrelevant", "b", ""); !errors.Is(err, ErrLocalData) {
 		t.Fatalf("recover with local data: %v", err)
 	}
 	if err := ClearSyncedData(ctx, b.conn); err != nil {
@@ -63,7 +63,7 @@ func TestJoinRequiresEmptyTables(t *testing.T) {
 	b.join(code)
 
 	// One club per device.
-	if _, _, err := Join(ctx, b.conn, b.dev, mem, code, "b"); !errors.Is(err, ErrAlreadyInClub) {
+	if _, _, err := Join(ctx, b.conn, b.dev, mem, code, "b", ""); !errors.Is(err, ErrAlreadyInClub) {
 		t.Errorf("second join: %v", err)
 	}
 }

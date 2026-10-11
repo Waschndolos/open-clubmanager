@@ -30,6 +30,7 @@ tags:
   - name: finance
   - name: inventory
   - name: history
+  - name: collaboration
 
 components:
   securitySchemes:
@@ -1103,6 +1104,188 @@ components:
       required: [id, action, entity, entityId, userId, createdAt]
       additionalProperties: false
 
+    AreaPermission:
+      type: string
+      description: What this device may do in a data area (docs/sync-protocol.md §4).
+      enum: [none, read, write]
+    AreaPermissions:
+      type: object
+      properties:
+        membersCore: { $ref: '#/components/schemas/AreaPermission' }
+        membersContact: { $ref: '#/components/schemas/AreaPermission' }
+        membersBank: { $ref: '#/components/schemas/AreaPermission' }
+        finance: { $ref: '#/components/schemas/AreaPermission' }
+        inventory: { $ref: '#/components/schemas/AreaPermission' }
+        admin: { $ref: '#/components/schemas/AreaPermission' }
+      required: [membersCore, membersContact, membersBank, finance, inventory, admin]
+    CollaborationStatus:
+      type: object
+      properties:
+        mode:
+          type: string
+          enum: [local, joining, member, revoked]
+        locked:
+          type: boolean
+          description: Device keys exist but are locked until the user who set up collaboration logs in.
+        clubName: { type: string }
+        clubId: { type: string }
+        storagePath: { type: string }
+        storageError:
+          type: boolean
+          description: The storage location could not be opened.
+        deviceId: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        role: { type: string }
+        isAdmin: { type: boolean }
+        permissions: { $ref: '#/components/schemas/AreaPermissions' }
+        lastSync: { type: string, format: date-time }
+        lastError: { type: string }
+        syncing: { type: boolean }
+        pendingChanges: { type: integer }
+        pendingRequests: { type: integer }
+        conflicts: { type: integer }
+        lostChanges:
+          type: integer
+          description: Own ACL changes that lost against a concurrent change and must be redone.
+        badKeys: { type: integer }
+      required: [mode, locked, isAdmin, permissions, syncing, pendingChanges, pendingRequests, conflicts, lostChanges, badKeys]
+    FolderClub:
+      type: object
+      properties:
+        path: { type: string }
+        name: { type: string }
+      required: [path, name]
+    FolderInfo:
+      type: object
+      properties:
+        path: { type: string }
+        writable: { type: boolean }
+        kind:
+          type: string
+          enum: [sync, network, local]
+        provider: { type: string }
+        club: { $ref: '#/components/schemas/FolderClub' }
+        clubsInside:
+          type: array
+          items: { $ref: '#/components/schemas/FolderClub' }
+      required: [path, writable, kind, clubsInside]
+    CheckFolderRequest:
+      type: object
+      properties:
+        path: { type: string }
+      required: [path]
+    CreateClubRequest:
+      type: object
+      properties:
+        folder: { type: string, description: Parent folder; the club gets its own subfolder in it. }
+        clubName: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        password: { type: string, description: Login password of the current user; protects the device keys. }
+      required: [folder, clubName, person, deviceName, password]
+    CreateClubResponse:
+      type: object
+      properties:
+        path: { type: string }
+        recoveryKit: { type: string, description: Shown once, never stored by the app. }
+      required: [path, recoveryKit]
+    JoinClubRequest:
+      type: object
+      properties:
+        folder: { type: string }
+        code: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        password: { type: string }
+        replaceLocalData:
+          type: boolean
+          description: Back up and clear existing local data before joining.
+      required: [folder, code, person, deviceName, password]
+    SafetyCodeResponse:
+      type: object
+      properties:
+        safetyCode: { type: string }
+      required: [safetyCode]
+    RecoverRequest:
+      type: object
+      properties:
+        folder: { type: string }
+        recoveryKit: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        password: { type: string }
+        replaceLocalData: { type: boolean }
+      required: [recoveryKit, person, deviceName, password]
+    LocalDataResponse:
+      type: object
+      properties:
+        hasLocalData: { type: boolean }
+      required: [hasLocalData]
+    ClubInvite:
+      type: object
+      properties:
+        id: { type: string }
+        person: { type: string }
+        role: { type: string }
+        createdAt: { type: string, format: date-time }
+        expiresAt: { type: string, format: date-time }
+        usedAt: { type: string, format: date-time }
+        code: { type: string, description: Only returned when the invite is created. }
+      required: [id, person, role, createdAt, expiresAt]
+    CreateInviteRequest:
+      type: object
+      properties:
+        person: { type: string }
+        role: { type: string }
+      required: [person, role]
+    ClubJoinRequest:
+      type: object
+      properties:
+        deviceId: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        role: { type: string }
+        error:
+          type: string
+          description: Set if the request cannot be approved (unknown, expired or used invite, contested, forged).
+      required: [deviceId, person]
+    ApproveRequest:
+      type: object
+      properties:
+        safetyCode: { type: string }
+      required: [safetyCode]
+    ClubDevice:
+      type: object
+      properties:
+        deviceId: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        role: { type: string }
+        active: { type: boolean }
+        me: { type: boolean }
+      required: [deviceId, person, role, active, me]
+    ChangeDeviceRoleRequest:
+      type: object
+      properties:
+        role: { type: string }
+      required: [role]
+    ClubRole:
+      type: object
+      properties:
+        id: { type: string }
+        permissions: { $ref: '#/components/schemas/AreaPermissions' }
+      required: [id, permissions]
+    SyncConflict:
+      type: object
+      properties:
+        table: { type: string }
+        rowId: { type: string }
+        column: { type: string }
+        value: { type: string }
+        keptRowId: { type: string }
+        detectedAt: { type: string, format: date-time }
+      required: [table, rowId, column, value, keptRowId, detectedAt]
   responses:
     NoContent:
       description: Request completed successfully. No response body is returned.
@@ -2775,3 +2958,368 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalError'
+  /collaboration/status:
+    get:
+      tags: [collaboration]
+      summary: Collaboration status of this device
+      operationId: getCollaborationStatus
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current status.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CollaborationStatus' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/sync:
+    post:
+      tags: [collaboration]
+      summary: Synchronize now
+      operationId: syncCollaboration
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Status after synchronizing.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CollaborationStatus' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/folders:
+    get:
+      tags: [collaboration]
+      summary: Folders of sync clients found on this computer
+      operationId: listCollaborationFolders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Suggested folders.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/FolderInfo' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/folders/check:
+    post:
+      tags: [collaboration]
+      summary: Check a folder chosen by the user
+      operationId: checkCollaborationFolder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CheckFolderRequest' }
+      responses:
+        '200':
+          description: Folder details.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FolderInfo' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /collaboration/club:
+    post:
+      tags: [collaboration]
+      summary: Create a club for collaboration
+      operationId: createCollaborationClub
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateClubRequest' }
+      responses:
+        '201':
+          description: Club created. The recovery kit is returned only here.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CreateClubResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/join:
+    post:
+      tags: [collaboration]
+      summary: Ask to join a club with an invite code
+      operationId: joinCollaborationClub
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JoinClubRequest' }
+      responses:
+        '201':
+          description: Join request written; read the safety code to the admin.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SafetyCodeResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/join/safety-code:
+    get:
+      tags: [collaboration]
+      summary: Safety code of this device while its join request is pending
+      operationId: getCollaborationSafetyCode
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Safety code.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SafetyCodeResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/recover:
+    post:
+      tags: [collaboration]
+      summary: Use the recovery kit to become an admin device
+      operationId: recoverCollaborationClub
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RecoverRequest' }
+      responses:
+        '200':
+          description: Status after recovery.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CollaborationStatus' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/local-data:
+    get:
+      tags: [collaboration]
+      summary: Whether this device holds data that joining would replace
+      operationId: getCollaborationLocalData
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Local data state.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LocalDataResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/invites:
+    get:
+      tags: [collaboration]
+      summary: Invites created on this device
+      operationId: listCollaborationInvites
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Invites, newest first.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ClubInvite' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [collaboration]
+      summary: Invite a person
+      operationId: createCollaborationInvite
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateInviteRequest' }
+      responses:
+        '201':
+          description: Invite with its code.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClubInvite' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /collaboration/invites/{inviteId}:
+    delete:
+      tags: [collaboration]
+      summary: Withdraw an unused invite
+      operationId: withdrawCollaborationInvite
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inviteId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /collaboration/requests:
+    get:
+      tags: [collaboration]
+      summary: Pending join requests (admin devices)
+      operationId: listCollaborationRequests
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Requests found by the last synchronization.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ClubJoinRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/requests/{deviceId}/approve:
+    post:
+      tags: [collaboration]
+      summary: Approve a join request with the safety code read out by the new member
+      operationId: approveCollaborationRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ApproveRequest' }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422':
+          description: Wrong safety code (code WRONG_SAFETY_CODE) or request rejected after too many attempts (TOO_MANY_ATTEMPTS).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /collaboration/requests/{deviceId}/reject:
+    post:
+      tags: [collaboration]
+      summary: Reject a join request
+      operationId: rejectCollaborationRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /collaboration/devices:
+    get:
+      tags: [collaboration]
+      summary: People and devices of the club
+      operationId: listCollaborationDevices
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Devices of the current access list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ClubDevice' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/devices/{deviceId}/role:
+    put:
+      tags: [collaboration]
+      summary: Change the role of a device
+      operationId: changeCollaborationDeviceRole
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChangeDeviceRoleRequest' }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/devices/{deviceId}/revoke:
+    post:
+      tags: [collaboration]
+      summary: Remove a device from the club
+      operationId: revokeCollaborationDevice
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/roles:
+    get:
+      tags: [collaboration]
+      summary: Roles and what they may see and change
+      operationId: listCollaborationRoles
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Roles of the club.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ClubRole' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/conflicts:
+    get:
+      tags: [collaboration]
+      summary: Duplicate values found after synchronizing (docs/sync-protocol.md §14.2)
+      operationId: listCollaborationConflicts
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Rows whose unique value must be changed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/SyncConflict' }
+        '401': { $ref: '#/components/responses/Unauthorized' }

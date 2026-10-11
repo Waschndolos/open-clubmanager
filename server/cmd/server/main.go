@@ -100,7 +100,7 @@ func main() {
 	openapi.HandlerWithOptions(api, openapi.ChiServerOptions{
 		BaseURL:     "/api/v2",
 		BaseRouter:  router,
-		Middlewares: []openapi.MiddlewareFunc{auth.Middleware(cfg.JWTSecret)},
+		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, auth.Middleware(cfg.JWTSecret)},
 	})
 
 	// Backup / restore endpoints are not part of the generated OpenAPI spec, so
@@ -111,6 +111,11 @@ func main() {
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))
+
+	// Refresh the collaboration club in the background (spec §18.2).
+	collabCtx, stopCollab := context.WithCancel(context.Background())
+	defer stopCollab()
+	go api.Collab().Run(collabCtx)
 
 	srv := &http.Server{
 		Addr:              net.JoinHostPort(cfg.BindAddress, strconv.Itoa(cfg.Port)),
