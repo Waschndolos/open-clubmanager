@@ -632,6 +632,15 @@ prevents duplicates whenever it can see them.
   `type: "snapshot"`, `streams` instead of `seq`/`prev`, and encryption with
   the current epoch. `acl_version` MUST name the latest unambiguous ACL known
   to the author when deriving the snapshot.
+  *(Fixed during implementation of the sync core, pending the review in issue
+  #130: the header is `{type, club_id, device_id, scope, streams, epoch,
+  acl_version, schema, nonce, hlc}`, where `hlc` equals the one in the file
+  name and `streams` maps `device_id` to `{seq, hash}`. The plaintext is gzip
+  of `{"rows": [...], "pending": [...]}`: each row is `{t, pk, cells}` with
+  `cells` mapping every column except `updated_at` to `{v, e, h, d}` (value,
+  `clock_epoch`, `hlc`, `device_id`); `pending` holds the received changes of
+  the covered prefixes that still wait for a referenced row, since they are
+  not in the tables.)*
 - Snapshots MUST be written by an active admin device. Other devices ignore
   snapshots from non-admin authors.
 - The snapshot signature MUST be by a device that is `active`, has `rw` on

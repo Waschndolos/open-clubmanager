@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"unicode/utf8"
 )
 
 // ErrBadSignature is returned when a detached signature does not verify.
@@ -97,11 +98,20 @@ func Verify(pub ed25519.PublicKey, data, sigFile []byte) error {
 	return nil
 }
 
-// DecodeStrict parses one JSON object into out, rejecting unknown fields and
-// trailing data. Signed protocol files are parsed with it so that a file
-// cannot carry content this version of the app would silently ignore.
+// DecodeStrict parses one JSON value into out, rejecting invalid UTF-8,
+// duplicate object keys, unknown fields and trailing data (§3). Signed
+// protocol files are parsed with it so that a file cannot carry content this
+// version of the app would silently ignore or read differently than another
+// implementation. Numbers decode as json.Number into interface values.
 func DecodeStrict(data []byte, out any) error {
+	if !utf8.Valid(data) {
+		return errors.New("invalid UTF-8")
+	}
+	if err := checkDuplicateKeys(data); err != nil {
+		return err
+	}
 	d := json.NewDecoder(bytes.NewReader(data))
+	d.UseNumber()
 	d.DisallowUnknownFields()
 	if err := d.Decode(out); err != nil {
 		return err
@@ -110,4 +120,54 @@ func DecodeStrict(data []byte, out any) error {
 		return errors.New("trailing data after JSON object")
 	}
 	return nil
+}
+
+// checkDuplicateKeys walks the JSON tokens of data and fails if an object
+// repeats a key. encoding/json would silently keep the last one.
+func checkDuplicateKeys(data []byte) error {
+	d := json.NewDecoder(bytes.NewReader(data))
+	d.UseNumber()
+	type frame struct {
+		object bool
+		keys   map[string]bool
+		key    bool // next token in an object is a key
+	}
+	var stack []*frame
+	for {
+		tok, err := d.Token()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		var top *frame
+		if len(stack) > 0 {
+			top = stack[len(stack)-1]
+		}
+		if top != nil && top.object && top.key {
+			if k, ok := tok.(string); ok {
+				if top.keys[k] {
+					return fmt.Errorf("duplicate object key %q", k)
+				}
+				top.keys[k] = true
+				top.key = false
+				continue
+			}
+		}
+		switch tok {
+		case json.Delim('{'):
+			stack = append(stack, &frame{object: true, keys: map[string]bool{}, key: true})
+			continue
+		case json.Delim('['):
+			stack = append(stack, &frame{})
+			continue
+		case json.Delim('}'), json.Delim(']'):
+			stack = stack[:len(stack)-1]
+		}
+		// A value ended: the next token of an enclosing object is a key.
+		if len(stack) > 0 && stack[len(stack)-1].object {
+			stack[len(stack)-1].key = true
+		}
+	}
 }

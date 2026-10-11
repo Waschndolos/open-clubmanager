@@ -71,17 +71,23 @@ func newFixture(t *testing.T) *fixture {
 		Devices: []Device{
 			entry(f.a, RoleBoard, 1), entry(f.b, RoleCoach, 1), entry(f.c, RoleBoard, 1),
 		},
-		Epochs: map[db.Scope]uint64{}, KeyChecks: map[db.Scope][]string{}, MinSchema: 1,
+		Epochs: map[db.Scope]uint64{}, ClockEpochs: map[db.Scope]uint64{}, KeyChecks: map[db.Scope][]string{}, MinSchema: 1,
 	}
 	for _, s := range db.Scopes {
 		first.Epochs[s] = 1
+		first.ClockEpochs[s] = 1
 		first.KeyChecks[s] = checks(1)
 	}
 	f.v1 = f.mustVerify(nil, first, f.root.Sign)
 
 	second := f.v1.Next(f.a.ID, hlc.Timestamp{MS: 2})
 	c := second.Device(f.c.ID)
-	c.Status, c.RevokedIn, c.Cutoff = StatusRevoked, 2, map[db.Scope]uint64{db.ScopeMembersCore: 3}
+	c.Status, c.RevokedIn, c.Cutoff = StatusRevoked, 2, map[db.Scope]Cutoff{}
+	for _, s := range db.Scopes {
+		c.Cutoff[s] = Cutoff{}
+	}
+	h := wire.Hash([]byte("segment 3"))
+	c.Cutoff[db.ScopeMembersCore] = Cutoff{Seq: 3, Hash: &h}
 	for _, s := range db.Scopes {
 		second.Epochs[s] = 2
 		second.KeyChecks[s] = checks(2)
@@ -182,8 +188,16 @@ func TestVerifyRules(t *testing.T) {
 			d.Status, d.RevokedIn, d.Cutoff = StatusActive, 0, nil
 		}, want: ErrDeviceChanged},
 		{name: "cutoff raised later", prev: f.v2, edit: func(a *ACL) {
-			a.Device(f.c.ID).Cutoff[db.ScopeMembersCore] = 99
+			h := wire.Hash([]byte("segment 99"))
+			a.Device(f.c.ID).Cutoff[db.ScopeMembersCore] = Cutoff{Seq: 99, Hash: &h}
 		}, want: ErrDeviceChanged},
+		{name: "cutoff hash rewritten", prev: f.v2, edit: func(a *ACL) {
+			h := wire.Hash([]byte("other segment 3"))
+			a.Device(f.c.ID).Cutoff[db.ScopeMembersCore] = Cutoff{Seq: 3, Hash: &h}
+		}, want: ErrDeviceChanged},
+		{name: "clock epoch decreased", prev: f.v2, edit: func(a *ACL) { a.ClockEpochs[db.ScopeFinance] = 0 }, want: ErrMalformed},
+		{name: "clock epoch increased", prev: f.v2, edit: func(a *ACL) { a.ClockEpochs[db.ScopeFinance] = 2 }},
+		{name: "clock epochs missing", prev: f.v2, edit: func(a *ACL) { a.ClockEpochs = nil }, want: ErrMalformed},
 		{name: "revoked_in rewritten", prev: f.v2, edit: func(a *ACL) { a.Device(f.c.ID).RevokedIn = 3 }, want: ErrDeviceChanged},
 		{name: "revocation with wrong revoked_in", prev: f.v2, edit: func(a *ACL) {
 			d := a.Device(f.b.ID)
@@ -191,8 +205,21 @@ func TestVerifyRules(t *testing.T) {
 		}, want: ErrDeviceChanged},
 		{name: "revocation", prev: f.v2, edit: func(a *ACL) {
 			d := a.Device(f.b.ID)
-			d.Status, d.RevokedIn, d.Cutoff = StatusRevoked, 3, map[db.Scope]uint64{db.ScopeInventory: 0}
+			d.Status, d.RevokedIn = StatusRevoked, 3 // a coach writes nothing: no cutoffs
 		}},
+		{name: "revocation with cutoff for a read-only scope", prev: f.v2, edit: func(a *ACL) {
+			d := a.Device(f.b.ID)
+			d.Status, d.RevokedIn, d.Cutoff = StatusRevoked, 3, map[db.Scope]Cutoff{db.ScopeInventory: {}}
+		}, want: ErrCutoff},
+		{name: "revocation without cutoff for a writable scope", prev: f.v2, edit: func(a *ACL) {
+			d := a.Device(f.a.ID)
+			d.Status, d.RevokedIn = StatusRevoked, 3
+		}, want: ErrCutoff},
+		{name: "cutoff with seq but without hash", prev: f.v2, edit: func(a *ACL) {
+			d := a.Device(f.b.ID)
+			d.Status, d.RevokedIn = StatusRevoked, 3
+			a.Device(f.c.ID).Cutoff[db.ScopeFinance] = Cutoff{Seq: 2}
+		}, want: ErrMalformed},
 		{name: "new device", prev: f.v2, edit: func(a *ACL) { a.Devices = append(a.Devices, entry(other, RoleCoach, 3)) }},
 		{name: "new device with old added_in", prev: f.v2, edit: func(a *ACL) {
 			a.Devices = append(a.Devices, entry(other, RoleCoach, 2))
@@ -236,7 +263,7 @@ func TestVerifyRules(t *testing.T) {
 		{name: "bad hlc", prev: f.v2, edit: func(a *ACL) { a.CreatedHLC = "yesterday" }, want: ErrMalformed},
 		{name: "min_schema zero", prev: f.v2, edit: func(a *ACL) { a.MinSchema = 0 }, want: ErrMalformed},
 		{name: "active device with cutoff", prev: f.v2, edit: func(a *ACL) {
-			a.Devices[1].Cutoff = map[db.Scope]uint64{db.ScopeInventory: 1}
+			a.Devices[1].Cutoff = map[db.Scope]Cutoff{db.ScopeInventory: {}}
 		}, want: ErrMalformed},
 		{name: "unknown field", prev: f.v2, edit: func(a *ACL) {},
 			raw: func(b []byte) []byte {

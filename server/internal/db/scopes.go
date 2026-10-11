@@ -69,6 +69,7 @@ var LocalTables = []string{
 	"users", "audit_log", "user_preferences", "refresh_tokens", "password_reset_tokens",
 	"sync_device", "sync_field_clock", "sync_outbox", "sync_conflicts",
 	"sync_club", "sync_acl", "sync_keys", "sync_key_drafts", "sync_invites", "sync_streams",
+	"sync_scopes", "sync_uploads", "sync_pending", "sync_history", "sync_clock_warnings", "sync_clock_epochs",
 }
 
 // SyncedTable returns the registry entry of a synced table.

@@ -342,15 +342,21 @@ type ClubRole struct {
 
 // CollaborationStatus defines model for CollaborationStatus.
 type CollaborationStatus struct {
-	BadKeys    int        `json:"badKeys"`
-	ClubId     *string    `json:"clubId,omitempty"`
-	ClubName   *string    `json:"clubName,omitempty"`
-	Conflicts  int        `json:"conflicts"`
-	DeviceId   *string    `json:"deviceId,omitempty"`
-	DeviceName *string    `json:"deviceName,omitempty"`
-	IsAdmin    bool       `json:"isAdmin"`
-	LastError  *string    `json:"lastError,omitempty"`
-	LastSync   *time.Time `json:"lastSync,omitempty"`
+	BadKeys int `json:"badKeys"`
+
+	// ClockWarnings Devices whose changes carried a clock far ahead of this device's clock.
+	ClockWarnings int     `json:"clockWarnings"`
+	ClubId        *string `json:"clubId,omitempty"`
+	ClubName      *string `json:"clubName,omitempty"`
+	Conflicts     int     `json:"conflicts"`
+	DeviceId      *string `json:"deviceId,omitempty"`
+	DeviceName    *string `json:"deviceName,omitempty"`
+
+	// IncompleteAreas Readable areas without a verified starting snapshot yet.
+	IncompleteAreas int        `json:"incompleteAreas"`
+	IsAdmin         bool       `json:"isAdmin"`
+	LastError       *string    `json:"lastError,omitempty"`
+	LastSync        *time.Time `json:"lastSync,omitempty"`
 
 	// Locked Device keys exist but are locked until the user who set up collaboration logs in.
 	Locked bool `json:"locked"`
@@ -362,12 +368,21 @@ type CollaborationStatus struct {
 	PendingRequests int                     `json:"pendingRequests"`
 	Permissions     AreaPermissions         `json:"permissions"`
 	Person          *string                 `json:"person,omitempty"`
-	Role            *string                 `json:"role,omitempty"`
+
+	// QuarantinedStreams Change streams stopped because a file failed verification (security warning).
+	QuarantinedStreams int     `json:"quarantinedStreams"`
+	Role               *string `json:"role,omitempty"`
 
 	// StorageError The storage location could not be opened.
 	StorageError *bool   `json:"storageError,omitempty"`
 	StoragePath  *string `json:"storagePath,omitempty"`
 	Syncing      bool    `json:"syncing"`
+
+	// WaitingChanges Received changes waiting for a row they reference.
+	WaitingChanges int `json:"waitingChanges"`
+
+	// WaitingStreams Change streams of other devices waiting for a missing file, key, ACL version or app update.
+	WaitingStreams int `json:"waitingStreams"`
 }
 
 // CollaborationStatusMode defines model for CollaborationStatus.Mode.

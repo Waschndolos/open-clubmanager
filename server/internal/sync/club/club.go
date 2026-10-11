@@ -11,6 +11,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"slices"
 	"sync"
 	"time"
 
@@ -23,6 +24,7 @@ import (
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/identity"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/keys"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/layout"
+	"github.com/Waschndolos/open-clubmanager/server/internal/sync/replica"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/transport"
 )
 
@@ -81,6 +83,13 @@ func (c *Club) head() *acl.Version {
 		return nil
 	}
 	return c.chain[len(c.chain)-1]
+}
+
+// Chain returns the accepted ACL chain, version 1 first.
+func (c *Club) Chain() []*acl.Version {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return slices.Clone(c.chain)
 }
 
 // Status returns StatusJoining, StatusMember or StatusRevoked.
@@ -152,23 +161,31 @@ func Create(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transpor
 			DeviceID: dev.ID, SignPub: dev.SignPubB64(), AgeRecipient: dev.AgeRecipient(),
 			Person: person, DeviceName: deviceName, Role: acl.RoleBoard, Status: acl.StatusActive, AddedIn: 1,
 		}},
-		Epochs:    map[db.Scope]uint64{},
-		KeyChecks: map[db.Scope][]string{},
-		MinSchema: 1,
+		Epochs:      map[db.Scope]uint64{},
+		ClockEpochs: map[db.Scope]uint64{},
+		KeyChecks:   map[db.Scope][]string{},
+		MinSchema:   1,
 	}
+	scopeKeys := map[db.Scope][]byte{}
+	defer func() {
+		for _, k := range scopeKeys {
+			clear(k)
+		}
+	}()
 	for _, s := range db.Scopes {
 		k, err := keys.New()
 		if err != nil {
 			return fail(err)
 		}
+		scopeKeys[s] = k
 		first.Epochs[s] = 1
+		first.ClockEpochs[s] = 1
 		first.KeyChecks[s] = []string{keys.Check(s, 1, k)}
 		for rid, rcpt := range map[string]string{dev.ID: dev.AgeRecipient(), layout.RootRecipient: root.AgeRecipient()} {
 			if err := writeKey(ctx, tr, s, 1, rid, rcpt, k); err != nil {
 				return fail(err)
 			}
 		}
-		clear(k)
 	}
 	raw, sig, err := acl.Sign(first, root.Sign)
 	if err != nil {
@@ -197,12 +214,17 @@ func Create(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transpor
 	if err := adoptLocalData(ctx, tx, dev.ID, ts); err != nil {
 		return fail(err)
 	}
-	// TODO(sync core, §15.4): write one snapshot per scope (epoch 1, empty
-	// streams map) from the adopted data and set the next seq of every
-	// scope to 1. Until then the adopted rows reach other devices only once
-	// they are changed again.
+	// §15.4 steps 3 and 4: one snapshot per scope with epoch 1 and an empty
+	// streams map, and the next seq of every scope is 1.
+	if err := initialSnapshots(ctx, tx, g.ClubID, dev, ts, scopeKeys); err != nil {
+		return fail(err)
+	}
 	if err := tx.Commit(); err != nil {
 		return fail(err)
+	}
+	// A failed upload is retried by the next sync with the identical files.
+	if _, err := replica.Upload(ctx, conn, tr); err != nil {
+		return fail(fmt.Errorf("club: upload initial snapshots: %w", err))
 	}
 	if _, err := c.Refresh(ctx); err != nil {
 		return fail(err)
