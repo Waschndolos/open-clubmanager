@@ -93,7 +93,7 @@ func (n *node) refresh() *RefreshResult {
 
 func (n *node) invite(role string) string {
 	n.t.Helper()
-	inv, err := n.club.CreateInvite(ctx, role, "", 0, TransportHint{})
+	inv, err := n.club.CreateInvite(ctx, role, "", 0)
 	if err != nil {
 		n.t.Fatal(err)
 	}
@@ -211,7 +211,7 @@ func TestMultiDeviceLifecycle(t *testing.T) {
 	if _, err := b.club.ScopeKey(ctx, db.ScopeFinance, 1); !errors.Is(err, ErrMissingKey) {
 		t.Errorf("coach reads finance: %v", err)
 	}
-	if _, err := b.club.CreateInvite(ctx, acl.RoleBoard, "", 0, TransportHint{}); !errors.Is(err, ErrNotAdmin) {
+	if _, err := b.club.CreateInvite(ctx, acl.RoleBoard, "", 0); !errors.Is(err, ErrNotAdmin) {
 		t.Errorf("coach invites: %v", err)
 	}
 

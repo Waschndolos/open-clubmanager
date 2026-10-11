@@ -354,6 +354,9 @@ func RecoverNew(ctx context.Context, conn *sql.DB, dev *identity.Device, tr tran
 	if err := requireNoClub(ctx, conn); err != nil {
 		return nil, nil, err
 	}
+	if err := requireEmptySyncedData(ctx, conn); err != nil {
+		return nil, nil, err
+	}
 	g, gRaw, gSig, err := fetchGenesis(ctx, tr)
 	if err != nil {
 		return nil, nil, err

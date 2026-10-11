@@ -596,9 +596,7 @@ Steps:
    - `invite_secret`, 16 random bytes.
    It stores the intended role and expiry date (default 7 days) **locally** and
    shows an invite code (text and QR) that contains: `club_id`, `invite_id`,
-   `invite_secret`, the transport hint (WebDAV URL or "shared folder"), and
-   `root_sign_pub`, which the new device compares with `club.json` before
-   pinning it *(added during implementation, pending #130)*.
+   `invite_secret`, and the transport hint (WebDAV URL or "shared folder").
 2. **Access to storage:** the person must get access to the shared folder or
    WebDAV share through the storage provider. This is outside the app, and
    the app explains it.
@@ -609,7 +607,7 @@ Steps:
      "sign_pub": "<b64>", "age_recipient": "age1...", "person": "Erika Mustermann",
      "proof": "<b64 HMAC-SHA-256(invite_secret, invite_id || sign_pub || age_recipient)>" }
    ```
-   plus a signature with its own `sign_priv` in `requests/<device_id>.json.sig`.
+   plus a signature with its own `sign_priv`.
 4. **Admin device checks the request:**
    - The proof must verify against a known, unexpired invite.
    - The invite must be unused.

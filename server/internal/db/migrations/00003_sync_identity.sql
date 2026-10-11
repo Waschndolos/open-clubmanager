@@ -26,7 +26,7 @@ CREATE TABLE sync_club (
     -- joining: request written, not yet in the ACL; member: active in the
     -- ACL; revoked: revoked in the ACL.
     status              TEXT NOT NULL CHECK (status IN ('joining', 'member', 'revoked')),
-    -- Transport hint from the invite (JSON), e.g. {"kind":"folder"}.
+    -- Storage location chosen by the user (JSON), e.g. {"kind":"folder"}.
     transport           TEXT NOT NULL DEFAULT '{}',
     join_invite_id      TEXT,
     created_at          TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))

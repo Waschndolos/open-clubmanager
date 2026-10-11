@@ -95,7 +95,9 @@ func (c *Club) Device() *identity.Device { return c.dev }
 
 // Create creates a new club (§17.1): it generates the root key, writes
 // club.json, the keys of epoch 1 of every scope for this device and root, and
-// ACL version 1 with this device as board.
+// ACL version 1 with this device as board. Rows already in the synced
+// tables become the club's initial state (field clocks at the creation HLC,
+// outbox cleared, §15.4).
 //
 // The returned kit holds the root private key. It is not stored anywhere; the
 // caller shows kit.Text(), lets the user confirm they printed or saved it and
@@ -180,10 +182,26 @@ func Create(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transpor
 		return fail(err)
 	}
 
-	if _, err := conn.ExecContext(ctx,
-		`INSERT INTO sync_club (id, club_id, name, root_sign_pub, root_age_recipient, genesis, genesis_sig, status, transport)
-		 VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		g.ClubID, g.Name, g.RootSignPub, g.RootAgeRecipient, gRaw, gSig, StatusJoining, `{"kind":"folder"}`); err != nil {
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return fail(err)
+	}
+	defer tx.Rollback()
+	if _, err := tx.ExecContext(ctx,
+		`INSERT INTO sync_club (id, club_id, name, root_sign_pub, root_age_recipient, genesis, genesis_sig, status)
+		 VALUES (1, ?, ?, ?, ?, ?, ?, ?)`,
+		g.ClubID, g.Name, g.RootSignPub, g.RootAgeRecipient, gRaw, gSig, StatusJoining); err != nil {
+		return fail(err)
+	}
+	// §17.1 / §15.4: existing local data becomes the club's initial state.
+	if err := adoptLocalData(ctx, tx, dev.ID, ts); err != nil {
+		return fail(err)
+	}
+	// TODO(sync core, §15.4): write one snapshot per scope (epoch 1, empty
+	// streams map) from the adopted data and set the next seq of every
+	// scope to 1. Until then the adopted rows reach other devices only once
+	// they are changed again.
+	if err := tx.Commit(); err != nil {
 		return fail(err)
 	}
 	if _, err := c.Refresh(ctx); err != nil {

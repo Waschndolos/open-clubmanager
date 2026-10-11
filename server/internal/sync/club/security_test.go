@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"sync"
@@ -45,9 +46,11 @@ func TestInviteChecks(t *testing.T) {
 
 	t.Run("wrong HMAC proof", func(t *testing.T) {
 		b := newNode(t, "b", mem)
-		ic, _ := ParseInviteCode(a.invite(acl.RoleCoach))
-		ic.Secret = wire.EncodeB64(bytes.Repeat([]byte{7}, 16))
-		b.join(ic.Encode())
+		id, _, err := ParseInviteCode(a.invite(acl.RoleCoach))
+		if err != nil {
+			t.Fatal(err)
+		}
+		b.join(FormatInviteCode(id, bytes.Repeat([]byte{7}, inviteSecretSize)))
 		if err := requestErr(t, a, b.dev.ID); !errors.Is(err, ErrBadProof) {
 			t.Fatalf("got %v", err)
 		}
@@ -59,9 +62,8 @@ func TestInviteChecks(t *testing.T) {
 
 	t.Run("unknown invite", func(t *testing.T) {
 		b := newNode(t, "b", mem)
-		ic, _ := ParseInviteCode(a.invite(acl.RoleCoach))
-		ic.InviteID = wire.EncodeB64([]byte("12345678"))
-		b.join(ic.Encode())
+		_, secret, _ := ParseInviteCode(a.invite(acl.RoleCoach))
+		b.join(FormatInviteCode([]byte("12345"), secret))
 		if err := requestErr(t, a, b.dev.ID); !errors.Is(err, ErrInviteUnknown) {
 			t.Fatalf("got %v", err)
 		}
@@ -70,7 +72,7 @@ func TestInviteChecks(t *testing.T) {
 
 	t.Run("expired invite", func(t *testing.T) {
 		b := newNode(t, "b", mem)
-		inv, err := a.club.CreateInvite(ctx, acl.RoleCoach, "", time.Hour, TransportHint{})
+		inv, err := a.club.CreateInvite(ctx, acl.RoleCoach, "", time.Hour)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -150,11 +152,9 @@ func TestInviteChecks(t *testing.T) {
 		b := newNode(t, "b", mem)
 		a.admit(b, acl.RoleCoach)
 		code := a.invite(acl.RoleBoard)
-		ic, _ := ParseInviteCode(code)
-		id, _ := wire.DecodeB64(ic.InviteID)
-		secret, _ := wire.DecodeB64(ic.Secret)
+		id, secret, _ := ParseInviteCode(code)
 		// b re-sends a request for another invite, hoping for board.
-		raw := []byte(`{"type":"ocm.join","club_id":"` + a.club.Genesis().ClubID + `","invite_id":"` + ic.InviteID +
+		raw := []byte(`{"type":"ocm.join","club_id":"` + a.club.Genesis().ClubID + `","invite_id":"` + wire.EncodeB64(id) +
 			`","device_id":"` + b.dev.ID + `","sign_pub":"` + b.dev.SignPubB64() + `","age_recipient":"` + b.dev.AgeRecipient() +
 			`","person":"b","proof":"` + wire.EncodeB64(Proof(secret, id, b.dev.SignPub(), b.dev.AgeRecipient())) + `"}`)
 		mem.Put(layout.RequestPath(b.dev.ID), raw)
@@ -166,26 +166,40 @@ func TestInviteChecks(t *testing.T) {
 	})
 
 	t.Run("invite code of another club", func(t *testing.T) {
+		// The code does not name the club: the request lands in the club of
+		// the selected storage, which does not know the invite.
 		other := newNode(t, "other", transport.NewMemory())
 		other.create("FC").Wipe()
 		b := newNode(t, "b", mem)
-		if _, _, err := Join(ctx, b.conn, b.dev, mem, other.invite(acl.RoleCoach), "b"); !errors.Is(err, acl.ErrGenesisMismatch) {
+		b.join(other.invite(acl.RoleCoach))
+		if b.club.Genesis().ClubID != a.club.Genesis().ClubID {
+			t.Fatal("joined the club of the code instead of the storage")
+		}
+		if err := requestErr(t, a, b.dev.ID); !errors.Is(err, ErrInviteUnknown) {
 			t.Fatalf("got %v", err)
 		}
+		a.club.RejectRequest(ctx, b.dev.ID)
 	})
 
 	t.Run("invite codes", func(t *testing.T) {
 		code := a.invite(acl.RoleCoach)
-		wrapped := code[:20] + "\n  " + code[20:]
-		if _, err := ParseInviteCode(wrapped); err != nil {
-			t.Errorf("line-wrapped code: %v", err)
+		if !regexp.MustCompile(`^[A-Z2-7]{4}(-[A-Z2-7]{4}){5}$`).MatchString(code) {
+			t.Fatalf("code %q", code)
 		}
-		for _, bad := range []string{"", "OCM-INVITE-1:", "OCM-INVITE-1:abc", code[:len(code)-4], strings.Replace(code, "OCM-INVITE-1", "OCM-INVITE-2", 1)} {
-			if _, err := ParseInviteCode(bad); !errors.Is(err, ErrBadInviteCode) {
+		id, secret, err := ParseInviteCode(code)
+		if err != nil || len(id) != 5 || len(secret) != 10 || FormatInviteCode(id, secret) != code {
+			t.Fatalf("round trip: %v", err)
+		}
+		typed := strings.ToLower(strings.ReplaceAll(code, "-", " ")) + "\n"
+		if id2, s2, err := ParseInviteCode(typed); err != nil || !bytes.Equal(id2, id) || !bytes.Equal(s2, secret) {
+			t.Errorf("typed code: %v", err)
+		}
+		for _, bad := range []string{"", code[:len(code)-1], code + "A", strings.Replace(code, code[:1], "1", 1), strings.Replace(code, code[:1], "0", 1)} {
+			if _, _, err := ParseInviteCode(bad); !errors.Is(err, ErrBadInviteCode) {
 				t.Errorf("ParseInviteCode(%q): %v", bad, err)
 			}
 		}
-		if _, err := a.club.CreateInvite(ctx, "president", "", 0, TransportHint{}); !errors.Is(err, ErrUnknownRole) {
+		if _, err := a.club.CreateInvite(ctx, "president", "", 0); !errors.Is(err, ErrUnknownRole) {
 			t.Errorf("unknown role: %v", err)
 		}
 	})

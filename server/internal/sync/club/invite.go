@@ -7,9 +7,11 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
+	"encoding/base32"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -43,13 +45,6 @@ var (
 	ErrNoRequest = errors.New("club: no such join request")
 )
 
-// TransportHint tells the new device where the club's files are (§17.2).
-type TransportHint struct {
-	// Kind is "folder" (shared cloud folder) or "webdav".
-	Kind string `json:"kind"`
-	URL  string `json:"url,omitempty"`
-}
-
 // Invite is an invite created by this admin device.
 type Invite struct {
 	ID        []byte
@@ -65,55 +60,49 @@ type Invite struct {
 	Code string
 }
 
-// inviteCodePrefix starts every invite code.
-const inviteCodePrefix = "OCM-INVITE-1:"
+// Sizes of the invite parts (§17.2 step 1). Together they are 15 bytes,
+// exactly 24 base32 characters.
+const (
+	inviteIDSize     = 5
+	inviteSecretSize = 10
+)
 
-// InviteCode is the content of an invite code (§17.2 step 1): club_id,
-// invite_id, invite_secret and the transport hint. RootSignPub is an addition:
-// it lets the new device check club.json against the inviting admin's copy
-// instead of trusting whatever club.json it finds in the folder.
-type InviteCode struct {
-	ClubID      string        `json:"club_id"`
-	InviteID    string        `json:"invite_id"`
-	Secret      string        `json:"secret"`
-	RootSignPub string        `json:"root_sign_pub"`
-	Transport   TransportHint `json:"transport"`
+var inviteEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)
+
+// FormatInviteCode returns the invite code of §17.2: invite_id ||
+// invite_secret as 24 characters of uppercase base32 (RFC 4648 alphabet
+// A–Z, 2–7) in groups of four, e.g. "AB2C-DEF3-…". The code names neither
+// the club nor the storage: the new device reads club.json from the storage
+// location the user selects.
+func FormatInviteCode(id, secret []byte) string {
+	s := inviteEncoding.EncodeToString(append(slices.Clone(id), secret...))
+	var groups []string
+	for i := 0; i < len(s); i += 4 {
+		groups = append(groups, s[i:min(i+4, len(s))])
+	}
+	return strings.Join(groups, "-")
 }
 
-// Encode returns the text form of the code.
-func (ic InviteCode) Encode() string {
-	b, _ := json.Marshal(ic)
-	return inviteCodePrefix + wire.EncodeB64(b)
-}
-
-// ParseInviteCode parses the text form. White space (line breaks when the
-// code was copied from an e-mail) is ignored.
-func ParseInviteCode(s string) (*InviteCode, error) {
-	s = strings.Join(strings.Fields(s), "")
-	rest, ok := strings.CutPrefix(s, inviteCodePrefix)
-	if !ok {
-		return nil, ErrBadInviteCode
+// ParseInviteCode returns invite_id and invite_secret. Case, dashes and
+// white space are ignored, so a code read out over the phone or copied with
+// line breaks still works.
+func ParseInviteCode(code string) (id, secret []byte, err error) {
+	s := strings.ToUpper(strings.Join(strings.FieldsFunc(code, func(r rune) bool {
+		return r == '-' || r == ' ' || r == '\t' || r == '\n' || r == '\r'
+	}), ""))
+	if len(s) != 24 {
+		return nil, nil, ErrBadInviteCode
 	}
-	b, err := wire.DecodeB64(rest)
-	if err != nil {
-		return nil, ErrBadInviteCode
+	b, err := inviteEncoding.DecodeString(s)
+	if err != nil || len(b) != inviteIDSize+inviteSecretSize {
+		return nil, nil, ErrBadInviteCode
 	}
-	var ic InviteCode
-	if err := wire.DecodeStrict(b, &ic); err != nil {
-		return nil, ErrBadInviteCode
-	}
-	id, err1 := wire.DecodeB64(ic.InviteID)
-	secret, err2 := wire.DecodeB64(ic.Secret)
-	_, err3 := wire.ParsePublicKey(ic.RootSignPub)
-	if err1 != nil || err2 != nil || err3 != nil || len(id) != 8 || len(secret) != 16 || ic.ClubID == "" {
-		return nil, ErrBadInviteCode
-	}
-	return &ic, nil
+	return b[:inviteIDSize], b[inviteIDSize:], nil
 }
 
 // CreateInvite creates an invite for a role (§17.2 step 1). The invite is
 // stored only locally. ttl <= 0 means DefaultInviteTTL.
-func (c *Club) CreateInvite(ctx context.Context, role, person string, ttl time.Duration, hint TransportHint) (*Invite, error) {
+func (c *Club) CreateInvite(ctx context.Context, role, person string, ttl time.Duration) (*Invite, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	head := c.head()
@@ -126,10 +115,7 @@ func (c *Club) CreateInvite(ctx context.Context, role, person string, ttl time.D
 	if ttl <= 0 {
 		ttl = DefaultInviteTTL
 	}
-	if hint.Kind == "" {
-		hint.Kind = "folder"
-	}
-	inv := &Invite{ID: make([]byte, 8), Secret: make([]byte, 16), Role: role, Person: person}
+	inv := &Invite{ID: make([]byte, inviteIDSize), Secret: make([]byte, inviteSecretSize), Role: role, Person: person}
 	if _, err := rand.Read(inv.ID); err != nil {
 		return nil, err
 	}
@@ -143,13 +129,7 @@ func (c *Club) CreateInvite(ctx context.Context, role, person string, ttl time.D
 		wire.EncodeB64(inv.ID), inv.Secret, role, person, db.FormatTime(inv.CreatedAt), db.FormatTime(inv.ExpiresAt)); err != nil {
 		return nil, err
 	}
-	inv.Code = InviteCode{
-		ClubID:      c.genesis.ClubID,
-		InviteID:    wire.EncodeB64(inv.ID),
-		Secret:      wire.EncodeB64(inv.Secret),
-		RootSignPub: c.genesis.RootSignPub,
-		Transport:   hint,
-	}.Encode()
+	inv.Code = FormatInviteCode(inv.ID, inv.Secret)
 	return inv, nil
 }
 
@@ -236,28 +216,29 @@ func Proof(secret, inviteID []byte, signPub ed25519.PublicKey, ageRecipient stri
 	return m.Sum(nil)
 }
 
-// Join sends a join request with an invite code (§17.2 step 3). It pins
-// club.json and returns the club in status joining plus the safety code to
+// Join sends a join request with an invite code (§17.2 step 3) to the club
+// whose files are in tr, the storage location the user selected. It pins
+// that club.json (trust on first use: the code does not name the club) and
+// returns the club in status joining plus the safety code to
 // compare with the admin. Refresh picks up the approval.
 func Join(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.Transport, code, person string) (*Club, string, error) {
-	ic, err := ParseInviteCode(code)
+	inviteID, secret, err := ParseInviteCode(code)
 	if err != nil {
 		return nil, "", err
 	}
+	// One club per device (v1), and a joining device starts empty (§15.4).
 	if err := requireNoClub(ctx, conn); err != nil {
+		return nil, "", err
+	}
+	if err := requireEmptySyncedData(ctx, conn); err != nil {
 		return nil, "", err
 	}
 	g, gRaw, gSig, err := fetchGenesis(ctx, tr)
 	if err != nil {
 		return nil, "", err
 	}
-	if err := g.Matches(ic.ClubID, ic.RootSignPub); err != nil {
-		return nil, "", err
-	}
-	inviteID, _ := wire.DecodeB64(ic.InviteID)
-	secret, _ := wire.DecodeB64(ic.Secret)
 	req := joinRequest{
-		Type: joinType, ClubID: g.ClubID, InviteID: ic.InviteID, DeviceID: dev.ID,
+		Type: joinType, ClubID: g.ClubID, InviteID: wire.EncodeB64(inviteID), DeviceID: dev.ID,
 		SignPub: dev.SignPubB64(), AgeRecipient: dev.AgeRecipient(), Person: person,
 		Proof: wire.EncodeB64(Proof(secret, inviteID, dev.SignPub(), dev.AgeRecipient())),
 	}
@@ -272,11 +253,10 @@ func Join(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.
 	if err := tr.Create(ctx, path, raw); err != nil {
 		return nil, "", fmt.Errorf("club: write join request: %w", err)
 	}
-	hint, _ := json.Marshal(ic.Transport)
 	if _, err := conn.ExecContext(ctx,
-		`INSERT INTO sync_club (id, club_id, name, root_sign_pub, root_age_recipient, genesis, genesis_sig, status, transport, join_invite_id)
-		 VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		g.ClubID, g.Name, g.RootSignPub, g.RootAgeRecipient, gRaw, gSig, StatusJoining, string(hint), ic.InviteID); err != nil {
+		`INSERT INTO sync_club (id, club_id, name, root_sign_pub, root_age_recipient, genesis, genesis_sig, status, join_invite_id)
+		 VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		g.ClubID, g.Name, g.RootSignPub, g.RootAgeRecipient, gRaw, gSig, StatusJoining, req.InviteID); err != nil {
 		return nil, "", err
 	}
 	c := &Club{db: conn, dev: dev, tr: tr, genesis: g, status: StatusJoining, Now: time.Now}
