@@ -3,18 +3,15 @@ import {
     Alert,
     Box,
     Button,
-    Card,
-    CardContent,
     IconButton,
     InputAdornment,
     TextField,
-    Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { resetPassword } from '../../api/authentication';
 import { useTranslation } from 'react-i18next';
-import loginBg from '../../assets/login_bg.jpeg';
+import AuthLayout from '../../components/auth/AuthLayout';
 
 const ResetPassword: React.FC = () => {
     const { t } = useTranslation();
@@ -29,7 +26,9 @@ const ResetPassword: React.FC = () => {
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newPassword || !confirmPassword || loading) return;
         setError(null);
 
         if (newPassword !== confirmPassword) {
@@ -62,192 +61,82 @@ const ResetPassword: React.FC = () => {
 
     if (!token) {
         return (
-            <Box
-                sx={{
-                    position: 'relative',
-                    minHeight: '100vh',
-                    minWidth: '100vw',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        inset: 0,
-                        backgroundImage: `url(${loginBg})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                        filter: 'saturate(1.1) contrast(1.05) brightness(0.65)',
-                        transform: 'scale(1.02)',
-                    }}
-                />
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'linear-gradient(135deg, rgba(15,21,22,0.75) 0%, rgba(22,33,34,0.6) 50%, rgba(15,21,22,0.85) 100%)',
-                    }}
-                />
-                <Box sx={{ position: 'relative' }}>
+            <AuthLayout title={t('resetPassword.title')}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.25 }}>
                     <Alert severity="error">{t('resetPassword.missingToken')}</Alert>
+                    <Button variant="contained" size="large" fullWidth onClick={() => navigate('/forgot-password')}>
+                        {t('login.forgotPassword')}
+                    </Button>
                 </Box>
-            </Box>
+            </AuthLayout>
         );
     }
 
     return (
-        <Box
-            sx={{
-                position: 'relative',
-                minHeight: '100vh',
-                minWidth: '100vw',
-                overflow: 'hidden',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}
-        >
-            <Box
-                sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    backgroundImage: `url(${loginBg})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    filter: 'saturate(1.1) contrast(1.05) brightness(0.65)',
-                    transform: 'scale(1.02)',
-                }}
-            />
+        <AuthLayout title={t('resetPassword.title')}>
+            {success ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.25 }}>
+                    <Alert severity="success">{t('resetPassword.successMessage')}</Alert>
+                    <Button variant="contained" fullWidth size="large" onClick={() => navigate('/login')}>
+                        {t('resetPassword.backToLogin')}
+                    </Button>
+                </Box>
+            ) : (
+                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2.25 }}>
+                    <TextField
+                        label={t('resetPassword.newPassword')}
+                        fullWidth
+                        autoFocus
+                        autoComplete="new-password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        helperText={t('setup.validation.passwordTooShort')}
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                            edge="end"
+                                            aria-label={t(showPassword ? 'login.hidePassword' : 'login.showPassword')}
+                                            size="small"
+                                        >
+                                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            },
+                        }}
+                    />
 
-            <Box
-                sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'linear-gradient(135deg, rgba(15,21,22,0.75) 0%, rgba(22,33,34,0.6) 50%, rgba(15,21,22,0.85) 100%)',
-                }}
-            />
+                    <TextField
+                        label={t('resetPassword.confirmPassword')}
+                        fullWidth
+                        autoComplete="new-password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
 
-            <Box
-                sx={{
-                    position: 'relative',
-                    width: '100%',
-                    maxWidth: 440,
-                    mx: { xs: 2, sm: 3 },
-                    my: 4,
-                }}
-            >
-                <Card
-                    sx={{
-                        width: '100%',
-                        p: { xs: 3, sm: 4 },
-                        bgcolor: (theme) => theme.palette.mode === 'dark'
-                            ? 'rgba(22, 33, 34, 0.92)'
-                            : 'rgba(255, 255, 255, 0.96)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        boxShadow: '0 24px 60px rgba(0, 0, 0, 0.35)',
-                        backdropFilter: 'blur(16px)',
-                        borderRadius: 4,
-                    }}
-                    elevation={0}
-                >
-                    <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
-                        <Box textAlign="center" mb={3}>
-                            <Typography
-                                variant="h4"
-                                component="h1"
-                                fontWeight={800}
-                                sx={{ letterSpacing: '-0.02em', mb: 1 }}
-                            >
-                                {t('resetPassword.title')}
-                            </Typography>
-                        </Box>
+                    {error && <Alert severity="error">{error}</Alert>}
 
-                        <Box display="flex" flexDirection="column" gap={2}>
-                            {success ? (
-                                <>
-                                    <Alert severity="success" variant="outlined">
-                                        {t('resetPassword.successMessage')}
-                                    </Alert>
-                                    <Button
-                                        variant="contained"
-                                        fullWidth
-                                        size="large"
-                                        onClick={() => navigate('/login')}
-                                    >
-                                        {t('resetPassword.backToLogin')}
-                                    </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <TextField
-                                        label={t('resetPassword.newPassword')}
-                                        variant="outlined"
-                                        fullWidth
-                                        type={showPassword ? 'text' : 'password'}
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        slotProps={{
-                                            input: {
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            onClick={() => setShowPassword((prev) => !prev)}
-                                                            edge="end"
-                                                            aria-label="toggle password visibility"
-                                                            size="small"
-                                                        >
-                                                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                ),
-                                            },
-                                        }}
-                                    />
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        disabled={!newPassword || !confirmPassword || loading}
+                    >
+                        {t('resetPassword.submitButton')}
+                    </Button>
 
-                                    <TextField
-                                        label={t('resetPassword.confirmPassword')}
-                                        variant="outlined"
-                                        fullWidth
-                                        type={showPassword ? 'text' : 'password'}
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                    />
-
-                                    {error && (
-                                        <Alert severity="error" variant="outlined">
-                                            {error}
-                                        </Alert>
-                                    )}
-
-                                    <Button
-                                        variant="contained"
-                                        fullWidth
-                                        size="large"
-                                        onClick={handleSubmit}
-                                        disabled={!newPassword || !confirmPassword || loading}
-                                    >
-                                        {t('resetPassword.submitButton')}
-                                    </Button>
-
-                                    <Button
-                                        variant="text"
-                                        fullWidth
-                                        onClick={() => navigate('/login')}
-                                    >
-                                        {t('resetPassword.backToLogin')}
-                                    </Button>
-                                </>
-                            )}
-                        </Box>
-                    </CardContent>
-                </Card>
-            </Box>
-        </Box>
+                    <Button variant="text" fullWidth onClick={() => navigate('/login')}>
+                        {t('resetPassword.backToLogin')}
+                    </Button>
+                </Box>
+            )}
+        </AuthLayout>
     );
 };
 

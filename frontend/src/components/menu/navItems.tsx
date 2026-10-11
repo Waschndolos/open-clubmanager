@@ -1,0 +1,57 @@
+import { ReactElement } from "react";
+import { useTranslation } from "react-i18next";
+import AccountBalanceOutlined from "@mui/icons-material/AccountBalanceOutlined";
+import AccountTreeOutlined from "@mui/icons-material/AccountTreeOutlined";
+import GroupsOutlined from "@mui/icons-material/GroupsOutlined";
+import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
+import HubOutlined from "@mui/icons-material/HubOutlined";
+import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
+import ManageAccountsOutlined from "@mui/icons-material/ManageAccountsOutlined";
+import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
+import SpaceDashboardOutlined from "@mui/icons-material/SpaceDashboardOutlined";
+import { useAuth } from "../../context/AuthContext";
+import { usePermission } from "../../context/CollaborationContext";
+
+export type NavItem = {
+    label: string;
+    icon: ReactElement;
+    link: string;
+};
+
+export type NavGroup = {
+    /** Group heading; the first group has none. */
+    label?: string;
+    items: NavItem[];
+};
+
+/** Navigation entries visible to the current login, grouped for the sidebar. */
+export function useNavGroups(): NavGroup[] {
+    const { t } = useTranslation();
+    const { appRole } = useAuth();
+
+    const isAdmin = appRole === "ADMIN";
+    // The device's role in a collaboration club limits what this login sees (UX F10).
+    const financeArea = usePermission("finance");
+    const inventoryArea = usePermission("inventory");
+    const canViewFinance = (appRole === "ADMIN" || appRole === "TREASURER") && financeArea !== "none";
+
+    const club: NavItem[] = [
+        { label: t("nav.members"), icon: <GroupsOutlined />, link: "/members" },
+        ...(canViewFinance ? [{ label: t("nav.finance"), icon: <AccountBalanceOutlined />, link: "/finance" }] : []),
+        ...(inventoryArea !== "none" ? [{ label: t("nav.inventory"), icon: <Inventory2Outlined />, link: "/inventory" }] : []),
+        { label: t("nav.entities"), icon: <AccountTreeOutlined />, link: "/entities" },
+    ];
+
+    const admin: NavItem[] = [
+        { label: t("nav.history"), icon: <HistoryOutlined />, link: "/history" },
+        ...(isAdmin ? [{ label: t("nav.users"), icon: <ManageAccountsOutlined />, link: "/users" }] : []),
+        { label: t("nav.collaboration"), icon: <HubOutlined />, link: "/collaboration" },
+        { label: t("nav.settings"), icon: <SettingsOutlined />, link: "/settings" },
+    ];
+
+    return [
+        { items: [{ label: t("nav.dashboard"), icon: <SpaceDashboardOutlined />, link: "/dashboard" }] },
+        { label: t("nav.club"), items: club },
+        { label: t("nav.admin"), items: admin },
+    ];
+}

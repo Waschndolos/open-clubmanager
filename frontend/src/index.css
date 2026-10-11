@@ -1,7 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 :root {
-  font-family: 'Inter', 'Space Grotesk', 'Poppins', sans-serif;
   color-scheme: light dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -9,64 +6,38 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Remove blue autofill background in light mode */
+/* Keep autofilled inputs on the theme surface instead of the browser's blue/yellow. */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px #FFFFFF inset !important;
-  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-text-fill-color: #15201B !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
-input:-webkit-autofill {
-  -webkit-text-fill-color: #1A2E33 !important;
-}
-
-/* Same for dark mode */
 .dark input:-webkit-autofill,
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,
 .dark input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #0F1516 inset !important;
-  -webkit-transition: background-color 5000s ease-in-out 0s !important;
-}
-
-.dark input:-webkit-autofill {
-  -webkit-text-fill-color: #E8F4F1 !important;
+  -webkit-box-shadow: 0 0 0 30px #121916 inset !important;
+  -webkit-text-fill-color: #E6EEE9 !important;
 }
 
 body {
   margin: 0;
-  display: flex;
   min-width: 320px;
   min-height: 100vh;
 }
 
 #root {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
 }
 
-.ag-theme-clubmanager-dark {
-  --ag-background-color: #162122;
-  --ag-header-background-color: #0F1516;
-  --ag-header-foreground-color: #E8F4F1;
-  --ag-foreground-color: #E8F4F1;
-  --ag-border-color: rgba(255, 255, 255, 0.08);
-  --ag-disabled-foreground-color: rgba(232, 244, 241, 0.38);
-  --ag-input-border-color: rgba(255, 255, 255, 0.1);
-  --ag-row-hover-color: #203436;
-  --ag-odd-row-background-color: #0F1516;
-}
-
-.ag-theme-clubmanager-light {
-  --ag-background-color: #FFFFFF;
-  --ag-header-background-color: #F8FFFE;
-  --ag-header-foreground-color: #1A2E33;
-  --ag-foreground-color: #1A2E33;
-  --ag-border-color: rgba(32, 52, 54, 0.08);
-  --ag-disabled-foreground-color: rgba(32, 52, 54, 0.38);
-  --ag-input-border-color: rgba(32, 52, 54, 0.16);
-  --ag-row-hover-color: #F0F5F5;
-  --ag-odd-row-background-color: #F8FFFE;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

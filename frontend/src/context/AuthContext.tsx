@@ -4,6 +4,7 @@ import { AppRole } from "../api/types";
 interface AuthContextType {
     accessToken: string | null;
     appRole: AppRole | null;
+    email: string | null;
     setAccessToken: (token: string | null) => void;
     logout: () => void;
 }
@@ -30,25 +31,34 @@ function extractRole(token: string | null): AppRole | null {
     return null;
 }
 
+function extractEmail(token: string | null): string | null {
+    if (!token) return null;
+    const email = decodeJwtPayload(token)?.["email"];
+    return typeof email === "string" ? email : null;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [accessToken, setAccessTokenState] = useState<string | null>(null);
     const [appRole, setAppRole] = useState<AppRole | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
 
     const setAccessToken = (token: string | null) => {
         setAccessTokenState(token);
         setAppRole(extractRole(token));
+        setEmail(extractEmail(token));
     };
 
     const logout = () => {
         setAccessTokenState(null);
         setAppRole(null);
+        setEmail(null);
         window.location.href = "/login";
     };
 
     return (
-        <AuthContext.Provider value={{ accessToken, appRole, setAccessToken, logout }}>
+        <AuthContext.Provider value={{ accessToken, appRole, email, setAccessToken, logout }}>
             {children}
         </AuthContext.Provider>
     );

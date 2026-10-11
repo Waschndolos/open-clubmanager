@@ -1,134 +1,98 @@
-import { Box, List, Typography } from "@mui/material";
-import AppMenuItem from "./AppMenuItem";
-import packageJson from "../../../package.json";
+import { Box, IconButton, List, Tooltip, Typography } from "@mui/material";
+import KeyboardDoubleArrowLeftRounded from "@mui/icons-material/KeyboardDoubleArrowLeftRounded";
+import KeyboardDoubleArrowRightRounded from "@mui/icons-material/KeyboardDoubleArrowRightRounded";
 import { useTranslation } from "react-i18next";
-import {
-  AccountBalance,
-  Badge,
-  GridView,
-  Groups,
-  History,
-  Inventory2,
-  ManageAccounts,
-  People,
-  Settings,
-} from "@mui/icons-material";
-import { useAuth } from "../../context/AuthContext";
-import { usePermission } from "../../context/CollaborationContext";
+import packageJson from "../../../package.json";
+import BrandMark from "../common/BrandMark";
+import AppMenuItem from "./AppMenuItem";
+import AccountMenu from "./AccountMenu";
+import { useNavGroups } from "./navItems";
 
 type Props = {
-  collapsed: boolean;
+    collapsed: boolean;
+    /** Desktop only: toggles the collapsed rail. Omitted in the mobile drawer. */
+    onToggleCollapsed?: () => void;
+    /** Mobile drawer: close after a navigation. */
+    onNavigate?: () => void;
 };
 
-export default function AppMenu({ collapsed }: Props) {
-  const { t } = useTranslation();
-  const { appRole } = useAuth();
+export default function AppMenu({ collapsed, onToggleCollapsed, onNavigate }: Props) {
+    const { t } = useTranslation();
+    const groups = useNavGroups();
 
-  const isAdmin = appRole === "ADMIN";
-  // The device's role in a collaboration club limits what this login sees (UX F10).
-  const financeArea = usePermission("finance");
-  const inventoryArea = usePermission("inventory");
-  const canViewFinance = (appRole === "ADMIN" || appRole === "TREASURER") && financeArea !== "none";
+    return (
+        <Box
+            component="nav"
+            aria-label={t("nav.main")}
+            sx={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}
+        >
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: collapsed ? "center" : "flex-start",
+                    height: 64,
+                    px: collapsed ? 0 : 2.25,
+                    flexShrink: 0,
+                }}
+            >
+                <BrandMark compact={collapsed} size={30} />
+            </Box>
 
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        width: "100%",
-        py: 1.5,
-        px: collapsed ? 1 : 1.5,
-      }}
-    >
-      <List sx={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: 0.25 }}>
-        <AppMenuItem
-          label={t("menu.dashboard")}
-          icon={<GridView fontSize="small" />}
-          link="dashboard"
-          collapsed={collapsed}
-        />
-        <AppMenuItem
-          label={t("menu.members")}
-          icon={<ManageAccounts fontSize="small" />}
-          link="members"
-          collapsed={collapsed}
-        />
-        {canViewFinance && (
-          <AppMenuItem
-            label={t("menu.finance")}
-            icon={<AccountBalance fontSize="small" />}
-            link="finance"
-            collapsed={collapsed}
-          />
-        )}
-        {inventoryArea !== "none" && (
-          <AppMenuItem
-            label={t("menu.inventory")}
-            icon={<Inventory2 fontSize="small" />}
-            link="inventory"
-            collapsed={collapsed}
-          />
-        )}
-        <AppMenuItem
-          label={t("menu.entities")}
-          icon={<Badge fontSize="small" />}
-          link="entities"
-          collapsed={collapsed}
-        />
-        <AppMenuItem
-          label={t("menu.history")}
-          icon={<History fontSize="small" />}
-          link="history"
-          collapsed={collapsed}
-        />
-        {isAdmin && (
-          <AppMenuItem
-            label={t("menu.users")}
-            icon={<People fontSize="small" />}
-            link="users"
-            collapsed={collapsed}
-          />
-        )}
-        <AppMenuItem
-          label={t("collaboration.title")}
-          icon={<Groups fontSize="small" />}
-          link="collaboration"
-          collapsed={collapsed}
-        />
-        <AppMenuItem
-          label={t("menu.settings")}
-          icon={<Settings fontSize="small" />}
-          link="settings"
-          collapsed={collapsed}
-        />
-      </List>
+            <Box sx={{ flexGrow: 1, overflowY: "auto", overflowX: "hidden", px: collapsed ? 1.25 : 1.75, pt: 1, scrollbarWidth: "thin" }}>
+                {groups.map((group, index) => (
+                    <Box key={group.label ?? index} sx={{ mb: 2 }}>
+                        {group.label && (collapsed ? (
+                            <Box sx={{ height: 1, bgcolor: "divider", mx: 1, mb: 1.5 }} role="separator" />
+                        ) : (
+                            <Typography
+                                component="h2"
+                                sx={{ px: 1.25, mb: 0.75, fontSize: "0.75rem", fontWeight: 600, color: "text.secondary" }}
+                            >
+                                {group.label}
+                            </Typography>
+                        ))}
+                        <List disablePadding sx={{ display: "grid", gap: 0.25 }}>
+                            {group.items.map((item) => (
+                                <AppMenuItem key={item.link} {...item} collapsed={collapsed} onNavigate={onNavigate} />
+                            ))}
+                        </List>
+                    </Box>
+                ))}
+            </Box>
 
-      <Box sx={{ marginTop: "auto", textAlign: "center", py: 1.5, px: 1 }}>
-        {collapsed ? (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ fontSize: "0.6rem", fontWeight: 600, opacity: 0.7 }}
-          >
-            v{packageJson.version}
-          </Typography>
-        ) : (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            noWrap
-            sx={{
-              fontSize: "0.7rem",
-              fontWeight: 600,
-              letterSpacing: "0.02em",
-              opacity: 0.6,
-            }}
-          >
-            v{packageJson.version}
-          </Typography>
-        )}
-      </Box>
-    </Box>
-  );
+            <Box sx={{ px: collapsed ? 1.25 : 1.75, pb: 1.5, pt: 1, borderTop: 1, borderColor: "divider", flexShrink: 0 }}>
+                <AccountMenu collapsed={collapsed} onNavigate={onNavigate} />
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: collapsed ? "column" : "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 0.5,
+                        mt: 1,
+                        pl: collapsed ? 0 : 1,
+                    }}
+                >
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.7rem", opacity: 0.75 }}>
+                        v{packageJson.version}
+                    </Typography>
+                    {onToggleCollapsed && (
+                        <Tooltip title={collapsed ? t("nav.expand") : t("nav.collapse")} placement="right">
+                            <IconButton
+                                size="small"
+                                onClick={onToggleCollapsed}
+                                aria-label={collapsed ? t("nav.expand") : t("nav.collapse")}
+                                sx={{ color: "text.secondary" }}
+                            >
+                                {collapsed
+                                    ? <KeyboardDoubleArrowRightRounded fontSize="small" />
+                                    : <KeyboardDoubleArrowLeftRounded fontSize="small" />}
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                </Box>
+            </Box>
+        </Box>
+    );
 }

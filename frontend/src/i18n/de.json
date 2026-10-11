@@ -17,7 +17,9 @@
         "forgotPassword": "Passwort vergessen?",
         "welcomeTitle": "Willkommen beim Open ClubManager",
         "welcomeSubtitle": "Verwalte Mitglieder, Finanzen, Gruppen und Vereinsprozesse in einer modernen, klaren und schnellen Anwendung.",
-        "errorInvalidCredentials": "Login fehlgeschlagen. Bitte überprüfe deine Eingaben."
+        "errorInvalidCredentials": "Login fehlgeschlagen. Bitte überprüfe deine Eingaben.",
+        "showPassword": "Passwort anzeigen",
+        "hidePassword": "Passwort verbergen"
     },
     "forgotPassword": {
         "title": "Passwort vergessen",
@@ -112,7 +114,32 @@
             },
             "membersBySection": {
                 "title": "Mitglieder nach Abteilung"
-            }
+            },
+            "empty": "Noch keine Daten vorhanden."
+        },
+        "greeting": {
+            "morning": "Guten Morgen",
+            "afternoon": "Guten Tag",
+            "evening": "Guten Abend"
+        },
+        "quick": {
+            "title": "Schnellzugriff",
+            "members": "Mitglieder verwalten",
+            "finance": "Buchung erfassen",
+            "entities": "Vereinsstruktur",
+            "history": "Letzte Änderungen"
+        },
+        "stats": {
+            "members": "Mitglieder",
+            "activeMembers": "{{count}} davon aktiv",
+            "activeShare": "Aktive Mitglieder",
+            "groups": "Gruppen",
+            "roles": "Rollen",
+            "sections": "Abteilungen",
+            "fees": "Beiträge bezahlt",
+            "feesOf": "von {{total}}",
+            "noMembers": "Noch keine Mitglieder angelegt.",
+            "addMembers": "Erstes Mitglied anlegen"
         }
     },
     "tooltips": {
@@ -822,6 +849,45 @@
             "STORAGE_MISSING": "Der Speicherort ist nicht erreichbar. Läuft dein Sync-Programm, und ist der Ordner noch da?",
             "NETWORK": "Keine Verbindung zum Programm. Läuft Open ClubManager noch?",
             "default": "Das hat nicht geklappt: {{message}}"
+        }
+    },
+    "auth": {
+        "brand": {
+            "tagline": "Dein Verein. Alles an einem Ort.",
+            "points": [
+                "Mitglieder, Beiträge und Abteilungen auf einen Blick",
+                "Läuft auf deinem Rechner – deine Daten bleiben bei dir",
+                "Auf Wunsch gemeinsam mit dem ganzen Vorstand"
+            ]
+        }
+    },
+    "theme": {
+        "toLight": "Helles Design",
+        "toDark": "Dunkles Design"
+    },
+    "nav": {
+        "main": "Hauptnavigation",
+        "club": "Verein",
+        "admin": "Verwaltung",
+        "dashboard": "Übersicht",
+        "members": "Mitglieder",
+        "finance": "Finanzen",
+        "inventory": "Inventar",
+        "entities": "Vereinsstruktur",
+        "history": "Verlauf",
+        "users": "Benutzer",
+        "collaboration": "Zusammenarbeit",
+        "settings": "Einstellungen",
+        "openMenu": "Menü öffnen",
+        "collapse": "Seitenleiste einklappen",
+        "expand": "Seitenleiste ausklappen",
+        "account": "Konto",
+        "signedInAs": "Angemeldet als",
+        "roles": {
+            "ADMIN": "Administrator",
+            "TREASURER": "Kassenwart",
+            "SECRETARY": "Schriftführer",
+            "READONLY": "Nur lesen"
         }
     }
 }

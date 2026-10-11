@@ -1,17 +1,8 @@
 import React from 'react';
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-} from 'recharts';
-import { Box, Paper, Typography } from '@mui/material';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { MemberGrowthPoint } from '../../api/statistics';
+import ChartCard, { useChartStyle } from './ChartCard';
 
 interface MemberGrowthChartProps {
     data: MemberGrowthPoint[];
@@ -19,39 +10,42 @@ interface MemberGrowthChartProps {
 
 export default function MemberGrowthChart({ data }: MemberGrowthChartProps) {
     const { t } = useTranslation();
+    const s = useChartStyle();
 
     return (
-        <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.7rem', color: 'text.secondary' }}>
-                {t('dashboard.charts.memberGrowth.title')}
-            </Typography>
-            <Box sx={{ width: '100%', height: 220 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                        <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                        <Tooltip />
-                        <Legend wrapperStyle={{ fontSize: 12 }} />
-                        <Line
-                            type="monotone"
-                            dataKey="entries"
-                            name={t('dashboard.charts.memberGrowth.entries')}
-                            stroke="#4caf50"
-                            strokeWidth={2}
-                            dot={false}
-                        />
-                        <Line
-                            type="monotone"
-                            dataKey="exits"
-                            name={t('dashboard.charts.memberGrowth.exits')}
-                            stroke="#f44336"
-                            strokeWidth={2}
-                            dot={false}
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
-            </Box>
-        </Paper>
+        <ChartCard title={t('dashboard.charts.memberGrowth.title')} empty={data.length === 0}>
+            <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data} margin={{ top: 5, right: 8, left: -16, bottom: 0 }}>
+                    <defs>
+                        <linearGradient id="mg-entries" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={s.positive} stopOpacity={0.25} />
+                            <stop offset="100%" stopColor={s.positive} stopOpacity={0} />
+                        </linearGradient>
+                    </defs>
+                    <CartesianGrid stroke={s.grid} vertical={false} />
+                    <XAxis dataKey="month" tick={s.tick} axisLine={false} tickLine={false} />
+                    <YAxis allowDecimals={false} tick={s.tick} axisLine={false} tickLine={false} />
+                    <Tooltip {...s.tooltip} />
+                    <Legend wrapperStyle={s.legend} iconType="circle" iconSize={8} />
+                    <Area
+                        type="monotone"
+                        dataKey="entries"
+                        name={t('dashboard.charts.memberGrowth.entries')}
+                        stroke={s.positive}
+                        fill="url(#mg-entries)"
+                        strokeWidth={2}
+                    />
+                    <Area
+                        type="monotone"
+                        dataKey="exits"
+                        name={t('dashboard.charts.memberGrowth.exits')}
+                        stroke={s.negative}
+                        fill="transparent"
+                        strokeWidth={2}
+                        strokeDasharray="4 3"
+                    />
+                </AreaChart>
+            </ResponsiveContainer>
+        </ChartCard>
     );
 }

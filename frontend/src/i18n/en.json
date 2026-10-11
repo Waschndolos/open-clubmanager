@@ -17,7 +17,9 @@
         "forgotPassword": "Forgot password?",
         "welcomeTitle": "Welcome to Open ClubManager",
         "welcomeSubtitle": "Manage members, finances, groups, and club processes in a modern, clear, and fast application.",
-        "errorInvalidCredentials": "Login failed. Please check your credentials."
+        "errorInvalidCredentials": "Login failed. Please check your credentials.",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password"
     },
     "forgotPassword": {
         "title": "Forgot Password",
@@ -112,7 +114,32 @@
             },
             "membersBySection": {
                 "title": "Members by Section"
-            }
+            },
+            "empty": "No data yet."
+        },
+        "greeting": {
+            "morning": "Good morning",
+            "afternoon": "Good afternoon",
+            "evening": "Good evening"
+        },
+        "quick": {
+            "title": "Quick access",
+            "members": "Manage members",
+            "finance": "Record a transaction",
+            "entities": "Club structure",
+            "history": "Recent changes"
+        },
+        "stats": {
+            "members": "Members",
+            "activeMembers": "{{count}} active",
+            "activeShare": "Active members",
+            "groups": "Groups",
+            "roles": "Roles",
+            "sections": "Sections",
+            "fees": "Fees paid",
+            "feesOf": "of {{total}}",
+            "noMembers": "No members yet.",
+            "addMembers": "Add your first member"
         }
     },
     "tooltips": {
@@ -822,6 +849,45 @@
             "STORAGE_MISSING": "The storage location is not reachable. Is your sync client running and is the folder still there?",
             "NETWORK": "No connection to the program. Is Open ClubManager still running?",
             "default": "That did not work: {{message}}"
+        }
+    },
+    "auth": {
+        "brand": {
+            "tagline": "Your club. All in one place.",
+            "points": [
+                "Members, fees and sections at a glance",
+                "Runs on your computer – your data stays with you",
+                "Work together with the whole board if you like"
+            ]
+        }
+    },
+    "theme": {
+        "toLight": "Light theme",
+        "toDark": "Dark theme"
+    },
+    "nav": {
+        "main": "Main navigation",
+        "club": "Club",
+        "admin": "Administration",
+        "dashboard": "Overview",
+        "members": "Members",
+        "finance": "Finances",
+        "inventory": "Inventory",
+        "entities": "Club structure",
+        "history": "History",
+        "users": "Users",
+        "collaboration": "Collaboration",
+        "settings": "Settings",
+        "openMenu": "Open menu",
+        "collapse": "Collapse sidebar",
+        "expand": "Expand sidebar",
+        "account": "Account",
+        "signedInAs": "Signed in as",
+        "roles": {
+            "ADMIN": "Administrator",
+            "TREASURER": "Treasurer",
+            "SECRETARY": "Secretary",
+            "READONLY": "Read only"
         }
     }
 }
