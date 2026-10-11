@@ -101,8 +101,9 @@ func (w *writer) record(t db.Table, pk row, set row) (string, error) {
 	pkText := op.EncodePK(pk)
 	for col := range set {
 		if _, err := w.ExecContext(w.ctx,
-			`INSERT INTO sync_field_clock (tbl, pk, col, hlc, device_id) VALUES (?, ?, ?, ?, NULL)
-			 ON CONFLICT (tbl, pk, col) DO UPDATE SET hlc = excluded.hlc, device_id = NULL`,
+			`INSERT INTO sync_field_clock (tbl, pk, col, hlc, device_id)
+			 VALUES (?, ?, ?, ?, (SELECT device_id FROM sync_device WHERE id = 1))
+			 ON CONFLICT (tbl, pk, col) DO UPDATE SET hlc = excluded.hlc, device_id = excluded.device_id`,
 			t.Name, pkText, col, ts.String()); err != nil {
 			return "", err
 		}

@@ -449,3 +449,23 @@ func TestDetectUniqueConflictsWithoutClocks(t *testing.T) {
 		t.Errorf("conflicts = %+v", conflicts)
 	}
 }
+
+// Once the device identity exists (sync/identity.Ensure), field clocks name
+// this device instead of NULL.
+func TestFieldClocksCarryDeviceID(t *testing.T) {
+	ctx := context.Background()
+	s, conn := newTestStore(t)
+	const id = "abcdefghijklmnopqrstuvwxyz"
+	if _, err := conn.Exec(`UPDATE sync_device SET device_id = ? WHERE id = 1`, id); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.CreateMember(ctx, MemberInput{Number: 1, FirstName: "A", LastName: "A"}); err != nil {
+		t.Fatal(err)
+	}
+	var own, other int
+	conn.QueryRow(`SELECT COUNT(*) FILTER (WHERE device_id = ?), COUNT(*) FILTER (WHERE device_id IS NOT ?)
+		FROM sync_field_clock`, id, id).Scan(&own, &other)
+	if own == 0 || other != 0 {
+		t.Errorf("%d clocks with the device id, %d without", own, other)
+	}
+}

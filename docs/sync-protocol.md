@@ -255,9 +255,19 @@ refuse any later `club.json` with different values.
   ],
   "epochs": { "members.core": 2, "members.contact": 1, "members.bank": 2, "finance": 1, "inventory": 1, "admin": 1 },
   "clock_epochs": { "members.core": 1, "members.contact": 1, "members.bank": 1, "finance": 1, "inventory": 1, "admin": 1 },
+  "key_checks": { "members.core": ["sha256:<b64 for epoch 1>", "sha256:<b64 for epoch 2>"], "...": [] },
   "min_schema": 1
 }
 ```
+
+`key_checks[S][e-1]` commits to `K(S,e)`: `sha256:<b64>` of the UTF-8 bytes
+`"ocm.key-check.v1\n" + S + "\n" + e + "\n"` (with `e` in decimal)
+followed by the 32 key bytes. A device MUST compare every key it unwraps
+with this value and MUST NOT use a key that does not match. *(Added during
+implementation of the identity layer, pending the review in issue #130: key
+files are not signed, and a sync client replaces a file another client wrote
+under the same name, so without this commitment anyone with write access to
+the folder could substitute a scope key they know.)*
 
 `.sig` file: signature by `author` (its `sign_pub`, or `root_sign_pub` for `root`).
 
@@ -267,7 +277,8 @@ ACL version `n` is valid if all of the following hold:
 1. Version 1 has `prev: null` and is signed by the root key.
 2. For `n > 1`, `prev` is the hash of a valid version `n-1`.
 3. The author is `root`, or a device that is `active` with `rw` on `admin` in version `n-1`.
-4. `epochs` never decrease from `n-1` to `n`.
+4. `epochs` never decrease from `n-1` to `n`. `key_checks[S]` has exactly
+   `epochs[S]` entries, and the entries of version `n-1` are unchanged.
 5. Revoked devices stay listed and are never reactivated. To re-add a person,
    add a new device.
 6. Role definitions satisfy the scope dependencies of [§4.1](#41-scopes).
