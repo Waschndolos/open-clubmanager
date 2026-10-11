@@ -1,8 +1,10 @@
-import { createGroup } from './groups';
+import { assignGroupMembers, createGroup } from './groups';
 import { createMember } from './members';
-import { createRole } from './roles';
-import { createSection } from './sections';
+import { assignRoleMembers, createRole } from './roles';
+import { assignSectionMembers, createSection } from './sections';
 import { createMemberFee, createTransaction } from './finance';
+import { createInventoryItem, createInventoryLoan } from './inventory';
+import { Member } from './types';
 
 export interface SetupDemoDataResult {
     roles: number;
@@ -11,62 +13,326 @@ export interface SetupDemoDataResult {
     members: number;
     transactions: number;
     memberFees: number;
+    inventoryItems: number;
+    inventoryLoans: number;
 }
 
+// Demo club: "Kiteclub Nordwind e.V.", a kitesurf club on the Baltic Sea coast.
+
+const ROLES = ['Vorstand', 'Kassenwart', 'Schriftführer', 'Kitelehrer (VDWS)', 'Rettungsschwimmer', 'Materialwart'];
+const GROUPS = ['Jugend (U18)', 'Erwachsene', 'Familienmitgliedschaft', 'Fördermitglieder'];
+const SECTIONS = ['Twintip & Freestyle', 'Wave & Strapless', 'Foil', 'Snowkiten', 'Kiteschule'];
+
+type Fee = 'adult' | 'youth' | 'family' | 'supporter';
+
+const FEE_AMOUNTS: Record<Fee, number> = {
+    adult: 180,
+    youth: 90,
+    family: 120,
+    supporter: 50,
+};
+
+const FEE_GROUP: Record<Fee, string> = {
+    adult: 'Erwachsene',
+    youth: 'Jugend (U18)',
+    family: 'Familienmitgliedschaft',
+    supporter: 'Fördermitglieder',
+};
+
+interface DemoMember {
+    data: Omit<Member, 'id'>;
+    fee: Fee;
+    roles?: string[];
+    sections?: string[];
+}
+
+// Standard documentation IBAN, never a real account.
+const DEMO_IBAN = 'DE89370400440532013000';
+const DEMO_BIC = 'COBADEFFXXX';
+
+function date(value: string): Date {
+    return new Date(`${value}T00:00:00.000Z`);
+}
+
+function sepa(accountHolder: string, mandateDate: string) {
+    return {
+        accountHolder,
+        iban: DEMO_IBAN,
+        bic: DEMO_BIC,
+        bankName: 'Demo Bank',
+        sepaMandateDate: date(mandateDate),
+    };
+}
+
+const MEMBERS: DemoMember[] = [
+    {
+        data: {
+            number: 1001, firstName: 'Jannik', lastName: 'Petersen', email: 'jannik.petersen@example.org',
+            birthday: date('1984-05-12'), entryDate: date('2012-04-01'), phoneMobile: '+49 170 1000001',
+            street: 'Strandweg 3', postalCode: '23769', city: 'Fehmarn', state: 'Schleswig-Holstein',
+            comment: 'Gründungsmitglied, 1. Vorsitzender',
+            ...sepa('Jannik Petersen', '2012-04-01'),
+        },
+        fee: 'adult', roles: ['Vorstand'], sections: ['Wave & Strapless'],
+    },
+    {
+        data: {
+            number: 1002, firstName: 'Merle', lastName: 'Hansen', email: 'merle.hansen@example.org',
+            birthday: date('1990-09-23'), entryDate: date('2014-05-15'), phoneMobile: '+49 170 1000002',
+            street: 'Deichstraße 17', postalCode: '24321', city: 'Hohwacht', state: 'Schleswig-Holstein',
+            ...sepa('Merle Hansen', '2014-05-15'),
+        },
+        fee: 'adult', roles: ['Vorstand', 'Kassenwart'], sections: ['Foil'],
+    },
+    {
+        data: {
+            number: 1003, firstName: 'Ole', lastName: 'Jensen', email: 'ole.jensen@example.org',
+            birthday: date('1979-02-08'), entryDate: date('2013-03-01'), phoneMobile: '+49 170 1000003',
+            street: 'Am Hafen 5', postalCode: '23774', city: 'Heiligenhafen', state: 'Schleswig-Holstein',
+            comment: 'VDWS-Lizenz bis 12/2027',
+        },
+        fee: 'adult', roles: ['Kitelehrer (VDWS)', 'Materialwart'], sections: ['Kiteschule', 'Twintip & Freestyle'],
+    },
+    {
+        data: {
+            number: 1004, firstName: 'Lea', lastName: 'Brandt', email: 'lea.brandt@example.org',
+            birthday: date('1995-11-30'), entryDate: date('2018-06-01'), phoneMobile: '+49 170 1000004',
+            street: 'Möwenring 22', postalCode: '23747', city: 'Dahme', state: 'Schleswig-Holstein',
+            comment: 'Rettungsschwimmerin DLRG Silber',
+        },
+        fee: 'adult', roles: ['Kitelehrer (VDWS)', 'Rettungsschwimmer'], sections: ['Kiteschule', 'Wave & Strapless'],
+    },
+    {
+        data: {
+            number: 1005, firstName: 'Finn', lastName: 'Clausen', email: 'finn.clausen@example.org',
+            birthday: date('1988-07-04'), entryDate: date('2016-04-10'),
+            street: 'Lindenallee 9', postalCode: '24103', city: 'Kiel', state: 'Schleswig-Holstein',
+        },
+        fee: 'adult', roles: ['Schriftführer'], sections: ['Twintip & Freestyle', 'Snowkiten'],
+    },
+    {
+        data: {
+            number: 1006, firstName: 'Sophie', lastName: 'Lorenzen', email: 'sophie.lorenzen@example.org',
+            birthday: date('1992-03-17'), entryDate: date('2019-05-01'), phoneMobile: '+49 170 1000006',
+            street: 'Kurpromenade 41', postalCode: '23683', city: 'Scharbeutz', state: 'Schleswig-Holstein',
+            ...sepa('Sophie Lorenzen', '2019-05-01'),
+        },
+        fee: 'adult', sections: ['Foil'],
+    },
+    {
+        data: {
+            number: 1007, firstName: 'Mats', lastName: 'Andresen', email: 'mats.andresen@example.org',
+            birthday: date('1986-12-01'), entryDate: date('2015-07-01'),
+            street: 'Dünenpfad 2', postalCode: '25980', city: 'Sylt', state: 'Schleswig-Holstein',
+            comment: 'Fährt im Winter Snowkite-Ausfahrten nach Norwegen',
+        },
+        fee: 'adult', sections: ['Wave & Strapless', 'Snowkiten'],
+    },
+    {
+        data: {
+            number: 1008, firstName: 'Kira', lastName: 'Thomsen', email: 'kira.thomsen@example.org',
+            birthday: date('2001-08-19'), entryDate: date('2022-04-23'), phoneMobile: '+49 170 1000008',
+            street: 'Fischerstraße 14', postalCode: '23730', city: 'Neustadt in Holstein', state: 'Schleswig-Holstein',
+            ...sepa('Kira Thomsen', '2022-04-23'),
+        },
+        fee: 'adult', sections: ['Twintip & Freestyle'],
+    },
+    {
+        data: {
+            number: 1009, firstName: 'Henrik', lastName: 'Nissen', email: 'henrik.nissen@example.org',
+            birthday: date('1975-01-26'), entryDate: date('2020-06-01'),
+            street: 'Bergstraße 7', postalCode: '20095', city: 'Hamburg', state: 'Hamburg',
+            comment: 'Unterstützt den Verein als Fördermitglied',
+        },
+        fee: 'supporter',
+    },
+    {
+        data: {
+            number: 1010, firstName: 'Nele', lastName: 'Kruse', email: 'nele.kruse@example.org',
+            birthday: date('2009-04-14'), entryDate: date('2023-05-06'),
+            street: 'Strandweg 11', postalCode: '23769', city: 'Fehmarn', state: 'Schleswig-Holstein',
+            comment: 'Einverständniserklärung der Eltern liegt vor',
+        },
+        fee: 'youth', sections: ['Kiteschule', 'Twintip & Freestyle'],
+    },
+    {
+        data: {
+            number: 1011, firstName: 'Paul', lastName: 'Kruse', email: 'paul.kruse@example.org',
+            birthday: date('2011-10-02'), entryDate: date('2024-04-20'),
+            street: 'Strandweg 11', postalCode: '23769', city: 'Fehmarn', state: 'Schleswig-Holstein',
+            comment: 'Geschwisterkind von Nele Kruse',
+        },
+        fee: 'family', sections: ['Kiteschule'],
+    },
+    {
+        data: {
+            number: 1012, firstName: 'Tjark', lastName: 'Albers', email: 'tjark.albers@example.org',
+            birthday: date('2008-06-28'), entryDate: date('2022-06-15'),
+            street: 'Ostseeallee 30', postalCode: '23570', city: 'Lübeck-Travemünde', state: 'Schleswig-Holstein',
+        },
+        fee: 'youth', sections: ['Twintip & Freestyle', 'Foil'],
+    },
+    {
+        data: {
+            number: 1013, firstName: 'Ida', lastName: 'Wendt', email: 'ida.wendt@example.org',
+            birthday: date('1998-02-11'), entryDate: date('2021-05-01'),
+            street: 'Rosenweg 4', postalCode: '18119', city: 'Rostock-Warnemünde', state: 'Mecklenburg-Vorpommern',
+        },
+        fee: 'adult', sections: ['Wave & Strapless'],
+    },
+    {
+        data: {
+            number: 1014, firstName: 'Lasse', lastName: 'Böttcher', email: 'lasse.boettcher@example.org',
+            birthday: date('1993-09-05'), entryDate: date('2017-04-01'), exitDate: date('2025-12-31'),
+            street: 'Wiesengrund 18', postalCode: '24937', city: 'Flensburg', state: 'Schleswig-Holstein',
+            comment: 'Ausgetreten wegen Umzug nach Portugal',
+        },
+        fee: 'adult', sections: ['Wave & Strapless'],
+    },
+    {
+        data: {
+            number: 1015, firstName: 'Greta', lastName: 'Möller', email: 'greta.moeller@example.org',
+            birthday: date('1987-05-20'), entryDate: date(`${new Date().getUTCFullYear()}-05-01`),
+            street: 'Seestraße 25', postalCode: '23769', city: 'Fehmarn', state: 'Schleswig-Holstein',
+            comment: 'Neumitglied nach Grundkurs in der Vereins-Kiteschule',
+            ...sepa('Greta Möller', `${new Date().getUTCFullYear()}-05-01`),
+        },
+        fee: 'adult', sections: ['Kiteschule'],
+    },
+];
+
+interface DemoTransaction {
+    month: string; // MM-DD within the current year
+    description: string;
+    amount: number;
+    type: 'income' | 'expense';
+    category: string;
+}
+
+const TRANSACTIONS: DemoTransaction[] = [
+    { month: '01-15', description: 'Mitgliedsbeiträge SEPA-Lastschrift Januar', amount: 1530, type: 'income', category: 'Beiträge' },
+    { month: '02-03', description: 'Haftpflichtversicherung Verein (Jahresbeitrag)', amount: 420, type: 'expense', category: 'Versicherung' },
+    { month: '02-20', description: 'Pacht Vereinsgelände Strandabschnitt Gold', amount: 1200, type: 'expense', category: 'Pacht' },
+    { month: '03-10', description: 'Neue Schulungskites 7 m / 9 m / 12 m', amount: 2850, type: 'expense', category: 'Material' },
+    { month: '03-28', description: 'Zuschuss Landessportbund Jugendarbeit', amount: 800, type: 'income', category: 'Zuschüsse' },
+    { month: '04-12', description: 'Wartung Rettungsboot und Außenborder', amount: 340, type: 'expense', category: 'Sicherheit' },
+    { month: '05-18', description: 'Kursgebühren Kiteschule Mai', amount: 2140, type: 'income', category: 'Kiteschule' },
+    { month: '06-07', description: 'Startgelder Fehmarn Kite Cup', amount: 960, type: 'income', category: 'Veranstaltungen' },
+    { month: '06-08', description: 'Pokale und Verpflegung Fehmarn Kite Cup', amount: 610, type: 'expense', category: 'Veranstaltungen' },
+    { month: '07-14', description: 'Kursgebühren Kiteschule Juli', amount: 3260, type: 'income', category: 'Kiteschule' },
+    { month: '07-22', description: 'Ersatz-Bladder und Reparaturmaterial', amount: 185, type: 'expense', category: 'Material' },
+    { month: '08-30', description: 'Spende Surfshop Nordwind', amount: 500, type: 'income', category: 'Spenden' },
+    { month: '09-05', description: 'VDWS-Lizenzverlängerung Kitelehrer', amount: 270, type: 'expense', category: 'Ausbildung' },
+];
+
+const INVENTORY = [
+    { key: 'kite9', name: 'Schulungskite 9 m', category: 'Kites', quantity: 4, location: 'Containerlager Strand', purchasePrice: 950, serialNumber: 'NW-K9' },
+    { key: 'kite12', name: 'Schulungskite 12 m', category: 'Kites', quantity: 3, location: 'Containerlager Strand', purchasePrice: 1090, serialNumber: 'NW-K12' },
+    { key: 'bar', name: 'Control Bar 45 m Leinen', category: 'Bars', quantity: 6, location: 'Containerlager Strand', purchasePrice: 420 },
+    { key: 'twintip', name: 'Twintip-Board 138 cm', category: 'Boards', quantity: 5, location: 'Boardständer Vereinsheim', purchasePrice: 520 },
+    { key: 'foil', name: 'Foilboard mit Hydrofoil-Set', category: 'Boards', quantity: 2, location: 'Vereinsheim Werkstatt', purchasePrice: 1650, serialNumber: 'NW-F01' },
+    { key: 'harness', name: 'Hüfttrapez (Größe M/L)', category: 'Trapeze', quantity: 8, location: 'Umkleide Vereinsheim', purchasePrice: 180 },
+    { key: 'wetsuit', name: 'Neoprenanzug 5/4 mm', category: 'Neopren', quantity: 10, location: 'Umkleide Vereinsheim', purchasePrice: 260 },
+    { key: 'helmet', name: 'Wassersport-Helm', category: 'Sicherheit', quantity: 12, location: 'Umkleide Vereinsheim', purchasePrice: 65 },
+    { key: 'boat', name: 'Rettungsboot (Schlauchboot, 15 PS)', category: 'Sicherheit', quantity: 1, location: 'Slipanlage', purchasePrice: 7800, serialNumber: 'NW-RB-01' },
+    { key: 'radio', name: 'Funkgerät / Headset-Set für Kiteschule', category: 'Kiteschule', quantity: 4, location: 'Vereinsheim Büro', purchasePrice: 140 },
+] as const;
+
 export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
-    const roleNames = ['Vorstand', 'Trainer', 'Kassenwart'];
-    const groupNames = ['Jugend', 'Erwachsene'];
-    const sectionNames = ['Fussball', 'Turnen'];
+    const currentYear = new Date().getUTCFullYear();
 
-    await Promise.all(roleNames.map((name) => createRole({ name, members: [] })));
-    await Promise.all(groupNames.map((name) => createGroup({ name, members: [] })));
-    await Promise.all(sectionNames.map((name) => createSection({ name, members: [] })));
+    const [roles, groups, sections] = await Promise.all([
+        Promise.all(ROLES.map((name) => createRole({ name, members: [] }))),
+        Promise.all(GROUPS.map((name) => createGroup({ name, members: [] }))),
+        Promise.all(SECTIONS.map((name) => createSection({ name, members: [] }))),
+    ]);
+    const roleIds = new Map(roles.map((r) => [r.name, r.id]));
+    const groupIds = new Map(groups.map((g) => [g.name, g.id]));
+    const sectionIds = new Map(sections.map((s) => [s.name, s.id]));
 
-    const sampleMembers = [
-        { number: 1001, firstName: 'Anna', lastName: 'Mueller', email: 'anna.mueller@example.org' },
-        { number: 1002, firstName: 'Ben', lastName: 'Schmidt', email: 'ben.schmidt@example.org' },
-        { number: 1003, firstName: 'Clara', lastName: 'Fischer', email: 'clara.fischer@example.org' },
-    ];
+    const roleMembers = new Map<string, string[]>();
+    const groupMembers = new Map<string, string[]>();
+    const sectionMembers = new Map<string, string[]>();
+    const push = (map: Map<string, string[]>, key: string, id: string) => {
+        map.set(key, [...(map.get(key) ?? []), id]);
+    };
 
-    const createdMembers = [] as Array<{ id: string }>;
-    for (const member of sampleMembers) {
-        const created = await createMember(member);
-        createdMembers.push({ id: created.id });
+    const createdMembers: Array<{ id: string; demo: DemoMember }> = [];
+    for (const demo of MEMBERS) {
+        const created = await createMember(demo.data);
+        createdMembers.push({ id: created.id, demo });
+        push(groupMembers, FEE_GROUP[demo.fee], created.id);
+        demo.roles?.forEach((role) => push(roleMembers, role, created.id));
+        demo.sections?.forEach((section) => push(sectionMembers, section, created.id));
     }
 
-    await createTransaction({
-        date: new Date('2026-01-15T10:00:00.000Z').toISOString(),
-        description: 'Mitgliedsbeitraege Januar',
-        amount: 180,
-        type: 'income',
-        category: 'Beitraege',
-    });
-    await createTransaction({
-        date: new Date('2026-01-20T09:30:00.000Z').toISOString(),
-        description: 'Sportgeraete Einkauf',
-        amount: 95,
-        type: 'expense',
-        category: 'Material',
-    });
+    await Promise.all([
+        ...[...roleMembers].map(([name, ids]) => assignRoleMembers(roleIds.get(name)!, ids)),
+        ...[...groupMembers].map(([name, ids]) => assignGroupMembers(groupIds.get(name)!, ids)),
+        ...[...sectionMembers].map(([name, ids]) => assignSectionMembers(sectionIds.get(name)!, ids)),
+    ]);
 
-    const currentYear = new Date().getUTCFullYear();
-    for (const member of createdMembers) {
+    for (const tx of TRANSACTIONS) {
+        await createTransaction({
+            date: new Date(`${currentYear}-${tx.month}T10:00:00.000Z`).toISOString(),
+            description: tx.description,
+            amount: tx.amount,
+            type: tx.type,
+            category: tx.category,
+        });
+    }
+
+    // Annual fee for every active member; most have paid via SEPA, a few are still open.
+    const unpaid = new Set([1007, 1012, 1013]);
+    let memberFees = 0;
+    for (const { id, demo } of createdMembers) {
+        if (demo.data.exitDate) continue;
         await createMemberFee({
-            memberId: member.id,
-            amount: 60,
+            memberId: id,
+            amount: FEE_AMOUNTS[demo.fee],
             dueDate: new Date(`${currentYear}-03-01T00:00:00.000Z`).toISOString(),
+            paidDate: unpaid.has(demo.data.number!)
+                ? null
+                : new Date(`${currentYear}-01-15T00:00:00.000Z`).toISOString(),
             year: currentYear,
-            description: 'Jahresbeitrag',
+            description: `Jahresbeitrag ${currentYear}`,
+        });
+        memberFees++;
+    }
+
+    const itemIds = new Map<string, string>();
+    for (const { key, ...item } of INVENTORY) {
+        const created = await createInventoryItem({
+            ...item,
+            purchaseDate: new Date(`${currentYear}-03-10T00:00:00.000Z`).toISOString(),
+        });
+        itemIds.set(key, created.id);
+    }
+
+    const memberByNumber = new Map(createdMembers.map(({ id, demo }) => [demo.data.number, id]));
+    const loans = [
+        { item: 'foil', member: 1006, notes: 'Foil-Training für die Vereinsmeisterschaft' },
+        { item: 'kite9', member: 1010, notes: 'Jugendtraining am Wochenende' },
+        { item: 'wetsuit', member: 1015, notes: 'Leihneo bis eigener Anzug geliefert wird' },
+    ];
+    for (const loan of loans) {
+        await createInventoryLoan({
+            itemId: itemIds.get(loan.item)!,
+            memberId: memberByNumber.get(loan.member)!,
+            loanedAt: new Date(`${currentYear}-08-01T09:00:00.000Z`).toISOString(),
+            dueDate: new Date(`${currentYear}-08-15T18:00:00.000Z`).toISOString(),
+            notes: loan.notes,
         });
     }
 
     return {
-        roles: roleNames.length,
-        groups: groupNames.length,
-        sections: sectionNames.length,
+        roles: roles.length,
+        groups: groups.length,
+        sections: sections.length,
         members: createdMembers.length,
-        transactions: 2,
-        memberFees: createdMembers.length,
+        transactions: TRANSACTIONS.length,
+        memberFees,
+        inventoryItems: INVENTORY.length,
+        inventoryLoans: loans.length,
     };
 }
-
