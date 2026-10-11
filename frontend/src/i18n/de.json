@@ -5,6 +5,12 @@
             "deleteall": "Alle löschen"
         }
     },
+    "dataExport": {
+        "create": "Datenauskunft erstellen",
+        "pdf": "Lesbarer Bericht (PDF)",
+        "json": "Maschinenlesbare Daten (JSON)",
+        "failed": "Die Datenauskunft konnte nicht erstellt werden."
+    },
     "logout": {
         "tooltip": "Abmelden"
     },

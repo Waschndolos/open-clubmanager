@@ -108,6 +108,9 @@ func main() {
 	router.Post("/api/v2/system/backup", bearerAuthRequired(cfg.JWTSecret, api.BackupDatabase))
 	router.Post("/api/v2/system/restore", bearerAuthRequired(cfg.JWTSecret, api.RestoreDatabase))
 
+	// GDPR data export for a member (Art. 15/20), PDF or JSON.
+	router.Get("/api/v2/members/{id}/data-export", bearerAuthRequired(cfg.JWTSecret, api.ExportMemberData))
+
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))

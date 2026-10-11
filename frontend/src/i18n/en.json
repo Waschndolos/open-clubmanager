@@ -5,6 +5,12 @@
             "deleteall": "Delete all"
         }
     },
+    "dataExport": {
+        "create": "Create data export",
+        "pdf": "Readable report (PDF)",
+        "json": "Machine-readable data (JSON)",
+        "failed": "The data export could not be created."
+    },
     "logout": {
         "tooltip": "Logout"
     },
