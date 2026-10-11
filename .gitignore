@@ -9,3 +9,5 @@ src-tauri/target/
 src-tauri/gen/
 # Sidecar binaries are built locally; only the .gitkeep placeholder is tracked
 src-tauri/binaries/open-clubmanager-server-*
+# IDE
+.idea/

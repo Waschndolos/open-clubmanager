@@ -368,7 +368,7 @@ All scripts below can be run from the **project root**.
 | `npm run build:backend` | Build the Go backend binary only |
 | `npm run prepare:sidecar` | Copy Go binary to `src-tauri/binaries/` with target-triple suffix |
 | `npm run lint` | Lint frontend and run Go tests for the server |
-| `npm run licenses` | Regenerate third-party licence files |
+| `npm run licenses` | Regenerate third-party license files (`licenses/`) |
 
 ---
 
@@ -406,22 +406,23 @@ role.
 
 ## 📄 License
 
-This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
+Open ClubManager is free software, licensed under the **GNU Affero General Public License v3.0 or later** (AGPL-3.0-or-later). See [LICENSE](LICENSE).
 
-You may use, modify, and share the code non-commercially, provided you give appropriate credit. Commercial use is not permitted.
+In short: you may use, study, modify and distribute the software for any purpose, including commercially and as a hosted service. If you distribute it or let others use a modified version over a network, you must make the corresponding source code of your version available under the same license.
 
-For full terms, see the LICENSE file or visit https://creativecommons.org/licenses/by-nc/4.0/.
+The software is provided "as is", without warranty of any kind. Anyone who runs it is responsible for complying with the applicable data protection law (e.g. GDPR) for the member data they manage.
+
+The project name, logo and icons are covered by [NOTICE](NOTICE).
 
 ---
 
 ## 📚 Licenses of Used Libraries
 
-This project uses open source packages such as React, Axios, and Tauri. These components are licensed under permissive licenses (MIT, Apache-2.0, etc.). You can find their license texts in their respective repositories or via `npm`.
+Open ClubManager builds on open source components under permissive or file-level copyleft licenses (MIT, Apache-2.0, BSD, ISC, MPL-2.0, OFL-1.1, Unicode, …), all compatible with AGPL-3.0. Their license texts are in [`licenses/`](licenses):
 
-The original code of ClubManager is licensed under **CC BY-NC 4.0**.
-
-For a list of all third-party libraries and their licenses, see 
-* [frontend/THIRD_PARTY_LICENSES.md](frontend/THIRD_PARTY_LICENSES.md)
+* [licenses/THIRD_PARTY_LICENSES_NPM.md](licenses/THIRD_PARTY_LICENSES_NPM.md) – frontend
+* [licenses/THIRD_PARTY_LICENSES_GO.md](licenses/THIRD_PARTY_LICENSES_GO.md) – server
+* [licenses/THIRD_PARTY_LICENSES_RUST.md](licenses/THIRD_PARTY_LICENSES_RUST.md) – desktop shell (Tauri)
 
 ## 💬 Questions & Feedback
 

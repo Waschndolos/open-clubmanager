@@ -1,0 +1,17 @@
+Open ClubManager
+Copyright (C) 2024-2026 Waschndolos and contributors
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version. See the LICENSE file.
+
+Third-party components are used under their own licenses; see the files in the
+"licenses/" directory.
+
+Name and logo
+-------------
+The source code is licensed under the AGPL. This does not grant any rights in
+the name "Open ClubManager", the logo or the icons beyond what is needed to
+describe the origin of the software truthfully. Modified versions should not
+suggest that they are the official release.

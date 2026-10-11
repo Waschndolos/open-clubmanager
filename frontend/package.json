@@ -1,6 +1,7 @@
 {
   "name": "open-clubmanager",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -8,8 +9,7 @@
     "dev:frontend": "vite",
     "build": "vite build",
     "lint": "eslint src --ext .ts,.tsx",
-    "preview": "vite preview",
-    "licenses": "license-checker --production --markdown --excludePackages 'open-clubmanager@0.0.0' > THIRD_PARTY_LICENSES.md"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
