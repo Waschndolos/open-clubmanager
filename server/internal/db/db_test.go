@@ -110,14 +110,25 @@ func TestSchemaMatchesScopeRegistry(t *testing.T) {
 		}
 	}
 
-	scopes := []Scope{ScopeMembersCore, ScopeMembersContact, ScopeMembersBank, ScopeFinance, ScopeAdmin}
+	for _, name := range LocalTables {
+		if _, ok := known[name]; ok {
+			t.Errorf("table %s is both synced and local", name)
+		}
+		if !slices.Contains(tables, name) {
+			t.Errorf("LocalTables lists %s, which does not exist", name)
+		}
+	}
+
 	for _, st := range SyncedTables {
 		if !slices.Contains(tables, st.Name) {
 			t.Errorf("SyncedTables lists %s, which does not exist", st.Name)
 			continue
 		}
-		if !slices.Contains(scopes, st.Scope) {
+		if !slices.Contains(Scopes, st.Scope) {
 			t.Errorf("%s has unknown scope %q", st.Name, st.Scope)
+		}
+		if pk := primaryKey(t, conn, st.Name); !slices.Equal(pk, st.PK) {
+			t.Errorf("%s: registry PK %v, schema PK %v", st.Name, st.PK, pk)
 		}
 		cols := tableColumns(t, conn, st.Name)
 		want := []string{"updated_at", "deleted_at"}
@@ -142,6 +153,86 @@ func TestSchemaMatchesScopeRegistry(t *testing.T) {
 			}
 		}
 	}
+}
+
+// The scope assignments required by docs/sync-protocol.md §4.1 and §22.
+func TestScopeAssignments(t *testing.T) {
+	want := map[string]Scope{
+		"members": ScopeMembersCore, "member_roles": ScopeMembersCore,
+		"member_contacts": ScopeMembersContact, "member_bank_details": ScopeMembersBank,
+		"finance_transactions": ScopeFinance, "member_fees": ScopeFinance,
+		"inventory_items": ScopeInventory, "inventory_loans": ScopeInventory,
+	}
+	for name, scope := range want {
+		if st, ok := SyncedTable(name); !ok || st.Scope != scope {
+			t.Errorf("%s: scope %q (synced %v), want %q", name, st.Scope, ok, scope)
+		}
+	}
+	for _, name := range []string{"users", "audit_log", "user_preferences", "refresh_tokens", "password_reset_tokens"} {
+		if _, ok := SyncedTable(name); ok || !slices.Contains(LocalTables, name) {
+			t.Errorf("%s must be local only", name)
+		}
+	}
+}
+
+// Synced tables must not carry UNIQUE indexes, since applying valid changes
+// from other devices must never fail on them (§14.2). Every uniqueness rule
+// still has an index for the pre-save check.
+func TestNoUniqueIndexesOnSyncedTables(t *testing.T) {
+	conn, _ := openTemp(t)
+	for _, st := range SyncedTables {
+		rows, err := conn.Query(`SELECT name, "unique", origin FROM pragma_index_list(?)`, st.Name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for rows.Next() {
+			var name, origin string
+			var unique bool
+			if err := rows.Scan(&name, &unique, &origin); err != nil {
+				t.Fatal(err)
+			}
+			if unique && origin != "pk" {
+				t.Errorf("synced table %s has unique index %s", st.Name, name)
+			}
+		}
+		rows.Close()
+	}
+	for _, u := range UniqueColumns {
+		if _, ok := SyncedTable(u.Table); !ok {
+			t.Errorf("unique rule on %s, which is not synced", u.Table)
+		}
+		var n int
+		err := conn.QueryRow(`SELECT COUNT(*) FROM pragma_index_list(?) l, pragma_index_info(l.name) i
+			WHERE i.name = ? AND i.seqno = 0`, u.Table, u.Column).Scan(&n)
+		if err != nil || n == 0 {
+			t.Errorf("no index on %s.%s (%v)", u.Table, u.Column, err)
+		}
+	}
+
+	// Duplicates are accepted by SQLite now; the store prevents them locally.
+	for _, id := range []string{NewID(), NewID()} {
+		if _, err := conn.Exec(`INSERT INTO members (id, number, first_name, last_name) VALUES (?, 1, 'A', 'B')`, id); err != nil {
+			t.Errorf("duplicate member number rejected by SQLite: %v", err)
+		}
+	}
+}
+
+func primaryKey(t *testing.T, conn *sql.DB, table string) []string {
+	t.Helper()
+	rows, err := conn.Query(`SELECT name FROM pragma_table_info(?) WHERE pk > 0 ORDER BY pk`, table)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rows.Close()
+	var cols []string
+	for rows.Next() {
+		var c string
+		if err := rows.Scan(&c); err != nil {
+			t.Fatal(err)
+		}
+		cols = append(cols, c)
+	}
+	return cols
 }
 
 // legacySchema is the schema the server created before the goose migrations
