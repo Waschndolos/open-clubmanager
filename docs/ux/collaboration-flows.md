@@ -149,7 +149,9 @@ Wo sollen die gemeinsamen Daten liegen?
     Ein Ordner, den euer Verein schon nutzt: Nextcloud, OneDrive,
     Dropbox oder Google Drive. Die Daten werden verschlüsselt –
     der Anbieter kann sie nicht lesen.
-    [Ordner auswählen …]   Gefunden: ~/Nextcloud, ~/OneDrive
+    Gefunden:  ( ) ~/Nextcloud   ( ) ~/OneDrive
+               ( ) Anderen Ordner angeben …
+                   [ \\vereinsserver\vorstand        ] [Durchsuchen …]
 
 ( ) Nextcloud direkt (ohne Sync-Programm)
     Adresse: [https://cloud.beispiel.de/remote.php/dav/files/…]
@@ -162,11 +164,26 @@ Wo sollen die gemeinsamen Daten liegen?
 - **Folder suggestions:** the app looks for typical sync folders
   (`~/Nextcloud`, `~/OneDrive*`, `~/Dropbox`, `~/Google Drive`) and offers
   them.
+- **Own folder:** „Anderen Ordner angeben …“ is always available. The user
+  can pick a folder with the system dialog („Durchsuchen …“) or type or
+  paste a path, including network paths such as `\\vereinsserver\vorstand`
+  or a mounted share like `/Volumes/Verein`. Typed paths are checked as
+  soon as the field loses focus.
 - **Checks after choosing:**
-  1. The folder is writable (test file is created and removed).
-  2. If the folder is not inside a known sync folder: warning „Dieser Ordner
-     scheint nicht synchronisiert zu werden. Andere können dann nicht auf die
-     Daten zugreifen.“ The user can continue anyway (e.g. network drive).
+  1. The folder exists and is writable (test file is created and removed).
+     Otherwise: „Auf diesen Ordner kann Open ClubManager nicht schreiben.
+     Prüfe den Pfad und deine Berechtigung.“
+  2. The app tells the user what kind of folder it found:
+     - **Known sync folder** (Nextcloud, OneDrive, …): „✓ Wird von
+       Nextcloud synchronisiert.“
+     - **Network drive** (UNC path or mounted share): „ℹ Netzlaufwerk. Das
+       funktioniert, wenn alle aus dem Vorstand darauf zugreifen können,
+       auch von zu Hause, z. B. über VPN.“
+     - **Local folder that is not synced:** „⚠ Dieser Ordner scheint nicht
+       synchronisiert zu werden. Andere können dann nicht auf die Daten
+       zugreifen.“
+     The user can continue in every case. A network drive is safe for the
+     protocol because files are only ever created, never changed.
   3. The app creates a subfolder `Open ClubManager – <Vereinsname>`. If it
      already contains a club: „Hier gibt es schon einen Verein. Möchtest du
      ihm beitreten?“ → [F4](#f4-joining-a-club).
@@ -291,8 +308,12 @@ From [F1](#f1-first-start) → „Ich habe eine Einladung“.
      is: „Gemeinsamer Ordner“, „Nextcloud direkt“ or „Server“. A QR code or
      link for WebDAV/server already contains the address.
    - For a folder: „Wähle den Ordner aus, den <Einladende Person> mit dir
-     geteilt hat.“ The app offers detected folders that contain a club with
-     the matching club id.
+     geteilt hat.“ The app offers detected folders that contain a club, and
+     „Anderen Ordner angeben …“ with a path field and „Durchsuchen …“, as in
+     [F2](#f2-creating-a-club-for-collaboration).
+   - When a folder is chosen, the app shows the club name from its
+     `club.json`: „✓ Enthält den Verein ‚TSV Beispielstadt e.V.‘“. The person
+     confirms that this is the right club.
    - If the folder is not there yet: „Der Ordner ist noch nicht auf diesem
      Gerät angekommen. Prüfe, ob du die Freigabe angenommen hast und dein
      Sync-Programm läuft.“
