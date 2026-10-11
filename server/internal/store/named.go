@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/Waschndolos/open-clubmanager/server/internal/db"
 )
@@ -47,30 +46,34 @@ func (s *Store) ListNamed(ctx context.Context, k NamedKind) ([]NamedEntity, erro
 // CreateNamed inserts a new entity. Names are unique among live entities.
 func (s *Store) CreateNamed(ctx context.Context, k NamedKind, name string) (NamedEntity, error) {
 	e := NamedEntity{ID: db.NewID(), Name: name}
-	now := db.Now()
-	_, err := s.db.ExecContext(ctx,
-		`INSERT INTO `+k.table+` (id, name, created_at, updated_at) VALUES (?, ?, ?, ?)`, e.ID, name, now, now)
-	return e, mapErr(err)
+	err := s.inWriteTx(ctx, func(w *writer) error {
+		if err := w.requireUnique(k.table, "name", name, "id", e.ID); err != nil {
+			return err
+		}
+		return w.insert(k.table, row{"id": e.ID, "name": name, "created_at": db.Now()})
+	})
+	return e, err
 }
 
 // RenameNamed changes the name of a live entity.
 func (s *Store) RenameNamed(ctx context.Context, k NamedKind, id, name string) (NamedEntity, error) {
-	err := requireAffected(s.db.ExecContext(ctx,
-		`UPDATE `+k.table+` SET name = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL`, name, db.Now(), id))
+	err := s.inWriteTx(ctx, func(w *writer) error {
+		if err := affected(w.update(k.table, `id = ? AND deleted_at IS NULL`, []any{id}, row{"name": name})); err != nil {
+			return err
+		}
+		return w.requireUnique(k.table, "name", name, "id", id)
+	})
 	return NamedEntity{ID: id, Name: name}, err
 }
 
 // DeleteNamed tombstones an entity and its member links.
 func (s *Store) DeleteNamed(ctx context.Context, k NamedKind, id string) error {
-	return s.inTx(ctx, func(tx *sql.Tx) error {
-		now := db.Now()
-		err := requireAffected(tx.ExecContext(ctx,
-			`UPDATE `+k.table+` SET deleted_at = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL`, now, now, id))
-		if err != nil {
+	return s.inWriteTx(ctx, func(w *writer) error {
+		tombstone := row{"deleted_at": db.Now()}
+		if err := affected(w.update(k.table, `id = ? AND deleted_at IS NULL`, []any{id}, tombstone)); err != nil {
 			return err
 		}
-		_, err = tx.ExecContext(ctx,
-			`UPDATE `+k.linkTable+` SET deleted_at = ?, updated_at = ? WHERE `+k.linkCol+` = ? AND deleted_at IS NULL`, now, now, id)
+		_, err := w.update(k.linkTable, k.linkCol+` = ? AND deleted_at IS NULL`, []any{id}, tombstone)
 		return err
 	})
 }
@@ -100,12 +103,12 @@ func (s *Store) NamedMembers(ctx context.Context, k NamedKind, id string) ([]Mem
 // SetNamedMembers makes memberIDs the exact set of members linked to a live
 // entity.
 func (s *Store) SetNamedMembers(ctx context.Context, k NamedKind, id string, memberIDs []string) error {
-	return s.inTx(ctx, func(tx *sql.Tx) error {
+	return s.inWriteTx(ctx, func(w *writer) error {
 		var exists int
-		err := tx.QueryRowContext(ctx, `SELECT 1 FROM `+k.table+` WHERE id = ? AND deleted_at IS NULL`, id).Scan(&exists)
+		err := w.QueryRowContext(ctx, `SELECT 1 FROM `+k.table+` WHERE id = ? AND deleted_at IS NULL`, id).Scan(&exists)
 		if err != nil {
 			return mapErr(err)
 		}
-		return setLinks(ctx, tx, k.linkTable, k.linkCol, id, "member_id", memberIDs, db.Now())
+		return setLinks(w, k.linkTable, k.linkCol, id, "member_id", memberIDs, db.Now())
 	})
 }

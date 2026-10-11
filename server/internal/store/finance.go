@@ -97,34 +97,40 @@ func (s *Store) GetTransaction(ctx context.Context, id string) (Transaction, err
 // CreateTransaction inserts a transaction.
 func (s *Store) CreateTransaction(ctx context.Context, in TransactionInput) (Transaction, error) {
 	id := db.NewID()
-	now := db.Now()
-	_, err := s.db.ExecContext(ctx,
-		`INSERT INTO finance_transactions (id, date, description, amount_cents, type, category, notes, created_at, updated_at)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		id, db.FormatTime(in.Date), in.Description, db.ToCents(in.Amount), in.Type, strArg(in.Category), strArg(in.Notes), now, now)
-	if err != nil {
-		return Transaction{}, mapErr(err)
-	}
-	return s.GetTransaction(ctx, id)
-}
-
-// UpdateTransaction replaces the writable fields of a live transaction.
-func (s *Store) UpdateTransaction(ctx context.Context, id string, in TransactionInput) (Transaction, error) {
-	err := requireAffected(s.db.ExecContext(ctx,
-		`UPDATE finance_transactions SET date = ?, description = ?, amount_cents = ?, type = ?, category = ?, notes = ?, updated_at = ?
-		 WHERE id = ? AND deleted_at IS NULL`,
-		db.FormatTime(in.Date), in.Description, db.ToCents(in.Amount), in.Type, strArg(in.Category), strArg(in.Notes), db.Now(), id))
+	err := s.inWriteTx(ctx, func(w *writer) error {
+		values := transactionColumns(in)
+		values["id"], values["created_at"] = id, db.Now()
+		return w.insert("finance_transactions", values)
+	})
 	if err != nil {
 		return Transaction{}, err
 	}
 	return s.GetTransaction(ctx, id)
 }
 
+// UpdateTransaction replaces the writable fields of a live transaction.
+func (s *Store) UpdateTransaction(ctx context.Context, id string, in TransactionInput) (Transaction, error) {
+	err := s.inWriteTx(ctx, func(w *writer) error {
+		return affected(w.update("finance_transactions", `id = ? AND deleted_at IS NULL`, []any{id}, transactionColumns(in)))
+	})
+	if err != nil {
+		return Transaction{}, err
+	}
+	return s.GetTransaction(ctx, id)
+}
+
+func transactionColumns(in TransactionInput) row {
+	return row{
+		"date": db.FormatTime(in.Date), "description": in.Description, "amount_cents": db.ToCents(in.Amount),
+		"type": in.Type, "category": strArg(in.Category), "notes": strArg(in.Notes),
+	}
+}
+
 // DeleteTransaction tombstones a transaction.
 func (s *Store) DeleteTransaction(ctx context.Context, id string) error {
-	now := db.Now()
-	return requireAffected(s.db.ExecContext(ctx,
-		`UPDATE finance_transactions SET deleted_at = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL`, now, now, id))
+	return s.inWriteTx(ctx, func(w *writer) error {
+		return affected(w.update("finance_transactions", `id = ? AND deleted_at IS NULL`, []any{id}, row{"deleted_at": db.Now()}))
+	})
 }
 
 const feeSelect = `SELECT f.id, f.amount_cents, f.due_date, f.paid_date, f.description, f.year, f.created_at, f.updated_at,
@@ -175,17 +181,13 @@ func (s *Store) GetFee(ctx context.Context, id string) (Fee, error) {
 // CreateFee inserts a fee for a live member.
 func (s *Store) CreateFee(ctx context.Context, in FeeInput) (Fee, error) {
 	id := db.NewID()
-	err := s.inTx(ctx, func(tx *sql.Tx) error {
-		if err := requireLiveMember(ctx, tx, in.MemberID); err != nil {
+	err := s.inWriteTx(ctx, func(w *writer) error {
+		if err := requireLiveMember(ctx, w.Tx, in.MemberID); err != nil {
 			return err
 		}
-		now := db.Now()
-		_, err := tx.ExecContext(ctx,
-			`INSERT INTO member_fees (id, member_id, amount_cents, due_date, paid_date, description, year, created_at, updated_at)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-			id, in.MemberID, db.ToCents(in.Amount), db.FormatTime(in.DueDate), timeArg(in.PaidDate), strArg(in.Description),
-			in.Year, now, now)
-		return mapErr(err)
+		values := feeColumns(in)
+		values["id"], values["created_at"] = id, db.Now()
+		return w.insert("member_fees", values)
 	})
 	if err != nil {
 		return Fee{}, err
@@ -195,15 +197,11 @@ func (s *Store) CreateFee(ctx context.Context, in FeeInput) (Fee, error) {
 
 // UpdateFee replaces the writable fields of a live fee.
 func (s *Store) UpdateFee(ctx context.Context, id string, in FeeInput) (Fee, error) {
-	err := s.inTx(ctx, func(tx *sql.Tx) error {
-		if err := requireLiveMember(ctx, tx, in.MemberID); err != nil {
+	err := s.inWriteTx(ctx, func(w *writer) error {
+		if err := requireLiveMember(ctx, w.Tx, in.MemberID); err != nil {
 			return err
 		}
-		return requireAffected(tx.ExecContext(ctx,
-			`UPDATE member_fees SET member_id = ?, amount_cents = ?, due_date = ?, paid_date = ?, description = ?, year = ?, updated_at = ?
-			 WHERE id = ? AND deleted_at IS NULL`,
-			in.MemberID, db.ToCents(in.Amount), db.FormatTime(in.DueDate), timeArg(in.PaidDate), strArg(in.Description),
-			in.Year, db.Now(), id))
+		return affected(w.update("member_fees", `id = ? AND deleted_at IS NULL`, []any{id}, feeColumns(in)))
 	})
 	if err != nil {
 		return Fee{}, err
@@ -211,31 +209,31 @@ func (s *Store) UpdateFee(ctx context.Context, id string, in FeeInput) (Fee, err
 	return s.GetFee(ctx, id)
 }
 
+func feeColumns(in FeeInput) row {
+	return row{
+		"member_id": in.MemberID, "amount_cents": db.ToCents(in.Amount), "due_date": db.FormatTime(in.DueDate),
+		"paid_date": timeArg(in.PaidDate), "description": strArg(in.Description), "year": in.Year,
+	}
+}
+
 // DeleteFee tombstones a fee.
 func (s *Store) DeleteFee(ctx context.Context, id string) error {
-	now := db.Now()
-	return requireAffected(s.db.ExecContext(ctx,
-		`UPDATE member_fees SET deleted_at = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL`, now, now, id))
+	return s.inWriteTx(ctx, func(w *writer) error {
+		return affected(w.update("member_fees", `id = ? AND deleted_at IS NULL`, []any{id}, row{"deleted_at": db.Now()}))
+	})
 }
 
 // ResetFinance tombstones all live fees and transactions and reports how many
 // of each were removed.
 func (s *Store) ResetFinance(ctx context.Context) (fees, transactions int, err error) {
-	err = s.inTx(ctx, func(tx *sql.Tx) error {
-		now := db.Now()
-		res, err := tx.ExecContext(ctx, `UPDATE member_fees SET deleted_at = ?, updated_at = ? WHERE deleted_at IS NULL`, now, now)
-		if err != nil {
+	err = s.inWriteTx(ctx, func(w *writer) error {
+		tombstone := row{"deleted_at": db.Now()}
+		var err error
+		if fees, err = w.update("member_fees", `deleted_at IS NULL`, nil, tombstone); err != nil {
 			return err
 		}
-		n, _ := res.RowsAffected()
-		fees = int(n)
-		res, err = tx.ExecContext(ctx, `UPDATE finance_transactions SET deleted_at = ?, updated_at = ? WHERE deleted_at IS NULL`, now, now)
-		if err != nil {
-			return err
-		}
-		n, _ = res.RowsAffected()
-		transactions = int(n)
-		return nil
+		transactions, err = w.update("finance_transactions", `deleted_at IS NULL`, nil, tombstone)
+		return err
 	})
 	return fees, transactions, err
 }

@@ -247,17 +247,17 @@ func (s *Store) loadMemberLinks(ctx context.Context, members []Member) error {
 // CreateMember inserts a member with its contact data, bank details and links.
 func (s *Store) CreateMember(ctx context.Context, in MemberInput) (Member, error) {
 	id := db.NewID()
-	err := s.inTx(ctx, func(tx *sql.Tx) error {
-		now := db.Now()
-		_, err := tx.ExecContext(ctx,
-			`INSERT INTO members (id, number, first_name, last_name, birthday, entry_date, exit_date, comment, created_at, updated_at)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-			id, in.Number, in.FirstName, in.LastName, timeArg(in.Birthday), timeArg(in.EntryDate), timeArg(in.ExitDate),
-			strArg(in.Comment), now, now)
-		if err != nil {
-			return mapErr(err)
+	err := s.inWriteTx(ctx, func(w *writer) error {
+		if err := w.requireUnique("members", "number", in.Number, "id", id); err != nil {
+			return err
 		}
-		return writeMemberParts(ctx, tx, id, in, now)
+		now := db.Now()
+		values := memberCore(in)
+		values["id"], values["created_at"] = id, now
+		if err := w.insert("members", values); err != nil {
+			return err
+		}
+		return writeMemberParts(w, id, in, now)
 	})
 	if err != nil {
 		return Member{}, err
@@ -267,18 +267,14 @@ func (s *Store) CreateMember(ctx context.Context, in MemberInput) (Member, error
 
 // UpdateMember replaces the writable fields of a live member.
 func (s *Store) UpdateMember(ctx context.Context, id string, in MemberInput) (Member, error) {
-	err := s.inTx(ctx, func(tx *sql.Tx) error {
-		now := db.Now()
-		err := requireAffected(tx.ExecContext(ctx,
-			`UPDATE members SET number = ?, first_name = ?, last_name = ?, birthday = ?, entry_date = ?, exit_date = ?,
-			        comment = ?, updated_at = ?
-			 WHERE id = ? AND deleted_at IS NULL`,
-			in.Number, in.FirstName, in.LastName, timeArg(in.Birthday), timeArg(in.EntryDate), timeArg(in.ExitDate),
-			strArg(in.Comment), now, id))
-		if err != nil {
+	err := s.inWriteTx(ctx, func(w *writer) error {
+		if err := affected(w.update("members", `id = ? AND deleted_at IS NULL`, []any{id}, memberCore(in))); err != nil {
 			return err
 		}
-		return writeMemberParts(ctx, tx, id, in, now)
+		if err := w.requireUnique("members", "number", in.Number, "id", id); err != nil {
+			return err
+		}
+		return writeMemberParts(w, id, in, db.Now())
 	})
 	if err != nil {
 		return Member{}, err
@@ -286,44 +282,53 @@ func (s *Store) UpdateMember(ctx context.Context, id string, in MemberInput) (Me
 	return s.GetMember(ctx, id)
 }
 
+// memberCore returns the members.core columns of in.
+func memberCore(in MemberInput) row {
+	return row{
+		"number": in.Number, "first_name": in.FirstName, "last_name": in.LastName,
+		"birthday": timeArg(in.Birthday), "entry_date": timeArg(in.EntryDate), "exit_date": timeArg(in.ExitDate),
+		"comment": strArg(in.Comment),
+	}
+}
+
 // writeMemberParts stores the contact/bank rows and links of a member. An
 // empty contact or bank part tombstones an existing row instead of keeping a
 // row full of NULLs, so scopes without data stay empty.
-func writeMemberParts(ctx context.Context, tx *sql.Tx, id string, in MemberInput, now string) error {
+func writeMemberParts(w *writer, id string, in MemberInput, now string) error {
+	tombstone := row{"deleted_at": now}
+	live := []any{id}
+
 	c := in.Contact
 	if c.empty() {
-		if _, err := tx.ExecContext(ctx, `UPDATE member_contacts SET deleted_at = ?, updated_at = ? WHERE member_id = ? AND deleted_at IS NULL`, now, now, id); err != nil {
+		if _, err := w.update("member_contacts", `member_id = ? AND deleted_at IS NULL`, live, tombstone); err != nil {
 			return err
 		}
 	} else {
-		_, err := tx.ExecContext(ctx,
-			`INSERT INTO member_contacts (member_id, email, phone, phone_mobile, street, postal_code, city, state, updated_at)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-			 ON CONFLICT (member_id) DO UPDATE SET email = excluded.email, phone = excluded.phone,
-			   phone_mobile = excluded.phone_mobile, street = excluded.street, postal_code = excluded.postal_code,
-			   city = excluded.city, state = excluded.state, updated_at = excluded.updated_at, deleted_at = NULL`,
-			id, strArg(c.Email), strArg(c.Phone), strArg(c.PhoneMobile), strArg(c.Street), strArg(c.PostalCode),
-			strArg(c.City), strArg(c.State), now)
+		if err := w.requireUnique("member_contacts", "email", strArg(c.Email), "member_id", id); err != nil {
+			return err
+		}
+		err := w.upsert("member_contacts", row{"member_id": id}, row{
+			"email": strArg(c.Email), "phone": strArg(c.Phone), "phone_mobile": strArg(c.PhoneMobile),
+			"street": strArg(c.Street), "postal_code": strArg(c.PostalCode), "city": strArg(c.City),
+			"state": strArg(c.State), "deleted_at": nil,
+		})
 		if err != nil {
-			return mapErr(err)
+			return err
 		}
 	}
 
 	b := in.Bank
 	if b.empty() {
-		if _, err := tx.ExecContext(ctx, `UPDATE member_bank_details SET deleted_at = ?, updated_at = ? WHERE member_id = ? AND deleted_at IS NULL`, now, now, id); err != nil {
+		if _, err := w.update("member_bank_details", `member_id = ? AND deleted_at IS NULL`, live, tombstone); err != nil {
 			return err
 		}
 	} else {
-		_, err := tx.ExecContext(ctx,
-			`INSERT INTO member_bank_details (member_id, account_holder, iban, bic, bank_name, sepa_mandate_date, updated_at)
-			 VALUES (?, ?, ?, ?, ?, ?, ?)
-			 ON CONFLICT (member_id) DO UPDATE SET account_holder = excluded.account_holder, iban = excluded.iban,
-			   bic = excluded.bic, bank_name = excluded.bank_name, sepa_mandate_date = excluded.sepa_mandate_date,
-			   updated_at = excluded.updated_at, deleted_at = NULL`,
-			id, strArg(b.AccountHolder), strArg(b.IBAN), strArg(b.BIC), strArg(b.BankName), timeArg(b.SEPAMandateDate), now)
+		err := w.upsert("member_bank_details", row{"member_id": id}, row{
+			"account_holder": strArg(b.AccountHolder), "iban": strArg(b.IBAN), "bic": strArg(b.BIC),
+			"bank_name": strArg(b.BankName), "sepa_mandate_date": timeArg(b.SEPAMandateDate), "deleted_at": nil,
+		})
 		if err != nil {
-			return mapErr(err)
+			return err
 		}
 	}
 
@@ -334,7 +339,7 @@ func writeMemberParts(ctx context.Context, tx *sql.Tx, id string, in MemberInput
 		if l.ids == nil {
 			continue
 		}
-		if err := setLinks(ctx, tx, l.kind.linkTable, "member_id", id, l.kind.linkCol, *l.ids, now); err != nil {
+		if err := setLinks(w, l.kind.linkTable, "member_id", id, l.kind.linkCol, *l.ids, now); err != nil {
 			return err
 		}
 	}
@@ -344,18 +349,14 @@ func writeMemberParts(ctx context.Context, tx *sql.Tx, id string, in MemberInput
 // DeleteMember tombstones a member together with everything that belongs to
 // it: contact data, bank details, links, fees and inventory loans.
 func (s *Store) DeleteMember(ctx context.Context, id string) error {
-	return s.inTx(ctx, func(tx *sql.Tx) error {
-		now := db.Now()
-		err := requireAffected(tx.ExecContext(ctx,
-			`UPDATE members SET deleted_at = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL`, now, now, id))
-		if err != nil {
+	return s.inWriteTx(ctx, func(w *writer) error {
+		tombstone := row{"deleted_at": db.Now()}
+		if err := affected(w.update("members", `id = ? AND deleted_at IS NULL`, []any{id}, tombstone)); err != nil {
 			return err
 		}
 		for _, table := range []string{"member_contacts", "member_bank_details", "member_roles", "member_groups",
 			"member_sections", "member_fees", "inventory_loans"} {
-			if _, err := tx.ExecContext(ctx,
-				`UPDATE `+table+` SET deleted_at = ?, updated_at = ? WHERE member_id = ? AND deleted_at IS NULL`,
-				now, now, id); err != nil {
+			if _, err := w.update(table, `member_id = ? AND deleted_at IS NULL`, []any{id}, tombstone); err != nil {
 				return err
 			}
 		}
