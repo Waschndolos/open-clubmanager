@@ -61,7 +61,8 @@ mutable `club.json` ACL with an immutable, versioned ACL chain.
 - Each file is written by exactly one device and never modified. This avoids
   write conflicts and makes cloud-folder sync safe.
 - Every operation carries a **Hybrid Logical Clock** timestamp, the entity
-  UUID, the **scope**, the schema version and the author device's signature.
+  UUID, the **scope** and the schema version; its containing segment is signed
+  by the author device.
 - Conflict resolution is **last-writer-wins per field**. Deletes are
   tombstones. Append-only data (finance transactions, audit log) does not
   conflict.
@@ -151,7 +152,8 @@ and complex re-keying when members change groups.
 **Positive**
 - Collaboration works without a server, using storage the club already has.
 - Offline work is the normal case, not an edge case.
-- The cloud storage provider only ever sees encrypted data.
+- The cloud storage provider sees encrypted member data, but also protocol
+  metadata, readable ACLs and join requests.
 - Permissions are enforced cryptographically, plus by the server in server
   mode.
 - One protocol for all transports, so clubs can upgrade without migrating.
@@ -165,8 +167,11 @@ and complex re-keying when members change groups.
   be reviewed by someone with cryptography experience before production use
   with real bank data.**
 - Anyone with write access to a shared folder can delete files (an availability
-  attack). Mitigation: full local copies on every device, snapshots and
-  backups. Forged data is never applied.
+  attack). Missing sequence numbers are detectable when a later segment or
+  checkpoint exists, but deletion of a stream's last file is not detectable
+  from the share alone. Devices keep local copies only of scopes they can read;
+  snapshots and independent backups mitigate data loss. Forged data is never
+  applied.
 - Key management (invites, revocation, recovery) adds UX the club must
   understand. It must be guided step by step in the app.
 - Schema changes must stay compatible with old change files, and clubs need an

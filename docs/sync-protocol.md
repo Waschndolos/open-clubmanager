@@ -32,7 +32,7 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119.
 20. [Local state](#20-local-state)
 21. [Security considerations](#21-security-considerations)
 22. [Required changes to the current data layer](#22-required-changes-to-the-current-data-layer)
-23. [Open questions and decisions](#23-open-questions-and-decisions)
+23. [Decisions and remaining limitations](#23-decisions-and-remaining-limitations)
 
 ---
 
@@ -91,7 +91,8 @@ Encodings:
 - Hashes are written as `sha256:<b64>`.
 - **Signed JSON:** an object is signed over its exact UTF-8 bytes as stored.
   The signature is stored next to it, never inside it, so no canonical JSON
-  form is needed.
+  form is needed. Readers MUST reject invalid UTF-8, duplicate object keys,
+  trailing data and values outside the specified schema.
 
 ## 4. Scopes and roles
 
@@ -171,14 +172,14 @@ acl/<version>-<hash>.json                     ACL versions (immutable)
 acl/<version>-<hash>.json.sig
 keys/<scope>/<epoch>/<recipient-id>.age       wrapped scope keys
 requests/<device_id>.json                     join requests
+requests/<device_id>.json.sig                 join-request signature
 segments/<device_id>/<scope>/<seq>.seg        change segments
 snapshots/<scope>/<epoch>/<hlc>-<device_id>.snap
 ```
 
 - `<seq>` is a zero-padded 12-digit decimal number starting at `000000000001`.
 - `<version>` is a zero-padded 8-digit decimal number.
-- `<hash>` is the first 16 characters of the lowercase hex SHA-256 of the
-  ACL file.
+- `<hash>` is the full lowercase hex SHA-256 of the ACL file.
 - `<recipient-id>` is a `device_id` or the literal `root`.
 
 **Every file is created once and never modified.** The only deletions are
@@ -242,14 +243,18 @@ refuse any later `club.json` with different values.
       "sign_pub": "<b64>",
       "age_recipient": "age1...",
       "person": "Max Muster",
-      "role": "coach",
+      "role": "treasurer",
       "status": "revoked",
       "added_in": 2,
       "revoked_in": 7,
-      "cutoff": { "members.core": 41, "inventory": 3 }
+      "cutoff": {
+        "members.bank": { "seq": 41, "hash": "sha256:<full segment hash>" },
+        "finance": { "seq": 3, "hash": "sha256:<full segment hash>" }
+      }
     }
   ],
   "epochs": { "members.core": 2, "members.contact": 1, "members.bank": 2, "finance": 1, "inventory": 1, "admin": 1 },
+  "clock_epochs": { "members.core": 1, "members.contact": 1, "members.bank": 1, "finance": 1, "inventory": 1, "admin": 1 },
   "min_schema": 1
 }
 ```
@@ -266,21 +271,48 @@ ACL version `n` is valid if all of the following hold:
 5. Revoked devices stay listed and are never reactivated. To re-add a person,
    add a new device.
 6. Role definitions satisfy the scope dependencies of [§4.1](#41-scopes).
+7. Every `device_id` equals the first 16 bytes of SHA-256 of its `sign_pub`,
+   encoded as specified in [§5.1](#51-device-keys).
+8. `clock_epochs` has exactly one positive integer per scope and never
+   decreases. Each increase starts a new conflict-ordering generation for that
+   scope ([§12](#12-hybrid-logical-clock)).
+9. A revoked device's `cutoff` has exactly one `{seq, hash}` entry for every
+   scope in which it had `rw` immediately before revocation. Each entry commits
+   to the revoking admin's highest contiguous, verified stream position and
+   complete-file hash at that time; use `{seq: 0, hash: null}` if none was
+   accepted. The values are immutable after revocation.
 
 ### 8.3 Concurrent ACL edits
 
-Two admin devices may create competing versions `n` with the same `prev`.
+ACL versions are not mergeable. Admin devices MUST coordinate so only one
+successor to an ACL version is published. If two valid children with the same
+`prev` are discovered, clients MUST mark an ACL fork, stop advancing the ACL,
+and stop accepting segments whose authorization depends on either branch.
+Choosing whichever file arrived first is forbidden.
 
-**Rule:** the valid version `n` with the lexicographically smallest file hash
-wins. Every device follows only the winning chain.
-
-The author of a losing version sees in the UI that the change was not applied
-and must redo it. ACL changes are rare, so this is acceptable.
+A fork can be resolved only by a new ACL version signed by the root key that
+extends the branch the root explicitly selects. That root-signed extension is
+final: clients MUST follow it even if they had pinned another branch, retain
+the old pin for audit, reject later-arriving descendants of losing branches,
+and re-evaluate/rebuild sync state under the selected chain. Until then,
+syncing is fail-closed. Admin devices show a blocking warning; the root key is
+in the recovery kit.
 
 ### 8.4 Rollback protection
 
-Devices MUST remember the highest ACL version they have accepted and MUST NOT
-accept a chain that ends at a lower version.
+Devices MUST remember the highest accepted ACL version and its hash. They MUST
+NOT accept a lower or different chain unless it is explicitly selected by a
+root-signed fork resolution under [§8.3](#83-concurrent-acl-edits).
+
+A new device has no prior high-water mark. During enrollment, the approving
+admin MUST provide an authenticated out-of-band checkpoint containing
+`club_id`, `root_sign_pub`, the latest ACL version and full hash, plus
+per-scope/per-stream sequence and complete-file-hash frontiers (or the hashes
+and frontiers of the starting snapshots). The new device pins these values and
+MUST NOT infer the current state solely from the files returned by the
+transport. This protects against rollback relative to the admin's checkpoint;
+frontier sequence `0` has a `null` hash. Folder-only transports cannot prove
+that no later files are being withheld.
 
 ## 9. Scope keys and epochs
 
@@ -299,6 +331,8 @@ accept a chain that ends at a lower version.
 - A segment encrypted with an older epoch is still accepted if its author was
   authorized (see [§13.2](#132-verification)). This is intentional: devices
   that were offline during the epoch change must not lose their work.
+- Epochs control confidentiality; `clock_epochs` in the ACL control conflict
+  ordering. They are independent.
 
 The `admin` scope has a key for future use (club settings). ACL files
 themselves are not encrypted, because every device must be able to verify
@@ -367,13 +401,25 @@ Header:
 
 - `prev` is `null` for `seq` 1.
 - The hash chain makes deleted or swapped segments detectable.
+- A segment's `prev` is SHA-256 of the complete preceding `.seg` file,
+  including its signature. An ACL's `prev` and file-name hash are SHA-256 of
+  the exact preceding ACL `.json` bytes; its `.sig` is verified separately.
+  ACL hashes are full-length; a truncated digest MUST NOT be used to select or
+  validate an ACL.
 
 ### 11.2 Encryption
 
 - `plaintext` = gzip of a JSON array of ops.
 - `ciphertext` = `XChaCha20-Poly1305.Seal(key = K(scope, epoch), nonce, plaintext, aad = header bytes)`.
 - Using the header as associated data binds it to the content.
-- A new random nonce MUST be used for every segment.
+- A fresh 24-byte nonce MUST be obtained from the OS CSPRNG for every segment.
+  It MUST NOT be derived only from `seq` or `device_id`: scope/epoch keys are
+  shared across devices. A retry MUST upload the identical serialized segment,
+  not encrypt the same sequence again with a new nonce.
+- The exact header bytes are both AEAD associated data and part of the signed
+  bytes. Readers MUST reject malformed framing. `hdr_len` MUST be at most
+  65,536 bytes, ciphertext at most 16 MiB, and decompressed plaintext at most
+  64 MiB; enforce each limit before allocating or decompressing untrusted input.
 
 ### 11.3 Writing
 
@@ -392,7 +438,9 @@ Header:
 - An HLC is a 48-bit physical time in milliseconds plus a 16-bit counter.
 - Encoding: `<12 hex digits ms>-<4 hex digits counter>`, written so that
   string order equals time order. Example: `0000019a1b2c-0003`.
-- **Total order** of two changes: compare `hlc`, then `device_id` as a string.
+- **Total order** for conflict resolution: compare
+  `(clock_epoch, hlc, device_id)`, where `clock_epoch` is the value for the
+  operation's scope in the ACL version named by its segment.
 
 **On a local change:**
 ```
@@ -407,7 +455,15 @@ if r.ms <= now_ms() + MAX_DRIFT: hlc = max(hlc, r)   # then tick as above for th
 
 - `MAX_DRIFT` = 1 hour. Ops with `r.ms > now + MAX_DRIFT` are still applied
   (devices must converge), but the local clock does not follow them. The UI
-  shows a clock warning naming the author device.
+  SHOULD show a clock warning naming the author device. This local-time check
+  is informational only and MUST NOT affect acceptance or conflict resolution;
+  different device clocks therefore cannot make devices accept different ops.
+- There is no reliable way to prevent a malicious authorized writer from
+  choosing a far-future HLC without a trusted time source. V1 accepts this
+  residual risk. To recover from a future-clock attack, an admin MUST revoke
+  the writer and increment `clock_epochs` for each affected scope. Newer
+  generations outrank every HLC in older generations; affected values may need
+  to be reviewed and re-entered. This is recovery, not prevention.
 - If the counter overflows, the device waits for the next millisecond.
 
 ## 13. Applying changes
@@ -420,42 +476,64 @@ For each scope the device can read, the device:
 3. processes them strictly in `seq` order.
 
 A gap (missing `seq`) stops that stream until the missing file appears.
+On first sync, the device MUST reconstruct state from a snapshot matching the
+pinned enrollment checkpoint ([§8.4](#84-rollback-protection)) or replay each
+stream from sequence 1 through its checkpoint frontier and verify the pinned
+hash. It MUST NOT skip directly to a checkpoint frontier without a matching
+snapshot. After verifying the checkpoint, it records those frontiers and
+applies later segments normally. Missing or mismatched checkpoint data leaves
+the scope incomplete; the device MUST NOT silently select an older state.
 
 ### 13.2 Verification
 
 A segment is **accepted** only if all of these hold:
 1. The file name matches the header (`device_id`, `scope`, `seq`).
 2. `club_id` matches the pinned club.
-3. The signature verifies with the `sign_pub` of `device_id` in the current
-   accepted ACL. Revoked devices remain in the ACL, so their keys are known.
+3. The signature verifies with the `sign_pub` of `device_id` in the selected
+   ACL chain, and `device_id` is derived from that public key. Revoked devices
+   remain in the ACL, so their keys are known.
 4. `prev` equals the hash of the accepted segment `seq - 1`.
 5. The ACL version `acl_version` exists in the accepted chain, and in it the
-   device has `rw` on `scope`.
-6. If the device is revoked in the current ACL: `seq <= cutoff[scope]`.
+   device has `rw` on `scope`, and `epoch` equals that ACL version's epoch for
+   `scope`.
+6. If the device is revoked in the latest unambiguous ACL, `seq` MUST NOT
+   exceed `cutoff[scope].seq`. A cutoff of `0` means no segment from that
+   stream is accepted. Otherwise, the complete-file hash at
+   `cutoff[scope].seq` MUST equal `cutoff[scope].hash`, and the contiguous
+   stream prefix MUST chain to that exact endpoint. A missing cutoff is
+   invalid. Until the endpoint and its prefix can be verified, the stream
+   waits and MUST NOT be reported as accepted or converged.
 7. The device has `K(scope, epoch)`. If not, the stream waits.
-8. Decryption succeeds.
+8. Decryption succeeds, and every op's HLC is within the segment's
+   `hlc_min`/`hlc_max` range; those header values equal the actual minimum and
+   maximum HLCs in the batch.
 9. Every op targets a table of `scope`.
 10. `schema` <= the local app's schema version. If not, the stream waits and
     the user is asked to update ([§16](#16-schema-evolution)).
 
 Handling failures:
-- **1–6, 8, 9:** the segment is **rejected**. The stream is quarantined from
-  that `seq` on. A file that is still being synced fails the signature check,
-  so the device retries a few times before quarantining. Admin devices show
-  a security warning.
-- **7, 10:** the stream waits; this is not an error.
+- **1–5, an invalid cutoff/hash in 6, 8, 9:** the segment is **rejected**.
+  The stream is quarantined from that `seq` on. A file that is still being
+  synced fails the signature check, so the device retries a few times before
+  quarantining. Admin devices show a security warning.
+- **7, 10, or missing files needed to verify a cutoff prefix:** the stream
+  waits; this is not an error.
 
-Rule 5 uses the ACL version the author referred to. Combined with rule 6 and
-the cutoff, every device decides the same way regardless of the order in
-which it saw files.
+The latest unambiguous ACL determines revocation cutoffs, while the segment's
+`acl_version` determines historical write permission and clock epoch. Clients
+MUST defer final acceptance until they have the applicable ACL chain and
+contiguous stream prefix. Combined with retroactive re-evaluation under
+[§17.4](#174-revoking-a-device), this defines the same accepted set regardless
+of file arrival order.
 
 ### 13.3 Apply
 
 For each accepted segment, in one SQLite transaction:
 1. Upcast ops to the local schema ([§16](#16-schema-evolution)).
-2. For each op and each column in `set`, compare `(hlc, device_id)` with the
-   stored field clock ([§20](#20-local-state)). If the op is newer, write the
-   value and the new field clock. Otherwise skip the column.
+2. For each op and each column in `set`, compare
+   `(clock_epoch, hlc, device_id)` with the stored field clock
+   ([§20](#20-local-state)). If the op is newer, write the value and the new
+   field clock. Otherwise skip the column.
 3. For a row that does not exist yet, insert it with the columns from `set`.
    Columns that are not set stay `NULL` or take their SQL default.
 4. Set `updated_at` from the newest applied HLC of the row.
@@ -472,10 +550,12 @@ Applying the same segment twice MUST have no effect.
 
 ### 14.1 Fields
 
-- Last writer wins per field, by `(hlc, device_id)`.
+- Last writer wins per field, by `(clock_epoch, hlc, device_id)`. The scope's
+  clock epoch comes from the op's segment `acl_version`; a higher epoch always
+  wins over a lower one, regardless of HLC.
 - Deleting a row and concurrently editing another field of it do not
   conflict: the row stays deleted with the edited value. A restore with a
-  newer HLC brings it back.
+  newer conflict-ordering tuple brings it back.
 - Append-only rows never conflict.
 
 ### 14.2 Unique values
@@ -490,8 +570,9 @@ applying, the device detects duplicates among rows that are not deleted:
 | `member_contacts` | `email` |
 | `roles`, `groups`, `sections` | `name` |
 
-**Rule:** the row whose value was set with the smaller `(hlc, device_id)`
-keeps it. Every other row with the same value is flagged in `sync_conflicts`.
+**Rule:** the row whose value was set with the smaller
+`(clock_epoch, hlc, device_id)` keeps it. Every other row with the same value
+is flagged in `sync_conflicts`.
 
 The UI shows flagged rows as "Duplicate member number" (etc.):
 - For member numbers it suggests the next free number.
@@ -516,15 +597,41 @@ prevents duplicates whenever it can see them.
 ### 15.1 Snapshots
 
 - A snapshot contains the full state of one scope, including tombstones and
-  field clocks, plus the position of every stream it includes
-  (`device_id → seq`).
+  field clocks (including `clock_epoch`), plus the position and complete-file
+  hash of every stream it includes (`device_id → {seq, hash}`); a frontier at
+  sequence `0` has a `null` hash, otherwise the hash covers the complete `.seg`
+  file including its signature.
 - File format: as a segment ([§11.1](#111-file-format)), with header fields
   `type: "snapshot"`, `streams` instead of `seq`/`prev`, and encryption with
-  the current epoch.
+  the current epoch. `acl_version` MUST name the latest unambiguous ACL known
+  to the author when deriving the snapshot.
 - Snapshots MUST be written by an admin device. Other devices ignore
   snapshots from non-admin authors.
-- A new device MAY start from the newest snapshot and then apply segments
-  after the recorded positions.
+- The snapshot signature MUST be by a device with `rw` on `admin` and read
+  access to the snapshot scope in both the ACL version named in the header and
+  the latest unambiguous ACL. A new device MUST verify the genesis, the
+  unambiguous ACL chain, the snapshot's signature, authorization, AEAD tag,
+  schema, and stream frontiers before applying it. If frontier segments are
+  still available, it MUST verify their hashes and chains. A frontier at
+  sequence `0` has a `null` hash. Frontiers
+  for revoked devices MUST NOT exceed their cutoffs. The snapshot MUST contain
+  only state derived from verified stream prefixes permitted by the latest ACL.
+- If the complete segment prefixes are retained, a new device MUST replay them
+  and compare the resulting state and field clocks with the snapshot; checking
+  frontier hashes alone does not verify snapshot contents.
+- A signature proves which authorized admin asserted the snapshot; it does not
+  prove that the state was correctly derived. If covered segments have been
+  compacted, independent verification is impossible. Trusting such a snapshot
+  therefore means trusting its signing admin not to be compromised or
+  malicious. A new device that cannot accept this trust assumption MUST refuse
+  the snapshot and remain incomplete unless it can reconstruct the state from
+  another trusted snapshot or the complete retained segment history.
+- A new device MAY start from a verified snapshot and then apply segments
+  strictly after the recorded positions.
+- A snapshot created after a revocation MUST name an ACL version that includes
+  it. An older snapshot MAY be used as a rebuild base only if its frontiers for
+  revoked devices do not exceed their cutoffs and the remaining prefixes are
+  replayed and checked against the cutoff hashes.
 - Admin devices SHOULD write a snapshot per scope when more than 1,000
   segments have accumulated since the last one, or once a month.
 
@@ -593,38 +700,84 @@ Steps:
    ```json
    { "type": "ocm.join", "club_id": "...", "invite_id": "<b64>", "device_id": "...",
      "sign_pub": "<b64>", "age_recipient": "age1...", "person": "Erika Mustermann",
-     "proof": "<b64 HMAC-SHA-256(invite_secret, invite_id || sign_pub || age_recipient)>" }
+     "proof": "<b64 HMAC-SHA-256(invite_secret_raw_16, join-v1 input below)>" }
    ```
-   plus a signature with its own `sign_priv`.
+   `requests/<device_id>.json.sig` contains the b64 Ed25519 signature over the
+   exact request JSON bytes.
+   The signature MUST cover the exact UTF-8 bytes of the complete request
+   object, including the proof. `device_id` MUST be derived from `sign_pub`.
+   The proof input is the byte concatenation
+   `"ocm.join.v1\0" || invite_id_raw_8 || sign_pub_raw_32 ||
+   age_recipient_canonical_ascii`; the HMAC key is `invite_secret_raw_16`.
+   All fields MUST be decoded and validated before proof verification, and
+   the proof MUST be compared in constant time.
+   The request signature uses its own `sign_priv`.
 4. **Admin device checks the request:**
    - The proof must verify against a known, unexpired invite.
    - The invite must be unused.
-   - The device shows the person's name and a **safety code** (6 digits,
-     derived from `SHA-256(sign_pub || age_recipient)`). The new device shows
-     the same code.
-   - Admin and new member compare the code by phone or in person. This
-     protects against someone who can write to the folder and has intercepted
-     the invite code.
+   - The admin pins the exact request bytes, their SHA-256 hash, and public keys
+     being reviewed. The safety code is derived from those pinned keys. Approval
+     MUST build the ACL entry from that same pinned request, without rereading
+     a replaceable shared-folder path.
+   - The admin displays the person's name and a six-digit safety code derived
+     from `SHA-256("ocm.join-sas.v1\0" || sign_pub_raw_32 ||
+     age_recipient_canonical_ascii)`: interpret the first four digest bytes as
+     an unsigned big-endian integer, reduce modulo 1,000,000, and zero-pad to
+     six digits. The new device displays the same code.
+   - Admin and new member MUST compare the code over an independently
+     authenticated channel (for example, in person or by calling a number
+     already known to the admin), before approval. The shared folder is not an
+     authenticated channel. A matching code binds the approval to these exact
+     public keys; the displayed name alone does not.
+   - HMAC proof establishes possession of the invite secret, not the identity
+     of the intended person. Anyone who obtains the invite secret can make a
+     valid request. The out-of-band comparison is therefore mandatory, not
+     optional.
 5. **Approval:** a new ACL version adds the device with the role, the
    relevant scope keys of all epochs are wrapped for it, and the request file
-   is deleted. The invite is marked used.
-6. **New device starts syncing:** it finds itself in the ACL, unwraps the
-   keys and syncs.
+   is deleted. The invite is marked used. The admin provides the enrollment
+   checkpoint of [§8.4](#84-rollback-protection) over the same authenticated
+   out-of-band channel used for the safety-code comparison.
+6. **New device starts syncing:** it verifies and pins the checkpoint, finds
+   itself in the ACL, unwraps the keys and syncs.
 
 ### 17.3 Changing a role
 
 - A new ACL version with the new role.
-- If read on a scope is removed, start a new epoch for it ([§9](#9-scope-keys-and-epochs)).
+- If the change removes `rw` on any scope, it MUST be done by revoking the old
+  device with cutoffs and inviting a new device with a new key pair. A revoked
+  device is never reactivated.
+- If read on a scope is removed while `rw` is not removed, start a new epoch
+  for it ([§9](#9-scope-keys-and-epochs)).
 - If read is added, wrap all epochs of the new scope for the device.
 
 ### 17.4 Revoking a device
 
 1. The admin device marks the device `revoked` in a new ACL version.
-2. It sets `cutoff[scope]` to the highest `seq` it has **accepted** from that
-   device per scope.
+2. It sets `cutoff[scope]` for every scope in which the device had `rw` to the
+   highest **contiguous, verified and accepted** sequence and the complete-file
+   hash at that sequence; use `{seq: 0, hash: null}` if no segment was accepted.
 3. Segments the revoked device writes later are rejected by everyone, as are
    segments the admin had not yet seen.
 4. A new epoch starts for every scope the device could read.
+
+The accepted set is defined by the latest unambiguous ACL, not by the ACL a
+client happened to have when a segment arrived. On learning a revocation,
+clients MUST re-evaluate that device's entire stream against the final cutoff.
+Any previously applied segment above the cutoff becomes invalid; clients MUST
+rebuild the affected scope from a snapshot whose frontiers do not exceed the
+cutoffs and the remaining accepted segment prefixes. A snapshot frontier at a
+revoked device's cutoff sequence MUST match the cutoff hash. An incremental
+apply that leaves effects from invalidated segments is forbidden. Until the
+required prefixes and hash commitments are available, the scope MUST be marked
+incomplete and MUST NOT be reported as converged.
+
+A persistent invalid file at the next sequence permanently blocks an
+immutable stream; clients MUST NOT skip its sequence or overwrite it. Recovery
+requires preserving the file for investigation, agreeing out of band on the
+last valid sequence and hash, revoking the blocked device at that cutoff, and
+enrolling a replacement device. Uncommitted local operations must be recovered
+from the old device and re-entered under the replacement identity.
 
 Lost or stolen devices are revoked the same way.
 
@@ -666,7 +819,7 @@ Because files are immutable, transports do not need locking.
 - Remote changes arrive whenever the sync client gets to them. The device
   polls with `List` (every 30 s when active) and MAY use file system
   notifications. A "Sync now" action triggers a flush and a `List`
-  immediately ([§23.2](#232-decided)).
+  immediately ([§23.2](#232-other-decisions)).
 - Files that are still being synced fail verification and are retried
   ([§13.2](#132-verification)).
 
@@ -674,8 +827,10 @@ Because files are immutable, transports do not need locking.
 
 - `PROPFIND` (depth 1, recursive by directory) for `List`.
 - `PUT` with `If-None-Match: *` for `Create`. `MKCOL` creates directories.
-- Authentication: Basic auth with an app password. The password is stored in
-  the OS keychain.
+- Authentication: Basic auth with an app password, over HTTPS only. Clients
+  MUST validate the server certificate and hostname, MUST reject HTTP URLs,
+  and MUST NOT forward credentials to another origin or follow redirects that
+  downgrade to HTTP. The password is stored in the OS keychain.
 
 ### 18.4 ServerTransport
 
@@ -714,9 +869,9 @@ Each device keeps these tables in its local SQLite. They are never synced.
 | Table | Content |
 |---|---|
 | `sync_device` | Own `device_id`, key references, next `seq` per scope, local HLC |
-| `sync_club` | Pinned `club_id`, `root_sign_pub`, highest accepted ACL version and hash |
+| `sync_club` | Pinned `club_id`, `root_sign_pub`, enrollment checkpoint, highest accepted ACL version and hash |
 | `sync_streams` | Per `(device_id, scope)`: last applied `seq`, file hash, status (`ok`, `waiting`, `quarantined`) |
-| `sync_field_clock` | Per `(table, pk, column)`: `hlc`, `device_id` |
+| `sync_field_clock` | Per `(table, pk, column)`: `clock_epoch`, `hlc`, `device_id` |
 | `sync_outbox` | Local ops not yet in a segment |
 | `sync_pending` | Received ops waiting for referenced rows |
 | `sync_conflicts` | Flagged duplicates ([§14.2](#142-unique-values)) |
@@ -730,14 +885,17 @@ data change, it writes the field clocks and the ops to `sync_outbox`.
 | Threat | Effect | Mitigation |
 |---|---|---|
 | Storage provider or person with folder access but no keys | Sees metadata: device ids, scopes, number and size of segments, times, names in the ACL | Content is encrypted. Names in the ACL are a known leak and could be encrypted in the `admin` scope in a later version. |
-| Same, with write access | Can delete or corrupt files (availability) | Segments are signed and hash-chained, so forgeries are rejected. Deletions are detected as gaps. Every device has a full local copy. Snapshots and backups exist. |
-| Member with a role | Can read their scopes and write in `rw` scopes | This is intended. Every change is signed and shown in the history. |
+| Person with folder read access | Join requests expose the invitee's name, device id, and public keys; a malicious transport can also withhold newer files | Treat requests and ACL metadata as visible to folder readers. Do not put sensitive information in the request name; remove request files after approval. Enrollment pins an authenticated checkpoint, but folder-only sync cannot prove that later files are not being withheld. |
+| Same, with write access | Can delete files, block a stream by pre-creating an invalid file at its next immutable path, or corrupt/withhold data | Signatures and hash chains detect altered files. Missing sequence numbers are detected when a later sequence or checkpoint exists; deletion of a stream's last file cannot be detected from the share alone. A blocked stream requires device replacement and recovery of unsent local operations ([§17.4](#174-revoking-a-device)). Devices keep local copies only of scopes they can read; keep independent backups. |
+| Network attacker on WebDAV | Could steal the app password or impersonate the server over an unprotected connection | HTTPS with certificate and hostname validation is mandatory; reject downgrade redirects and do not forward credentials across origins ([§18.3](#183-webdavtransport)). |
+| Member with a role | Can exfiltrate data in readable scopes and create valid changes in `rw` scopes | This is intended authority. Signatures provide attribution, not truthfulness; revocation cannot erase data already copied. |
 | Revoked device | Keeps what it already had | Cannot be prevented. It cannot read new epochs, and its later writes are rejected (cutoff). |
-| Device with manipulated clock | Its values win LWW until real time catches up | Clock warning ([§12](#12-hybrid-logical-clock)). Admin can revoke the device. See open question 1. |
+| Authorized writer with manipulated clock | Can submit far-future HLCs that win field conflicts | No prevention is possible without trusted time. Warn, revoke the writer, and increment affected scope `clock_epochs` to permit recovery ([§12](#12-hybrid-logical-clock)); this does not undo leaked data. |
 | Replay of old segments | – | `seq` and the hash chain make replays useless. |
-| Rollback of the ACL | Could reinstate removed rights | Devices remember the highest version ([§8.4](#84-rollback-protection)). |
-| Intercepted invite code | Attacker could join | Admin approval with safety code ([§17.2](#172-inviting-a-device)). |
-| Compromised admin device | Full control | Revoke it from another admin device or with the recovery kit, and start new epochs for all scopes. |
+| ACL fork or rollback | Devices could otherwise authorize different writers or rights | Fail closed on competing ACL children; only a root-signed extension resolves a fork. Pin the highest version and hash ([§8](#8-access-control-list-acl)). |
+| Intercepted invite code or replaced join request | Attacker could request access as another device | HMAC alone does not authenticate the person. Require the safety-code comparison over an independently authenticated channel before approval ([§17.2](#172-inviting-a-device)). |
+| Compromised admin device | Can authorize devices, sign snapshots, and write all data permitted by its scopes | Revoke it from a different admin or with the recovery kit, rotate readable scope keys, rebuild state under the new ACL, and review signed snapshots and data. Previously disclosed data cannot be recovered. |
+| Admin-signed snapshot | May contain incorrect state even though its signature is valid | New devices trust the authorized signer unless they can replay retained segments; a signature is not proof of correct derivation ([§15.1](#151-snapshots)). |
 | Lost recovery kit + all admin devices lost | Club data can no longer be administered | The kit is printed. The UI reminds users to keep it safe. |
 | Stolen device | Local SQLite holds decrypted data | Revoke the device. The setup recommends OS disk encryption. Keys are stored in the OS keychain or encrypted with a passphrase. |
 
@@ -765,30 +923,40 @@ sync core:
 5. **Field clocks and outbox:** the store package writes them in the same
    transaction as each change ([§20](#20-local-state)).
 
-## 23. Open questions and decisions
+## 23. Decisions and remaining limitations
 
-### 23.1 Open (for the security review)
+### 23.1 Security-review decisions
 
-1. **Clock manipulation:** a malicious device can set future HLCs and win
-   every conflict until real time catches up. Options:
-   - Bound HLCs by the timestamps of the segments' upload. Needs a trusted
-     time source, e.g. the server in server mode.
-   - Let admins "reset" a device's values.
-2. **Snapshot trust:** only admin devices write snapshots, but an admin device
-   could forge one. Should new devices verify snapshots against the segments
-   (if not yet compacted) or against a second admin's signature?
+1. **Clock manipulation:** no trusted time source means no sound way to reject
+   future timestamps while preserving deterministic acceptance. V1 accepts
+   them, warns, and provides generation-based recovery after revocation; this
+   remains a risk from an authorized malicious writer.
+2. **Snapshot trust:** signatures authenticate the admin who asserted a
+   snapshot, not its correctness. A new device may use it only when it accepts
+   that admin as trusted; otherwise it must replay retained segments.
+3. **Revocation:** cutoffs use the latest unambiguous ACL and retroactively
+   invalidate later sequence numbers. Clients rebuild affected scopes instead
+   of retaining already-applied effects.
+4. **ACL forks:** there is no first-seen or hash-order winner. Clients stop
+   until a root-signed extension explicitly selects a branch.
+5. **New-device freshness:** an out-of-band checkpoint anchors a join to the
+   approving admin's latest known state, but a folder transport cannot prove
+   that later changes are not being withheld.
 
-### 23.2 Decided
+These rules still require implementation, interoperability tests and
+cryptographic review before using this draft with real member or banking data.
 
-3. **Names in the ACL stay readable in v1.** They are the names of club
+### 23.2 Other decisions
+
+6. **Names in the ACL stay readable in v1.** They are the names of club
    officials, not member data, and people with folder access belong to the
    club. Moving them into the encrypted `admin` scope is possible in a later
    protocol version.
-4. **No provider sharing APIs in v1.** Giving a new member access to the
+7. **No provider sharing APIs in v1.** Giving a new member access to the
    shared folder stays outside the app. The invite screen shows an
    illustrated step-by-step guide for Nextcloud and OneDrive (others link to
    the provider's help).
-5. **Latency:** the flush rules of [§11.3](#113-writing) and 30 s polling
+8. **Latency:** the flush rules of [§11.3](#113-writing) and 30 s polling
    ([§18.2](#182-localfoldertransport)) stay. In addition, the UI MUST offer a
    "Sync now" button that flushes the outbox and lists immediately.
    Real-time sync is not a goal.
