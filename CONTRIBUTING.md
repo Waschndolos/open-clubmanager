@@ -86,8 +86,10 @@ git checkout -b feature/my-feature-name
 ### 5. Commit with a Clear Message
 
 ```bash
-git commit -m "feat: add new feature X"
+git commit -s -m "feat: add new feature X"
 ```
+
+The `-s` flag adds a `Signed-off-by` line (see [Licensing of contributions](#-licensing-of-contributions)).
 
 ### 6. Push and Open a Pull Request
 
@@ -114,6 +116,14 @@ git push origin feature/my-feature-name
 * Adding large new dependencies without discussion
 * Committing directly to the `main` branch
 * Submitting untested code
+
+---
+
+## 📜 Licensing of contributions
+
+The project is licensed under [AGPL-3.0-or-later](LICENSE). By contributing you agree that your contribution is licensed under the same license.
+
+We use the [Developer Certificate of Origin](https://developercertificate.org/) (DCO): every commit must carry a `Signed-off-by: Your Name <you@example.com>` line (`git commit -s`), certifying that you wrote the contribution or have the right to submit it under this license. Do not submit code or assets (images, fonts, icons) whose license is incompatible with AGPL-3.0 or whose origin you cannot document.
 
 ---
 

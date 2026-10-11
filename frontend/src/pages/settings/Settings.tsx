@@ -10,10 +10,8 @@ import {
     DialogTitle,
     Fade,
     FormControl,
-    InputLabel,
     MenuItem,
     Paper,
-    Select,
     Snackbar,
     TextField,
     Typography,
@@ -52,9 +50,7 @@ export function Settings() {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const availableLanguages = () => {
-        return Object.keys(i18n.services.resourceStore.data);
-    }
+    const languageCodes = Object.keys(i18n.services.resourceStore.data);
 
     useEffect(() => {
         const raw = userpreference?.get('1', 'language');
@@ -175,32 +171,23 @@ export function Settings() {
                         margin="normal"/>
                 </FormControl>
 
-                <FormControl fullWidth margin="normal">
-                    <InputLabel id="language-select-label">{t("settings.labels.language")}</InputLabel>
-                    <Select
-                        labelId="language-select-label"
-                        value={language}
-                        label={t("settings.labels.language")}
-                        onChange={(e) => {
-                            const lng = e.target.value;
-                            setLanguage(lng);
-                        }}
-                    >
-                        {availableLanguages().map((lng) => (
-                            <MenuItem key={lng} value={lng}>
-                                {t(`settings.languages.${lng}`) || lng}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                <TextField
+                    select
+                    fullWidth
+                    margin="normal"
+                    label={t("settings.labels.language")}
+                    value={language}
+                    onChange={(event) => setLanguage(event.target.value)}
+                >
+                    {languageCodes.map((code) => (
+                        <MenuItem key={code} value={code}>
+                            {t(`settings.languages.${code}`, {defaultValue: code})}
+                        </MenuItem>
+                    ))}
+                </TextField>
             </Paper>
 
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={saveSettings}
-                sx={{mt: 2}}
-            >
+            <Button variant="contained" onClick={saveSettings} sx={{mt: 2}}>
                 {t("buttons.save")}
             </Button>
 
@@ -269,13 +256,11 @@ export function Settings() {
 
             <Snackbar
                 open={snackBarState.open}
-                color="primary"
-                onClose={() => setSnackBarState({...snackBarState, open: false})}
-                slots={{
-                    transition: Fade
-                }}
                 message={snackBarState.message}
-                autoHideDuration={3000}/>
+                autoHideDuration={3000}
+                slots={{transition: Fade}}
+                onClose={() => setSnackBarState((prev) => ({...prev, open: false}))}
+            />
 
             {/* ── Restore confirmation dialog ──────────────────────────────── */}
             <Dialog open={confirmOpen} onClose={() => { setConfirmOpen(false); setPendingRestoreFile(null); }}>

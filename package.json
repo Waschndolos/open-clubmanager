@@ -2,6 +2,7 @@
   "name": "open-clubmanager",
   "version": "1.0.0",
   "author": "Waschndolos",
+  "license": "AGPL-3.0-or-later",
   "description": "Open Clubmanager ",
   "type": "module",
   "scripts": {
@@ -16,7 +17,7 @@
     "build": "npm run tauri:check && npm run build:backend && npm run prepare:sidecar && tauri build",
     "docs:redoc": "python3 scripts/generate_redoc.py",
     "lint": "npm --prefix frontend run lint && cd server && go test ./...",
-    "licenses": "npm --prefix frontend run licenses"
+    "licenses": "python3 scripts/generate_licenses.py"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",

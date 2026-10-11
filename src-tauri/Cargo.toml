@@ -3,8 +3,8 @@ name = "open-clubmanager"
 version = "1.0.0"
 description = "Open ClubManager"
 authors = ["Waschndolos"]
-license = ""
-repository = ""
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/Waschndolos/open-clubmanager"
 edition = "2021"
 rust-version = "1.77.2"
 

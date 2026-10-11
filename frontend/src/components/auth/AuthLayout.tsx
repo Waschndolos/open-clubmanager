@@ -5,7 +5,6 @@ import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import BrandMark from "../common/BrandMark";
 import ThemeToggle from "../header/ThemeToggle";
-import loginBg from "../../assets/login_bg.jpeg";
 
 type AuthLayoutProps = {
     title: string;
@@ -19,8 +18,9 @@ type AuthLayoutProps = {
 
 /**
  * Split-screen frame for login, password reset and first-time setup:
- * a photo panel that says what the app is for, and a calm form column.
- * Below the md breakpoint the photo panel is dropped and the form stands alone.
+ * a brand panel that says what the app is for, and a calm form column.
+ * The panel is pure CSS (glowing gradients and a grid) so no image has to
+ * be shipped. Below the md breakpoint the panel is dropped and the form stands alone.
  */
 export default function AuthLayout({ title, subtitle, eyebrow, children, formWidth = 400 }: AuthLayoutProps) {
     const { t } = useTranslation();
@@ -46,12 +46,61 @@ export default function AuthLayout({ title, subtitle, eyebrow, children, formWid
                     p: { md: 5, lg: 6 },
                     color: "#FFFFFF",
                     overflow: "hidden",
-                    backgroundColor: "#143D30",
-                    backgroundImage: `linear-gradient(180deg, ${alpha("#0E2A21", 0.55)} 0%, ${alpha("#0E2A21", 0.2)} 40%, ${alpha("#0B211A", 0.92)} 100%), url(${loginBg})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
+                    isolation: "isolate",
+                    backgroundColor: "#0A1F18",
+                    backgroundImage: `radial-gradient(120% 80% at 0% 0%, ${alpha("#2F7A60", 0.55)} 0%, transparent 60%), linear-gradient(160deg, #0F2E24 0%, #0A1F18 55%, #07150F 100%)`,
+                    "@keyframes authDrift": {
+                        "0%": { transform: "translate3d(0, 0, 0) scale(1)" },
+                        "50%": { transform: "translate3d(-6%, 5%, 0) scale(1.12)" },
+                        "100%": { transform: "translate3d(0, 0, 0) scale(1)" },
+                    },
+                    "& > .auth-fx": { position: "absolute", pointerEvents: "none", zIndex: -1 },
+                    "@media (prefers-reduced-motion: reduce)": {
+                        "& .auth-anim": { animation: "none !important" },
+                    },
                 }}
             >
+                {/* Ember glow */}
+                <Box
+                    className="auth-fx auth-anim"
+                    aria-hidden
+                    sx={{
+                        width: "110%",
+                        aspectRatio: "1",
+                        right: "-35%",
+                        bottom: "-45%",
+                        borderRadius: "50%",
+                        background: `radial-gradient(circle at 50% 50%, ${alpha("#FFC247", 1)} 0%, ${alpha("#F0731F", 0.85)} 25%, ${alpha("#C2410C", 0.45)} 50%, transparent 72%)`,
+                        filter: "blur(18px)",
+                        animation: "authDrift 16s ease-in-out infinite",
+                    }}
+                />
+                <Box
+                    className="auth-fx auth-anim"
+                    aria-hidden
+                    sx={{
+                        width: "60%",
+                        aspectRatio: "1",
+                        left: "-25%",
+                        top: "30%",
+                        borderRadius: "50%",
+                        background: `radial-gradient(circle, ${alpha("#5BC49A", 0.4)} 0%, transparent 65%)`,
+                        filter: "blur(40px)",
+                        animation: "authDrift 22s ease-in-out infinite reverse",
+                    }}
+                />
+                {/* Fine grid, fading out towards the bottom */}
+                <Box
+                    className="auth-fx"
+                    aria-hidden
+                    sx={{
+                        inset: 0,
+                        backgroundImage: `linear-gradient(${alpha("#FFFFFF", 0.06)} 1px, transparent 1px), linear-gradient(90deg, ${alpha("#FFFFFF", 0.06)} 1px, transparent 1px)`,
+                        backgroundSize: "44px 44px",
+                        maskImage: "linear-gradient(180deg, #000 0%, transparent 75%)",
+                        WebkitMaskImage: "linear-gradient(180deg, #000 0%, transparent 75%)",
+                    }}
+                />
                 <BrandMark inverted size={36} />
 
                 <Box sx={{ maxWidth: 440 }}>

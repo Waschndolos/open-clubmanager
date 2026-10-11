@@ -1,59 +1,52 @@
-import { createContext, useContext, useState, useMemo, useEffect, ReactNode } from 'react';
-import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { CssBaseline, ThemeProvider as MuiThemeProvider } from '@mui/material';
 import { createAppTheme } from './createAppTheme';
 
-// Type for theme mode
 export type ThemeMode = 'light' | 'dark';
 
-// Context type
-interface ThemeContextType {
+interface ThemeContextValue {
   mode: ThemeMode;
   toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const STORAGE_KEY = 'theme';
 
-export function useThemeContext() {
-  const context = useContext(ThemeContext);
-  if (!context) throw new Error('useThemeContext must be used within ThemeProvider');
-  return context;
+const ThemeContext = createContext<ThemeContextValue | null>(null);
+
+export function useThemeContext(): ThemeContextValue {
+  const value = useContext(ThemeContext);
+  if (value === null) {
+    throw new Error('useThemeContext must be used within ThemeProvider');
+  }
+  return value;
 }
 
-// Helper to get initial theme from localStorage or system preference
-function getInitialTheme(): ThemeMode {
-  if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('theme');
-    if (stored === 'light' || stored === 'dark') return stored;
-    // Fallback to system preference
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
-  }
-  return 'light';
+/** Stored choice first, then the operating system preference, then light. */
+function resolveInitialMode(): ThemeMode {
+  if (typeof window === 'undefined') return 'light';
+  const stored = window.localStorage.getItem(STORAGE_KEY);
+  if (stored === 'light' || stored === 'dark') return stored;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<ThemeMode>(getInitialTheme);
+  const [mode, setMode] = useState<ThemeMode>(resolveInitialMode);
 
-  // Sync theme to localStorage and <html> class for Tailwind
   useEffect(() => {
-    localStorage.setItem('theme', mode);
-    const root = window.document.documentElement;
-    if (mode === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+    window.localStorage.setItem(STORAGE_KEY, mode);
+    document.documentElement.classList.toggle('dark', mode === 'dark');
   }, [mode]);
 
-  // Toggle theme
-  const toggleTheme = () => setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
+  const toggleTheme = useCallback(() => {
+    setMode((current) => (current === 'dark' ? 'light' : 'dark'));
+  }, []);
 
-  // Memoize MUI theme
-  const theme = useMemo(() => createAppTheme(mode), [mode]);
+  const muiTheme = useMemo(() => createAppTheme(mode), [mode]);
+  const contextValue = useMemo(() => ({ mode, toggleTheme }), [mode, toggleTheme]);
 
   return (
-    <ThemeContext.Provider value={{ mode, toggleTheme }}>
-      <MuiThemeProvider theme={theme}>
-        {/* CssBaseline for MUI global styles */}
+    <ThemeContext.Provider value={contextValue}>
+      <MuiThemeProvider theme={muiTheme}>
         <CssBaseline />
         {children}
       </MuiThemeProvider>
