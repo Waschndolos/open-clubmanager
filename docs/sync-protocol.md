@@ -428,6 +428,7 @@ Header:
   - after a few seconds without new changes, or
   - when the outbox exceeds 1 MiB, or
   - when the app closes.
+- A segment MUST contain at least one op.
 - `seq` MUST be strictly increasing by 1 per stream, without gaps. A device
   MUST persist the next `seq` before uploading. After a crash it MUST NOT reuse
   a `seq` with different content. If an upload fails, it retries with the
@@ -507,7 +508,7 @@ A segment is **accepted** only if all of these hold:
 8. Decryption succeeds, and every op's HLC is within the segment's
    `hlc_min`/`hlc_max` range; those header values equal the actual minimum and
    maximum HLCs in the batch.
-9. Every op targets a table of `scope`.
+9. The batch is non-empty, and every op targets a table of `scope`.
 10. `schema` <= the local app's schema version. If not, the stream waits and
     the user is asked to update ([§16](#16-schema-evolution)).
 
@@ -605,16 +606,17 @@ prevents duplicates whenever it can see them.
   `type: "snapshot"`, `streams` instead of `seq`/`prev`, and encryption with
   the current epoch. `acl_version` MUST name the latest unambiguous ACL known
   to the author when deriving the snapshot.
-- Snapshots MUST be written by an admin device. Other devices ignore
+- Snapshots MUST be written by an active admin device. Other devices ignore
   snapshots from non-admin authors.
-- The snapshot signature MUST be by a device with `rw` on `admin` and read
-  access to the snapshot scope in both the ACL version named in the header and
-  the latest unambiguous ACL. A new device MUST verify the genesis, the
-  unambiguous ACL chain, the snapshot's signature, authorization, AEAD tag,
+- The snapshot signature MUST be by a device that is `active`, has `rw` on
+  `admin`, and has read access to the snapshot scope in both the ACL version
+  named in the header and the latest unambiguous ACL. A new device MUST verify
+  the genesis, the unambiguous ACL chain, the snapshot's signature,
+  authorization, AEAD tag,
   schema, and stream frontiers before applying it. If frontier segments are
-  still available, it MUST verify their hashes and chains. A frontier at
-  sequence `0` has a `null` hash. Frontiers
-  for revoked devices MUST NOT exceed their cutoffs. The snapshot MUST contain
+  still available, it MUST verify their hashes and chains. Frontiers for
+  revoked devices MUST NOT exceed `cutoff[scope].seq`; a frontier at that
+  sequence MUST match `cutoff[scope].hash`. The snapshot MUST contain
   only state derived from verified stream prefixes permitted by the latest ACL.
 - If the complete segment prefixes are retained, a new device MUST replay them
   and compare the resulting state and field clocks with the snapshot; checking
@@ -767,10 +769,12 @@ clients MUST re-evaluate that device's entire stream against the final cutoff.
 Any previously applied segment above the cutoff becomes invalid; clients MUST
 rebuild the affected scope from a snapshot whose frontiers do not exceed the
 cutoffs and the remaining accepted segment prefixes. A snapshot frontier at a
-revoked device's cutoff sequence MUST match the cutoff hash. An incremental
-apply that leaves effects from invalidated segments is forbidden. Until the
-required prefixes and hash commitments are available, the scope MUST be marked
-incomplete and MUST NOT be reported as converged.
+revoked device's cutoff sequence MUST match the cutoff hash. Rebuild all
+derived scope state, including row values, `sync_streams`, field clocks,
+history, pending ops and conflicts. An incremental apply that leaves effects
+from invalidated segments is forbidden. Until the required prefixes and hash
+commitments are available, the scope MUST be marked incomplete and MUST NOT
+be reported as converged.
 
 A persistent invalid file at the next sequence permanently blocks an
 immutable stream; clients MUST NOT skip its sequence or overwrite it. Recovery
@@ -841,6 +845,10 @@ operations, plus server-side checks.
 
 The server is the same Go binary started with `--serve`.
 
+Deployments accessed over a network MUST provide HTTPS. Clients MUST validate
+the server certificate; credentials and JWTs MUST NOT be sent over plaintext.
+A deployment behind a reverse proxy is responsible for TLS termination.
+
 **As a transport:**
 - Devices authenticate with a challenge signed by their device key.
 - `List` and `Get` return only scopes the device may read, according to the
@@ -887,7 +895,7 @@ data change, it writes the field clocks and the ops to `sync_outbox`.
 | Storage provider or person with folder access but no keys | Sees metadata: device ids, scopes, number and size of segments, times, names in the ACL | Content is encrypted. Names in the ACL are a known leak and could be encrypted in the `admin` scope in a later version. |
 | Person with folder read access | Join requests expose the invitee's name, device id, and public keys; a malicious transport can also withhold newer files | Treat requests and ACL metadata as visible to folder readers. Do not put sensitive information in the request name; remove request files after approval. Enrollment pins an authenticated checkpoint, but folder-only sync cannot prove that later files are not being withheld. |
 | Same, with write access | Can delete files, block a stream by pre-creating an invalid file at its next immutable path, or corrupt/withhold data | Signatures and hash chains detect altered files. Missing sequence numbers are detected when a later sequence or checkpoint exists; deletion of a stream's last file cannot be detected from the share alone. A blocked stream requires device replacement and recovery of unsent local operations ([§17.4](#174-revoking-a-device)). Devices keep local copies only of scopes they can read; keep independent backups. |
-| Network attacker on WebDAV | Could steal the app password or impersonate the server over an unprotected connection | HTTPS with certificate and hostname validation is mandatory; reject downgrade redirects and do not forward credentials across origins ([§18.3](#183-webdavtransport)). |
+| Network attacker on WebDAV or remote server mode | Could steal credentials or impersonate the server over an unprotected connection | HTTPS with certificate and hostname validation is mandatory; reject downgrade redirects and do not forward credentials across origins ([§18.3](#183-webdavtransport), [§19](#19-server-mode)). |
 | Member with a role | Can exfiltrate data in readable scopes and create valid changes in `rw` scopes | This is intended authority. Signatures provide attribution, not truthfulness; revocation cannot erase data already copied. |
 | Revoked device | Keeps what it already had | Cannot be prevented. It cannot read new epochs, and its later writes are rejected (cutoff). |
 | Authorized writer with manipulated clock | Can submit far-future HLCs that win field conflicts | No prevention is possible without trusted time. Warn, revoke the writer, and increment affected scope `clock_epochs` to permit recovery ([§12](#12-hybrid-logical-clock)); this does not undo leaked data. |
@@ -933,10 +941,11 @@ sync core:
    remains a risk from an authorized malicious writer.
 2. **Snapshot trust:** signatures authenticate the admin who asserted a
    snapshot, not its correctness. A new device may use it only when it accepts
-   that admin as trusted; otherwise it must replay retained segments.
-3. **Revocation:** cutoffs use the latest unambiguous ACL and retroactively
-   invalidate later sequence numbers. Clients rebuild affected scopes instead
-   of retaining already-applied effects.
+   that admin as trusted or can verify the snapshot by replaying the complete
+   segment prefixes; without either basis it remains incomplete.
+3. **Revocation:** the latest unambiguous ACL binds each cutoff to a terminal
+   sequence and hash. Clients retroactively invalidate later sequence numbers
+   and rebuild affected scopes instead of retaining already-applied effects.
 4. **ACL forks:** there is no first-seen or hash-order winner. Clients stop
    until a root-signed extension explicitly selects a branch.
 5. **New-device freshness:** an out-of-band checkpoint anchors a join to the
