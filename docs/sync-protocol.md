@@ -32,7 +32,7 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119.
 20. [Local state](#20-local-state)
 21. [Security considerations](#21-security-considerations)
 22. [Required changes to the current data layer](#22-required-changes-to-the-current-data-layer)
-23. [Open questions](#23-open-questions)
+23. [Open questions and decisions](#23-open-questions-and-decisions)
 
 ---
 
@@ -665,7 +665,8 @@ Because files are immutable, transports do not need locking.
   4. Delete the temp file.
 - Remote changes arrive whenever the sync client gets to them. The device
   polls with `List` (every 30 s when active) and MAY use file system
-  notifications.
+  notifications. A "Sync now" action triggers a flush and a `List`
+  immediately ([§23.2](#232-decided)).
 - Files that are still being synced fail verification and are retried
   ([§13.2](#132-verification)).
 
@@ -764,9 +765,9 @@ sync core:
 5. **Field clocks and outbox:** the store package writes them in the same
    transaction as each change ([§20](#20-local-state)).
 
-## 23. Open questions
+## 23. Open questions and decisions
 
-For review before implementation:
+### 23.1 Open (for the security review)
 
 1. **Clock manipulation:** a malicious device can set future HLCs and win
    every conflict until real time catches up. Options:
@@ -776,13 +777,18 @@ For review before implementation:
 2. **Snapshot trust:** only admin devices write snapshots, but an admin device
    could forge one. Should new devices verify snapshots against the segments
    (if not yet compacted) or against a second admin's signature?
-3. **Names in the ACL** are readable by anyone with folder access. Is that
-   acceptable for v1, or should person names move into the encrypted `admin`
-   scope?
-4. **Invite without folder access:** in folder mode the new member must get
-   access to the shared folder outside the app. Can the app guide users for
-   Nextcloud and OneDrive well enough, or do we need provider-specific
-   sharing APIs?
-5. **Segment size and latency:** are the flush rules of
-   [§11.3](#113-writing) and the 30 s polling of [§18.2](#182-localfoldertransport)
-   good enough for clubs, or is a "Sync now" button sufficient?
+
+### 23.2 Decided
+
+3. **Names in the ACL stay readable in v1.** They are the names of club
+   officials, not member data, and people with folder access belong to the
+   club. Moving them into the encrypted `admin` scope is possible in a later
+   protocol version.
+4. **No provider sharing APIs in v1.** Giving a new member access to the
+   shared folder stays outside the app. The invite screen shows an
+   illustrated step-by-step guide for Nextcloud and OneDrive (others link to
+   the provider's help).
+5. **Latency:** the flush rules of [§11.3](#113-writing) and 30 s polling
+   ([§18.2](#182-localfoldertransport)) stay. In addition, the UI MUST offer a
+   "Sync now" button that flushes the outbox and lists immediately.
+   Real-time sync is not a goal.
