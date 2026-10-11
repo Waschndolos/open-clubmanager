@@ -8,6 +8,8 @@ import {getSetupStatus} from '../../api/setup';
 import {useTranslation} from "react-i18next";
 import {setAccessToken} from "../../api/api";
 import AuthLayout from '../../components/auth/AuthLayout';
+import {fadeUp, reveal, shake, sheen} from '../../components/auth/authAnimations';
+import {alpha} from '@mui/material/styles';
 
 const Login: React.FC = () => {
     const { t } = useTranslation();
@@ -16,6 +18,7 @@ const Login: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const [errorKey, setErrorKey] = useState(0);
 
     const {setAccessToken: setAuthAccessToken} = useAuth();
     const navigate = useNavigate();
@@ -50,13 +53,29 @@ const Login: React.FC = () => {
         } catch (e) {
             console.log('Login error', e);
             setError(t('login.errorInvalidCredentials'));
+            setErrorKey((k) => k + 1);
             setSubmitting(false);
         }
     };
 
     return (
         <AuthLayout title={t('login.title')} subtitle={t('login.welcomeSubtitle')}>
-            <Box component="form" onSubmit={handleLogin} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2.25 }}>
+            <Box component="form" onSubmit={handleLogin} noValidate sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2.25,
+                // Staggered entrance for each form row
+                ...Object.fromEntries(
+                    [1, 2, 3, 4, 5, 6].map((n) => [`& > :nth-of-type(${n})`, {animation: reveal(0.45 + n * 0.09, fadeUp, 0.7)}]),
+                ),
+                '& .MuiOutlinedInput-root': {
+                    transition: 'box-shadow .25s, transform .25s',
+                    '&.Mui-focused': {
+                        boxShadow: (theme) => `0 0 0 4px ${alpha(theme.palette.primary.main, 0.16)}`,
+                        transform: 'translateY(-1px)',
+                    },
+                },
+            }}>
                 {setupComplete && <Alert severity="success">{t('login.setupComplete')}</Alert>}
                 {setupWarning && <Alert severity="warning">{setupWarning}</Alert>}
 
@@ -106,7 +125,7 @@ const Login: React.FC = () => {
                     {t('login.forgotPassword')}
                 </Link>
 
-                {error && <Alert severity="error">{error}</Alert>}
+                {error && <Alert key={errorKey} severity="error" sx={{animation: `${shake} 0.6s cubic-bezier(.36,.07,.19,.97) both`}}>{error}</Alert>}
 
                 <Button
                     type="submit"
@@ -114,6 +133,28 @@ const Login: React.FC = () => {
                     fullWidth
                     size="large"
                     disabled={!email || !password || submitting}
+                    sx={{
+                        position: 'relative',
+                        overflow: 'hidden',
+                        transition: 'transform .2s, box-shadow .2s, background-color .15s',
+                        '&:not(.Mui-disabled):hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: (theme) => `0 10px 24px ${alpha(theme.palette.primary.main, 0.35)}`,
+                        },
+                        '&:not(.Mui-disabled):active': {transform: 'translateY(0)'},
+                        '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            width: '40%',
+                            left: 0,
+                            background: `linear-gradient(90deg, transparent, ${alpha('#FFFFFF', 0.28)}, transparent)`,
+                            transform: 'translateX(-120%) skewX(-20deg)',
+                            pointerEvents: 'none',
+                        },
+                        '&:not(.Mui-disabled):hover::after': {animation: `${sheen} .9s ease`},
+                    }}
                     startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : undefined}
                 >
                     {t('login.loginButton')}
