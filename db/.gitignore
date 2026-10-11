@@ -1,3 +1,0 @@
-prisma/*.db*
-node_modules
-/.env

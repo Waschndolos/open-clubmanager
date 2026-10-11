@@ -2,15 +2,15 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
-	"strings"
-	"time"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/Waschndolos/open-clubmanager/server/internal/auth"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
+	"github.com/Waschndolos/open-clubmanager/server/internal/store"
 )
 
 // requireAdmin returns true when the request's JWT claims show the ADMIN role.
@@ -29,34 +29,20 @@ func (a *API) ListAppUsers(w http.ResponseWriter, r *http.Request) {
 	if !requireAdmin(w, r) {
 		return
 	}
-	if !a.requireDB(w) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
-
-	rows, err := a.db.Query(`SELECT "id", "email", "appRole", "createdAt" FROM "User" ORDER BY "id"`)
+	users, err := st.ListUsers(r.Context())
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to query users"})
+		writeStoreError(w, err, "", "failed to query users")
 		return
 	}
-	defer rows.Close()
-
-	users := []openapi.AppUser{}
-	for rows.Next() {
-		var u openapi.AppUser
-		var createdAt string
-		if err := rows.Scan(&u.Id, &u.Email, &u.AppRole, &createdAt); err != nil {
-			writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to read user row"})
-			return
-		}
-		u.CreatedAt = parseTimestamp(createdAt)
-		users = append(users, u)
+	out := make([]openapi.AppUser, len(users))
+	for i, u := range users {
+		out[i] = toAPIUser(u)
 	}
-	if err := rows.Err(); err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to iterate users"})
-		return
-	}
-
-	writeJSON(w, http.StatusOK, users)
+	writeJSON(w, http.StatusOK, out)
 }
 
 // CreateAppUser creates a new app user. Only admins may call this endpoint.
@@ -64,7 +50,8 @@ func (a *API) CreateAppUser(w http.ResponseWriter, r *http.Request) {
 	if !requireAdmin(w, r) {
 		return
 	}
-	if !a.requireDB(w) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
 
@@ -90,33 +77,25 @@ func (a *API) CreateAppUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := a.db.Exec(
-		`INSERT INTO "User" ("email", "password", "appRole") VALUES (?, ?, ?)`,
-		string(req.Email), string(hash), string(req.AppRole),
-	)
+	u, err := st.CreateUser(r.Context(), string(req.Email), string(hash), string(req.AppRole))
+	if errors.Is(err, store.ErrConflict) {
+		writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "email already in use"})
+		return
+	}
 	if err != nil {
-		if isUniqueConstraintError(err) {
-			writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "email already in use"})
-			return
-		}
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to create user"})
+		writeStoreError(w, err, "", "failed to create user")
 		return
 	}
-
-	id, _ := result.LastInsertId()
-	u, ok := a.loadUserByID(w, int(id))
-	if !ok {
-		return
-	}
-	writeJSON(w, http.StatusCreated, u)
+	writeJSON(w, http.StatusCreated, toAPIUser(u))
 }
 
 // UpdateAppUser updates an app user's email or role. Only admins may call this endpoint.
-func (a *API) UpdateAppUser(w http.ResponseWriter, r *http.Request, id int) {
+func (a *API) UpdateAppUser(w http.ResponseWriter, r *http.Request, id string) {
 	if !requireAdmin(w, r) {
 		return
 	}
-	if !a.requireDB(w) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
 
@@ -131,74 +110,41 @@ func (a *API) UpdateAppUser(w http.ResponseWriter, r *http.Request, id int) {
 		return
 	}
 
-	// Build an update query using only the fields that were provided.
-	setClauses := []string{}
-	args := []any{}
-
+	var email, role *string
 	if req.Email != nil {
-		setClauses = append(setClauses, `"email" = ?`)
-		args = append(args, string(*req.Email))
+		e := string(*req.Email)
+		email = &e
 	}
 	if req.AppRole != nil {
-		setClauses = append(setClauses, `"appRole" = ?`)
-		args = append(args, string(*req.AppRole))
+		ar := string(*req.AppRole)
+		role = &ar
 	}
 
-	if len(setClauses) == 0 {
-		u, ok := a.loadUserByID(w, id)
-		if !ok {
-			return
-		}
-		writeJSON(w, http.StatusOK, u)
+	u, err := st.UpdateUser(r.Context(), id, email, role)
+	if errors.Is(err, store.ErrConflict) {
+		writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "email already in use"})
 		return
 	}
-
-	query := `UPDATE "User" SET `
-	for i, clause := range setClauses {
-		if i > 0 {
-			query += ", "
-		}
-		query += clause
-	}
-	query += `, "updatedAt" = CURRENT_TIMESTAMP WHERE "id" = ?`
-	args = append(args, id)
-
-	res, err := a.db.Exec(query, args...)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to update user"})
+		writeStoreError(w, err, "user not found", "failed to update user")
 		return
 	}
-	if n, _ := res.RowsAffected(); n == 0 {
-		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "user not found"})
-		return
-	}
-
-	u, ok := a.loadUserByID(w, id)
-	if !ok {
-		return
-	}
-	writeJSON(w, http.StatusOK, u)
+	writeJSON(w, http.StatusOK, toAPIUser(u))
 }
 
-// DeleteAppUser permanently deletes an app user. Only admins may call this endpoint.
-func (a *API) DeleteAppUser(w http.ResponseWriter, r *http.Request, id int) {
+// DeleteAppUser deletes an app user. Only admins may call this endpoint.
+func (a *API) DeleteAppUser(w http.ResponseWriter, r *http.Request, id string) {
 	if !requireAdmin(w, r) {
 		return
 	}
-	if !a.requireDB(w) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
-
-	res, err := a.db.Exec(`DELETE FROM "User" WHERE "id" = ?`, id)
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to delete user"})
+	if err := st.DeleteUser(r.Context(), id); err != nil {
+		writeStoreError(w, err, "user not found", "failed to delete user")
 		return
 	}
-	if n, _ := res.RowsAffected(); n == 0 {
-		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "user not found"})
-		return
-	}
-
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -210,7 +156,8 @@ func (a *API) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "unauthorized"})
 		return
 	}
-	if !a.requireDB(w) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
 
@@ -258,8 +205,7 @@ func (a *API) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// DB user: verify current password unless caller is admin.
-	var storedHash string
-	err := a.db.QueryRow(`SELECT "password" FROM "User" WHERE "email" = ?`, email).Scan(&storedHash)
+	user, err := st.GetUserByEmail(r.Context(), email)
 	if err != nil {
 		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "user not found"})
 		return
@@ -270,7 +216,7 @@ func (a *API) ChangePassword(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "currentPassword is required"})
 			return
 		}
-		if bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(*req.CurrentPassword)) != nil {
+		if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(*req.CurrentPassword)) != nil {
 			writeJSON(w, http.StatusForbidden, openapi.ErrorResponse{Error: "current password is incorrect"})
 			return
 		}
@@ -282,54 +228,16 @@ func (a *API) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := a.db.Exec(
-		`UPDATE "User" SET "password" = ?, "updatedAt" = CURRENT_TIMESTAMP WHERE "email" = ?`,
-		string(hash), email,
-	); err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to update password"})
+	if err := st.SetUserPassword(r.Context(), email, string(hash)); err != nil {
+		writeStoreError(w, err, "user not found", "failed to update password")
 		return
 	}
 
 	writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
 }
 
-// loadUserByID fetches a single AppUser from the database by its primary key.
-func (a *API) loadUserByID(w http.ResponseWriter, id int) (openapi.AppUser, bool) {
-	var u openapi.AppUser
-	var email string
-	var createdAt string
-	err := a.db.QueryRow(
-		`SELECT "id", "email", "appRole", "createdAt" FROM "User" WHERE "id" = ?`, id,
-	).Scan(&u.Id, &email, &u.AppRole, &createdAt)
-	if err != nil {
-		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "user not found"})
-		return openapi.AppUser{}, false
+func toAPIUser(u store.User) openapi.AppUser {
+	return openapi.AppUser{
+		Id: u.ID, Email: openapi_types.Email(u.Email), AppRole: openapi.AppRole(u.AppRole), CreatedAt: u.CreatedAt,
 	}
-	u.Email = openapi_types.Email(email)
-	u.CreatedAt = parseTimestamp(createdAt)
-	return u, true
-}
-
-// parseTimestamp tries multiple time formats used by SQLite and MySQL.
-func parseTimestamp(s string) time.Time {
-	formats := []string{
-		time.RFC3339,
-		"2006-01-02 15:04:05",
-		"2006-01-02T15:04:05Z",
-	}
-	for _, f := range formats {
-		if t, err := time.Parse(f, s); err == nil {
-			return t
-		}
-	}
-	return time.Time{}
-}
-
-// isUniqueConstraintError returns true for SQLite/MySQL unique constraint violations.
-func isUniqueConstraintError(err error) bool {
-	if err == nil {
-		return false
-	}
-	msg := err.Error()
-	return strings.Contains(msg, "UNIQUE constraint failed") || strings.Contains(msg, "Duplicate entry")
 }

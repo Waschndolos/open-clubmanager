@@ -25,7 +25,6 @@
         "esbenp.prettier-vscode",
         "golang.go",
         "rust-lang.rust-analyzer",
-        "Prisma.prisma",
         "tauri-apps.tauri-vscode",
         "ms-vscode.vscode-typescript-next"
       ],

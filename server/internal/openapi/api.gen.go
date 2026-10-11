@@ -69,15 +69,12 @@ func (e AuditLogAction) Valid() bool {
 
 // Defines values for DatabaseMode.
 const (
-	MysqlShared DatabaseMode = "mysql-shared"
 	SqliteLocal DatabaseMode = "sqlite-local"
 )
 
 // Valid indicates whether the value is a known member of the DatabaseMode enum.
 func (e DatabaseMode) Valid() bool {
 	switch e {
-	case MysqlShared:
-		return true
 	case SqliteLocal:
 		return true
 	default:
@@ -155,7 +152,7 @@ type AppUser struct {
 	AppRole   AppRole             `json:"appRole"`
 	CreatedAt time.Time           `json:"createdAt"`
 	Email     openapi_types.Email `json:"email"`
-	Id        int                 `json:"id"`
+	Id        string              `json:"id"`
 }
 
 // AuditLog defines model for AuditLog.
@@ -164,8 +161,8 @@ type AuditLog struct {
 	CreatedAt time.Time      `json:"createdAt"`
 	Data      *string        `json:"data,omitempty"`
 	Entity    string         `json:"entity"`
-	EntityId  int            `json:"entityId"`
-	Id        int            `json:"id"`
+	EntityId  string         `json:"entityId"`
+	Id        string         `json:"id"`
 	UserId    string         `json:"userId"`
 }
 
@@ -174,7 +171,7 @@ type AuditLogAction string
 
 // BulkMemberAssignRequest defines model for BulkMemberAssignRequest.
 type BulkMemberAssignRequest struct {
-	MemberIds []int `json:"memberIds"`
+	MemberIds []string `json:"memberIds"`
 }
 
 // Camt053ImportRequest defines model for Camt053ImportRequest.
@@ -262,7 +259,7 @@ type FinanceTransaction struct {
 	CreatedAt   time.Time              `json:"createdAt"`
 	Date        time.Time              `json:"date"`
 	Description string                 `json:"description"`
-	Id          int                    `json:"id"`
+	Id          string                 `json:"id"`
 	Notes       *string                `json:"notes,omitempty"`
 	Type        FinanceTransactionType `json:"type"`
 	UpdatedAt   time.Time              `json:"updatedAt"`
@@ -313,7 +310,7 @@ type InventoryItem struct {
 	Category      string     `json:"category"`
 	CreatedAt     time.Time  `json:"createdAt"`
 	Description   *string    `json:"description,omitempty"`
-	Id            int        `json:"id"`
+	Id            string     `json:"id"`
 	Location      string     `json:"location"`
 	Name          string     `json:"name"`
 	PurchaseDate  *time.Time `json:"purchaseDate,omitempty"`
@@ -351,10 +348,10 @@ type InventoryItemUpdateRequest struct {
 type InventoryLoan struct {
 	CreatedAt  time.Time  `json:"createdAt"`
 	DueDate    *time.Time `json:"dueDate,omitempty"`
-	Id         int        `json:"id"`
-	ItemId     int        `json:"itemId"`
+	Id         string     `json:"id"`
+	ItemId     string     `json:"itemId"`
 	LoanedAt   time.Time  `json:"loanedAt"`
-	MemberId   int        `json:"memberId"`
+	MemberId   string     `json:"memberId"`
 	Notes      string     `json:"notes"`
 	ReturnedAt *time.Time `json:"returnedAt,omitempty"`
 }
@@ -362,18 +359,18 @@ type InventoryLoan struct {
 // InventoryLoanCreateRequest defines model for InventoryLoanCreateRequest.
 type InventoryLoanCreateRequest struct {
 	DueDate  *time.Time `json:"dueDate,omitempty"`
-	ItemId   int        `json:"itemId"`
+	ItemId   string     `json:"itemId"`
 	LoanedAt time.Time  `json:"loanedAt"`
-	MemberId int        `json:"memberId"`
+	MemberId string     `json:"memberId"`
 	Notes    string     `json:"notes"`
 }
 
 // InventoryLoanUpdateRequest defines model for InventoryLoanUpdateRequest.
 type InventoryLoanUpdateRequest struct {
 	DueDate    *time.Time `json:"dueDate,omitempty"`
-	ItemId     *int       `json:"itemId,omitempty"`
+	ItemId     *string    `json:"itemId,omitempty"`
 	LoanedAt   *time.Time `json:"loanedAt,omitempty"`
-	MemberId   *int       `json:"memberId,omitempty"`
+	MemberId   *string    `json:"memberId,omitempty"`
 	Notes      *string    `json:"notes,omitempty"`
 	ReturnedAt *time.Time `json:"returnedAt,omitempty"`
 }
@@ -398,7 +395,7 @@ type Member struct {
 	FirstName       string              `json:"firstName"`
 	Groups          []NamedEntity       `json:"groups"`
 	Iban            *string             `json:"iban,omitempty"`
-	Id              int                 `json:"id"`
+	Id              string              `json:"id"`
 	LastName        string              `json:"lastName"`
 	Number          int                 `json:"number"`
 	Phone           *string             `json:"phone,omitempty"`
@@ -424,7 +421,7 @@ type MemberCreateRequest struct {
 	EntryDate       *time.Time              `json:"entryDate,omitempty"`
 	ExitDate        *time.Time              `json:"exitDate,omitempty"`
 	FirstName       string                  `json:"firstName"`
-	GroupIds        *[]int                  `json:"groupIds,omitempty"`
+	GroupIds        *[]string               `json:"groupIds,omitempty"`
 	Groups          *[]NamedEntityReference `json:"groups,omitempty"`
 	Iban            *string                 `json:"iban,omitempty"`
 	LastName        string                  `json:"lastName"`
@@ -432,9 +429,9 @@ type MemberCreateRequest struct {
 	Phone           *string                 `json:"phone,omitempty"`
 	PhoneMobile     *string                 `json:"phoneMobile,omitempty"`
 	PostalCode      *string                 `json:"postalCode,omitempty"`
-	RoleIds         *[]int                  `json:"roleIds,omitempty"`
+	RoleIds         *[]string               `json:"roleIds,omitempty"`
 	Roles           *[]NamedEntityReference `json:"roles,omitempty"`
-	SectionIds      *[]int                  `json:"sectionIds,omitempty"`
+	SectionIds      *[]string               `json:"sectionIds,omitempty"`
 	Sections        *[]NamedEntityReference `json:"sections,omitempty"`
 	SepaMandateDate *time.Time              `json:"sepaMandateDate,omitempty"`
 	State           *string                 `json:"state,omitempty"`
@@ -447,9 +444,9 @@ type MemberFee struct {
 	CreatedAt   time.Time     `json:"createdAt"`
 	Description *string       `json:"description,omitempty"`
 	DueDate     time.Time     `json:"dueDate"`
-	Id          int           `json:"id"`
+	Id          string        `json:"id"`
 	Member      MemberSummary `json:"member"`
-	MemberId    int           `json:"memberId"`
+	MemberId    string        `json:"memberId"`
 	PaidDate    *time.Time    `json:"paidDate,omitempty"`
 	UpdatedAt   time.Time     `json:"updatedAt"`
 	Year        int           `json:"year"`
@@ -460,7 +457,7 @@ type MemberFeeCreateRequest struct {
 	Amount      float32    `json:"amount"`
 	Description *string    `json:"description,omitempty"`
 	DueDate     time.Time  `json:"dueDate"`
-	MemberId    int        `json:"memberId"`
+	MemberId    string     `json:"memberId"`
 	PaidDate    *time.Time `json:"paidDate,omitempty"`
 	Year        int        `json:"year"`
 }
@@ -470,7 +467,7 @@ type MemberFeeUpdateRequest struct {
 	Amount      *float32   `json:"amount,omitempty"`
 	Description *string    `json:"description,omitempty"`
 	DueDate     *time.Time `json:"dueDate,omitempty"`
-	MemberId    *int       `json:"memberId,omitempty"`
+	MemberId    *string    `json:"memberId,omitempty"`
 	PaidDate    *time.Time `json:"paidDate,omitempty"`
 	Year        *int       `json:"year,omitempty"`
 }
@@ -478,7 +475,7 @@ type MemberFeeUpdateRequest struct {
 // MemberSummary defines model for MemberSummary.
 type MemberSummary struct {
 	FirstName string `json:"firstName"`
-	Id        int    `json:"id"`
+	Id        string `json:"id"`
 	LastName  string `json:"lastName"`
 	Number    int    `json:"number"`
 }
@@ -496,7 +493,7 @@ type MemberUpdateRequest struct {
 	ExitDate             *time.Time              `json:"exitDate,omitempty"`
 	ExpectedVersionToken string                  `json:"expectedVersionToken"`
 	FirstName            string                  `json:"firstName"`
-	GroupIds             *[]int                  `json:"groupIds,omitempty"`
+	GroupIds             *[]string               `json:"groupIds,omitempty"`
 	Groups               *[]NamedEntityReference `json:"groups,omitempty"`
 	Iban                 *string                 `json:"iban,omitempty"`
 	LastName             string                  `json:"lastName"`
@@ -504,9 +501,9 @@ type MemberUpdateRequest struct {
 	Phone                *string                 `json:"phone,omitempty"`
 	PhoneMobile          *string                 `json:"phoneMobile,omitempty"`
 	PostalCode           *string                 `json:"postalCode,omitempty"`
-	RoleIds              *[]int                  `json:"roleIds,omitempty"`
+	RoleIds              *[]string               `json:"roleIds,omitempty"`
 	Roles                *[]NamedEntityReference `json:"roles,omitempty"`
-	SectionIds           *[]int                  `json:"sectionIds,omitempty"`
+	SectionIds           *[]string               `json:"sectionIds,omitempty"`
 	Sections             *[]NamedEntityReference `json:"sections,omitempty"`
 	SepaMandateDate      *time.Time              `json:"sepaMandateDate,omitempty"`
 	State                *string                 `json:"state,omitempty"`
@@ -536,7 +533,7 @@ type MetaResponse struct {
 
 // NamedEntity defines model for NamedEntity.
 type NamedEntity struct {
-	Id                   int                    `json:"id"`
+	Id                   string                 `json:"id"`
 	Name                 string                 `json:"name"`
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
@@ -548,7 +545,7 @@ type NamedEntityCreateRequest struct {
 
 // NamedEntityReference defines model for NamedEntityReference.
 type NamedEntityReference struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 // NamedEntityUpdateRequest defines model for NamedEntityUpdateRequest.
@@ -625,10 +622,10 @@ type UpsertUserPreferenceRequest struct {
 
 // UserPreferenceRecord defines model for UserPreferenceRecord.
 type UserPreferenceRecord struct {
-	Id        int       `json:"id"`
+	Id        string    `json:"id"`
 	Key       string    `json:"key"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	UserId    int       `json:"userId"`
+	UserId    string    `json:"userId"`
 	Value     string    `json:"value"`
 }
 
@@ -987,7 +984,7 @@ type ServerInterface interface {
 	CreateMemberFee(w http.ResponseWriter, r *http.Request)
 	// Update a member fee
 	// (PUT /finance/memberfees/{id})
-	UpdateMemberFee(w http.ResponseWriter, r *http.Request, id int)
+	UpdateMemberFee(w http.ResponseWriter, r *http.Request, id string)
 	// Delete a member fee
 	// (DELETE /finance/reset)
 	DeleteMemberFee(w http.ResponseWriter, r *http.Request)
@@ -1005,10 +1002,10 @@ type ServerInterface interface {
 	ImportFinanceTransactionsCamt053(w http.ResponseWriter, r *http.Request)
 	// Delete a finance transaction
 	// (DELETE /finance/transactions/{id})
-	DeleteFinanceTransaction(w http.ResponseWriter, r *http.Request, id int)
+	DeleteFinanceTransaction(w http.ResponseWriter, r *http.Request, id string)
 	// Update a finance transaction
 	// (PUT /finance/transactions/{id})
-	UpdateFinanceTransaction(w http.ResponseWriter, r *http.Request, id int)
+	UpdateFinanceTransaction(w http.ResponseWriter, r *http.Request, id string)
 	// List groups
 	// (GET /groups)
 	ListGroups(w http.ResponseWriter, r *http.Request)
@@ -1017,16 +1014,16 @@ type ServerInterface interface {
 	CreateGroup(w http.ResponseWriter, r *http.Request)
 	// Delete a group
 	// (DELETE /groups/{id})
-	DeleteGroup(w http.ResponseWriter, r *http.Request, id int)
+	DeleteGroup(w http.ResponseWriter, r *http.Request, id string)
 	// Update a group
 	// (PUT /groups/{id})
-	UpdateGroup(w http.ResponseWriter, r *http.Request, id int)
+	UpdateGroup(w http.ResponseWriter, r *http.Request, id string)
 	// Get members of a group
 	// (GET /groups/{id}/members)
-	GetGroupMembers(w http.ResponseWriter, r *http.Request, id int)
+	GetGroupMembers(w http.ResponseWriter, r *http.Request, id string)
 	// Bulk assign members to a group
 	// (PUT /groups/{id}/members)
-	BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id int)
+	BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id string)
 	// List recent audit log entries
 	// (GET /history)
 	ListHistory(w http.ResponseWriter, r *http.Request)
@@ -1038,13 +1035,13 @@ type ServerInterface interface {
 	CreateInventoryItem(w http.ResponseWriter, r *http.Request)
 	// Delete an inventory item
 	// (DELETE /inventory/items/{id})
-	DeleteInventoryItem(w http.ResponseWriter, r *http.Request, id int)
+	DeleteInventoryItem(w http.ResponseWriter, r *http.Request, id string)
 	// Get an inventory item
 	// (GET /inventory/items/{id})
-	GetInventoryItem(w http.ResponseWriter, r *http.Request, id int)
+	GetInventoryItem(w http.ResponseWriter, r *http.Request, id string)
 	// Update an inventory item
 	// (PUT /inventory/items/{id})
-	UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id int)
+	UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id string)
 	// List inventory loans
 	// (GET /inventory/loans)
 	ListInventoryLoans(w http.ResponseWriter, r *http.Request)
@@ -1053,13 +1050,13 @@ type ServerInterface interface {
 	CreateInventoryLoan(w http.ResponseWriter, r *http.Request)
 	// Delete an inventory loan
 	// (DELETE /inventory/loans/{id})
-	DeleteInventoryLoan(w http.ResponseWriter, r *http.Request, id int)
+	DeleteInventoryLoan(w http.ResponseWriter, r *http.Request, id string)
 	// Get an inventory loan
 	// (GET /inventory/loans/{id})
-	GetInventoryLoan(w http.ResponseWriter, r *http.Request, id int)
+	GetInventoryLoan(w http.ResponseWriter, r *http.Request, id string)
 	// Update an inventory loan
 	// (PUT /inventory/loans/{id})
-	UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id int)
+	UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id string)
 	// List members
 	// (GET /members)
 	ListMembers(w http.ResponseWriter, r *http.Request, params ListMembersParams)
@@ -1068,13 +1065,13 @@ type ServerInterface interface {
 	CreateMember(w http.ResponseWriter, r *http.Request)
 	// Delete a member
 	// (DELETE /members/{id})
-	DeleteMember(w http.ResponseWriter, r *http.Request, id int)
+	DeleteMember(w http.ResponseWriter, r *http.Request, id string)
 	// Get a member by id
 	// (GET /members/{id})
-	GetMemberById(w http.ResponseWriter, r *http.Request, id int)
+	GetMemberById(w http.ResponseWriter, r *http.Request, id string)
 	// Update a member
 	// (PUT /members/{id})
-	UpdateMember(w http.ResponseWriter, r *http.Request, id int)
+	UpdateMember(w http.ResponseWriter, r *http.Request, id string)
 	// List stored user preferences
 	// (GET /preferences)
 	ListPreferences(w http.ResponseWriter, r *http.Request)
@@ -1104,16 +1101,16 @@ type ServerInterface interface {
 	CreateRole(w http.ResponseWriter, r *http.Request)
 	// Delete a role
 	// (DELETE /roles/{id})
-	DeleteRole(w http.ResponseWriter, r *http.Request, id int)
+	DeleteRole(w http.ResponseWriter, r *http.Request, id string)
 	// Update a role
 	// (PUT /roles/{id})
-	UpdateRole(w http.ResponseWriter, r *http.Request, id int)
+	UpdateRole(w http.ResponseWriter, r *http.Request, id string)
 	// Get members of a role
 	// (GET /roles/{id}/members)
-	GetRoleMembers(w http.ResponseWriter, r *http.Request, id int)
+	GetRoleMembers(w http.ResponseWriter, r *http.Request, id string)
 	// Bulk assign members to a role
 	// (PUT /roles/{id}/members)
-	BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id int)
+	BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id string)
 	// List sections
 	// (GET /sections)
 	ListSections(w http.ResponseWriter, r *http.Request)
@@ -1122,16 +1119,16 @@ type ServerInterface interface {
 	CreateSection(w http.ResponseWriter, r *http.Request)
 	// Delete a section
 	// (DELETE /sections/{id})
-	DeleteSection(w http.ResponseWriter, r *http.Request, id int)
+	DeleteSection(w http.ResponseWriter, r *http.Request, id string)
 	// Update a section
 	// (PUT /sections/{id})
-	UpdateSection(w http.ResponseWriter, r *http.Request, id int)
+	UpdateSection(w http.ResponseWriter, r *http.Request, id string)
 	// Get members of a section
 	// (GET /sections/{id}/members)
-	GetSectionMembers(w http.ResponseWriter, r *http.Request, id int)
+	GetSectionMembers(w http.ResponseWriter, r *http.Request, id string)
 	// Bulk assign members to a section
 	// (PUT /sections/{id}/members)
-	BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id int)
+	BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id string)
 	// Get database mode and connection URL
 	// (GET /settings/database)
 	GetDatabaseSettings(w http.ResponseWriter, r *http.Request)
@@ -1170,10 +1167,10 @@ type ServerInterface interface {
 	CreateAppUser(w http.ResponseWriter, r *http.Request)
 	// Delete an app user
 	// (DELETE /users/{id})
-	DeleteAppUser(w http.ResponseWriter, r *http.Request, id int)
+	DeleteAppUser(w http.ResponseWriter, r *http.Request, id string)
 	// Update an app user
 	// (PUT /users/{id})
-	UpdateAppUser(w http.ResponseWriter, r *http.Request, id int)
+	UpdateAppUser(w http.ResponseWriter, r *http.Request, id string)
 	// Validate a SQLite database path
 	// (POST /validation/check-db-path)
 	ValidateDbPath(w http.ResponseWriter, r *http.Request)
@@ -1242,7 +1239,7 @@ func (_ Unimplemented) CreateMemberFee(w http.ResponseWriter, r *http.Request) {
 
 // Update a member fee
 // (PUT /finance/memberfees/{id})
-func (_ Unimplemented) UpdateMemberFee(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) UpdateMemberFee(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1278,13 +1275,13 @@ func (_ Unimplemented) ImportFinanceTransactionsCamt053(w http.ResponseWriter, r
 
 // Delete a finance transaction
 // (DELETE /finance/transactions/{id})
-func (_ Unimplemented) DeleteFinanceTransaction(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) DeleteFinanceTransaction(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Update a finance transaction
 // (PUT /finance/transactions/{id})
-func (_ Unimplemented) UpdateFinanceTransaction(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) UpdateFinanceTransaction(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1302,25 +1299,25 @@ func (_ Unimplemented) CreateGroup(w http.ResponseWriter, r *http.Request) {
 
 // Delete a group
 // (DELETE /groups/{id})
-func (_ Unimplemented) DeleteGroup(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) DeleteGroup(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Update a group
 // (PUT /groups/{id})
-func (_ Unimplemented) UpdateGroup(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) UpdateGroup(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get members of a group
 // (GET /groups/{id}/members)
-func (_ Unimplemented) GetGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) GetGroupMembers(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Bulk assign members to a group
 // (PUT /groups/{id}/members)
-func (_ Unimplemented) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1344,19 +1341,19 @@ func (_ Unimplemented) CreateInventoryItem(w http.ResponseWriter, r *http.Reques
 
 // Delete an inventory item
 // (DELETE /inventory/items/{id})
-func (_ Unimplemented) DeleteInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) DeleteInventoryItem(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get an inventory item
 // (GET /inventory/items/{id})
-func (_ Unimplemented) GetInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) GetInventoryItem(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Update an inventory item
 // (PUT /inventory/items/{id})
-func (_ Unimplemented) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1374,19 +1371,19 @@ func (_ Unimplemented) CreateInventoryLoan(w http.ResponseWriter, r *http.Reques
 
 // Delete an inventory loan
 // (DELETE /inventory/loans/{id})
-func (_ Unimplemented) DeleteInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) DeleteInventoryLoan(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get an inventory loan
 // (GET /inventory/loans/{id})
-func (_ Unimplemented) GetInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) GetInventoryLoan(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Update an inventory loan
 // (PUT /inventory/loans/{id})
-func (_ Unimplemented) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1404,19 +1401,19 @@ func (_ Unimplemented) CreateMember(w http.ResponseWriter, r *http.Request) {
 
 // Delete a member
 // (DELETE /members/{id})
-func (_ Unimplemented) DeleteMember(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) DeleteMember(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get a member by id
 // (GET /members/{id})
-func (_ Unimplemented) GetMemberById(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) GetMemberById(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Update a member
 // (PUT /members/{id})
-func (_ Unimplemented) UpdateMember(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) UpdateMember(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1476,25 +1473,25 @@ func (_ Unimplemented) CreateRole(w http.ResponseWriter, r *http.Request) {
 
 // Delete a role
 // (DELETE /roles/{id})
-func (_ Unimplemented) DeleteRole(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) DeleteRole(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Update a role
 // (PUT /roles/{id})
-func (_ Unimplemented) UpdateRole(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) UpdateRole(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get members of a role
 // (GET /roles/{id}/members)
-func (_ Unimplemented) GetRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) GetRoleMembers(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Bulk assign members to a role
 // (PUT /roles/{id}/members)
-func (_ Unimplemented) BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1512,25 +1509,25 @@ func (_ Unimplemented) CreateSection(w http.ResponseWriter, r *http.Request) {
 
 // Delete a section
 // (DELETE /sections/{id})
-func (_ Unimplemented) DeleteSection(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) DeleteSection(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Update a section
 // (PUT /sections/{id})
-func (_ Unimplemented) UpdateSection(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) UpdateSection(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get members of a section
 // (GET /sections/{id}/members)
-func (_ Unimplemented) GetSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) GetSectionMembers(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Bulk assign members to a section
 // (PUT /sections/{id}/members)
-func (_ Unimplemented) BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1608,13 +1605,13 @@ func (_ Unimplemented) CreateAppUser(w http.ResponseWriter, r *http.Request) {
 
 // Delete an app user
 // (DELETE /users/{id})
-func (_ Unimplemented) DeleteAppUser(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) DeleteAppUser(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Update an app user
 // (PUT /users/{id})
-func (_ Unimplemented) UpdateAppUser(w http.ResponseWriter, r *http.Request, id int) {
+func (_ Unimplemented) UpdateAppUser(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1808,9 +1805,9 @@ func (siw *ServerInterfaceWrapper) UpdateMemberFee(w http.ResponseWriter, r *htt
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -1940,9 +1937,9 @@ func (siw *ServerInterfaceWrapper) DeleteFinanceTransaction(w http.ResponseWrite
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -1972,9 +1969,9 @@ func (siw *ServerInterfaceWrapper) UpdateFinanceTransaction(w http.ResponseWrite
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2038,9 +2035,9 @@ func (siw *ServerInterfaceWrapper) DeleteGroup(w http.ResponseWriter, r *http.Re
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2070,9 +2067,9 @@ func (siw *ServerInterfaceWrapper) UpdateGroup(w http.ResponseWriter, r *http.Re
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2102,9 +2099,9 @@ func (siw *ServerInterfaceWrapper) GetGroupMembers(w http.ResponseWriter, r *htt
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2128,9 +2125,9 @@ func (siw *ServerInterfaceWrapper) BulkAssignGroupMembers(w http.ResponseWriter,
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2220,9 +2217,9 @@ func (siw *ServerInterfaceWrapper) DeleteInventoryItem(w http.ResponseWriter, r 
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2252,9 +2249,9 @@ func (siw *ServerInterfaceWrapper) GetInventoryItem(w http.ResponseWriter, r *ht
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2284,9 +2281,9 @@ func (siw *ServerInterfaceWrapper) UpdateInventoryItem(w http.ResponseWriter, r 
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2356,9 +2353,9 @@ func (siw *ServerInterfaceWrapper) DeleteInventoryLoan(w http.ResponseWriter, r 
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2388,9 +2385,9 @@ func (siw *ServerInterfaceWrapper) GetInventoryLoan(w http.ResponseWriter, r *ht
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2420,9 +2417,9 @@ func (siw *ServerInterfaceWrapper) UpdateInventoryLoan(w http.ResponseWriter, r 
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2531,9 +2528,9 @@ func (siw *ServerInterfaceWrapper) DeleteMember(w http.ResponseWriter, r *http.R
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2563,9 +2560,9 @@ func (siw *ServerInterfaceWrapper) GetMemberById(w http.ResponseWriter, r *http.
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2589,9 +2586,9 @@ func (siw *ServerInterfaceWrapper) UpdateMember(w http.ResponseWriter, r *http.R
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2801,9 +2798,9 @@ func (siw *ServerInterfaceWrapper) DeleteRole(w http.ResponseWriter, r *http.Req
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2833,9 +2830,9 @@ func (siw *ServerInterfaceWrapper) UpdateRole(w http.ResponseWriter, r *http.Req
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2865,9 +2862,9 @@ func (siw *ServerInterfaceWrapper) GetRoleMembers(w http.ResponseWriter, r *http
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2891,9 +2888,9 @@ func (siw *ServerInterfaceWrapper) BulkAssignRoleMembers(w http.ResponseWriter, 
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2957,9 +2954,9 @@ func (siw *ServerInterfaceWrapper) DeleteSection(w http.ResponseWriter, r *http.
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -2989,9 +2986,9 @@ func (siw *ServerInterfaceWrapper) UpdateSection(w http.ResponseWriter, r *http.
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -3021,9 +3018,9 @@ func (siw *ServerInterfaceWrapper) GetSectionMembers(w http.ResponseWriter, r *h
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -3047,9 +3044,9 @@ func (siw *ServerInterfaceWrapper) BulkAssignSectionMembers(w http.ResponseWrite
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -3259,9 +3256,9 @@ func (siw *ServerInterfaceWrapper) DeleteAppUser(w http.ResponseWriter, r *http.
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -3291,9 +3288,9 @@ func (siw *ServerInterfaceWrapper) UpdateAppUser(w http.ResponseWriter, r *http.
 	_ = err
 
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: ""})
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
@@ -4162,7 +4159,7 @@ func (response CreateMemberFee403JSONResponse) VisitCreateMemberFeeResponse(w ht
 }
 
 type UpdateMemberFeeRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *UpdateMemberFeeJSONRequestBody
 }
 
@@ -4524,7 +4521,7 @@ func (response ImportFinanceTransactionsCamt053403JSONResponse) VisitImportFinan
 }
 
 type DeleteFinanceTransactionRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type DeleteFinanceTransactionResponseObject interface {
@@ -4581,7 +4578,7 @@ func (response DeleteFinanceTransaction404JSONResponse) VisitDeleteFinanceTransa
 }
 
 type UpdateFinanceTransactionRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *UpdateFinanceTransactionJSONRequestBody
 }
 
@@ -4689,7 +4686,7 @@ func (response CreateGroup201JSONResponse) VisitCreateGroupResponse(w http.Respo
 }
 
 type DeleteGroupRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type DeleteGroupResponseObject interface {
@@ -4704,7 +4701,7 @@ func (response DeleteGroup204Response) VisitDeleteGroupResponse(w http.ResponseW
 }
 
 type UpdateGroupRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *UpdateGroupJSONRequestBody
 }
 
@@ -4727,7 +4724,7 @@ func (response UpdateGroup200JSONResponse) VisitUpdateGroupResponse(w http.Respo
 }
 
 type GetGroupMembersRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type GetGroupMembersResponseObject interface {
@@ -4763,7 +4760,7 @@ func (response GetGroupMembers404JSONResponse) VisitGetGroupMembersResponse(w ht
 }
 
 type BulkAssignGroupMembersRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *BulkAssignGroupMembersJSONRequestBody
 }
 
@@ -4990,7 +4987,7 @@ func (response CreateInventoryItem403JSONResponse) VisitCreateInventoryItemRespo
 }
 
 type DeleteInventoryItemRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type DeleteInventoryItemResponseObject interface {
@@ -5054,7 +5051,7 @@ func (response DeleteInventoryItem404JSONResponse) VisitDeleteInventoryItemRespo
 }
 
 type GetInventoryItemRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type GetInventoryItemResponseObject interface {
@@ -5118,7 +5115,7 @@ func (response GetInventoryItem404JSONResponse) VisitGetInventoryItemResponse(w 
 }
 
 type UpdateInventoryItemRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *UpdateInventoryItemJSONRequestBody
 }
 
@@ -5296,7 +5293,7 @@ func (response CreateInventoryLoan403JSONResponse) VisitCreateInventoryLoanRespo
 }
 
 type DeleteInventoryLoanRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type DeleteInventoryLoanResponseObject interface {
@@ -5360,7 +5357,7 @@ func (response DeleteInventoryLoan404JSONResponse) VisitDeleteInventoryLoanRespo
 }
 
 type GetInventoryLoanRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type GetInventoryLoanResponseObject interface {
@@ -5424,7 +5421,7 @@ func (response GetInventoryLoan404JSONResponse) VisitGetInventoryLoanResponse(w 
 }
 
 type UpdateInventoryLoanRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *UpdateInventoryLoanJSONRequestBody
 }
 
@@ -5617,7 +5614,7 @@ func (response CreateMember500JSONResponse) VisitCreateMemberResponse(w http.Res
 }
 
 type DeleteMemberRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type DeleteMemberResponseObject interface {
@@ -5688,7 +5685,7 @@ func (response DeleteMember500JSONResponse) VisitDeleteMemberResponse(w http.Res
 }
 
 type GetMemberByIdRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type GetMemberByIdResponseObject interface {
@@ -5748,7 +5745,7 @@ func (response GetMemberById500JSONResponse) VisitGetMemberByIdResponse(w http.R
 }
 
 type UpdateMemberRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *UpdateMemberJSONRequestBody
 }
 
@@ -6118,7 +6115,7 @@ func (response CreateRole201JSONResponse) VisitCreateRoleResponse(w http.Respons
 }
 
 type DeleteRoleRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type DeleteRoleResponseObject interface {
@@ -6133,7 +6130,7 @@ func (response DeleteRole204Response) VisitDeleteRoleResponse(w http.ResponseWri
 }
 
 type UpdateRoleRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *UpdateRoleJSONRequestBody
 }
 
@@ -6156,7 +6153,7 @@ func (response UpdateRole200JSONResponse) VisitUpdateRoleResponse(w http.Respons
 }
 
 type GetRoleMembersRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type GetRoleMembersResponseObject interface {
@@ -6206,7 +6203,7 @@ func (response GetRoleMembers500JSONResponse) VisitGetRoleMembersResponse(w http
 }
 
 type BulkAssignRoleMembersRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *BulkAssignRoleMembersJSONRequestBody
 }
 
@@ -6314,7 +6311,7 @@ func (response CreateSection201JSONResponse) VisitCreateSectionResponse(w http.R
 }
 
 type DeleteSectionRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type DeleteSectionResponseObject interface {
@@ -6329,7 +6326,7 @@ func (response DeleteSection204Response) VisitDeleteSectionResponse(w http.Respo
 }
 
 type UpdateSectionRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *UpdateSectionJSONRequestBody
 }
 
@@ -6352,7 +6349,7 @@ func (response UpdateSection200JSONResponse) VisitUpdateSectionResponse(w http.R
 }
 
 type GetSectionMembersRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type GetSectionMembersResponseObject interface {
@@ -6388,7 +6385,7 @@ func (response GetSectionMembers404JSONResponse) VisitGetSectionMembersResponse(
 }
 
 type BulkAssignSectionMembersRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *BulkAssignSectionMembersJSONRequestBody
 }
 
@@ -6976,7 +6973,7 @@ func (response CreateAppUser500JSONResponse) VisitCreateAppUserResponse(w http.R
 }
 
 type DeleteAppUserRequestObject struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 type DeleteAppUserResponseObject interface {
@@ -7047,7 +7044,7 @@ func (response DeleteAppUser500JSONResponse) VisitDeleteAppUserResponse(w http.R
 }
 
 type UpdateAppUserRequestObject struct {
-	Id   int `json:"id"`
+	Id   string `json:"id"`
 	Body *UpdateAppUserJSONRequestBody
 }
 
@@ -7718,7 +7715,7 @@ func (sh *strictHandler) CreateMemberFee(w http.ResponseWriter, r *http.Request)
 }
 
 // UpdateMemberFee operation middleware
-func (sh *strictHandler) UpdateMemberFee(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) UpdateMemberFee(w http.ResponseWriter, r *http.Request, id string) {
 	var request UpdateMemberFeeRequestObject
 
 	request.Id = id
@@ -7892,7 +7889,7 @@ func (sh *strictHandler) ImportFinanceTransactionsCamt053(w http.ResponseWriter,
 }
 
 // DeleteFinanceTransaction operation middleware
-func (sh *strictHandler) DeleteFinanceTransaction(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) DeleteFinanceTransaction(w http.ResponseWriter, r *http.Request, id string) {
 	var request DeleteFinanceTransactionRequestObject
 
 	request.Id = id
@@ -7918,7 +7915,7 @@ func (sh *strictHandler) DeleteFinanceTransaction(w http.ResponseWriter, r *http
 }
 
 // UpdateFinanceTransaction operation middleware
-func (sh *strictHandler) UpdateFinanceTransaction(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) UpdateFinanceTransaction(w http.ResponseWriter, r *http.Request, id string) {
 	var request UpdateFinanceTransactionRequestObject
 
 	request.Id = id
@@ -8006,7 +8003,7 @@ func (sh *strictHandler) CreateGroup(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteGroup operation middleware
-func (sh *strictHandler) DeleteGroup(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) DeleteGroup(w http.ResponseWriter, r *http.Request, id string) {
 	var request DeleteGroupRequestObject
 
 	request.Id = id
@@ -8032,7 +8029,7 @@ func (sh *strictHandler) DeleteGroup(w http.ResponseWriter, r *http.Request, id 
 }
 
 // UpdateGroup operation middleware
-func (sh *strictHandler) UpdateGroup(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) UpdateGroup(w http.ResponseWriter, r *http.Request, id string) {
 	var request UpdateGroupRequestObject
 
 	request.Id = id
@@ -8065,7 +8062,7 @@ func (sh *strictHandler) UpdateGroup(w http.ResponseWriter, r *http.Request, id 
 }
 
 // GetGroupMembers operation middleware
-func (sh *strictHandler) GetGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) GetGroupMembers(w http.ResponseWriter, r *http.Request, id string) {
 	var request GetGroupMembersRequestObject
 
 	request.Id = id
@@ -8091,7 +8088,7 @@ func (sh *strictHandler) GetGroupMembers(w http.ResponseWriter, r *http.Request,
 }
 
 // BulkAssignGroupMembers operation middleware
-func (sh *strictHandler) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id string) {
 	var request BulkAssignGroupMembersRequestObject
 
 	request.Id = id
@@ -8203,7 +8200,7 @@ func (sh *strictHandler) CreateInventoryItem(w http.ResponseWriter, r *http.Requ
 }
 
 // DeleteInventoryItem operation middleware
-func (sh *strictHandler) DeleteInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) DeleteInventoryItem(w http.ResponseWriter, r *http.Request, id string) {
 	var request DeleteInventoryItemRequestObject
 
 	request.Id = id
@@ -8229,7 +8226,7 @@ func (sh *strictHandler) DeleteInventoryItem(w http.ResponseWriter, r *http.Requ
 }
 
 // GetInventoryItem operation middleware
-func (sh *strictHandler) GetInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) GetInventoryItem(w http.ResponseWriter, r *http.Request, id string) {
 	var request GetInventoryItemRequestObject
 
 	request.Id = id
@@ -8255,7 +8252,7 @@ func (sh *strictHandler) GetInventoryItem(w http.ResponseWriter, r *http.Request
 }
 
 // UpdateInventoryItem operation middleware
-func (sh *strictHandler) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) UpdateInventoryItem(w http.ResponseWriter, r *http.Request, id string) {
 	var request UpdateInventoryItemRequestObject
 
 	request.Id = id
@@ -8343,7 +8340,7 @@ func (sh *strictHandler) CreateInventoryLoan(w http.ResponseWriter, r *http.Requ
 }
 
 // DeleteInventoryLoan operation middleware
-func (sh *strictHandler) DeleteInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) DeleteInventoryLoan(w http.ResponseWriter, r *http.Request, id string) {
 	var request DeleteInventoryLoanRequestObject
 
 	request.Id = id
@@ -8369,7 +8366,7 @@ func (sh *strictHandler) DeleteInventoryLoan(w http.ResponseWriter, r *http.Requ
 }
 
 // GetInventoryLoan operation middleware
-func (sh *strictHandler) GetInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) GetInventoryLoan(w http.ResponseWriter, r *http.Request, id string) {
 	var request GetInventoryLoanRequestObject
 
 	request.Id = id
@@ -8395,7 +8392,7 @@ func (sh *strictHandler) GetInventoryLoan(w http.ResponseWriter, r *http.Request
 }
 
 // UpdateInventoryLoan operation middleware
-func (sh *strictHandler) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id string) {
 	var request UpdateInventoryLoanRequestObject
 
 	request.Id = id
@@ -8485,7 +8482,7 @@ func (sh *strictHandler) CreateMember(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteMember operation middleware
-func (sh *strictHandler) DeleteMember(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) DeleteMember(w http.ResponseWriter, r *http.Request, id string) {
 	var request DeleteMemberRequestObject
 
 	request.Id = id
@@ -8511,7 +8508,7 @@ func (sh *strictHandler) DeleteMember(w http.ResponseWriter, r *http.Request, id
 }
 
 // GetMemberById operation middleware
-func (sh *strictHandler) GetMemberById(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) GetMemberById(w http.ResponseWriter, r *http.Request, id string) {
 	var request GetMemberByIdRequestObject
 
 	request.Id = id
@@ -8537,7 +8534,7 @@ func (sh *strictHandler) GetMemberById(w http.ResponseWriter, r *http.Request, i
 }
 
 // UpdateMember operation middleware
-func (sh *strictHandler) UpdateMember(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) UpdateMember(w http.ResponseWriter, r *http.Request, id string) {
 	var request UpdateMemberRequestObject
 
 	request.Id = id
@@ -8822,7 +8819,7 @@ func (sh *strictHandler) CreateRole(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteRole operation middleware
-func (sh *strictHandler) DeleteRole(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) DeleteRole(w http.ResponseWriter, r *http.Request, id string) {
 	var request DeleteRoleRequestObject
 
 	request.Id = id
@@ -8848,7 +8845,7 @@ func (sh *strictHandler) DeleteRole(w http.ResponseWriter, r *http.Request, id i
 }
 
 // UpdateRole operation middleware
-func (sh *strictHandler) UpdateRole(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) UpdateRole(w http.ResponseWriter, r *http.Request, id string) {
 	var request UpdateRoleRequestObject
 
 	request.Id = id
@@ -8881,7 +8878,7 @@ func (sh *strictHandler) UpdateRole(w http.ResponseWriter, r *http.Request, id i
 }
 
 // GetRoleMembers operation middleware
-func (sh *strictHandler) GetRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) GetRoleMembers(w http.ResponseWriter, r *http.Request, id string) {
 	var request GetRoleMembersRequestObject
 
 	request.Id = id
@@ -8907,7 +8904,7 @@ func (sh *strictHandler) GetRoleMembers(w http.ResponseWriter, r *http.Request, 
 }
 
 // BulkAssignRoleMembers operation middleware
-func (sh *strictHandler) BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id string) {
 	var request BulkAssignRoleMembersRequestObject
 
 	request.Id = id
@@ -8995,7 +8992,7 @@ func (sh *strictHandler) CreateSection(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteSection operation middleware
-func (sh *strictHandler) DeleteSection(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) DeleteSection(w http.ResponseWriter, r *http.Request, id string) {
 	var request DeleteSectionRequestObject
 
 	request.Id = id
@@ -9021,7 +9018,7 @@ func (sh *strictHandler) DeleteSection(w http.ResponseWriter, r *http.Request, i
 }
 
 // UpdateSection operation middleware
-func (sh *strictHandler) UpdateSection(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) UpdateSection(w http.ResponseWriter, r *http.Request, id string) {
 	var request UpdateSectionRequestObject
 
 	request.Id = id
@@ -9054,7 +9051,7 @@ func (sh *strictHandler) UpdateSection(w http.ResponseWriter, r *http.Request, i
 }
 
 // GetSectionMembers operation middleware
-func (sh *strictHandler) GetSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) GetSectionMembers(w http.ResponseWriter, r *http.Request, id string) {
 	var request GetSectionMembersRequestObject
 
 	request.Id = id
@@ -9080,7 +9077,7 @@ func (sh *strictHandler) GetSectionMembers(w http.ResponseWriter, r *http.Reques
 }
 
 // BulkAssignSectionMembers operation middleware
-func (sh *strictHandler) BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id string) {
 	var request BulkAssignSectionMembersRequestObject
 
 	request.Id = id
@@ -9436,7 +9433,7 @@ func (sh *strictHandler) CreateAppUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteAppUser operation middleware
-func (sh *strictHandler) DeleteAppUser(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) DeleteAppUser(w http.ResponseWriter, r *http.Request, id string) {
 	var request DeleteAppUserRequestObject
 
 	request.Id = id
@@ -9462,7 +9459,7 @@ func (sh *strictHandler) DeleteAppUser(w http.ResponseWriter, r *http.Request, i
 }
 
 // UpdateAppUser operation middleware
-func (sh *strictHandler) UpdateAppUser(w http.ResponseWriter, r *http.Request, id int) {
+func (sh *strictHandler) UpdateAppUser(w http.ResponseWriter, r *http.Request, id string) {
 	var request UpdateAppUserRequestObject
 
 	request.Id = id

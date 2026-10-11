@@ -11,9 +11,6 @@ npm ci
 echo "[devcontainer] Installing frontend dependencies..."
 npm --prefix frontend ci
 
-echo "[devcontainer] Installing Prisma/DB dependencies..."
-npm --prefix db ci
-
 echo "[devcontainer] Downloading Go modules..."
 (
   cd server
@@ -27,7 +24,6 @@ echo "[devcontainer] Fetching Rust crates..."
 )
 
 echo "[devcontainer] Running quick validations..."
-npm run prisma:validate
 npm run tauri:check
 
 echo

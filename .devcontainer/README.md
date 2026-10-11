@@ -8,7 +8,7 @@ This configuration sets up a complete development environment for `open-clubmana
 - Go 1.25.0
 - Rust 1.77.2 with `cargo`, `clippy`, and `rustfmt`
 - Python 3
-- SQLite and MySQL CLI tools
+- SQLite CLI tools
 - Linux dependencies for Tauri 2 on Ubuntu 24.04
 
 ## Automatic bootstrap
@@ -17,11 +17,9 @@ The following commands are run automatically when the container is created for t
 
 1. `npm ci`
 2. `npm --prefix frontend ci`
-3. `npm --prefix db ci`
-4. `go mod download`
-5. `cargo fetch`
-6. `npm run prisma:validate`
-7. `npm run tauri:check`
+3. `go mod download`
+4. `cargo fetch`
+5. `npm run tauri:check`
 
 ## Notes
 

@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
+	"log"
 	"net/http"
 	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
@@ -17,38 +18,80 @@ import (
 	"github.com/Waschndolos/open-clubmanager/server/internal/config"
 	dbpkg "github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
+	"github.com/Waschndolos/open-clubmanager/server/internal/store"
 )
 
 type API struct {
 	openapi.Unimplemented
 	cfg         *config.Config
 	cfgFilePath string
-	db          *sql.DB
-	dbMu        sync.RWMutex
+
+	dbMu sync.RWMutex
+	conn *sql.DB
+	st   *store.Store
 }
 
-func New(cfg *config.Config, db *sql.DB) *API {
+// New creates the API. conn may be nil when no database is configured yet.
+func New(cfg *config.Config, conn *sql.DB) *API {
 	cfgPath, _ := config.DefaultConfigFilePath()
 	if envPath := os.Getenv("SERVER_CONFIG_FILE"); envPath != "" {
 		cfgPath = envPath
 	}
-	return &API{cfg: cfg, cfgFilePath: cfgPath, db: db}
+	a := &API{cfg: cfg, cfgFilePath: cfgPath}
+	if conn != nil {
+		a.conn, a.st = conn, store.New(conn)
+	}
+	return a
 }
 
-// getDB returns the active database connection, or nil if not yet initialised.
-func (a *API) getDB() *sql.DB {
+// store returns the active store, or nil if no database is open.
+func (a *API) store() *store.Store {
 	a.dbMu.RLock()
 	defer a.dbMu.RUnlock()
-	return a.db
+	return a.st
 }
 
-// requireDB writes a 503 error and returns false when the DB is unavailable.
-func (a *API) requireDB(w http.ResponseWriter) bool {
-	if a.getDB() == nil {
+// requireStore returns the active store, or writes a 503 error and returns
+// false when no database is open.
+func (a *API) requireStore(w http.ResponseWriter) (*store.Store, bool) {
+	st := a.store()
+	if st == nil {
 		writeJSON(w, http.StatusServiceUnavailable, openapi.ErrorResponse{Error: "database not configured yet"})
-		return false
+		return nil, false
 	}
-	return true
+	return st, true
+}
+
+// openDatabase opens (and migrates) the SQLite database at path and makes it
+// the active one, closing the previous connection.
+func (a *API) openDatabase(ctx context.Context, path string) error {
+	conn, err := dbpkg.Open(ctx, path)
+	if err != nil {
+		return err
+	}
+	a.dbMu.Lock()
+	old := a.conn
+	a.conn, a.st = conn, store.New(conn)
+	a.dbMu.Unlock()
+	if old != nil {
+		_ = old.Close()
+	}
+	return nil
+}
+
+// writeStoreError maps store errors to HTTP responses.
+func writeStoreError(w http.ResponseWriter, err error, notFound, failure string) {
+	switch {
+	case errors.Is(err, store.ErrNotFound):
+		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: notFound})
+	case errors.Is(err, store.ErrConflict):
+		writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "a record with the same unique value already exists"})
+	case errors.Is(err, store.ErrInvalidReference):
+		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "referenced record does not exist"})
+	default:
+		log.Printf("%s: %v", failure, err)
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: failure})
+	}
 }
 
 // currentUserID extracts the authenticated user's e-mail from the JWT and uses
@@ -78,81 +121,66 @@ func (a *API) GetSystemMeta(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (a *API) GetSetupStatus(w http.ResponseWriter, _ *http.Request) {
-	mode := openapi.SqliteLocal
-	if a.cfg.DatabaseURL != "" {
-		mode = openapi.MysqlShared
+	databaseConfigured := false
+	if a.cfg.DatabasePath != "" {
+		_, err := os.Stat(dbpkg.CleanPath(a.cfg.DatabasePath))
+		databaseConfigured = err == nil
 	}
 
-	databaseConfigured := a.cfg.DatabasePath != "" || a.cfg.DatabaseURL != ""
-	if mode == openapi.SqliteLocal {
-		sqlitePath := strings.TrimPrefix(a.cfg.DatabasePath, "file:")
-		sqlitePath = strings.TrimPrefix(sqlitePath, "//")
-		sqlitePath = filepath.Clean(sqlitePath)
-		if sqlitePath == "" {
-			databaseConfigured = false
-		} else if _, err := os.Stat(sqlitePath); err != nil {
-			databaseConfigured = false
-		}
-	}
-
-	setupRequired := a.cfg.AdminPassword == "" || a.getDB() == nil
+	setupRequired := a.cfg.AdminPassword == "" || a.store() == nil
 
 	writeJSON(w, http.StatusOK, openapi.SetupStatus{
 		SetupRequired:      setupRequired,
 		UserCount:          0,
 		DatabaseConfigured: databaseConfigured,
-		DatabaseMode:       mode,
+		DatabaseMode:       openapi.SqliteLocal,
 	})
 }
 
-// ConfigureSetupDatabase persists the chosen database mode and connection
-// string, then immediately opens the database and runs migrations.
+// ConfigureSetupDatabase opens (creating and migrating) the SQLite database at
+// the given path and persists the path on success.
 func (a *API) ConfigureSetupDatabase(w http.ResponseWriter, r *http.Request) {
 	var req openapi.ConfigureDatabaseRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
 		return
 	}
-
-	if req.Mode == openapi.MysqlShared {
-		if req.DatabaseUrl == nil || *req.DatabaseUrl == "" {
-			writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "databaseUrl is required for mysql-shared mode"})
-			return
-		}
-		a.cfg.DatabaseURL = *req.DatabaseUrl
-		a.cfg.DatabasePath = ""
-	} else {
-		url := "./clubmanager.db"
-		if req.DatabaseUrl != nil && *req.DatabaseUrl != "" {
-			url = *req.DatabaseUrl
-		}
-		a.cfg.DatabasePath = url
-		a.cfg.DatabaseURL = ""
-	}
-
-	if err := config.Save(*a.cfg, a.cfgFilePath); err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to save configuration"})
+	if !req.Mode.Valid() {
+		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "unsupported database mode"})
 		return
 	}
 
-	// Open DB connection immediately so subsequent handlers can use it.
-	mode := string(req.Mode)
-	dsn := a.cfg.DatabasePath
-	if a.cfg.DatabaseURL != "" {
-		dsn = a.cfg.DatabaseURL
+	path := defaultDatabasePath
+	if req.DatabaseUrl != nil && *req.DatabaseUrl != "" {
+		path = *req.DatabaseUrl
 	}
-	if db, err := dbpkg.Open(mode, dsn); err == nil {
-		if migrateErr := dbpkg.Migrate(db); migrateErr == nil {
-			a.dbMu.Lock()
-			a.db = db
-			a.dbMu.Unlock()
-		}
+	if !a.switchDatabase(w, r, path) {
+		return
 	}
 
 	writeJSON(w, http.StatusOK, openapi.ConfigureDatabaseResponse{
-		Mode:        req.Mode,
-		DatabaseUrl: a.cfg.DatabasePath + a.cfg.DatabaseURL,
+		Mode:        openapi.SqliteLocal,
+		DatabaseUrl: a.cfg.DatabasePath,
 	})
+}
+
+// defaultDatabasePath is used when setup does not name a database file.
+const defaultDatabasePath = "./clubmanager.db"
+
+// switchDatabase opens the database at path, makes it active and persists the
+// path. It writes an error response and returns false on failure.
+func (a *API) switchDatabase(w http.ResponseWriter, r *http.Request, path string) bool {
+	if err := a.openDatabase(r.Context(), path); err != nil {
+		log.Printf("open database %s: %v", path, err)
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to open database: " + err.Error()})
+		return false
+	}
+	a.cfg.DatabasePath = path
+	if err := config.Save(*a.cfg, a.cfgFilePath); err != nil {
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to save configuration"})
+		return false
+	}
+	return true
 }
 
 // InitializeSetup hashes the admin password and saves the admin credentials to
@@ -207,21 +235,18 @@ func (a *API) Login(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
 			return
 		}
-	} else if db := a.getDB(); db != nil {
+	} else if st := a.store(); st != nil {
 		// Fall back to database users.
-		var hashedPwd, appRole string
-		err := db.QueryRow(
-			`SELECT "password", "appRole" FROM "User" WHERE "email" = ?`, email,
-		).Scan(&hashedPwd, &appRole)
+		user, err := st.GetUserByEmail(r.Context(), email)
 		if err != nil {
 			writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
 			return
 		}
-		if bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(req.Password)) != nil {
+		if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)) != nil {
 			writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
 			return
 		}
-		role = openapi.AppRole(appRole)
+		role = openapi.AppRole(user.AppRole)
 	} else {
 		writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
 		return
@@ -275,48 +300,28 @@ func (a *API) GetDbPath(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (a *API) GetDatabaseSettings(w http.ResponseWriter, _ *http.Request) {
-	mode := openapi.SqliteLocal
-	url := a.cfg.DatabasePath
-	if a.cfg.DatabaseURL != "" {
-		mode = openapi.MysqlShared
-		url = a.cfg.DatabaseURL
-	}
 	writeJSON(w, http.StatusOK, openapi.ConfigureDatabaseResponse{
-		Mode:        mode,
-		DatabaseUrl: url,
+		Mode:        openapi.SqliteLocal,
+		DatabaseUrl: a.cfg.DatabasePath,
 	})
 }
 
-// UpdateDatabaseSettings updates the database configuration and reconnects.
+// UpdateDatabaseSettings switches to the SQLite database at the given path.
 func (a *API) UpdateDatabaseSettings(w http.ResponseWriter, r *http.Request) {
 	var req openapi.DatabaseSettingsRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
 		return
 	}
-
-	if req.Mode == openapi.MysqlShared {
-		a.cfg.DatabaseURL = req.DatabaseUrl
-		a.cfg.DatabasePath = ""
-	} else {
-		a.cfg.DatabasePath = req.DatabaseUrl
-		a.cfg.DatabaseURL = ""
-	}
-
-	if err := config.Save(*a.cfg, a.cfgFilePath); err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to save configuration"})
+	if !req.Mode.Valid() || req.DatabaseUrl == "" {
+		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "a database path is required"})
 		return
 	}
-
-	if db, err := dbpkg.Open(string(req.Mode), req.DatabaseUrl); err == nil {
-		_ = dbpkg.Migrate(db)
-		a.dbMu.Lock()
-		a.db = db
-		a.dbMu.Unlock()
+	if !a.switchDatabase(w, r, req.DatabaseUrl) {
+		return
 	}
-
 	writeJSON(w, http.StatusOK, openapi.ConfigureDatabaseResponse{
-		Mode:        req.Mode,
+		Mode:        openapi.SqliteLocal,
 		DatabaseUrl: req.DatabaseUrl,
 	})
 }
@@ -324,26 +329,13 @@ func (a *API) UpdateDatabaseSettings(w http.ResponseWriter, r *http.Request) {
 // SetDbPath updates the SQLite database path.
 func (a *API) SetDbPath(w http.ResponseWriter, r *http.Request) {
 	var req openapi.SetDbPathRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.DbPath == "" {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
 		return
 	}
-
-	a.cfg.DatabasePath = req.DbPath
-	a.cfg.DatabaseURL = ""
-
-	if err := config.Save(*a.cfg, a.cfgFilePath); err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to save configuration"})
+	if !a.switchDatabase(w, r, req.DbPath) {
 		return
 	}
-
-	if db, err := dbpkg.Open("sqlite-local", req.DbPath); err == nil {
-		_ = dbpkg.Migrate(db)
-		a.dbMu.Lock()
-		a.db = db
-		a.dbMu.Unlock()
-	}
-
 	dbPath := req.DbPath
 	writeJSON(w, http.StatusOK, openapi.SetDbPathResponse{DbPath: &dbPath, Status: "ok"})
 }

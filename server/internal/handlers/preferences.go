@@ -3,49 +3,40 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
+	dbpkg "github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
 )
 
-// adminUserID is the fixed user-id used for the single-admin config-based
-// deployment. The UserPreference table expects an integer user id.
-const adminUserID = 1
+// preferenceUserID is the user all preferences are stored under. The desktop
+// deployment currently shares one set of preferences between all logins, so
+// they are kept under the config-file admin's id.
+const preferenceUserID = dbpkg.AdminUserID
 
 // ── User Preferences ─────────────────────────────────────────────────────────
 
 // ListPreferences returns all preferences stored for the current (admin) user.
-func (a *API) ListPreferences(w http.ResponseWriter, _ *http.Request) {
-	if !a.requireDB(w) {
+func (a *API) ListPreferences(w http.ResponseWriter, r *http.Request) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
-	rows, err := a.getDB().Query(
-		`SELECT "id","userId","key","value","updatedAt" FROM "UserPreference" WHERE "userId"=? ORDER BY "key"`,
-		adminUserID,
-	)
+	prefs, err := st.ListPreferences(r.Context(), preferenceUserID)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to list preferences"})
+		writeStoreError(w, err, "", "failed to list preferences")
 		return
 	}
-	defer rows.Close()
-
-	result := []openapi.UserPreferenceRecord{}
-	for rows.Next() {
-		var p openapi.UserPreferenceRecord
-		var updatedAtStr string
-		if err := rows.Scan(&p.Id, &p.UserId, &p.Key, &p.Value, &updatedAtStr); err == nil {
-			if t, err := time.Parse(time.RFC3339, updatedAtStr); err == nil {
-				p.UpdatedAt = t
-			}
-			result = append(result, p)
-		}
+	result := make([]openapi.UserPreferenceRecord, len(prefs))
+	for i, p := range prefs {
+		result[i] = openapi.UserPreferenceRecord{Id: p.ID, UserId: p.UserID, Key: p.Key, Value: p.Value, UpdatedAt: p.UpdatedAt}
 	}
 	writeJSON(w, http.StatusOK, result)
 }
 
 // UpsertPreference creates or updates a preference for the current user.
 func (a *API) UpsertPreference(w http.ResponseWriter, r *http.Request) {
-	if !a.requireDB(w) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
 	var req openapi.UpsertUserPreferenceRequest
@@ -60,54 +51,41 @@ func (a *API) UpsertPreference(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	now := time.Now().UTC().Format(time.RFC3339)
-	_, err = a.getDB().Exec(
-		`INSERT INTO "UserPreference" ("userId","key","value","updatedAt") VALUES (?,?,?,?)
-		 ON CONFLICT("userId","key") DO UPDATE SET "value"=excluded."value","updatedAt"=excluded."updatedAt"`,
-		adminUserID, req.Key, valueStr, now,
-	)
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to upsert preference"})
+	if err := st.SetPreference(r.Context(), preferenceUserID, req.Key, valueStr); err != nil {
+		writeStoreError(w, err, "", "failed to upsert preference")
 		return
 	}
 	writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
 }
 
 // GetPreferenceByKey returns a single user preference by key.
-func (a *API) GetPreferenceByKey(w http.ResponseWriter, _ *http.Request, identifier string) {
-	if !a.requireDB(w) {
+func (a *API) GetPreferenceByKey(w http.ResponseWriter, r *http.Request, identifier string) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
-	var value, updatedAtStr string
-	err := a.getDB().QueryRow(
-		`SELECT "value","updatedAt" FROM "UserPreference" WHERE "userId"=? AND "key"=?`,
-		adminUserID, identifier,
-	).Scan(&value, &updatedAtStr)
+	p, err := st.GetPreference(r.Context(), preferenceUserID, identifier)
 	if err != nil {
-		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "preference not found"})
+		writeStoreError(w, err, "preference not found", "failed to load preference")
 		return
 	}
 
 	var parsed interface{}
-	if err := json.Unmarshal([]byte(value), &parsed); err != nil {
-		parsed = value // fall back to raw string
-	}
-
-	var updatedAt time.Time
-	if t, err := time.Parse(time.RFC3339, updatedAtStr); err == nil {
-		updatedAt = t
+	if err := json.Unmarshal([]byte(p.Value), &parsed); err != nil {
+		parsed = p.Value // fall back to raw string
 	}
 
 	writeJSON(w, http.StatusOK, openapi.UserPreferenceValueResponse{
 		Key:       identifier,
 		Value:     parsed,
-		UpdatedAt: updatedAt,
+		UpdatedAt: p.UpdatedAt,
 	})
 }
 
 // UpdatePreferenceById updates a user preference by key (identifier).
 func (a *API) UpdatePreferenceById(w http.ResponseWriter, r *http.Request, identifier string) {
-	if !a.requireDB(w) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
 	var req openapi.UpdateUserPreferenceRequest
@@ -116,14 +94,8 @@ func (a *API) UpdatePreferenceById(w http.ResponseWriter, r *http.Request, ident
 		return
 	}
 
-	now := time.Now().UTC().Format(time.RFC3339)
-	_, err := a.getDB().Exec(
-		`INSERT INTO "UserPreference" ("userId","key","value","updatedAt") VALUES (?,?,?,?)
-		 ON CONFLICT("userId","key") DO UPDATE SET "value"=excluded."value","updatedAt"=excluded."updatedAt"`,
-		adminUserID, identifier, req.Value, now,
-	)
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to update preference"})
+	if err := st.SetPreference(r.Context(), preferenceUserID, identifier, req.Value); err != nil {
+		writeStoreError(w, err, "", "failed to update preference")
 		return
 	}
 	writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
@@ -184,4 +156,3 @@ func marshalPreferenceValue(v interface{}) (string, error) {
 	}
 	return string(b), nil
 }
-

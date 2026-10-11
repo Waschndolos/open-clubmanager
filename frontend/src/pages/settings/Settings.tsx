@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-    Alert,
     Box,
     Button,
     CircularProgress,
@@ -22,7 +21,7 @@ import {
 import {useTranslation} from 'react-i18next';
 import {apppreference, userpreference} from "../../lib/preferences";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {DatabaseMode, getDatabaseSettings, saveDatabaseSettings} from "../../api/settings";
+import {getDatabaseSettings, saveDatabaseSettings} from "../../api/settings";
 import {validatePath} from "../../api/validation";
 import {createBackup, restoreBackup} from "../../api/backup";
 import PageHeader from "../../components/common/PageHeader";
@@ -34,7 +33,6 @@ export function Settings() {
 
     const raw = apppreference.get('DATABASE_URL');
     const [dbPath, setDbPath] = useState<string>(typeof raw == 'string' ? raw : '');
-    const [databaseMode, setDatabaseMode] = useState<DatabaseMode>('sqlite-local');
     const [language, setLanguage] = useState<string>('en');
     const [validationMessage, setValidationMessage] = useState<string>("");
     const [snackBarState, setSnackBarState] = useState<{ open: boolean, message: string }>({
@@ -65,8 +63,7 @@ export function Settings() {
     }, [i18n]);
 
     useEffect(() => {
-        getDatabaseSettings().then(({ mode, databaseUrl }) => {
-            setDatabaseMode(mode);
+        getDatabaseSettings().then(({ databaseUrl }) => {
             setDbPath(databaseUrl);
         });
 
@@ -76,8 +73,7 @@ export function Settings() {
         userpreference?.set('1', 'language', language); // TODO: use userID as soon as we have auth
         i18n.changeLanguage(language);
         apppreference.set('DATABASE_URL', dbPath);
-        apppreference.set('DATABASE_MODE', databaseMode);
-        saveDatabaseSettings({ mode: databaseMode, databaseUrl: dbPath }).then(() => {
+        saveDatabaseSettings({ mode: 'sqlite-local', databaseUrl: dbPath }).then(() => {
             setSnackBarState({
                 open: true,
                 message: t("settings.labels.saveSuccess")
@@ -92,14 +88,6 @@ export function Settings() {
     };
 
     async function validateDbPath(path: string): Promise<{ valid: boolean, i18nToken?: string }> {
-        if (databaseMode === 'mysql-shared') {
-            const valid = /^mysqls?:\/\//i.test(path);
-            return {
-                valid,
-                i18nToken: valid ? 'success.valid' : 'error.invalidmysqlurl',
-            };
-        }
-
         return await validatePath(path.startsWith('file:') ? path.replace('file:', '').replace(/^\/\//, '') : path);
     }
 
@@ -160,27 +148,8 @@ export function Settings() {
                 p: 3,
             }}>
                 <FormControl fullWidth margin="normal">
-                    <InputLabel id="database-mode-select-label">{t("settings.labels.databaseMode")}</InputLabel>
-                    <Select
-                        labelId="database-mode-select-label"
-                        value={databaseMode}
-                        label={t("settings.labels.databaseMode")}
-                        onChange={(e) => {
-                            const mode = e.target.value as DatabaseMode;
-                            setDatabaseMode(mode);
-                            if (mode === 'sqlite-local' && dbPath.length === 0) {
-                                setDbPath('file:./clubmanager.db');
-                            }
-                        }}
-                    >
-                        <MenuItem value="sqlite-local">{t("settings.databaseModes.sqliteLocal")}</MenuItem>
-                        <MenuItem value="mysql-shared">{t("settings.databaseModes.mysqlShared")}</MenuItem>
-                    </Select>
-                </FormControl>
-
-                <FormControl fullWidth margin="normal">
                     <TextField
-                        label={databaseMode === 'sqlite-local' ? t("settings.labels.dbPath") : t("settings.labels.dbUrl")}
+                        label={t("settings.labels.dbPath")}
                         variant="outlined"
                         value={dbPath}
                         fullWidth
@@ -200,7 +169,7 @@ export function Settings() {
                                     : t(`settings.validatíon.${response.i18nToken}`)
                             );
                         }}
-                        placeholder={databaseMode === 'sqlite-local' ? "file:/path/to/database.db" : "******host:3306/db"}
+                        placeholder="file:/path/to/database.db"
                         margin="normal"/>
                 </FormControl>
 
@@ -238,56 +207,50 @@ export function Settings() {
                 {t("settings.backup.title")}
             </Typography>
 
-            {databaseMode === 'mysql-shared' ? (
-                <Alert severity="info" sx={{mb: 2}}>
-                    {t("settings.backup.mysqlHint")}
-                </Alert>
-            ) : (
-                <Paper sx={{p: 3}}>
-                    <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
-                        {t("settings.backup.description")}
-                    </Typography>
+            <Paper sx={{p: 3}}>
+                <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
+                    {t("settings.backup.description")}
+                </Typography>
 
-                    <Typography variant="body2" sx={{mb: 2}}>
-                        {t("settings.backup.lastBackup")}: <strong>{formattedLastBackup}</strong>
-                    </Typography>
+                <Typography variant="body2" sx={{mb: 2}}>
+                    {t("settings.backup.lastBackup")}: <strong>{formattedLastBackup}</strong>
+                </Typography>
 
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleBackup}
-                        disabled={backupLoading}
-                        startIcon={backupLoading ? <CircularProgress size={16} /> : undefined}
-                        sx={{mr: 2, mb: 2}}
-                    >
-                        {t("settings.backup.backupButton")}
-                    </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleBackup}
+                    disabled={backupLoading}
+                    startIcon={backupLoading ? <CircularProgress size={16} /> : undefined}
+                    sx={{mr: 2, mb: 2}}
+                >
+                    {t("settings.backup.backupButton")}
+                </Button>
 
-                    <Typography variant="subtitle2" sx={{mt: 2, mb: 1}}>
-                        {t("settings.backup.restoreTitle")}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{mb: 1}}>
-                        {t("settings.backup.restoreDescription")}
-                    </Typography>
+                <Typography variant="subtitle2" sx={{mt: 2, mb: 1}}>
+                    {t("settings.backup.restoreTitle")}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{mb: 1}}>
+                    {t("settings.backup.restoreDescription")}
+                </Typography>
 
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".zip"
-                        style={{display: 'none'}}
-                        onChange={handleRestoreFileChange}
-                    />
-                    <Button
-                        variant="outlined"
-                        color="warning"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={restoreLoading}
-                        startIcon={restoreLoading ? <CircularProgress size={16} /> : undefined}
-                    >
-                        {t("settings.backup.selectFile")}
-                    </Button>
-                </Paper>
-            )}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".zip"
+                    style={{display: 'none'}}
+                    onChange={handleRestoreFileChange}
+                />
+                <Button
+                    variant="outlined"
+                    color="warning"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={restoreLoading}
+                    startIcon={restoreLoading ? <CircularProgress size={16} /> : undefined}
+                >
+                    {t("settings.backup.selectFile")}
+                </Button>
+            </Paper>
 
             <Snackbar
                 open={snackBarState.open}

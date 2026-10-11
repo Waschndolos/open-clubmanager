@@ -36,7 +36,7 @@ export async function updateTransaction(
     return res.data;
 }
 
-export async function deleteTransaction(id: number): Promise<void> {
+export async function deleteTransaction(id: string): Promise<void> {
     await api.delete(`/finance/transactions/${id}`);
 }
 
@@ -71,6 +71,6 @@ export async function updateMemberFee(data: MemberFee): Promise<MemberFee> {
     return res.data;
 }
 
-export async function deleteMemberFee(id: number): Promise<void> {
+export async function deleteMemberFee(id: string): Promise<void> {
     await api.delete(`/finance/memberfees/${id}`);
 }

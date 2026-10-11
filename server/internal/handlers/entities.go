@@ -1,287 +1,186 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
-	dbpkg "github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
+	"github.com/Waschndolos/open-clubmanager/server/internal/store"
+)
+
+// namedResource binds a named-entity kind to its audit-log entity name and
+// the label used in error messages.
+type namedResource struct {
+	kind   store.NamedKind
+	entity string
+	label  string
+}
+
+var (
+	roleResource    = namedResource{store.Roles, "Role", "role"}
+	groupResource   = namedResource{store.Groups, "Group", "group"}
+	sectionResource = namedResource{store.Sections, "ClubSection", "section"}
 )
 
 // ── Roles ────────────────────────────────────────────────────────────────────
 
-func (a *API) ListRoles(w http.ResponseWriter, _ *http.Request) {
-	if !a.requireDB(w) {
-		return
-	}
-	entities, err := queryNamedEntities(a.getDB(), "Role")
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to list roles"})
-		return
-	}
-	writeJSON(w, http.StatusOK, entities)
-}
-
+func (a *API) ListRoles(w http.ResponseWriter, r *http.Request) { a.listNamed(w, r, roleResource) }
 func (a *API) CreateRole(w http.ResponseWriter, r *http.Request) {
-	a.createNamedEntity(w, r, "Role")
+	a.createNamed(w, r, roleResource)
 }
-
-func (a *API) UpdateRole(w http.ResponseWriter, r *http.Request, id int) {
-	a.updateNamedEntity(w, r, "Role", id)
+func (a *API) UpdateRole(w http.ResponseWriter, r *http.Request, id string) {
+	a.updateNamed(w, r, roleResource, id)
 }
-
-func (a *API) DeleteRole(w http.ResponseWriter, r *http.Request, id int) {
-	a.deleteNamedEntity(w, r, "Role", id)
+func (a *API) DeleteRole(w http.ResponseWriter, r *http.Request, id string) {
+	a.deleteNamed(w, r, roleResource, id)
 }
-
-func (a *API) GetRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
-	a.getEntityMembers(w, id, "_MemberRoles", "role")
+func (a *API) GetRoleMembers(w http.ResponseWriter, r *http.Request, id string) {
+	a.namedMembers(w, r, roleResource, id)
 }
-
-func (a *API) BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id int) {
-	a.bulkAssignEntityMembers(w, r, id, "_MemberRoles", "role")
+func (a *API) BulkAssignRoleMembers(w http.ResponseWriter, r *http.Request, id string) {
+	a.assignNamedMembers(w, r, roleResource, id)
 }
 
 // ── Groups ───────────────────────────────────────────────────────────────────
 
-func (a *API) ListGroups(w http.ResponseWriter, _ *http.Request) {
-	if !a.requireDB(w) {
-		return
-	}
-	entities, err := queryNamedEntities(a.getDB(), "Group")
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to list groups"})
-		return
-	}
-	writeJSON(w, http.StatusOK, entities)
-}
-
+func (a *API) ListGroups(w http.ResponseWriter, r *http.Request) { a.listNamed(w, r, groupResource) }
 func (a *API) CreateGroup(w http.ResponseWriter, r *http.Request) {
-	a.createNamedEntity(w, r, "Group")
+	a.createNamed(w, r, groupResource)
 }
-
-func (a *API) UpdateGroup(w http.ResponseWriter, r *http.Request, id int) {
-	a.updateNamedEntity(w, r, "Group", id)
+func (a *API) UpdateGroup(w http.ResponseWriter, r *http.Request, id string) {
+	a.updateNamed(w, r, groupResource, id)
 }
-
-func (a *API) DeleteGroup(w http.ResponseWriter, r *http.Request, id int) {
-	a.deleteNamedEntity(w, r, "Group", id)
+func (a *API) DeleteGroup(w http.ResponseWriter, r *http.Request, id string) {
+	a.deleteNamed(w, r, groupResource, id)
 }
-
-func (a *API) GetGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
-	a.getEntityMembers(w, id, "_MemberGroups", "group")
+func (a *API) GetGroupMembers(w http.ResponseWriter, r *http.Request, id string) {
+	a.namedMembers(w, r, groupResource, id)
 }
-
-func (a *API) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id int) {
-	a.bulkAssignEntityMembers(w, r, id, "_MemberGroups", "group")
+func (a *API) BulkAssignGroupMembers(w http.ResponseWriter, r *http.Request, id string) {
+	a.assignNamedMembers(w, r, groupResource, id)
 }
 
 // ── Sections ─────────────────────────────────────────────────────────────────
 
-func (a *API) ListSections(w http.ResponseWriter, _ *http.Request) {
-	if !a.requireDB(w) {
-		return
-	}
-	entities, err := queryNamedEntities(a.getDB(), "ClubSection")
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to list sections"})
-		return
-	}
-	writeJSON(w, http.StatusOK, entities)
+func (a *API) ListSections(w http.ResponseWriter, r *http.Request) {
+	a.listNamed(w, r, sectionResource)
 }
-
 func (a *API) CreateSection(w http.ResponseWriter, r *http.Request) {
-	a.createNamedEntity(w, r, "ClubSection")
+	a.createNamed(w, r, sectionResource)
+}
+func (a *API) UpdateSection(w http.ResponseWriter, r *http.Request, id string) {
+	a.updateNamed(w, r, sectionResource, id)
+}
+func (a *API) DeleteSection(w http.ResponseWriter, r *http.Request, id string) {
+	a.deleteNamed(w, r, sectionResource, id)
+}
+func (a *API) GetSectionMembers(w http.ResponseWriter, r *http.Request, id string) {
+	a.namedMembers(w, r, sectionResource, id)
+}
+func (a *API) BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id string) {
+	a.assignNamedMembers(w, r, sectionResource, id)
 }
 
-func (a *API) UpdateSection(w http.ResponseWriter, r *http.Request, id int) {
-	a.updateNamedEntity(w, r, "ClubSection", id)
-}
+// ── generic named-entity handlers ─────────────────────────────────────────────
 
-func (a *API) DeleteSection(w http.ResponseWriter, r *http.Request, id int) {
-	a.deleteNamedEntity(w, r, "ClubSection", id)
-}
-
-func (a *API) GetSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
-	a.getEntityMembers(w, id, "_MemberSections", "section")
-}
-
-func (a *API) BulkAssignSectionMembers(w http.ResponseWriter, r *http.Request, id int) {
-	a.bulkAssignEntityMembers(w, r, id, "_MemberSections", "section")
-}
-
-// ── generic named-entity helpers ──────────────────────────────────────────────
-
-func queryNamedEntities(db *sql.DB, table string) ([]openapi.NamedEntity, error) {
-	rows, err := db.Query(`SELECT "id","name" FROM "` + table + `" ORDER BY "name"`)
+func (a *API) listNamed(w http.ResponseWriter, r *http.Request, res namedResource) {
+	st, ok := a.requireStore(w)
+	if !ok {
+		return
+	}
+	entities, err := st.ListNamed(r.Context(), res.kind)
 	if err != nil {
-		return nil, err
+		writeStoreError(w, err, "", "failed to list "+res.label+"s")
+		return
 	}
-	defer rows.Close()
-
-	result := []openapi.NamedEntity{}
-	for rows.Next() {
-		var e openapi.NamedEntity
-		if err := rows.Scan(&e.Id, &e.Name); err != nil {
-			return nil, err
-		}
-		result = append(result, e)
-	}
-	return result, nil
+	writeJSON(w, http.StatusOK, toAPINamedList(entities))
 }
 
-func (a *API) createNamedEntity(w http.ResponseWriter, r *http.Request, table string) {
-	if !a.requireDB(w) {
+func (a *API) createNamed(w http.ResponseWriter, r *http.Request, res namedResource) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
 	var req openapi.NamedEntityCreateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Name == "" {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
 		return
 	}
-	res, err := a.getDB().Exec(`INSERT INTO "`+table+`" ("name") VALUES (?)`, req.Name)
+	e, err := st.CreateNamed(r.Context(), res.kind, req.Name)
 	if err != nil {
-		if isUniqueConstraint(err) {
-			writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "name already exists"})
-			return
-		}
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to create entity"})
+		writeStoreError(w, err, "", "failed to create "+res.label)
 		return
 	}
-	id64, _ := res.LastInsertId()
-	dbpkg.LogAudit(a.getDB(), "CREATE", table, int(id64), currentUserID(r), "")
-	writeJSON(w, http.StatusCreated, openapi.NamedEntity{Id: int(id64), Name: req.Name})
+	st.Audit(r.Context(), "CREATE", res.entity, e.ID, currentUserID(r))
+	writeJSON(w, http.StatusCreated, openapi.NamedEntity{Id: e.ID, Name: e.Name})
 }
 
-func (a *API) updateNamedEntity(w http.ResponseWriter, r *http.Request, table string, id int) {
-	if !a.requireDB(w) {
+func (a *API) updateNamed(w http.ResponseWriter, r *http.Request, res namedResource, id string) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
 	var req openapi.NamedEntityUpdateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Name == "" {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
 		return
 	}
-	res, err := a.getDB().Exec(`UPDATE "`+table+`" SET "name"=? WHERE "id"=?`, req.Name, id)
+	e, err := st.RenameNamed(r.Context(), res.kind, id, req.Name)
 	if err != nil {
-		if isUniqueConstraint(err) {
-			writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "name already exists"})
-			return
-		}
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to update entity"})
+		writeStoreError(w, err, res.label+" not found", "failed to update "+res.label)
 		return
 	}
-	if n, _ := res.RowsAffected(); n == 0 {
-		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "entity not found"})
-		return
-	}
-	dbpkg.LogAudit(a.getDB(), "UPDATE", table, id, currentUserID(r), "")
-	writeJSON(w, http.StatusOK, openapi.NamedEntity{Id: id, Name: req.Name})
+	st.Audit(r.Context(), "UPDATE", res.entity, id, currentUserID(r))
+	writeJSON(w, http.StatusOK, openapi.NamedEntity{Id: e.ID, Name: e.Name})
 }
 
-func (a *API) deleteNamedEntity(w http.ResponseWriter, r *http.Request, table string, id int) {
-	if !a.requireDB(w) {
+func (a *API) deleteNamed(w http.ResponseWriter, r *http.Request, res namedResource, id string) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
-	res, err := a.getDB().Exec(`DELETE FROM "`+table+`" WHERE "id"=?`, id)
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to delete entity"})
+	if err := st.DeleteNamed(r.Context(), res.kind, id); err != nil {
+		writeStoreError(w, err, res.label+" not found", "failed to delete "+res.label)
 		return
 	}
-	if n, _ := res.RowsAffected(); n == 0 {
-		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: "entity not found"})
-		return
-	}
-	dbpkg.LogAudit(a.getDB(), "DELETE", table, id, currentUserID(r), "")
+	st.Audit(r.Context(), "DELETE", res.entity, id, currentUserID(r))
 	writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
 }
 
-// getEntityMembers returns the list of members assigned to the given entity
-// (group, role, or section) identified by junctionTable and entityID.
-func (a *API) getEntityMembers(w http.ResponseWriter, entityID int, junctionTable string, entityLabel string) {
-	if !a.requireDB(w) {
+// namedMembers returns the members assigned to a role, group or section.
+func (a *API) namedMembers(w http.ResponseWriter, r *http.Request, res namedResource, id string) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
-	db := a.getDB()
-
-	// Resolve the correct join column based on Prisma junction-table convention:
-	// _MemberRoles:    A=Member, B=Role    → members are in column A where B=entityID
-	// _MemberGroups:   A=Group,  B=Member  → members are in column B where A=entityID
-	// _MemberSections: A=Section,B=Member  → members are in column B where A=entityID
-	var query string
-	if junctionTable == "_MemberRoles" {
-		query = fmt.Sprintf(
-			`SELECT m."id", m."firstName", m."lastName", m."number" FROM "Member" m JOIN "%s" j ON m."id" = j."A" WHERE j."B" = ? ORDER BY m."lastName", m."firstName"`,
-			junctionTable,
-		)
-	} else {
-		query = fmt.Sprintf(
-			`SELECT m."id", m."firstName", m."lastName", m."number" FROM "Member" m JOIN "%s" j ON m."id" = j."B" WHERE j."A" = ? ORDER BY m."lastName", m."firstName"`,
-			junctionTable,
-		)
-	}
-
-	rows, err := db.Query(query, entityID)
+	members, err := st.NamedMembers(r.Context(), res.kind, id)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to list " + entityLabel + " members"})
+		writeStoreError(w, err, res.label+" not found", "failed to list "+res.label+" members")
 		return
 	}
-	defer rows.Close()
-
-	members := []openapi.MemberSummary{}
-	for rows.Next() {
-		var m openapi.MemberSummary
-		if err := rows.Scan(&m.Id, &m.FirstName, &m.LastName, &m.Number); err != nil {
-			writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to scan member"})
-			return
-		}
-		members = append(members, m)
+	out := make([]openapi.MemberSummary, len(members))
+	for i, m := range members {
+		out[i] = toAPIMemberSummary(m)
 	}
-	writeJSON(w, http.StatusOK, members)
+	writeJSON(w, http.StatusOK, out)
 }
 
-// bulkAssignEntityMembers replaces all member assignments for the given entity.
-// It accepts a BulkMemberAssignRequest and syncs the junction table accordingly.
-func (a *API) bulkAssignEntityMembers(w http.ResponseWriter, r *http.Request, entityID int, junctionTable string, entityLabel string) {
-	if !a.requireDB(w) {
+// assignNamedMembers replaces all member assignments of a role, group or
+// section.
+func (a *API) assignNamedMembers(w http.ResponseWriter, r *http.Request, res namedResource, id string) {
+	st, ok := a.requireStore(w)
+	if !ok {
 		return
 	}
-	db := a.getDB()
-
 	var req openapi.BulkMemberAssignRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
 		return
 	}
-
-	// Resolve correct column convention (same as syncMemberRelations):
-	// _MemberRoles:    colA=Member, colB=Role    → entity is colB
-	// _MemberGroups:   colA=Group,  colB=Member  → entity is colA
-	// _MemberSections: colA=Section,colB=Member  → entity is colA
-	entityCol, memberCol := "A", "B"
-	if junctionTable == "_MemberRoles" {
-		entityCol, memberCol = "B", "A"
-	}
-
-	_, err := db.Exec(fmt.Sprintf(`DELETE FROM "%s" WHERE "%s"=?`, junctionTable, entityCol), entityID)
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to update " + entityLabel + " members"})
+	if err := st.SetNamedMembers(r.Context(), res.kind, id, req.MemberIds); err != nil {
+		writeStoreError(w, err, res.label+" not found", "failed to update "+res.label+" members")
 		return
 	}
-
-	for _, memberID := range req.MemberIds {
-		_, err = db.Exec(
-			fmt.Sprintf(`INSERT OR IGNORE INTO "%s" ("%s","%s") VALUES (?,?)`, junctionTable, entityCol, memberCol),
-			entityID, memberID,
-		)
-		if err != nil {
-			writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to assign member to " + entityLabel})
-			return
-		}
-	}
-
-	dbpkg.LogAudit(db, "UPDATE", junctionTable, entityID, currentUserID(r), "")
+	st.Audit(r.Context(), "UPDATE", res.entity, id, currentUserID(r))
 	writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
 }

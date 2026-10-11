@@ -1,10 +1,10 @@
 import api from './api';
 
 export type AuditLog = {
-    id: number;
+    id: string;
     action: 'CREATE' | 'UPDATE' | 'DELETE';
     entity: string;
-    entityId: number;
+    entityId: string;
     userId: string;
     data?: string | null;
     createdAt: string;

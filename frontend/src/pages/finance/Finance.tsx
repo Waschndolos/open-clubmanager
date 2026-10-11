@@ -156,7 +156,7 @@ function MemberFeeDialog({ fee, members, isNew, onClose, onSave }: MemberFeeDial
                         <Select
                             label={t('finance.memberfees.fields.member')}
                             value={form.memberId ?? ''}
-                            onChange={(e) => handleChange('memberId', Number(e.target.value))}
+                            onChange={(e) => handleChange('memberId', e.target.value)}
                         >
                             {members.map((m) => (
                                 <MenuItem key={m.id} value={m.id}>
@@ -312,7 +312,7 @@ export function Finance() {
         setTxDialog({ open: false, item: {}, isNew: true });
     };
 
-    const handleDeleteTransaction = async (id: number) => {
+    const handleDeleteTransaction = async (id: string) => {
         await deleteTransaction(id);
         setTransactions((prev) => prev.filter((tx) => tx.id !== id));
     };
@@ -348,7 +348,7 @@ export function Finance() {
         setFeeDialog({ open: false, item: {}, isNew: true });
     };
 
-    const handleDeleteFee = async (id: number) => {
+    const handleDeleteFee = async (id: string) => {
         await deleteMemberFee(id);
         setFees((prev) => prev.filter((f) => f.id !== id));
     };

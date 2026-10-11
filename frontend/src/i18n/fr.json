@@ -50,14 +50,9 @@
             "login": "Se connecter"
         },
         "database": {
-            "localOption": "Travailler en local (SQLite)",
-            "sharedOption": "Travailler a plusieurs (MySQL)",
             "localHint": "Les donnees sont stockees dans un fichier sur cet ordinateur.",
-            "sharedHint": "Les donnees sont stockees dans une base MySQL partagee pour plusieurs utilisateurs.",
             "localPathLabel": "Chemin de la base SQLite",
             "localPathHint": "Exemples: ./clubmanager.db, /home/user/clubmanager.db, ou C:\\Users\\Name\\clubmanager.db",
-            "urlLabel": "URL de base MySQL",
-            "mysqlPlaceholderHint": "Exemple: mysql://user:pass@host:3306/clubmanager",
             "saveButton": "Enregistrer le mode base de donnees",
             "continueButton": "Continuer",
             "saving": "Enregistrement...",
@@ -77,8 +72,7 @@
         "validation": {
             "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
             "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères.",
-            "passwordMismatch": "Les mots de passe ne correspondent pas.",
-            "invalidMysqlUrl": "Veuillez saisir une URL MySQL valide (mysql:// ou mysqls://)."
+            "passwordMismatch": "Les mots de passe ne correspondent pas."
         },
         "error": {
             "generic": "Une erreur s'est produite. Veuillez réessayer."
@@ -274,7 +268,6 @@
                 "cannotcreate": "Impossible de créer une base de données à l'emplacement indiqué.",
                 "required": "Le chemin de la base de données est requis.",
                 "invalidsqliteurl": "Veuillez saisir une URL SQLite valide (file:...).",
-                "invalidmysqlurl": "Veuillez saisir une URL MySQL valide (mysql:// ou mysqls://).",
                 "invalidmode": "Mode de base de données invalide."
             },
             "success": {
@@ -282,15 +275,9 @@
                 "valid": "Le chemin de la base de données est valide.+"
             }
         },
-        "databaseModes": {
-            "sqliteLocal": "Local (SQLite)",
-            "mysqlShared": "Multi-utilisateurs (MySQL)"
-        },
         "labels": {
             "language": "Langue",
             "dbPath": "Chemin de la base de données",
-            "dbUrl": "URL de base de données",
-            "databaseMode": "Mode de base de données",
             "save": "Chemin de la base de données",
             "saveSuccess": "Paramètres enregistrés avec succès !",
             "saveFails": "Échec de l’enregistrement des paramètres !"
@@ -298,7 +285,6 @@
         "backup": {
             "title": "Sauvegarde des données",
             "description": "Créez une sauvegarde de votre base de données ou restaurez une sauvegarde existante.",
-            "mysqlHint": "En mode multi-utilisateurs (MySQL), les sauvegardes sont gérées par le serveur de base de données lui-même.",
             "backupButton": "Sauvegarder maintenant",
             "backupSuccess": "Sauvegarde créée avec succès.",
             "backupError": "Échec de la création de la sauvegarde.",

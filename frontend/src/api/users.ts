@@ -11,12 +11,12 @@ export async function createAppUser(email: string, password: string, appRole: Ap
     return res.data;
 }
 
-export async function updateAppUser(id: number, email?: string, appRole?: AppRole): Promise<AppUser> {
+export async function updateAppUser(id: string, email?: string, appRole?: AppRole): Promise<AppUser> {
     const res = await api.put<AppUser>(`/users/${id}`, { email, appRole });
     return res.data;
 }
 
-export async function deleteAppUser(id: number): Promise<void> {
+export async function deleteAppUser(id: string): Promise<void> {
     await api.delete(`/users/${id}`);
 }
 
