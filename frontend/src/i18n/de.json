@@ -5,6 +5,21 @@
             "deleteall": "Alle löschen"
         }
     },
+    "search": {
+        "label": "Suche",
+        "open": "Suche (Strg+K)",
+        "placeholder": "Seiten, Mitglieder, Aktionen suchen…",
+        "empty": "Keine Treffer",
+        "groups": {
+            "actions": "Schnellaktionen",
+            "members": "Mitglieder",
+            "pages": "Seiten"
+        },
+        "actions": {
+            "newMember": "Neues Mitglied",
+            "sync": "Sync jetzt"
+        }
+    },
     "logout": {
         "tooltip": "Abmelden"
     },
