@@ -32,6 +32,16 @@ export interface CollaborationStatus {
     conflicts: number;
     lostChanges: number;
     badKeys: number;
+    /** Change streams of other devices waiting for a file, key or app update. */
+    waitingStreams: number;
+    /** Change streams stopped because a file failed verification. */
+    quarantinedStreams: number;
+    /** Received changes waiting for a row they reference. */
+    waitingChanges: number;
+    /** Readable areas without a verified starting snapshot yet. */
+    incompleteAreas: number;
+    /** Devices whose changes carried a clock far in the future. */
+    clockWarnings: number;
 }
 
 export interface FolderClub {

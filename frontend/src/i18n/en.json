@@ -525,6 +525,8 @@
             "error": "Last error: {{error}}",
             "lostChanges": "One of your changes to roles or devices was overtaken by a simultaneous change. Please check it and make it again.",
             "badKeys": "Some key files in the storage location are damaged or do not match. Ask the board to check.",
+            "quarantined": "Changes from {{count}} device(s) failed verification and were stopped. Ask the board to check.",
+            "clockWarnings": "{{count}} device(s) sent changes with a clock far in the future. Ask the board to check the device clocks.",
             "settings": "Settings"
         },
         "folder": {

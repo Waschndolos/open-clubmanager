@@ -7,10 +7,10 @@ migrations that are embedded in the server binary and applied on every start
 
 The schema is designed so that a sync layer can replicate changes between
 devices as immutable, signed change files that are encrypted per **data scope**
-(normative spec: [sync-protocol.md](sync-protocol.md)). The transport, segments,
-encryption and identity are not implemented yet; the local groundwork (scopes,
-field clocks, outbox, conflict detection) is. This document records the
-conventions sync relies on.
+(normative spec: [sync-protocol.md](sync-protocol.md)). The identity layer
+(`server/internal/sync/club`) and the sync core (`server/internal/sync/engine`,
+`replica`, `segment`) implement it; this document records the conventions
+sync relies on.
 
 ## Conventions
 
@@ -74,29 +74,42 @@ In the same transaction as the data change it:
    `sync_device.hlc`, once per op;
 2. writes only columns whose value actually changes (an unchanged update
    produces no op and keeps `updated_at`);
-3. upserts `sync_field_clock (tbl, pk, col) → hlc, device_id` for each written
-   column (`device_id` is NULL — "this device" — until the device identity exists);
+3. upserts `sync_field_clock (tbl, pk, col) → clock_epoch, hlc, device_id` for
+   each written column (`device_id` is NULL — "this device" — until the device
+   identity exists; `clock_epoch` comes from `sync_clock_epochs`, which the sync
+   core keeps equal to the newest ACL);
 4. appends the op (`{"t", "pk", "hlc", "set"}`, see sync-protocol §10) to
-   `sync_outbox` with its scope.
+   `sync_outbox` with its scope and clock epoch.
 
 `pk` in the sync tables is the JSON object of the primary key columns with
 sorted keys (`op.EncodePK`). `store.DetectUniqueConflicts` implements the
-uniqueness rule of sync-protocol §14.2 for the future apply step: among live
-rows sharing a unique value, the one whose value has the smallest
-`(hlc, device_id)` keeps it and the others are recorded in `sync_conflicts`.
+uniqueness rule of sync-protocol §14.2: among live rows sharing a unique
+value, the one whose value has the smallest `(clock_epoch, hlc, device_id)`
+keeps it and the others are recorded in `sync_conflicts`. The sync core runs
+it for every row it applies.
 Local writes re-run it for tables with open conflicts, so fixing a duplicate
 clears its flag.
 
 | Local table | Content |
 | --- | --- |
-| `sync_device` | One row: own `device_id` and key references (NULL for now), local HLC |
-| `sync_field_clock` | Last writer per `(table, pk, column)` |
-| `sync_outbox` | Local ops not yet written to a segment, in order, with scope |
+| `sync_device` | One row: own `device_id`, public keys, local HLC |
+| `sync_field_clock` | Last writer per `(table, pk, column)`: `clock_epoch`, `hlc`, `device_id` |
+| `sync_outbox` | Local ops not yet written to a segment, in order, with scope and clock epoch |
 | `sync_conflicts` | Rows flagged as duplicate of a unique value, with the row that keeps it |
+| `sync_club`, `sync_acl`, `sync_keys`, `sync_key_drafts`, `sync_invites` | Identity layer: pinned club, accepted ACL chain, wrapped scope keys, invites |
+| `sync_streams` | Per `(device_id, scope)`: last accepted `seq` and file hash, status (`ok`, `waiting`, `quarantined`), consecutive failures, reason. For this device's own streams: the last segment written (next seq = seq + 1) |
+| `sync_scopes` | Snapshot each readable scope's local state started from |
+| `sync_uploads` | Segment and snapshot files written but not yet uploaded; retried with identical bytes |
+| `sync_pending` | Received changes waiting for a row they reference (or for their own row) |
+| `sync_history` | Ops of accepted segments with author, seq and clock, own ones included |
+| `sync_clock_epochs` | Current clock epoch per scope (from the newest ACL) |
+| `sync_clock_warnings` | Devices whose ops carried an HLC more than an hour ahead |
 
 Rows that existed before this bookkeeping (or were imported from a legacy
-database) have no field clocks and no outbox entries; they count as oldest in
-conflict resolution.
+database) have no field clocks and no outbox entries. Creating a club gives
+them field clocks at the creation time and puts them into the initial
+snapshot of every scope (sync-protocol §15.4); until then they count as oldest
+in conflict resolution.
 
 ## Databases from earlier versions
 

@@ -257,8 +257,9 @@ func TestMultiDeviceLifecycle(t *testing.T) {
 		t.Errorf("downgraded device reads new epoch: %v", err)
 	}
 
-	// §17.4: revocation with the cutoff from sync_streams.
-	if _, err := a.conn.Exec(`INSERT INTO sync_streams (device_id, scope, seq) VALUES (?, 'members.core', 41), (?, 'inventory', 3)`,
+	// §17.4: revocation. A coach writes nothing, so it gets no cutoffs
+	// (§8.2 rule 9), whatever sync_streams holds.
+	if _, err := a.conn.Exec(`INSERT INTO sync_streams (device_id, scope, seq, hash) VALUES (?, 'members.core', 41, 'sha256:x'), (?, 'inventory', 3, 'sha256:y')`,
 		b.dev.ID, b.dev.ID); err != nil {
 		t.Fatal(err)
 	}
@@ -271,7 +272,7 @@ func TestMultiDeviceLifecycle(t *testing.T) {
 	}
 	rb := v5.Device(b.dev.ID)
 	if rb.Status != acl.StatusRevoked || rb.RevokedIn != 5 ||
-		rb.Cutoff[db.ScopeMembersCore] != 41 || rb.Cutoff[db.ScopeInventory] != 3 || len(rb.Cutoff) != 2 {
+		len(rb.Cutoff) != 0 {
 		t.Errorf("revoked entry %+v", rb)
 	}
 	if v5.Epochs[db.ScopeMembersCore] != 2 || v5.Epochs[db.ScopeInventory] != 2 || v5.Epochs[db.ScopeFinance] != 2 {

@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/Waschndolos/open-clubmanager/server/internal/db"
+	"github.com/Waschndolos/open-clubmanager/server/internal/store"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/acl"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/club"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/wire"
@@ -309,3 +310,54 @@ func TestCheckFolderKinds(t *testing.T) {
 }
 
 func encodeID(b []byte) string { return wire.EncodeB64(b) }
+
+// Sync exchanges data between the devices of a club: local data of the
+// creator arrives through the initial snapshot, later changes in both
+// directions through segments (spec §13, §15.4).
+func TestSyncExchangesData(t *testing.T) {
+	ctx := context.Background()
+	shared := t.TempDir()
+	a, b := newNode(t), newNode(t)
+	sa := store.New(a.conn)
+	pre, err := sa.CreateMember(ctx, store.MemberInput{Number: 1, FirstName: "Erika", LastName: "Mustermann"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := a.svc.Create(ctx, shared, "TSV", "Petra", "Laptop", "pw-a"); err != nil {
+		t.Fatal(err)
+	}
+	inv, err := a.svc.CreateInvite(ctx, acl.RoleBoard, "Max")
+	if err != nil {
+		t.Fatal(err)
+	}
+	safety, err := b.svc.Join(ctx, shared, inv.Code, "Max", "PC", "pw-b", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a.sync(t)
+	if err := a.svc.Approve(ctx, a.svc.Requests()[0].DeviceID, safety); err != nil {
+		t.Fatal(err)
+	}
+	st := b.sync(t)
+	if st.Mode != "member" || st.IncompleteAreas != 0 || st.LastError != "" {
+		t.Fatalf("b status %+v", st)
+	}
+	sb := store.New(b.conn)
+	if m, err := sb.GetMember(ctx, pre.ID); err != nil || m.LastName != "Mustermann" {
+		t.Fatalf("pre-club member on b: %+v, %v", m, err)
+	}
+	created, err := sb.CreateMember(ctx, store.MemberInput{Number: 2, FirstName: "Max", LastName: "Muster"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if st := b.sync(t); st.PendingChanges != 0 {
+		t.Fatalf("outbox not flushed: %+v", st)
+	}
+	st = a.sync(t)
+	if m, err := sa.GetMember(ctx, created.ID); err != nil || m.FirstName != "Max" {
+		t.Fatalf("b's member on a: %+v, %v", m, err)
+	}
+	if st.WaitingStreams != 0 || st.QuarantinedStreams != 0 || st.WaitingChanges != 0 {
+		t.Fatalf("a status %+v", st)
+	}
+}

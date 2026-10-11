@@ -165,6 +165,12 @@ func toStatus(st *collab.Status) openapi.CollaborationStatus {
 		Conflicts:       st.Conflicts,
 		LostChanges:     st.LostChanges,
 		BadKeys:         st.BadKeys,
+
+		WaitingStreams:     st.WaitingStreams,
+		QuarantinedStreams: st.QuarantinedStreams,
+		WaitingChanges:     st.WaitingChanges,
+		IncompleteAreas:    st.IncompleteAreas,
+		ClockWarnings:      st.ClockWarnings,
 	}
 	if st.StorageError {
 		t := true

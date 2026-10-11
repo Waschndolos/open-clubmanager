@@ -9,7 +9,9 @@ import (
 
 	"github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/hlc"
+	"github.com/Waschndolos/open-clubmanager/server/internal/sync/identity"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/op"
+	"github.com/Waschndolos/open-clubmanager/server/internal/sync/replica"
 )
 
 // ErrLocalData is returned when joining a club while synced tables already
@@ -53,7 +55,8 @@ func ClearSyncedData(ctx context.Context, conn *sql.DB) error {
 			return err
 		}
 	}
-	for _, t := range []string{"sync_field_clock", "sync_conflicts", "sync_outbox"} {
+	for _, t := range []string{"sync_field_clock", "sync_conflicts", "sync_outbox",
+		"sync_pending", "sync_history", "sync_scopes", "sync_streams", "sync_uploads"} {
 		if _, err := tx.ExecContext(ctx, `DELETE FROM `+t); err != nil {
 			return err
 		}
@@ -71,8 +74,34 @@ func adoptLocalData(ctx context.Context, tx *sql.Tx, deviceID string, created hl
 			return fmt.Errorf("club: backfill field clocks of %s: %w", t.Name, err)
 		}
 	}
+	// Clocks written before the device identity existed carry no device id
+	// ("this device"); from now on they are attributed explicitly.
+	if _, err := tx.ExecContext(ctx, `UPDATE sync_field_clock SET device_id = ? WHERE device_id IS NULL`, deviceID); err != nil {
+		return err
+	}
 	_, err := tx.ExecContext(ctx, `DELETE FROM sync_outbox`)
 	return err
+}
+
+// initialSnapshots writes the initial snapshot of every scope (§15.4 steps
+// 3–4): epoch 1, ACL version 1, an empty streams map, and no stream state, so
+// the first segment of every scope has seq 1 and prev null. The files are
+// queued for upload in tx.
+func initialSnapshots(ctx context.Context, tx *sql.Tx, clubID string, dev *identity.Device, created hlc.Timestamp, scopeKeys map[db.Scope][]byte) error {
+	for _, t := range []string{"sync_streams", "sync_scopes", "sync_pending", "sync_history", "sync_uploads", "sync_clock_epochs"} {
+		if _, err := tx.ExecContext(ctx, `DELETE FROM `+t); err != nil {
+			return err
+		}
+	}
+	for _, s := range db.Scopes {
+		if _, _, err := replica.WriteSnapshot(ctx, tx, replica.SnapshotSpec{
+			ClubID: clubID, DeviceID: dev.ID, Sign: dev.Sign, Scope: s,
+			Epoch: 1, Key: scopeKeys[s], ACLVersion: 1, HLC: created,
+		}); err != nil {
+			return fmt.Errorf("club: initial snapshot of %s: %w", s, err)
+		}
+	}
+	return nil
 }
 
 func backfillClocks(ctx context.Context, tx *sql.Tx, t db.Table, deviceID string, created hlc.Timestamp) error {

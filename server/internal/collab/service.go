@@ -19,6 +19,7 @@ import (
 	"github.com/Waschndolos/open-clubmanager/server/internal/store"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/acl"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/club"
+	"github.com/Waschndolos/open-clubmanager/server/internal/sync/engine"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/identity"
 	"github.com/Waschndolos/open-clubmanager/server/internal/sync/transport"
 )
@@ -64,6 +65,7 @@ type Service struct {
 	conn     *sql.DB // database the state below belongs to
 	dev      *identity.Device
 	club     *club.Club
+	engine   *engine.Engine
 	tr       *transport.LocalFolder
 	path     string
 	lastSync time.Time
@@ -73,6 +75,9 @@ type Service struct {
 	badKeys  int
 	attempts map[string]int
 	syncing  bool
+	// incomplete is the number of readable scopes without a starting
+	// snapshot after the last sync.
+	incomplete int
 }
 
 // New returns a service. Call Run to start background refreshes.
@@ -124,8 +129,8 @@ func (s *Service) closeLocked() {
 	if s.tr != nil {
 		_ = s.tr.Close()
 	}
-	s.dev, s.club, s.tr, s.path = nil, nil, nil, ""
-	s.requests, s.lostOwn, s.badKeys, s.lastErr = nil, 0, 0, ""
+	s.dev, s.club, s.engine, s.tr, s.path = nil, nil, nil, nil, ""
+	s.requests, s.lostOwn, s.badKeys, s.lastErr, s.incomplete = nil, 0, 0, "", 0
 	s.lastSync = time.Time{}
 	s.attempts = map[string]int{}
 }
@@ -188,6 +193,7 @@ func (s *Service) openClubLocked(ctx context.Context) error {
 		return err
 	}
 	s.tr, s.club, s.path = tr, c, st.Path
+	s.engine = engine.New(s.conn, c, tr)
 	return nil
 }
 
@@ -201,6 +207,7 @@ func (s *Service) adopt(ctx context.Context, c *club.Club, tr *transport.LocalFo
 		_ = s.tr.Close()
 	}
 	s.club, s.tr, s.path = c, tr, path
+	s.engine = engine.New(s.conn, c, tr)
 	return nil
 }
 
@@ -225,11 +232,20 @@ func (s *Service) Sync(ctx context.Context) (*Status, error) {
 			return s.Status(ctx)
 		}
 	}
-	c := s.club
+	c, eng := s.club, s.engine
 	s.syncing = true
 	s.mu.Unlock()
 
+	// Refresh the ACL and keys, then exchange data (spec §13: flush the
+	// outbox, upload, pull and apply).
 	res, err := c.Refresh(ctx)
+	var rep *engine.Report
+	if err == nil {
+		rep, err = eng.Sync(ctx)
+	}
+	if err == nil && rep.UploadErr != nil {
+		err = rep.UploadErr
+	}
 	var reqs []club.JoinRequest
 	if err == nil && c.Head() != nil && c.Head().IsAdmin(c.Device().ID) {
 		reqs, err = c.JoinRequests(ctx)
@@ -246,6 +262,7 @@ func (s *Service) Sync(ctx context.Context) (*Status, error) {
 			s.requests = reqs
 			s.lostOwn += len(res.LostOwn)
 			s.badKeys = len(res.BadKeys)
+			s.incomplete = len(rep.Incomplete)
 		}
 	}
 	s.mu.Unlock()
@@ -282,6 +299,14 @@ type Status struct {
 	Conflicts       int
 	LostChanges     int
 	BadKeys         int
+	// Sync core (spec §13): streams of other devices that wait or are
+	// quarantined, received changes waiting for a referenced row, readable
+	// areas without a starting snapshot, devices with a clock warning.
+	WaitingStreams     int
+	QuarantinedStreams int
+	WaitingChanges     int
+	IncompleteAreas    int
+	ClockWarnings      int
 }
 
 // Status returns the current status. In local mode every area is writable.
@@ -309,6 +334,10 @@ func (s *Service) Status(ctx context.Context) (*Status, error) {
 	if conflicts, err := store.New(conn).ListConflicts(ctx); err == nil {
 		st.Conflicts = len(conflicts)
 	}
+	if sc, waiting, warn, err := engine.Counts(ctx, conn); err == nil {
+		st.WaitingStreams, st.QuarantinedStreams = sc.Waiting, sc.Quarantined
+		st.WaitingChanges, st.ClockWarnings = waiting, len(warn)
+	}
 	if s.dev == nil {
 		st.Locked = true
 		for _, sc := range db.Scopes {
@@ -321,6 +350,7 @@ func (s *Service) Status(ctx context.Context) (*Status, error) {
 	st.StorageError = s.club == nil
 	st.LastError, st.Syncing = s.lastErr, s.syncing
 	st.LostChanges, st.BadKeys = s.lostOwn, s.badKeys
+	st.IncompleteAreas = s.incomplete
 	if !s.lastSync.IsZero() {
 		t := s.lastSync
 		st.LastSync = &t

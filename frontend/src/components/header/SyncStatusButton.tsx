@@ -13,7 +13,7 @@ type State = 'ok' | 'syncing' | 'offline' | 'attention';
 
 export function syncState(st: CollaborationStatus): State {
     if (st.syncing) return 'syncing';
-    if (st.locked || st.mode === 'revoked' || st.conflicts > 0 || st.pendingRequests > 0 || st.lostChanges > 0 || st.badKeys > 0) {
+    if (st.locked || st.mode === 'revoked' || st.conflicts > 0 || st.pendingRequests > 0 || st.lostChanges > 0 || st.badKeys > 0 || st.quarantinedStreams > 0) {
         return 'attention';
     }
     if (st.storageError || st.lastError) return 'offline';
@@ -115,6 +115,8 @@ export default function SyncStatusButton() {
                     )}
                     {status.lostChanges > 0 && <Alert severity="warning">{t('collaboration.popover.lostChanges')}</Alert>}
                     {status.badKeys > 0 && <Alert severity="error">{t('collaboration.popover.badKeys')}</Alert>}
+                    {status.quarantinedStreams > 0 && <Alert severity="error">{t('collaboration.popover.quarantined', { count: status.quarantinedStreams })}</Alert>}
+                    {status.clockWarnings > 0 && <Alert severity="warning">{t('collaboration.popover.clockWarnings', { count: status.clockWarnings })}</Alert>}
                     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'space-between', alignItems: 'center' }}>
                         <Button size="small" onClick={() => go('/collaboration')}>{t('collaboration.popover.settings')}</Button>
                         <Button variant="contained" size="small" onClick={sync} disabled={status.syncing || status.locked}>

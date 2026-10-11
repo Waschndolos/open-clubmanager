@@ -73,3 +73,21 @@ func TestDecodeStrict(t *testing.T) {
 		}
 	}
 }
+
+func TestDecodeStrictRejectsDuplicatesAndBadUTF8(t *testing.T) {
+	var v map[string]any
+	for _, in := range []string{
+		`{"a": 1, "a": 2}`,
+		`{"x": {"b": [1, {"c": 1, "c": 2}]}}`,
+		"{\"a\": \"\xff\"}",
+	} {
+		if err := DecodeStrict([]byte(in), &v); err == nil {
+			t.Errorf("accepted %q", in)
+		}
+	}
+	for _, in := range []string{`{"a": {"a": 1}, "b": [{"a": 1}, {"a": 2}]}`, `{"a": [], "b": {}}`} {
+		if err := DecodeStrict([]byte(in), &v); err != nil {
+			t.Errorf("rejected %q: %v", in, err)
+		}
+	}
+}

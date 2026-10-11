@@ -51,7 +51,7 @@ func (s *Store) ListConflicts(ctx context.Context) ([]Conflict, error) {
 // applied. For every unique column of the table it looks at each value held by
 // one of the rows, or previously flagged for one of them, and among the live
 // rows holding that value the one whose value was set with the smallest
-// (hlc, device_id) keeps it; every other row is recorded in sync_conflicts.
+// (clock_epoch, hlc, device_id) keeps it; every other row is recorded in sync_conflicts.
 // Flags that no longer apply are removed. The result depends only on the
 // database content, so every device reaches the same decision.
 //
@@ -138,6 +138,7 @@ func resolveUniqueValue(ctx context.Context, tx *sql.Tx, t db.Table, col, valueT
 	}
 	type holder struct {
 		pk          string
+		epoch       int64
 		hlc, device string
 	}
 	var holders []holder
@@ -165,16 +166,20 @@ func resolveUniqueValue(ctx context.Context, tx *sql.Tx, t db.Table, col, valueT
 	for i := range holders {
 		var device sql.NullString
 		err := tx.QueryRowContext(ctx,
-			`SELECT hlc, device_id FROM sync_field_clock WHERE tbl = ? AND pk = ? AND col = ?`,
-			t.Name, holders[i].pk, col).Scan(&holders[i].hlc, &device)
+			`SELECT clock_epoch, hlc, device_id FROM sync_field_clock WHERE tbl = ? AND pk = ? AND col = ?`,
+			t.Name, holders[i].pk, col).Scan(&holders[i].epoch, &holders[i].hlc, &device)
 		if err != nil && err != sql.ErrNoRows {
 			return err
 		}
 		holders[i].device = device.String
 	}
-	// HLC strings sort like timestamps; a missing clock ("") sorts first.
+	// Order by (clock_epoch, hlc, device_id) (§14.1). HLC strings sort like
+	// timestamps; a missing clock (epoch 0, "") sorts first.
 	sort.Slice(holders, func(i, j int) bool {
 		a, b := holders[i], holders[j]
+		if a.epoch != b.epoch {
+			return a.epoch < b.epoch
+		}
 		if a.hlc != b.hlc {
 			return a.hlc < b.hlc
 		}

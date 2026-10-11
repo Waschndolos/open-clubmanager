@@ -205,17 +205,17 @@ func (c *Club) ChangeRole(ctx context.Context, deviceID, role string) (*acl.Vers
 	})
 }
 
-// Revoke revokes a device (§17.4). cutoff is the highest accepted seq per
-// scope; if nil, it is taken from sync_streams, and every scope the device
-// could write gets an entry (0 if nothing was accepted). Every scope the
-// device could read gets a new epoch.
-func (c *Club) Revoke(ctx context.Context, deviceID string, cutoff map[db.Scope]uint64) (*acl.Version, error) {
+// Revoke revokes a device (§17.4). cutoff is the highest accepted stream
+// position per scope; if nil, it is taken from sync_streams, and every scope
+// the device could write gets an entry ({0, null} if nothing was accepted).
+// Every scope the device could read gets a new epoch.
+func (c *Club) Revoke(ctx context.Context, deviceID string, cutoff map[db.Scope]acl.Cutoff) (*acl.Version, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.revoke(ctx, nil, deviceID, cutoff)
 }
 
-func (c *Club) revoke(ctx context.Context, root *identity.KeyPair, deviceID string, cutoff map[db.Scope]uint64) (*acl.Version, error) {
+func (c *Club) revoke(ctx context.Context, root *identity.KeyPair, deviceID string, cutoff map[db.Scope]acl.Cutoff) (*acl.Version, error) {
 	if cutoff == nil {
 		head := c.head()
 		if head == nil {
@@ -242,32 +242,33 @@ func (c *Club) revoke(ctx context.Context, root *identity.KeyPair, deviceID stri
 	})
 }
 
-// acceptedCutoff returns, per scope, the highest seq this device has
-// accepted from deviceID (§17.4 step 2), covering every scope with a stream
-// and every scope the device may currently write.
-func (c *Club) acceptedCutoff(ctx context.Context, head *acl.Version, deviceID string) (map[db.Scope]uint64, error) {
-	cutoff := map[db.Scope]uint64{}
+// acceptedCutoff returns, for every scope deviceID may currently write, the
+// highest contiguous stream position this device has verified and accepted
+// from it, with the complete-file hash of that segment (§17.4 step 2,
+// §8.2 rule 9).
+func (c *Club) acceptedCutoff(ctx context.Context, head *acl.Version, deviceID string) (map[db.Scope]acl.Cutoff, error) {
+	cutoff := map[db.Scope]acl.Cutoff{}
 	for _, s := range db.Scopes {
-		if head.Perm(deviceID, s).CanWrite() {
-			cutoff[s] = 0
+		if !head.Perm(deviceID, s).CanWrite() {
+			continue
 		}
-	}
-	rows, err := c.db.QueryContext(ctx, `SELECT scope, seq FROM sync_streams WHERE device_id = ?`, deviceID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var s string
 		var seq uint64
-		if err := rows.Scan(&s, &seq); err != nil {
+		var hash sql.NullString
+		err := c.db.QueryRowContext(ctx, `SELECT seq, hash FROM sync_streams WHERE device_id = ? AND scope = ?`,
+			deviceID, s).Scan(&seq, &hash)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, err
 		}
-		if layout.ValidScope(db.Scope(s)) {
-			cutoff[db.Scope(s)] = seq
+		cut := acl.Cutoff{Seq: seq}
+		if seq > 0 && hash.Valid {
+			h := hash.String
+			cut.Hash = &h
+		} else {
+			cut.Seq = 0
 		}
+		cutoff[s] = cut
 	}
-	return cutoff, rows.Err()
+	return cutoff, nil
 }
 
 // Recover makes this device an admin device with the recovery kit (§17.5):
@@ -302,7 +303,7 @@ func (c *Club) Recover(ctx context.Context, kitText, person, deviceName string) 
 
 // RevokeWithRoot revokes a device with the recovery kit, e.g. a compromised
 // admin device when no other admin device is left (§21).
-func (c *Club) RevokeWithRoot(ctx context.Context, kitText, deviceID string, cutoff map[db.Scope]uint64) (*acl.Version, error) {
+func (c *Club) RevokeWithRoot(ctx context.Context, kitText, deviceID string, cutoff map[db.Scope]acl.Cutoff) (*acl.Version, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	kit, err := c.openKit(kitText)

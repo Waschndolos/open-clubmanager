@@ -43,9 +43,26 @@ type Device struct {
 	Status     string `json:"status"`
 	AddedIn    uint64 `json:"added_in"`
 	RevokedIn  uint64 `json:"revoked_in,omitempty"`
-	// Cutoff is the highest seq per scope that is still accepted from a
-	// revoked device (§13.2 rule 6). A scope missing here has cutoff 0.
-	Cutoff map[db.Scope]uint64 `json:"cutoff,omitempty"`
+	// Cutoff is, per scope the device could write immediately before its
+	// revocation, the last stream position that is still accepted
+	// (§8.2 rule 9, §13.2 rule 6).
+	Cutoff map[db.Scope]Cutoff `json:"cutoff,omitempty"`
+}
+
+// Cutoff is the terminal position of a revoked device's stream: the highest
+// contiguous, verified segment the revoking admin had accepted and the
+// complete-file hash of that segment. Seq 0 (nothing accepted) has a nil Hash.
+type Cutoff struct {
+	Seq  uint64  `json:"seq"`
+	Hash *string `json:"hash"`
+}
+
+// Equal reports whether two cutoffs are the same.
+func (c Cutoff) Equal(o Cutoff) bool {
+	if c.Seq != o.Seq || (c.Hash == nil) != (o.Hash == nil) {
+		return false
+	}
+	return c.Hash == nil || *c.Hash == *o.Hash
 }
 
 // Active reports whether the device is active.
@@ -62,6 +79,9 @@ type ACL struct {
 	Roles      map[string]Role     `json:"roles"`
 	Devices    []Device            `json:"devices"`
 	Epochs     map[db.Scope]uint64 `json:"epochs"`
+	// ClockEpochs starts a new conflict-ordering generation per scope
+	// (§8.1, §12): changes ordered by (clock_epoch, hlc, device_id).
+	ClockEpochs map[db.Scope]uint64 `json:"clock_epochs"`
 	// KeyChecks commits to the scope key of every epoch: KeyChecks[S][e-1]
 	// is keys.Check(S, e, K(S,e)). This field is an addition to §8.1, see
 	// keys.Check for why it is needed.
@@ -166,6 +186,7 @@ var (
 	ErrKeyChecks      = errors.New("acl: key checks changed or do not match epochs")     // rule 4 (addition)
 	ErrDeviceChanged  = errors.New("acl: device removed, altered or reactivated")        // rule 5
 	ErrScopeDeps      = errors.New("acl: role violates scope dependencies")              // rule 6
+	ErrCutoff         = errors.New("acl: revocation cutoff invalid")                     // rule 9
 	ErrLostConcurrent = errors.New("acl: lost against a concurrent version")             // §8.3
 	ErrRollback       = errors.New("acl: chain ends below the highest accepted version") // §8.4
 )
@@ -276,6 +297,14 @@ func checkFormat(a *ACL) error {
 			return bad("epoch of %s", s)
 		}
 	}
+	if len(a.ClockEpochs) != len(db.Scopes) {
+		return bad("clock_epochs must list every scope")
+	}
+	for _, s := range db.Scopes {
+		if a.ClockEpochs[s] < 1 {
+			return bad("clock epoch of %s", s)
+		}
+	}
 	seen := map[string]bool{}
 	for _, d := range a.Devices {
 		if seen[d.DeviceID] {
@@ -307,9 +336,20 @@ func checkFormat(a *ACL) error {
 			if d.RevokedIn < d.AddedIn || d.RevokedIn > a.Version {
 				return bad("device %s revoked_in %d", d.DeviceID, d.RevokedIn)
 			}
-			for s := range d.Cutoff {
+			for s, c := range d.Cutoff {
 				if !layout.ValidScope(s) {
 					return bad("device %s cutoff for unknown scope %q", d.DeviceID, s)
+				}
+				if c.Seq == 0 && c.Hash != nil {
+					return bad("device %s cutoff %s: seq 0 must have hash null", d.DeviceID, s)
+				}
+				if c.Seq != 0 {
+					if c.Hash == nil {
+						return bad("device %s cutoff %s: hash missing", d.DeviceID, s)
+					}
+					if _, err := wire.ParseHash(*c.Hash); err != nil {
+						return bad("device %s cutoff %s: %v", d.DeviceID, s, err)
+					}
 				}
 			}
 		default:
@@ -337,6 +377,10 @@ func checkEpochs(prev, a *ACL) error {
 		}
 		if prev != nil && !slices.Equal(checks[:len(prev.KeyChecks[s])], prev.KeyChecks[s]) {
 			return fmt.Errorf("%w: %s", ErrKeyChecks, s)
+		}
+		// Rule 8.
+		if prev != nil && a.ClockEpochs[s] < prev.ClockEpochs[s] {
+			return fmt.Errorf("%w: clock epoch of %s from %d to %d", ErrEpochDecreased, s, prev.ClockEpochs[s], a.ClockEpochs[s])
 		}
 	}
 	if len(a.KeyChecks) != len(db.Scopes) {
@@ -366,10 +410,19 @@ func checkDevices(prev, a *ACL) error {
 			return fmt.Errorf("%w: keys of %s changed", ErrDeviceChanged, old.DeviceID)
 		case !old.Active() && d.Active():
 			return fmt.Errorf("%w: %s reactivated", ErrDeviceChanged, old.DeviceID)
-		case !old.Active() && (d.RevokedIn != old.RevokedIn || !maps.Equal(d.Cutoff, old.Cutoff)):
+		case !old.Active() && (d.RevokedIn != old.RevokedIn || !maps.EqualFunc(d.Cutoff, old.Cutoff, Cutoff.Equal)):
 			return fmt.Errorf("%w: revocation of %s changed", ErrDeviceChanged, old.DeviceID)
 		case old.Active() && !d.Active() && d.RevokedIn != a.Version:
 			return fmt.Errorf("%w: %s revoked with revoked_in %d", ErrDeviceChanged, old.DeviceID, d.RevokedIn)
+		case old.Active() && !d.Active():
+			// Rule 9: exactly one cutoff per scope the device could write
+			// immediately before its revocation.
+			for _, s := range db.Scopes {
+				_, has := d.Cutoff[s]
+				if has != prev.Perm(old.DeviceID, s).CanWrite() {
+					return fmt.Errorf("%w: %s scope %s", ErrCutoff, old.DeviceID, s)
+				}
+			}
 		}
 	}
 	for _, d := range a.Devices {

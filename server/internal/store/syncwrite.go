@@ -99,12 +99,18 @@ func (w *writer) record(t db.Table, pk row, set row) (string, error) {
 	w.touched[t.Name] = true
 
 	pkText := op.EncodePK(pk)
+	var epoch int64
+	if err := w.QueryRowContext(w.ctx,
+		`SELECT COALESCE((SELECT clock_epoch FROM sync_clock_epochs WHERE scope = ?), 1)`, t.Scope).Scan(&epoch); err != nil {
+		return "", err
+	}
 	for col := range set {
 		if _, err := w.ExecContext(w.ctx,
-			`INSERT INTO sync_field_clock (tbl, pk, col, hlc, device_id)
-			 VALUES (?, ?, ?, ?, (SELECT device_id FROM sync_device WHERE id = 1))
-			 ON CONFLICT (tbl, pk, col) DO UPDATE SET hlc = excluded.hlc, device_id = excluded.device_id`,
-			t.Name, pkText, col, ts.String()); err != nil {
+			`INSERT INTO sync_field_clock (tbl, pk, col, hlc, device_id, clock_epoch)
+			 VALUES (?, ?, ?, ?, (SELECT device_id FROM sync_device WHERE id = 1), ?)
+			 ON CONFLICT (tbl, pk, col) DO UPDATE SET hlc = excluded.hlc, device_id = excluded.device_id,
+			   clock_epoch = excluded.clock_epoch`,
+			t.Name, pkText, col, ts.String(), epoch); err != nil {
 			return "", err
 		}
 	}
@@ -113,7 +119,7 @@ func (w *writer) record(t db.Table, pk row, set row) (string, error) {
 		return "", err
 	}
 	if _, err := w.ExecContext(w.ctx,
-		`INSERT INTO sync_outbox (scope, hlc, op) VALUES (?, ?, ?)`, string(t.Scope), ts.String(), string(data)); err != nil {
+		`INSERT INTO sync_outbox (scope, hlc, op, clock_epoch) VALUES (?, ?, ?, ?)`, string(t.Scope), ts.String(), string(data), epoch); err != nil {
 		return "", err
 	}
 	return db.FormatTime(ts.Time()), nil

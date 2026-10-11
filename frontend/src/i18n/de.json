@@ -525,6 +525,8 @@
             "error": "Letzter Fehler: {{error}}",
             "lostChanges": "Eine deiner Änderungen an Rollen oder Geräten wurde von einer gleichzeitigen Änderung überholt. Bitte prüfe sie und mach sie noch einmal.",
             "badKeys": "Einige Schlüsseldateien im Speicherort sind beschädigt oder passen nicht. Bitte den Vorstand, das zu prüfen.",
+            "quarantined": "Änderungen von {{count}} Gerät(en) haben die Prüfung nicht bestanden und wurden angehalten. Bitte den Vorstand, das zu prüfen.",
+            "clockWarnings": "{{count}} Gerät(e) haben Änderungen mit einer weit vorgehenden Uhr geschickt. Bitte den Vorstand, die Geräteuhren zu prüfen.",
             "settings": "Einstellungen"
         },
         "folder": {

@@ -1183,7 +1183,22 @@ components:
           type: integer
           description: Own ACL changes that lost against a concurrent change and must be redone.
         badKeys: { type: integer }
-      required: [mode, locked, isAdmin, permissions, syncing, pendingChanges, pendingRequests, conflicts, lostChanges, badKeys]
+        waitingStreams:
+          type: integer
+          description: Change streams of other devices waiting for a missing file, key, ACL version or app update.
+        quarantinedStreams:
+          type: integer
+          description: Change streams stopped because a file failed verification (security warning).
+        waitingChanges:
+          type: integer
+          description: Received changes waiting for a row they reference.
+        incompleteAreas:
+          type: integer
+          description: Readable areas without a verified starting snapshot yet.
+        clockWarnings:
+          type: integer
+          description: Devices whose changes carried a clock far ahead of this device's clock.
+      required: [mode, locked, isAdmin, permissions, syncing, pendingChanges, pendingRequests, conflicts, lostChanges, badKeys, waitingStreams, quarantinedStreams, waitingChanges, incompleteAreas, clockWarnings]
     FolderClub:
       type: object
       properties:
