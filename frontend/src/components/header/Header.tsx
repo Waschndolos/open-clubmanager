@@ -1,74 +1,69 @@
-import {AppBar, Box, IconButton, Toolbar, Typography} from '@mui/material'
-import React from "react";
-import NotificationBell from "./NotificationBell";
-import MenuIcon from "@mui/icons-material/Menu";
-import ThemeToggle from "./ThemeToggle";
-import LogoutButton from "./LogoutButton";
-import SyncStatusButton from "./SyncStatusButton";
-import { useTheme } from '@mui/material/styles';
+import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import { matchPath, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import NotificationBell from './NotificationBell';
+import ThemeToggle from './ThemeToggle';
+import SyncStatusButton from './SyncStatusButton';
+import { useNavGroups } from '../menu/navItems';
 
-// HeaderProps type
 type HeaderProps = {
-    sidebarCollapsed: boolean;
-    onToggleSidebar: () => void;
+    /** Shown on small screens where the sidebar is a drawer. */
+    onOpenNavigation?: () => void;
 };
 
-export default function Header({onToggleSidebar }: HeaderProps) {
-    const theme = useTheme();
-    
-    return (
-        <AppBar position="static" elevation={0}>
-            <Toolbar
-                variant="dense"
-                sx={{
-                    minHeight: 56,
-                    px: { xs: 1.5, sm: 2 },
-                    gap: 1.5,
-                }}
-            >
-                <IconButton
-                    color="inherit"
-                    edge="start"
-                    onClick={onToggleSidebar}
-                    size="small"
-                    aria-label="toggle sidebar"
-                >
-                    <MenuIcon fontSize="small" />
-                </IconButton>
+/** Slim top bar: where you are on the left, status and quick toggles on the right. */
+export default function Header({ onOpenNavigation }: HeaderProps) {
+    const { t } = useTranslation();
+    const { pathname } = useLocation();
+    const groups = useNavGroups();
 
-                <Typography
-                    variant="h6"
-                    sx={{
-                        flexGrow: 1,
-                        fontWeight: 700,
-                        letterSpacing: '-0.02em',
-                        fontSize: '1.05rem',
-                    }}
-                >
-                    Open ClubManager
-                </Typography>
+    let groupLabel: string | undefined;
+    let pageLabel: string | undefined;
+    for (const group of groups) {
+        const item = group.items.find((i) => matchPath({ path: i.link, end: false }, pathname));
+        if (item) {
+            groupLabel = group.label;
+            pageLabel = item.label;
+            break;
+        }
+    }
+
+    return (
+        <AppBar position="sticky">
+            <Toolbar sx={{ minHeight: { xs: 56, sm: 64 }, px: { xs: 1.5, sm: 3 }, gap: 1 }}>
+                {onOpenNavigation && (
+                    <IconButton edge="start" onClick={onOpenNavigation} aria-label={t('nav.openMenu')}>
+                        <MenuRoundedIcon />
+                    </IconButton>
+                )}
 
                 <Box
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 0.5,
-                        bgcolor: theme.palette.mode === 'dark'
-                            ? 'rgba(255, 255, 255, 0.04)'
-                            : 'rgba(0, 0, 0, 0.03)',
-                        border: `1px solid ${theme.palette.mode === 'dark'
-                            ? 'rgba(255, 255, 255, 0.06)'
-                            : 'rgba(0, 0, 0, 0.06)'}`,
-                        borderRadius: 3,
-                        p: 0.5,
-                    }}
+                    component="nav"
+                    aria-label="Breadcrumb"
+                    sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 1 }}
                 >
-                    <ThemeToggle />
+                    {groupLabel && (
+                        <>
+                            <Typography noWrap sx={{ fontSize: '0.9rem', color: 'text.secondary', display: { xs: 'none', sm: 'block' } }}>
+                                {groupLabel}
+                            </Typography>
+                            <Typography aria-hidden sx={{ color: 'divider', display: { xs: 'none', sm: 'block' } }}>/</Typography>
+                        </>
+                    )}
+                    {pageLabel && (
+                        <Typography noWrap aria-current="page" sx={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                            {pageLabel}
+                        </Typography>
+                    )}
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
                     <SyncStatusButton />
                     <NotificationBell />
-                    <LogoutButton />
+                    <ThemeToggle />
                 </Box>
             </Toolbar>
         </AppBar>
-    )
+    );
 }

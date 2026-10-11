@@ -8,12 +8,16 @@ declare module '@mui/material/styles' {
         custom: {
             border: string;
             boxShadow: string;
+            accent: string;
+            sunken: string;
         };
     }
     interface ThemeOptions {
         custom?: {
             border?: string;
             boxShadow?: string;
+            accent?: string;
+            sunken?: string;
         };
     }
 }

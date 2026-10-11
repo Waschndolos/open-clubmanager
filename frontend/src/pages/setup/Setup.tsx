@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
     Box,
     Button,
-    Card,
-    CardContent,
     Checkbox,
     FormControlLabel,
     IconButton,
@@ -15,7 +13,7 @@ import {
     Step,
     StepLabel,
 } from '@mui/material';
-import { Visibility, VisibilityOff, AdminPanelSettings } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -30,7 +28,7 @@ import { setAccessToken } from '../../api/api';
 import { seedSetupDemoData } from '../../api/setupDemoData';
 import { getDatabaseSettings } from '../../api/settings';
 import { validatePath } from '../../api/validation';
-import loginBg from '../../assets/login_bg.jpeg';
+import AuthLayout from '../../components/auth/AuthLayout';
 
 const Setup: React.FC = () => {
     const { t } = useTranslation();
@@ -167,92 +165,15 @@ const Setup: React.FC = () => {
     };
 
     return (
-        <Box
-            sx={{
-                position: 'relative',
-                minHeight: '100vh',
-                minWidth: '100vw',
-                overflow: 'hidden',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                py: 4,
-            }}
-        >
-            <Box
-                sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    backgroundImage: `url(${loginBg})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    filter: 'saturate(1.1) contrast(1.05) brightness(0.65)',
-                    transform: 'scale(1.02)',
-                }}
-            />
-
-            <Box
-                sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'linear-gradient(135deg, rgba(15,21,22,0.75) 0%, rgba(22,33,34,0.6) 50%, rgba(15,21,22,0.85) 100%)',
-                }}
-            />
-
-            <Box
-                sx={{
-                    position: 'relative',
-                    width: '100%',
-                    maxWidth: 520,
-                    mx: { xs: 2, sm: 3 },
-                    my: 4,
-                }}
-            >
-                <Card
-                    sx={{
-                        width: '100%',
-                        p: { xs: 3, sm: 4 },
-                        bgcolor: (theme) => theme.palette.mode === 'dark'
-                            ? 'rgba(22, 33, 34, 0.92)'
-                            : 'rgba(255, 255, 255, 0.96)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        boxShadow: '0 24px 60px rgba(0, 0, 0, 0.35)',
-                        backdropFilter: 'blur(16px)',
-                        borderRadius: 4,
-                    }}
-                    elevation={0}
-                >
-                    <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
-                        <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
-                            <AdminPanelSettings
-                                sx={{
-                                    fontSize: 48,
-                                    color: 'primary.main',
-                                    mb: 1,
-                                }}
-                            />
-                            <Typography
-                                variant="h4"
-                                component="h1"
-                                fontWeight={800}
-                                sx={{ letterSpacing: '-0.02em', mb: 0.5 }}
-                            >
-                                {t('setup.title')}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" align="center">
-                                {t('setup.description')}
-                            </Typography>
-                        </Box>
-
-                        <Stepper activeStep={currentStep} sx={{ mb: 3 }}>
-                            <Step completed={false}>
+        <AuthLayout title={t('setup.title')} subtitle={t('setup.description')} formWidth={480}>
+                        <Stepper activeStep={currentStep} alternativeLabel sx={{ mb: 4, mx: -1 }}>
+                            <Step completed={currentStep > 0}>
                                 <StepLabel>{t('collaboration.setup.stepUsage')}</StepLabel>
                             </Step>
-                            <Step completed={false}>
+                            <Step completed={currentStep > 1}>
                                 <StepLabel>{t('setup.steps.database')}</StepLabel>
                             </Step>
-                            <Step completed={false}>
+                            <Step completed={currentStep > 2}>
                                 <StepLabel>{t('setup.steps.createAdmin')}</StepLabel>
                             </Step>
                         </Stepper>
@@ -444,10 +365,7 @@ const Setup: React.FC = () => {
                                 </Alert>
                             )}
                         </Box>
-                    </CardContent>
-                </Card>
-            </Box>
-        </Box>
+        </AuthLayout>
     );
 };
 

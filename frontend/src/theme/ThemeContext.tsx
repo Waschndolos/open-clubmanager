@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useMemo, useEffect, ReactNode } from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { lightTheme, darkTheme } from '.';
+import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
+import { createAppTheme } from './createAppTheme';
 
 // Type for theme mode
 export type ThemeMode = 'light' | 'dark';
@@ -48,7 +48,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const toggleTheme = () => setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
 
   // Memoize MUI theme
-  const theme = useMemo(() => createTheme(mode === 'light' ? lightTheme : darkTheme), [mode]);
+  const theme = useMemo(() => createAppTheme(mode), [mode]);
 
   return (
     <ThemeContext.Provider value={{ mode, toggleTheme }}>

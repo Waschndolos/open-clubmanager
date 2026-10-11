@@ -5,7 +5,8 @@ import {NotificationProvider} from "./context/NotificationContext";
 import {AuthProvider} from "./context/AuthContext";
 import {CollaborationProvider} from "./context/CollaborationContext";
 import './i18n';
-import '@fontsource/roboto/300.css';
+import '@fontsource-variable/figtree';
+import '@fontsource-variable/bricolage-grotesque';
 
 /**
  * Root application component that composes all application-level providers

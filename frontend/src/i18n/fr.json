@@ -17,7 +17,9 @@
         "forgotPassword": "Mot de passe oublié ?",
         "welcomeTitle": "Bienvenue sur Open ClubManager",
         "welcomeSubtitle": "Gérez les membres, les finances, les groupes et les processus du club dans une application moderne, claire et rapide.",
-        "errorInvalidCredentials": "Échec de la connexion. Veuillez vérifier vos identifiants."
+        "errorInvalidCredentials": "Échec de la connexion. Veuillez vérifier vos identifiants.",
+        "showPassword": "Afficher le mot de passe",
+        "hidePassword": "Masquer le mot de passe"
     },
     "forgotPassword": {
         "title": "Mot de passe oublié",
@@ -112,7 +114,32 @@
             },
             "membersBySection": {
                 "title": "Membres par section"
-            }
+            },
+            "empty": "Pas encore de données."
+        },
+        "greeting": {
+            "morning": "Bonjour",
+            "afternoon": "Bonjour",
+            "evening": "Bonsoir"
+        },
+        "quick": {
+            "title": "Accès rapide",
+            "members": "Gérer les membres",
+            "finance": "Saisir une écriture",
+            "entities": "Structure du club",
+            "history": "Dernières modifications"
+        },
+        "stats": {
+            "members": "Membres",
+            "activeMembers": "dont {{count}} actifs",
+            "activeShare": "Membres actifs",
+            "groups": "Groupes",
+            "roles": "Rôles",
+            "sections": "Sections",
+            "fees": "Cotisations payées",
+            "feesOf": "sur {{total}}",
+            "noMembers": "Aucun membre pour l’instant.",
+            "addMembers": "Ajouter le premier membre"
         }
     },
     "tooltips": {
@@ -471,6 +498,45 @@
         "hint": "Vous pouvez modifier ce dossier ultérieurement dans les paramètres.",
         "error": {
             "generic": "Une erreur s'est produite lors de la configuration du dossier du club."
+        }
+    },
+    "auth": {
+        "brand": {
+            "tagline": "Votre club. Tout au même endroit.",
+            "points": [
+                "Membres, cotisations et sections en un coup d’œil",
+                "Fonctionne sur votre ordinateur – vos données restent chez vous",
+                "Travaillez avec tout le bureau si vous le souhaitez"
+            ]
+        }
+    },
+    "theme": {
+        "toLight": "Thème clair",
+        "toDark": "Thème sombre"
+    },
+    "nav": {
+        "main": "Navigation principale",
+        "club": "Club",
+        "admin": "Administration",
+        "dashboard": "Aperçu",
+        "members": "Membres",
+        "finance": "Finances",
+        "inventory": "Inventaire",
+        "entities": "Structure du club",
+        "history": "Historique",
+        "users": "Utilisateurs",
+        "collaboration": "Collaboration",
+        "settings": "Paramètres",
+        "openMenu": "Ouvrir le menu",
+        "collapse": "Réduire la barre latérale",
+        "expand": "Développer la barre latérale",
+        "account": "Compte",
+        "signedInAs": "Connecté en tant que",
+        "roles": {
+            "ADMIN": "Administrateur",
+            "TREASURER": "Trésorier",
+            "SECRETARY": "Secrétaire",
+            "READONLY": "Lecture seule"
         }
     }
 }
