@@ -244,13 +244,16 @@ Gib Erika Zugriff auf den gemeinsamen Ordner
 Das geht nicht über Open ClubManager, sondern bei eurem Anbieter.
 
 [Nextcloud] [OneDrive] [Dropbox] [Google Drive]
- 1. Öffne Nextcloud im Browser …   (illustrated steps, with screenshots)
+ 1. Öffne Nextcloud im Browser …   (text steps, no screenshots)
  2. …
 
 [x] Erledigt – Erika hat Zugriff auf den Ordner
 ```
 
 - The provider tab is preselected based on the storage location.
+- Guides are short **text steps without screenshots**, plus a link to the
+  provider's own help page. Screenshots go out of date with every provider
+  UI change and nobody can maintain them reliably.
 - The guide shows the folder name to share.
 - For „Eigener Server“ this step is skipped.
 
@@ -259,7 +262,7 @@ Das geht nicht über Open ClubManager, sondern bei eurem Anbieter.
 ```
 Einladung für Erika Mustermann (Kassierer)
 
-  [QR-Code]     OCM-7K2P-QX9M-4TFA-...     [Kopieren]
+  [QR-Code]     7K2P-QX9M-4TFA-W3RB-NC5H-Y8LD     [Kopieren]
 
 Schicke Erika diesen Code, z. B. per E-Mail oder Messenger.
 Er ist 7 Tage gültig und kann nur einmal verwendet werden.
@@ -284,7 +287,9 @@ From [F1](#f1-first-start) → „Ich habe eine Einladung“.
    (camera, where available). Invalid or expired codes get a clear error:
    „Dieser Code ist abgelaufen. Bitte frag nach einer neuen Einladung.“
 2. **Speicherort:**
-   - The code tells the app the kind of storage.
+   - The code only identifies the invite. The app asks where the club's data
+     is: „Gemeinsamer Ordner“, „Nextcloud direkt“ or „Server“. A QR code or
+     link for WebDAV/server already contains the address.
    - For a folder: „Wähle den Ordner aus, den <Einladende Person> mit dir
      geteilt hat.“ The app offers detected folders that contain a club with
      the matching club id.
@@ -530,9 +535,9 @@ Settings → Zusammenarbeit → „Dieses Gerät abmelden“.
 
 - Choice: „Daten auf diesem Gerät behalten (nur lesen, nicht mehr
   synchronisiert)“ or „Daten von diesem Gerät löschen“.
-- The device asks an admin to remove it. The text explains that a Vorstand
-  device must confirm, otherwise the device stays listed. This needs a
-  „leave request“ file that the spec does not define yet (see open question 6).
+- The app does not send a request. It tells the person: „Bitte jemanden aus
+  dem Vorstand, dein Gerät unter Personen & Geräte zu entfernen. Bis dahin
+  bleibt es in der Liste.“
 - The last admin cannot leave. The hint is to give the Vorstand role to
   someone else first.
 
@@ -569,22 +574,22 @@ Settings → Zusammenarbeit → „Dieses Gerät abmelden“.
   (F3 step 2) are longer texts with images and should live as separate
   Markdown files per language.
 
-## Open UX questions
+## Decisions
 
-1. **Invite code length vs. typing:** the code must carry club id, invite id,
-   secret and storage hint. As text it gets long. Do we need a short code
-   that is only valid together with the shared folder (club id and storage
-   come from the folder)?
-2. **Several clubs on one device** (a person is treasurer in two clubs): out
-   of scope for v1? Then the first-start screen must say so when a second
-   invite is used.
-3. **Role editing** (custom roles, spec §8): in v1 only the five default
-   roles, or editable from the start?
-4. **Mobile:** coaches mostly use phones. Tauri 2 supports mobile, but cloud
-   folders on phones work differently (no always-on sync client). Is mobile
-   read-only access via server mode enough for v1?
-5. **Provider guides:** who creates and maintains the screenshots for
-   Nextcloud, OneDrive, Dropbox and Google Drive when their UIs change?
-6. **Leave request:** [F13](#f13-leaving-collaboration) needs a way for a
-   device to ask for its own removal. Add a `requests/<device_id>.leave.json`
-   to the spec, or simply tell the person to ask an admin?
+Decided after the first draft:
+
+1. **Short invite code.** The code contains only the invite id and secret
+   (24 characters, e.g. `7K2P-QX9M-4TFA-W3RB-NC5H-Y8LD`). The club is found
+   through the storage location; for WebDAV and server a QR code or link
+   carries the address. Spec §17.2 is updated accordingly.
+2. **One club per device in v1.** If a device that already belongs to a club
+   uses an invite, the app explains: „Auf diesem Gerät ist schon ein Verein
+   eingerichtet. Mehrere Vereine werden noch nicht unterstützt.“
+3. **Only the five default roles in v1.** The ACL format already supports
+   custom roles; the editor comes later. The Rollen tab is read-only.
+4. **Desktop only in v1.** Mobile access comes later via the browser in
+   server mode. Cloud-folder sync on phones is not reliable enough.
+5. **Provider guides as text without screenshots**, with a link to the
+   provider's help (see [F3](#f3-inviting-a-person)).
+6. **No leave request.** [F13](#f13-leaving-collaboration) asks the person
+   to have a Vorstand member remove the device. The spec stays unchanged.

@@ -619,11 +619,18 @@ snapshots.
 
 Steps:
 1. **Admin device creates the invite.** It generates:
-   - `invite_id`, 8 random bytes,
-   - `invite_secret`, 16 random bytes.
+   - `invite_id`, 5 random bytes,
+   - `invite_secret`, 10 random bytes (80 bits).
    It stores the intended role and expiry date (default 7 days) **locally** and
-   shows an invite code (text and QR) that contains: `club_id`, `invite_id`,
-   `invite_secret`, and the transport hint (WebDAV URL or "shared folder").
+   shows an **invite code**: `invite_id || invite_secret` as 24 characters of
+   uppercase base32 in groups of four, e.g. `7K2P-QX9M-4TFA-W3RB-NC5H-Y8LD`.
+   - The code does not contain the club id or the storage location, so it
+     stays short enough to type. The joining device learns the club from
+     `club.json` in the storage location the person selects.
+   - For WebDAV and server storage, the app additionally offers a QR code or
+     link that contains the storage URL together with the code.
+   - 80 bits are enough because the secret is only used for the HMAC proof,
+     invites expire after 7 days, and the safety code check follows.
 2. **Access to storage:** the person must get access to the shared folder or
    WebDAV share through the storage provider. This is outside the app, and
    the app explains it.
