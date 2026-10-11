@@ -409,6 +409,11 @@ if r.ms <= now_ms() + MAX_DRIFT: hlc = max(hlc, r)   # then tick as above for th
   (devices must converge), but the local clock does not follow them. The UI
   shows a clock warning naming the author device.
 - If the counter overflows, the device waits for the next millisecond.
+- **Every op gets its own tick**, also when several ops are written in the
+  same database transaction. Two ops of one device therefore never share an
+  HLC, and two writes to the same field within one transaction cannot tie.
+- Ops in a segment MUST be ordered by ascending `hlc`. `hlc_min` and
+  `hlc_max` in the header are the first and last of them.
 
 ## 13. Applying changes
 
@@ -523,8 +528,10 @@ prevents duplicates whenever it can see them.
   the current epoch.
 - Snapshots MUST be written by an admin device. Other devices ignore
   snapshots from non-admin authors.
-- A new device MAY start from the newest snapshot and then apply segments
-  after the recorded positions.
+- A device that joins a club MUST load the newest valid snapshot of each
+  scope it can read, if one exists, and then apply segments after the
+  recorded positions. Data that exists only in a snapshot, such as the
+  initial snapshot ([§15.4](#154-initial-snapshot)), is otherwise never seen.
 - Admin devices SHOULD write a snapshot per scope when more than 1,000
   segments have accumulated since the last one, or once a month.
 
@@ -553,6 +560,30 @@ The documentation for clubs MUST mention this.
 Retention periods for finance records (§ 147 AO: 10 years) take precedence
 over erasure. The UI MUST warn before purging finance data.
 
+### 15.4 Initial snapshot
+
+A club is usually created on a device that already holds data from local
+mode. These rows were written before sync existed: they have no field clocks
+from the club's history, and changes in `sync_outbox` from before the club
+was created are not part of any stream.
+
+When a club is created ([§17.1](#171-creating-a-club)), the device therefore:
+1. Assigns a field clock to every column of every row in synced tables that
+   has none, all with the same HLC `G` (the club creation time) and its own
+   `device_id`. Existing clocks are kept.
+2. Clears `sync_outbox`. Every change in it is already in the local tables
+   and therefore in the snapshot.
+3. Writes one snapshot per scope with epoch 1 and an empty `streams` map.
+4. Sets the next `seq` of every scope to 1. The first segment after the
+   snapshot has `prev: null`.
+
+The snapshot is the starting state for all other devices. Its rows behave
+like any other data: later ops change them by normal LWW, since every
+later HLC is greater than `G`.
+
+A club created on an empty database still writes the (empty) initial
+snapshots, so joining devices always find one.
+
 ## 16. Schema evolution
 
 - `schema` in segment headers is the app's sync schema version (integer).
@@ -573,8 +604,16 @@ over erasure. The UI MUST warn before purging finance data.
 1. Generate device keys and root key.
 2. Write `club.json` + signature, ACL version 1 (the device as `board`), keys
    for epoch 1 of all scopes for the device and `root`.
-3. Show the recovery kit. The user MUST confirm they printed or saved it.
+3. Write the initial snapshots ([§15.4](#154-initial-snapshot)).
+4. Show the recovery kit. The user MUST confirm they printed or saved it.
    Then delete the root private key from the device.
+
+**Joining with existing local data:** a device that joins a club
+([§17.2](#172-inviting-a-device)) MUST start with empty synced tables.
+Merging two independent data sets is not supported in version 1. If the
+device holds local data, the app MUST offer to export or back it up, and
+then clears the synced tables and `sync_outbox` before applying the club's
+snapshots.
 
 ### 17.2 Inviting a device
 
