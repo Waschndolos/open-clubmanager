@@ -305,6 +305,9 @@ const Setup: React.FC = () => {
                                         placeholder={localPathPlaceholder}
                                     />
 
+                                    <Button onClick={() => setCurrentStep(0)} disabled={submitting} sx={{ alignSelf: 'flex-start' }}>
+                                        {t('buttons.back')}
+                                    </Button>
                                     <Button
                                         variant="contained"
                                         fullWidth

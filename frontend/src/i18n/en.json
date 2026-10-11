@@ -609,7 +609,8 @@
             "waiting": "Waiting for confirmation …",
             "welcome": "Welcome! You are in – your role: {{role}}.",
             "rejected": "This device was not admitted to the club or was removed again. Please contact the board.",
-            "toApp": "Go to overview"
+            "toApp": "Go to overview",
+            "codeLong": "The code is too long. It has 24 characters – was it pasted twice?"
         },
         "recover": {
             "title": "Use the emergency key",

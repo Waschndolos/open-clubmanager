@@ -609,7 +609,8 @@
             "waiting": "Warte auf Bestätigung …",
             "welcome": "Willkommen! Du bist jetzt dabei – deine Rolle: {{role}}.",
             "rejected": "Dieses Gerät wurde nicht in den Verein aufgenommen oder wieder entfernt. Bitte wende dich an den Vorstand.",
-            "toApp": "Zur Übersicht"
+            "toApp": "Zur Übersicht",
+            "codeLong": "Der Code ist zu lang. Er hat 24 Zeichen – wurde er doppelt eingefügt?"
         },
         "recover": {
             "title": "Notfallschlüssel verwenden",

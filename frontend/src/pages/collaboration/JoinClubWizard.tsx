@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Box, Button, Checkbox, CircularProgress, FormControlLabel, Stack, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { FolderInfo, getLocalData, getSafetyCode, getStatus, joinClub } from '../../api/collaboration';
+import { FolderInfo, getLocalData, getSafetyCode, joinClub, syncNow } from '../../api/collaboration';
 import FolderPicker, { folderUsable, joinFolderClub } from '../../components/collaboration/FolderPicker';
 import { SafetyCodeDisplay, useErrorText, useRoleName } from '../../components/collaboration/common';
 import { useCollaboration } from '../../context/CollaborationContext';
@@ -39,6 +39,7 @@ export default function JoinClubWizard() {
     const normalized = normalizeInviteCode(code);
     const codeError = !CODE_CHARS.test(normalized)
         ? t('collaboration.join.codeInvalid')
+        : normalized.length > 24 ? t('collaboration.join.codeLong')
         : normalized.length > 0 && normalized.length < 24 ? t('collaboration.join.codeShort') : '';
 
     // Opened while a request is already pending: go straight to the waiting screen.
@@ -55,12 +56,13 @@ export default function JoinClubWizard() {
         getLocalData().then((r) => setHasLocalData(r.hasLocalData), () => {});
     }, []);
 
-    // Wait for approval.
+    // Wait for approval: synchronize actively, so the approval shows up within
+    // seconds instead of at the next background refresh.
     useEffect(() => {
         if (step !== 3 || result) return;
         const poll = async () => {
             try {
-                const st = await getStatus();
+                const st = await syncNow();
                 if (st.mode === 'member') {
                     setRole(st.role ?? '');
                     setResult('member');
