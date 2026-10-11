@@ -143,8 +143,6 @@ Create the required environment files if they don't exist yet:
 **`server/.env`**
 ```plaintext
 DATABASE_URL="file:/home/myUser/clubmanager.db"
-JWT_ACCESS_SECRET="dev_access_secret_change_me"
-JWT_REFRESH_SECRET="dev_refresh_secret_change_me"
 ```
 
 **`frontend/.env`**
@@ -178,10 +176,6 @@ First, create a file named `.env` in the `server` directory with the following c
 ```plaintext
 # Default local database URL (SQLite)
 DATABASE_URL="file:/home/myUser/clubmanager.db"
-
-# Development secrets for API authentication
-JWT_ACCESS_SECRET="dev_access_secret_change_me"
-JWT_REFRESH_SECRET="dev_refresh_secret_change_me"
 ```
 
 Then, from the project root run:
@@ -222,16 +216,27 @@ Create a file named `.env` in the `server` directory with the following content:
 ```plaintext
 # Default local database URL (SQLite)
 DATABASE_URL="file:/home/myUser/clubmanager.db"
-
-# Recommended for local development
-JWT_ACCESS_SECRET="dev_access_secret_change_me"
-JWT_REFRESH_SECRET="dev_refresh_secret_change_me"
 ```
 
 ```bash
 cd server
 go run ./cmd/server   # start the backend server
 ```
+
+#### Backend configuration
+
+Settings are read from `config.json` (default `~/.config/open-clubmanager/config.json`,
+override with `SERVER_CONFIG_FILE`); environment variables take precedence.
+
+| Env variable | `config.json` key | Default | Description |
+|---|---|---|---|
+| `PORT` | `port` | `3001` | HTTP port of the API |
+| `BIND_ADDRESS` | `bindAddress` | `127.0.0.1` | Interface the API listens on. The default only accepts connections from this machine (desktop/sidecar mode). Set `0.0.0.0` **only** for a server deployment that must be reachable from the network – and put it behind TLS. |
+| `JWT_SECRET` / `JWT_ACCESS_SECRET` | `jwtSecret` | *generated* | Secret used to sign login tokens. If unset, a random 256-bit secret is generated on first start and stored in `jwt_secret` next to `config.json` (permissions `0600`); later starts reuse it. Delete the file to invalidate all issued tokens. |
+| `JWT_SECRET_FILE` | – | `<config dir>/jwt_secret` | Alternative location for the generated secret file |
+| `DATABASE_PATH` / `DATABASE_URL` | `databasePath` / `databaseUrl` | – | SQLite path / MySQL URL |
+
+> The former hard-coded fallback secret `dev_access_secret_change_me` is no longer used. If it is still stored in an existing `config.json`, it is ignored and replaced by a generated secret (users have to log in again once).
 
 #### Frontend
 
