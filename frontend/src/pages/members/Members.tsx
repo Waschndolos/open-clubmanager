@@ -5,6 +5,7 @@ import MemberTable from "./MemberTable";
 import {Member} from "../../api/types";
 import {Add, Clear, ManageAccounts} from "@mui/icons-material";
 import {useEffect, useState} from "react";
+import {useSearchParams} from "react-router-dom";
 import {EditMemberDialog} from "./EditMemberDialog";
 import {createMember, deleteMembers, fetchMembers} from "../../api/members";
 import {useNotification} from "../../context/NotificationContext";
@@ -47,6 +48,16 @@ export default function Members() {
     const [search, setSearch] = useState("");
     const [newMemberDialogOpen, setNewMemberDialogOpen] = useState(false);
     const { addNotification } = useNotification();
+    const [params, setParams] = useSearchParams();
+
+    // Deep links from the command palette: ?new=1 opens the dialog, ?q= prefills the search.
+    useEffect(() => {
+        const q = params.get("q");
+        const wantsNew = params.get("new") === "1";
+        if (q !== null) setSearch(q);
+        if (wantsNew) setNewMemberDialogOpen(true);
+        if (q !== null || wantsNew) setParams({}, {replace: true});
+    }, [params, setParams]);
 
 
 

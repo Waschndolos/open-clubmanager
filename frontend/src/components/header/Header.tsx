@@ -4,6 +4,7 @@ import { matchPath, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import NotificationBell from './NotificationBell';
 import ThemeToggle from './ThemeToggle';
+import SearchButton from './SearchButton';
 import SyncStatusButton from './SyncStatusButton';
 import { useNavGroups } from '../menu/navItems';
 
@@ -59,6 +60,7 @@ export default function Header({ onOpenNavigation }: HeaderProps) {
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+                    <SearchButton />
                     <SyncStatusButton />
                     <NotificationBell />
                     <ThemeToggle />
