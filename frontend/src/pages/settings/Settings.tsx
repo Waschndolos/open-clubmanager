@@ -25,11 +25,13 @@ import {getDatabaseSettings, saveDatabaseSettings} from "../../api/settings";
 import {validatePath} from "../../api/validation";
 import {createBackup, restoreBackup} from "../../api/backup";
 import PageHeader from "../../components/common/PageHeader";
+import {useNavigate} from "react-router-dom";
 
 const LAST_BACKUP_KEY = 'lastBackupDate';
 
 export function Settings() {
     const {t, i18n} = useTranslation();
+    const navigate = useNavigate();
 
     const raw = apppreference.get('DATABASE_URL');
     const [dbPath, setDbPath] = useState<string>(typeof raw == 'string' ? raw : '');
@@ -201,6 +203,19 @@ export function Settings() {
             >
                 {t("buttons.save")}
             </Button>
+
+            {/* ── Collaboration ────────────────────────────────────────────── */}
+            <Typography variant="h6" sx={{mt: 4, mb: 1}}>
+                {t("collaboration.title")}
+            </Typography>
+            <Paper sx={{p: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap'}}>
+                <Typography variant="body2" color="text.secondary" sx={{flex: 1, minWidth: 220}}>
+                    {t("collaboration.settings.cardText")}
+                </Typography>
+                <Button variant="outlined" onClick={() => navigate('/collaboration')}>
+                    {t("collaboration.settings.open")}
+                </Button>
+            </Paper>
 
             {/* ── Backup & Restore ─────────────────────────────────────────── */}
             <Typography variant="h6" sx={{mt: 4, mb: 1}}>

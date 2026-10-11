@@ -15,6 +15,11 @@ import { RequireRole } from "../guards/RequireRole";
 import History from "../pages/history/History";
 import Users from "../pages/users/Users";
 import Inventory from "../pages/inventory/Inventory";
+import CollaborationSettings from "../pages/collaboration/CollaborationSettings";
+import CreateClubWizard from "../pages/collaboration/CreateClubWizard";
+import JoinClubWizard from "../pages/collaboration/JoinClubWizard";
+import RecoverWizard from "../pages/collaboration/RecoverWizard";
+import Conflicts from "../pages/collaboration/Conflicts";
 
 export const router = createBrowserRouter([
     {
@@ -104,6 +109,46 @@ export const router = createBrowserRouter([
             <RequireRole roles={["ADMIN"]}>
               <Users />
             </RequireRole>
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "collaboration",
+        element: (
+          <RequireAuth>
+            <CollaborationSettings />
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "collaboration/create",
+        element: (
+          <RequireAuth>
+            <CreateClubWizard />
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "collaboration/join",
+        element: (
+          <RequireAuth>
+            <JoinClubWizard />
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "collaboration/recover",
+        element: (
+          <RequireAuth>
+            <RecoverWizard />
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "collaboration/conflicts",
+        element: (
+          <RequireAuth>
+            <Conflicts />
           </RequireAuth>
         ),
             },

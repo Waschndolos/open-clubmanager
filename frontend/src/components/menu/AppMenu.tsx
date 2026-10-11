@@ -6,6 +6,7 @@ import {
   AccountBalance,
   Badge,
   GridView,
+  Groups,
   History,
   Inventory2,
   ManageAccounts,
@@ -13,6 +14,7 @@ import {
   Settings,
 } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
+import { usePermission } from "../../context/CollaborationContext";
 
 type Props = {
   collapsed: boolean;
@@ -23,7 +25,10 @@ export default function AppMenu({ collapsed }: Props) {
   const { appRole } = useAuth();
 
   const isAdmin = appRole === "ADMIN";
-  const canViewFinance = appRole === "ADMIN" || appRole === "TREASURER";
+  // The device's role in a collaboration club limits what this login sees (UX F10).
+  const financeArea = usePermission("finance");
+  const inventoryArea = usePermission("inventory");
+  const canViewFinance = (appRole === "ADMIN" || appRole === "TREASURER") && financeArea !== "none";
 
   return (
     <Box
@@ -57,12 +62,14 @@ export default function AppMenu({ collapsed }: Props) {
             collapsed={collapsed}
           />
         )}
-        <AppMenuItem
-          label={t("menu.inventory")}
-          icon={<Inventory2 fontSize="small" />}
-          link="inventory"
-          collapsed={collapsed}
-        />
+        {inventoryArea !== "none" && (
+          <AppMenuItem
+            label={t("menu.inventory")}
+            icon={<Inventory2 fontSize="small" />}
+            link="inventory"
+            collapsed={collapsed}
+          />
+        )}
         <AppMenuItem
           label={t("menu.entities")}
           icon={<Badge fontSize="small" />}
@@ -83,6 +90,12 @@ export default function AppMenu({ collapsed }: Props) {
             collapsed={collapsed}
           />
         )}
+        <AppMenuItem
+          label={t("collaboration.title")}
+          icon={<Groups fontSize="small" />}
+          link="collaboration"
+          collapsed={collapsed}
+        />
         <AppMenuItem
           label={t("menu.settings")}
           icon={<Settings fontSize="small" />}

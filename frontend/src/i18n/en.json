@@ -472,5 +472,353 @@
         "error": {
             "generic": "An error occurred while setting up the club folder."
         }
+    },
+    "collaboration": {
+        "title": "Collaboration",
+        "roles": {
+            "board": "Board",
+            "treasurer": "Treasurer",
+            "secretary": "Secretary",
+            "coach": "Coach",
+            "equipment_manager": "Equipment manager"
+        },
+        "roleDesc": {
+            "board": "See and change everything, invite others.",
+            "treasurer": "Change bank details and finances, see members and contacts.",
+            "secretary": "Maintain members and contact details.",
+            "coach": "See the member list and inventory.",
+            "equipment_manager": "Change the inventory, see the member list."
+        },
+        "areas": {
+            "membersCore": "Members",
+            "membersContact": "Contact details",
+            "membersBank": "Bank details",
+            "finance": "Finances",
+            "inventory": "Inventory",
+            "admin": "Administration"
+        },
+        "perm": {
+            "none": "–",
+            "read": "see",
+            "write": "change"
+        },
+        "readOnly": "Read only – your role: {{role}}",
+        "status": {
+            "upToDate": "Everything is in sync – last at {{time}}",
+            "neverSynced": "Not synchronized yet",
+            "syncing": "Synchronizing …",
+            "offline": "Storage location not reachable – {{count}} changes waiting. You can keep working.",
+            "attention": "Please have a look",
+            "locked": "Locked – log in with the account that set up collaboration.",
+            "joining": "Waiting for your request to be approved",
+            "revoked": "This device was removed from the club. It no longer receives new data."
+        },
+        "popover": {
+            "lastSync": "Last synchronized: {{time}}",
+            "storage": "Storage location: {{path}}",
+            "pending": "Own changes waiting: {{count}}",
+            "conflicts": "{{count}} item(s) to resolve",
+            "requests": "Join requests: {{count}}",
+            "view": "View",
+            "syncNow": "Synchronize now",
+            "folderHint": "Other people's changes arrive once your sync client has downloaded them.",
+            "error": "Last error: {{error}}",
+            "lostChanges": "One of your changes to roles or devices was overtaken by a simultaneous change. Please check it and make it again.",
+            "badKeys": "Some key files in the storage location are damaged or do not match. Ask the board to check.",
+            "settings": "Settings"
+        },
+        "folder": {
+            "detected": "Found on this computer",
+            "none": "No Nextcloud, OneDrive, Dropbox or Google Drive folders found.",
+            "custom": "Enter another folder …",
+            "customHint": "Your own folder or a network drive",
+            "pathLabel": "Folder path",
+            "pathHelp": "Network drives work too, e.g. \\\\clubserver\\board or /Volumes/Club.",
+            "check": "Check",
+            "checking": "Checking …",
+            "kindSync": "The folder is writable and synchronized by {{provider}}.",
+            "kindNetwork": "Network drive. This works if everyone on the board can reach it, also from home, e.g. via VPN.",
+            "kindLocal": "This folder does not seem to be synchronized. Others will not be able to reach the data.",
+            "notWritable": "Open ClubManager cannot write to this folder. Check the path and your permissions.",
+            "missing": "This folder does not exist. Check the path.",
+            "containsClub": "Contains the club “{{name}}”",
+            "severalClubs": "This folder contains several clubs. Choose the subfolder of the right club.",
+            "noClub": "There is no club in this folder. Check that you accepted the share and that your sync client is running.",
+            "clubExists": "The club “{{name}}” already exists here. Do you want to join it?",
+            "subfolder": "The subfolder “Open ClubManager – {{name}}” will be created."
+        },
+        "create": {
+            "title": "Set up the club for collaboration",
+            "steps": {
+                "storage": "Storage location",
+                "club": "Club and you",
+                "key": "Emergency key",
+                "done": "Done"
+            },
+            "storageQuestion": "Where should the shared data live?",
+            "storageIntro": "Ideally in a folder your club already uses: Nextcloud, OneDrive, Dropbox or Google Drive. The data is encrypted – the provider cannot read it.",
+            "clubName": "Club name",
+            "person": "Your name",
+            "deviceName": "Name of this device",
+            "deviceHelp": "This is how others recognize your device, e.g. “Laptop” or “Office PC”.",
+            "roleInfo": "You get the Board role and can invite others.",
+            "localData": "The data already on this device becomes the club's starting point.",
+            "password": "Your password",
+            "passwordHelp": "The password you log in to Open ClubManager with. It protects this device's key.",
+            "submit": "Set up club",
+            "creating": "Encrypting the club data and storing it in the storage location …",
+            "doneTitle": "Done!",
+            "doneText": "Next: invite the other board members.",
+            "invite": "Invite a person",
+            "toOverview": "Go to overview"
+        },
+        "key": {
+            "title": "Your emergency key",
+            "intro": "If all board devices are lost, this key is the only way back to your club data. Nobody else – not even us – can restore it.",
+            "save": "Save as file",
+            "print": "Print",
+            "copy": "Copy",
+            "keepSafe": "Keep it like a safe key, e.g. printed in the club binder. Do not store it in the shared folder.",
+            "check": "To check: enter the last 4 characters of the “check:” line",
+            "checkError": "That does not match. Look at the end of the “check:” line.",
+            "confirm": "I printed or safely stored the emergency key.",
+            "deleted": "Open ClubManager does not store the key. After this step it only exists on your printout or in your file.",
+            "continue": "Continue"
+        },
+        "join": {
+            "title": "Join a club",
+            "steps": {
+                "code": "Invite code",
+                "storage": "Storage location",
+                "name": "Your name",
+                "safety": "Safety code"
+            },
+            "codeLabel": "Invite code",
+            "codeHelp": "Pasting works. Dashes, spaces and lowercase letters do not matter.",
+            "codeShort": "The code is too short. It has 24 characters.",
+            "codeInvalid": "The code may only contain letters and the digits 2 to 7.",
+            "storageQuestion": "Where is your club's data?",
+            "storageIntro": "Choose the folder that was shared with you.",
+            "localDataTitle": "There is already club data on this device.",
+            "localDataText": "Joining replaces it with the club's data. A backup is saved next to the database first.",
+            "localDataConfirm": "I agree: save a backup and replace the local data.",
+            "submit": "Request to join",
+            "safetyTitle": "Almost done!",
+            "safetyText": "Tell the person who invited you this code – ideally by phone:",
+            "safetyWait": "You get access once they confirm it. You can close the app in the meantime.",
+            "waiting": "Waiting for confirmation …",
+            "welcome": "Welcome! You are in – your role: {{role}}.",
+            "rejected": "This device was not admitted to the club or was removed again. Please contact the board.",
+            "toApp": "Go to overview"
+        },
+        "recover": {
+            "title": "Use the emergency key",
+            "intro": "Only use this if no device with the Board role is available any more. This device becomes a board device.",
+            "kitLabel": "Emergency key",
+            "kitHelp": "Paste or type the whole text. The lines “club-id”, “root-sign-key”, “root-age-key” and “check” matter.",
+            "submit": "Restore club",
+            "done": "You are now Board. Remove devices that were lost.",
+            "reminder": "The emergency key stays valid. Keep it safe again.",
+            "toPeople": "Go to people & devices"
+        },
+        "settings": {
+            "tabs": {
+                "overview": "Overview",
+                "people": "People & devices",
+                "invites": "Invites",
+                "roles": "Roles",
+                "emergency": "Emergency"
+            },
+            "cardText": "Work together with the board, invite people, manage devices.",
+            "open": "Open collaboration",
+            "localTitle": "Only on this device",
+            "localText": "The club data is only on this device. Turn on collaboration so the board can work together – even if you are not on the same network.",
+            "enable": "Turn on collaboration",
+            "join": "I have an invite",
+            "overviewTitle": "Collaboration is on",
+            "club": "Club",
+            "storage": "Storage location",
+            "yourRole": "Your role",
+            "device": "This device",
+            "lastSync": "Last synchronized",
+            "never": "never",
+            "whatYouCan": "What you may do",
+            "rolesTitle": "What the roles may do",
+            "rolesFixed": "The five roles are fixed.",
+            "emergencyTitle": "Emergency key",
+            "emergencyText": "With the emergency key you get back to your data if no board device is available any more. It was printed during setup."
+        },
+        "invite": {
+            "open": "Invites",
+            "none": "No invites.",
+            "new": "Invite a person",
+            "name": "Person's name",
+            "namePlaceholder": "First and last name",
+            "role": "Role",
+            "whatRole": "What {{name}} may do as {{role}}:",
+            "thePerson": "the person",
+            "steps": {
+                "who": "Who and which role",
+                "access": "Folder access",
+                "code": "Invite code"
+            },
+            "accessTitle": "Give {{name}} access to the shared folder",
+            "accessIntro": "This is not done in Open ClubManager but at your provider.",
+            "accessFolder": "Folder to share: {{path}}",
+            "accessDone": "Done – {{name}} has access to the folder",
+            "guides": {
+                "Nextcloud": [
+                    "Open Nextcloud in the browser and log in.",
+                    "Go to the club's folder.",
+                    "Click the share icon next to the folder.",
+                    "Enter the Nextcloud user name or e-mail address of {{name}}.",
+                    "Allow “Edit”. Without write access Open ClubManager cannot synchronize."
+                ],
+                "OneDrive": [
+                    "Open OneDrive in the browser.",
+                    "Right-click the club's folder and choose “Share”.",
+                    "Enter the e-mail address of {{name}} and choose “Can edit”.",
+                    "{{name}} then has to “Add to My files” so the folder arrives on the computer."
+                ],
+                "Dropbox": [
+                    "Open Dropbox in the browser.",
+                    "Click “Share” on the club's folder.",
+                    "Enter the e-mail address of {{name}} and choose “Can edit”."
+                ],
+                "Google Drive": [
+                    "Open Google Drive in the browser.",
+                    "Right-click the club's folder and choose “Share”.",
+                    "Enter the e-mail address of {{name}} and choose “Editor”.",
+                    "{{name}} needs “Google Drive for desktop” so the folder arrives on the computer."
+                ],
+                "other": [
+                    "Share the club's folder with {{name}}, with write access.",
+                    "For a network drive: make sure {{name}} can reach the drive, also from home."
+                ]
+            },
+            "otherProvider": "Other",
+            "providerHelp": "Open {{provider}} help",
+            "codeTitle": "Invite for {{name}} ({{role}})",
+            "copyCode": "Copy code",
+            "showMail": "Show e-mail text",
+            "hideMail": "Hide e-mail text",
+            "copyMail": "Copy e-mail text",
+            "copied": "Copied",
+            "copyFailed": "Copying is not possible – please select and copy.",
+            "codeHint": "Send {{name}} this code, e.g. by e-mail or messenger. It is valid for 7 days and can be used once.",
+            "safetyHint": "Important: when {{name}} joins, you will be told a 6-digit safety code – ideally by phone. {{name}} only gets access once you enter it.",
+            "mail": "Hello {{name}},\n\nyou are now {{role}} at {{club}}. We manage the club with Open ClubManager.\n\n1. Install Open ClubManager.\n2. On start, choose “Together with others – I have an invite”.\n3. Enter this invite code: {{code}}\n\nI already shared the folder with you. When you are done, I will give you a quick call to compare the safety code.\n\nBest regards\n{{sender}}",
+            "validUntil": "Valid until",
+            "status": "Status",
+            "statusOpen": "open",
+            "statusUsed": "used",
+            "statusExpired": "expired",
+            "withdraw": "Withdraw",
+            "withdrawn": "Invite withdrawn",
+            "done": "Done"
+        },
+        "request": {
+            "title": "Join request",
+            "wants": "{{name}} wants to join",
+            "invitedAs": "Invited as {{role}}",
+            "askCode": "{{name}} sees a safety code on the screen. Ask for it and enter it here:",
+            "mismatchHint": "If the code does not match, reject the request – someone else used the invite.",
+            "approve": "Give access",
+            "reject": "Reject",
+            "later": "Later",
+            "wrongCode": "The code does not match. Please ask again.",
+            "tooMany": "The request was rejected after 3 wrong codes. Create a new invite.",
+            "approved": "{{name}} now has access.",
+            "rejected": "Request rejected",
+            "invalid": {
+                "INVITE_EXPIRED": "The invite has expired.",
+                "INVITE_USED": "The invite was already used.",
+                "INVITE_UNKNOWN": "This device has no invite for this request.",
+                "INVITE_CONTESTED": "Several devices used the same invite code. Reject all of them and create a new invite.",
+                "default": "This request cannot be approved."
+            }
+        },
+        "people": {
+            "me": "(you)",
+            "inactive": "removed",
+            "unnamedDevice": "Device",
+            "changeRole": "Change role",
+            "removeDevice": "Remove device",
+            "removeTitle": "Remove device “{{device}}” of {{name}}?",
+            "why": "Why?",
+            "reasons": {
+                "lost": "Device lost or stolen",
+                "left": "Person is leaving office",
+                "unused": "Device is no longer used"
+            },
+            "consequence1": "The device receives no new data.",
+            "consequence2": "Changes it makes from now on are ignored by everyone.",
+            "consequence3": "Data already stored on the device cannot be deleted.",
+            "breach": "Loss or theft can be a data breach that has to be reported within 72 hours (Art. 33 GDPR).",
+            "ownHint": "You cannot remove your own device here. There must always be at least one device with the Board role.",
+            "roleTitle": "Change role of {{name}}",
+            "roleLess": "From now on {{name}} cannot see new data in these areas: {{areas}}. What was already seen stays on the device.",
+            "removed": "Device removed",
+            "roleChanged": "Role changed",
+            "pending": "Join requests"
+        },
+        "conflicts": {
+            "title": "To resolve",
+            "none": "Nothing to resolve.",
+            "numberTitle": "Member number {{value}} is used twice",
+            "emailTitle": "The e-mail address {{value}} is used twice",
+            "nameTitle": "“{{value}}” exists twice",
+            "keeps": "keeps the value",
+            "mustChange": "must be changed",
+            "rule": "Whoever set the value first keeps it.",
+            "nextFree": "Use the next free number ({{number}})",
+            "chooseOwn": "Choose a number",
+            "apply": "Apply",
+            "rename": "New name",
+            "changeEmail": "New e-mail address",
+            "readOnly": "Someone with write access to this area can resolve this.",
+            "fixed": "Resolved",
+            "unknownRow": "Entry {{id}}",
+            "tables": {
+                "members": "Member",
+                "member_contacts": "Member",
+                "groups": "Group",
+                "roles": "Role",
+                "sections": "Section"
+            }
+        },
+        "setup": {
+            "question": "How do you want to manage the club?",
+            "local": "Only on this device",
+            "localDesc": "Just for you. You can turn on collaboration any time later.",
+            "create": "Together with others – set up a new club",
+            "createDesc": "You are on the board and set up the club.",
+            "join": "Together with others – I have an invite",
+            "joinDesc": "Someone from the club sent you an invite code.",
+            "recover": "Use the emergency key",
+            "accountFirst": "First create your user account on this device. Then you set up collaboration.",
+            "demoOnlyLocal": "Demo data is only available for “Only on this device”, so that no fake members are shared with everyone.",
+            "stepUsage": "Usage"
+        },
+        "errors": {
+            "WRONG_PASSWORD": "The password is not correct.",
+            "LOCAL_DATA": "There is already club data on this device.",
+            "CLUB_EXISTS": "There is already a club in this folder. Choose “I have an invite” to join it.",
+            "FOLDER_MISSING": "This folder does not exist.",
+            "FOLDER_NOT_WRITABLE": "Open ClubManager cannot write to this folder.",
+            "NO_CLUB_IN_FOLDER": "There is no club in this folder.",
+            "BAD_INVITE_CODE": "We do not know this invite code. Check it or ask for a new invite.",
+            "BAD_RECOVERY_KIT": "The emergency key is incomplete or contains a typo.",
+            "KIT_MISMATCH": "This emergency key belongs to another club.",
+            "ALREADY_IN_CLUB": "This device already belongs to a club. Several clubs are not supported yet.",
+            "LAST_ADMIN": "There must always be at least one device with the Board role.",
+            "LOCKED": "Collaboration is locked. Log in with the account that set it up.",
+            "NOT_ADMIN": "Only the board may do this.",
+            "OWN_DEVICE": "You cannot change your own device here.",
+            "READ_ONLY_AREA": "Your role may only see this data.",
+            "STORAGE_MISSING": "The storage location is not reachable. Is your sync client running and is the folder still there?",
+            "NETWORK": "No connection to the program. Is Open ClubManager still running?",
+            "default": "That did not work: {{message}}"
+        }
     }
 }
