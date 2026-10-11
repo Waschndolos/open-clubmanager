@@ -59,7 +59,7 @@ Open ClubManager runs exclusively with the backend API and a database.
 * **Frontend**: React, TypeScript, Axios, Vite
 * **Backend**: Go, Chi, oapi-codegen
 * **Desktop**: Tauri 2 (Rust)
-* **Database**: SQLite / MySQL
+* **Database**: SQLite (embedded, pure Go – no external database server)
 * **Dev Tools**: go toolchain, npm, Rust/Cargo, WebStorm/VS Code
 
 ---
@@ -69,10 +69,9 @@ Open ClubManager runs exclusively with the backend API and a database.
 ```
 /clubmanager
 ├── assets/          # App icons
-├── db/              # Prisma schemas + migrations
 ├── server/          # Go API + Chi router
 │   ├── cmd/server/  # binary entry point
-│   └── internal/    # generated OpenAPI bindings + handlers
+│   └── internal/    # OpenAPI bindings, handlers, store (SQL) and db (migrations)
 ├── src-tauri/       # Tauri 2 desktop shell (Rust)
 │   ├── src/         # Rust source (lib.rs spawns the Go sidecar)
 │   ├── capabilities/# Tauri capability definitions
@@ -97,7 +96,7 @@ It includes all required toolchains and system dependencies so you can start cod
 | Go                         | 1.25.0       |
 | Rust + Cargo               | 1.77.2       |
 | Python 3                   | system       |
-| SQLite / MySQL CLI         | system       |
+| SQLite CLI                 | system       |
 | Tauri 2 Linux dependencies | Ubuntu 24.04 |
 
 ### Using the Dev Container
@@ -110,10 +109,9 @@ It includes all required toolchains and system dependencies so you can start cod
    Dev Containers: Reopen in Container
    ```
 3. The container builds automatically and runs the bootstrap script, which:
-   - installs all npm workspaces (`root`, `frontend`, `db`)
+   - installs all npm workspaces (`root`, `frontend`)
    - downloads Go modules (`go mod download`)
    - pre-fetches Rust crates (`cargo fetch`)
-   - validates the Prisma schemas
    - checks Tauri prerequisites
 
 #### Option B — Dev Container CLI
@@ -188,11 +186,10 @@ This will:
 1. Install all dependencies (root, frontend, Go modules)
 
 If the database contains no users yet, the app will guide you through the setup flow:
-1. Choose database mode:
-   - local use: `sqlite-local`
-   - shared multi-user use: `mysql-shared`
-2. Enter a MySQL URL for shared mode
-3. Create the first admin account
+1. Choose where the local SQLite database file lives
+2. Create the first admin account
+
+The schema is created and migrated automatically on server start.
 
 Once setup is complete, start the development servers:
 
@@ -212,10 +209,9 @@ If you prefer to set up each part individually:
 
 #### Backend
 
-Create a file named `.env` in the `server` directory with the following content:
-```plaintext
-# Default local database URL (SQLite)
-DATABASE_URL="file:/home/myUser/clubmanager.db"
+Optionally point the backend at a database file (otherwise the setup flow asks for it):
+```bash
+export DATABASE_PATH=/home/myUser/clubmanager.db
 ```
 
 ```bash
@@ -234,7 +230,7 @@ override with `SERVER_CONFIG_FILE`); environment variables take precedence.
 | `BIND_ADDRESS` | `bindAddress` | `127.0.0.1` | Interface the API listens on. The default only accepts connections from this machine (desktop/sidecar mode). Set `0.0.0.0` **only** for a server deployment that must be reachable from the network – and put it behind TLS. |
 | `JWT_SECRET` / `JWT_ACCESS_SECRET` | `jwtSecret` | *generated* | Secret used to sign login tokens. If unset, a random 256-bit secret is generated on first start and stored in `jwt_secret` next to `config.json` (permissions `0600`); later starts reuse it. Delete the file to invalidate all issued tokens. |
 | `JWT_SECRET_FILE` | – | `<config dir>/jwt_secret` | Alternative location for the generated secret file |
-| `DATABASE_PATH` / `DATABASE_URL` | `databasePath` / `databaseUrl` | – | SQLite path / MySQL URL |
+| `DATABASE_PATH` | `databasePath` | `./clubmanager.db` | Path of the SQLite database file. It is created and migrated on first use. |
 
 > The former hard-coded fallback secret `dev_access_secret_change_me` is no longer used. If it is still stored in an existing `config.json`, it is ignored and replaced by a generated secret (users have to log in again once).
 

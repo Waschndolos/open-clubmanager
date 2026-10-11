@@ -26,35 +26,14 @@ jobs:
       - name: Download Go modules
         run: go mod download
 
+      - name: Vet
+        run: go vet ./...
+
       - name: Test
         run: go test ./...
 
       - name: Build
         run: go build ./cmd/server
-
-  prisma-tooling:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: db
-    env:
-      DATABASE_URL: "file:./clubmanager.db"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'npm'
-          cache-dependency-path: db/package-lock.json
-
-      - name: Install db dependencies
-        run: npm ci
-
-      - name: Validate Prisma schemas
-        run: npm run prisma:validate
-
-      - name: Push Prisma schema
-        run: npx prisma db push --schema prisma/schema.prisma
 
   frontend:
     runs-on: ubuntu-latest

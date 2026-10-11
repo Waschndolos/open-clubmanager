@@ -29,7 +29,6 @@ RUN apt-get update \
         libwebkit2gtk-4.1-dev \
         libxdo-dev \
         libgtk-3-dev \
-        default-mysql-client \
         patchelf \
         pkg-config \
         python3 \

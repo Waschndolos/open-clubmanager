@@ -42,15 +42,9 @@ go mod tidy
 go run ./cmd/server   # start the backend server
 ```
 
-#### Prisma tooling (`db/` folder)
+#### Database schema
 
-The `db/` directory contains Prisma schema and migrations.
-
-```bash
-cd db
-npm install
-npm run setup:sqlite
-```
+The SQLite schema is defined by the goose migrations in `server/internal/db/migrations/`, which are embedded into the server binary and applied automatically on start. To change the schema, add a new numbered migration file – never edit one that has been released. See [`docs/data-model.md`](docs/data-model.md) for conventions (UUIDv7 keys, tombstones, data scopes).
 
 #### Frontend
 
