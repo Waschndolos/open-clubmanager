@@ -4,6 +4,7 @@ import AccountBalanceOutlined from "@mui/icons-material/AccountBalanceOutlined";
 import AccountTreeOutlined from "@mui/icons-material/AccountTreeOutlined";
 import GroupsOutlined from "@mui/icons-material/GroupsOutlined";
 import CelebrationOutlined from "@mui/icons-material/CelebrationOutlined";
+import TaskAltOutlined from "@mui/icons-material/TaskAltOutlined";
 import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
 import HubOutlined from "@mui/icons-material/HubOutlined";
 import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
@@ -45,6 +46,7 @@ export function useNavGroups(): NavGroup[] {
         ...(membersArea !== "none" ? [{ label: t("nav.honors"), icon: <CelebrationOutlined />, link: "/honors" }] : []),
         ...(membersArea !== "none" && (appRole === "ADMIN" || appRole === "SECRETARY")
             ? [{ label: t("nav.qualifications"), icon: <WorkspacePremiumOutlined />, link: "/qualifications" }] : []),
+        ...(membersArea !== "none" ? [{ label: t("nav.tasks"), icon: <TaskAltOutlined />, link: "/tasks" }] : []),
         { label: t("nav.entities"), icon: <AccountTreeOutlined />, link: "/entities" },
     ];
 
