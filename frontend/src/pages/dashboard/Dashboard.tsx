@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import MemberGrowthChart from '../../components/dashboard/MemberGrowthChart';
 import FinanceChart from '../../components/dashboard/FinanceChart';
 import FeeStatusChart from '../../components/dashboard/FeeStatusChart';
+import UpcomingJubilees from '../../components/dashboard/UpcomingJubilees';
 import MembersBySectionChart from '../../components/dashboard/MembersBySectionChart';
 import { useNavGroups } from '../../components/menu/navItems';
 import { useStatistics, useChartStatistics } from '../../hooks/statistics';
@@ -215,6 +216,8 @@ export default function Dashboard() {
                     </Grid>
                 </Box>
             )}
+
+            <UpcomingJubilees />
 
             {charts && (
                 <Box component="section" sx={{ mt: { xs: 4, sm: 5 } }}>

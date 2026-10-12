@@ -909,6 +909,53 @@
             "TREASURER": "Treasurer",
             "SECRETARY": "Secretary",
             "READONLY": "Read only"
+        },
+        "honors": "Anniversaries & honors"
+    },
+    "honors": {
+        "title": "Anniversaries & honors",
+        "subtitle": "Upcoming membership anniversaries and round birthdays, and recorded honors",
+        "from": "From",
+        "to": "To",
+        "export": "Export as CSV",
+        "record": "Record honor",
+        "delete": "Delete honor",
+        "confirmDelete": "Delete this honor? The stage will be suggested again.",
+        "empty": "No upcoming anniversaries in the selected period.",
+        "emptyGiven": "No honors recorded yet.",
+        "note": "Note",
+        "titleHint": "e.g. silver pin",
+        "loadFailed": "Anniversaries could not be loaded.",
+        "saveFailed": "The change could not be saved.",
+        "exportFailed": "The export failed.",
+        "kind": {
+            "membership": "{{count}} years of membership",
+            "birthday": "{{count}}th birthday",
+            "other": "Other honor"
+        },
+        "columns": {
+            "date": "Date",
+            "member": "Member",
+            "occasion": "Occasion",
+            "honor": "Honor"
+        },
+        "tabs": {
+            "upcoming": "Upcoming",
+            "given": "Recorded honors"
+        },
+        "stages": {
+            "years": "Membership years",
+            "ages": "Round birthdays",
+            "hint": "Comma separated"
+        },
+        "adjust": {
+            "title": "Correct membership years",
+            "years": "Correction in years",
+            "hint": "Added to the years computed from the entry date, e.g. -3 after a break."
+        },
+        "dashboard": {
+            "title": "Upcoming anniversaries",
+            "all": "Show all {{count}}"
         }
     }
 }
