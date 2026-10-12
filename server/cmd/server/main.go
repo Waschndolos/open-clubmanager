@@ -119,6 +119,15 @@ func main() {
 	router.Get("/api/v2/members/{id}/membership-adjustment", bearerAuthRequired(cfg.JWTSecret, api.GetMembershipAdjust))
 	router.Put("/api/v2/members/{id}/membership-adjustment", bearerAuthRequired(cfg.JWTSecret, api.SetMembershipAdjust))
 
+	// Qualifications and licences with expiry tracking.
+	router.Get("/api/v2/qualification-types", bearerAuthRequired(cfg.JWTSecret, api.ListQualificationTypes))
+	router.Post("/api/v2/qualification-types", bearerAuthRequired(cfg.JWTSecret, api.CreateQualificationType))
+	router.Put("/api/v2/qualification-types/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateQualificationType))
+	router.Delete("/api/v2/qualification-types/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteQualificationType))
+	router.Get("/api/v2/qualifications", bearerAuthRequired(cfg.JWTSecret, api.ListQualifications))
+	router.Delete("/api/v2/qualifications/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteQualification))
+	router.Post("/api/v2/members/{id}/qualifications", bearerAuthRequired(cfg.JWTSecret, api.CreateQualification))
+
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))

@@ -16,6 +16,7 @@ import History from "../pages/history/History";
 import Users from "../pages/users/Users";
 import Inventory from "../pages/inventory/Inventory";
 import Honors from "../pages/honors/Honors";
+import Qualifications from "../pages/qualifications/Qualifications";
 import CollaborationSettings from "../pages/collaboration/CollaborationSettings";
 import CreateClubWizard from "../pages/collaboration/CreateClubWizard";
 import JoinClubWizard from "../pages/collaboration/JoinClubWizard";
@@ -108,6 +109,16 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth>
             <Honors />
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "qualifications",
+        element: (
+          <RequireAuth>
+            <RequireRole roles={["ADMIN", "SECRETARY"]}>
+              <Qualifications />
+            </RequireRole>
           </RequireAuth>
         ),
             },

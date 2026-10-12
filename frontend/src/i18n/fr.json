@@ -559,7 +559,8 @@
             "SECRETARY": "Secrétaire",
             "READONLY": "Lecture seule"
         },
-        "honors": "Anniversaires & distinctions"
+        "honors": "Anniversaires & distinctions",
+        "qualifications": "Qualifications"
     },
     "honors": {
         "title": "Anniversaires & distinctions",
@@ -604,6 +605,52 @@
         },
         "dashboard": {
             "title": "Anniversaires à venir",
+            "all": "Tout afficher ({{count}})"
+        }
+    },
+    "qualifications": {
+        "title": "Qualifications & licences",
+        "subtitle": "Licences d'entraîneur, premiers secours et extraits de casier avec alerte d'expiration",
+        "add": "Enregistrer une qualification",
+        "addType": "Ajouter un type",
+        "editType": "Modifier le type",
+        "deleteType": "Supprimer le type",
+        "delete": "Supprimer la qualification",
+        "confirmDelete": "Supprimer cette qualification ?",
+        "confirmDeleteType": "Supprimer ce type avec toutes ses qualifications ?",
+        "validity": "Validité (mois)",
+        "validityHint": "Laisser vide si la qualification n'expire pas.",
+        "months": "{{count}} mois",
+        "unlimited": "illimitée",
+        "inspectionOnly": "Enregistrer uniquement la date de consultation",
+        "inspectionHint": "Seule la date de consultation est enregistrée, jamais le contenu (§ 72a SGB VIII). Les notes sont désactivées.",
+        "inspectedOn": "Date de consultation",
+        "yes": "Oui",
+        "expiryHint": "Vide = date d'émission + {{count}} mois",
+        "empty": "Aucune qualification enregistrée.",
+        "emptyTypes": "Aucun type créé.",
+        "forbidden": "Seuls les administrateurs et secrétaires peuvent voir les qualifications.",
+        "loadFailed": "Impossible de charger les qualifications.",
+        "saveFailed": "La modification n'a pas pu être enregistrée.",
+        "status": {
+            "valid": "Valide",
+            "expiring": "Expire bientôt",
+            "expired": "Expirée"
+        },
+        "columns": {
+            "status": "Statut",
+            "member": "Membre",
+            "type": "Qualification",
+            "issued": "Émise le",
+            "expiry": "Expire le",
+            "note": "Note"
+        },
+        "tabs": {
+            "overview": "Aperçu",
+            "types": "Types"
+        },
+        "dashboard": {
+            "title": "Qualifications arrivant à expiration",
             "all": "Tout afficher ({{count}})"
         }
     }

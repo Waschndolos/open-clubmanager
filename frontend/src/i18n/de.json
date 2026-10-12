@@ -910,7 +910,8 @@
             "SECRETARY": "Schriftführer",
             "READONLY": "Nur lesen"
         },
-        "honors": "Jubiläen & Ehrungen"
+        "honors": "Jubiläen & Ehrungen",
+        "qualifications": "Qualifikationen"
     },
     "honors": {
         "title": "Jubiläen & Ehrungen",
@@ -955,6 +956,52 @@
         },
         "dashboard": {
             "title": "Anstehende Jubiläen",
+            "all": "Alle {{count}} anzeigen"
+        }
+    },
+    "qualifications": {
+        "title": "Qualifikationen & Lizenzen",
+        "subtitle": "Übungsleiterlizenzen, Erste Hilfe und Führungszeugnisse mit Ablaufwarnung",
+        "add": "Qualifikation erfassen",
+        "addType": "Qualifikationstyp anlegen",
+        "editType": "Typ bearbeiten",
+        "deleteType": "Typ löschen",
+        "delete": "Qualifikation löschen",
+        "confirmDelete": "Diese Qualifikation löschen?",
+        "confirmDeleteType": "Diesen Typ mit allen zugehörigen Qualifikationen löschen?",
+        "validity": "Gültigkeit (Monate)",
+        "validityHint": "Leer lassen, wenn die Qualifikation nicht abläuft.",
+        "months": "{{count}} Monate",
+        "unlimited": "unbegrenzt",
+        "inspectionOnly": "Nur Einsichtsdatum speichern",
+        "inspectionHint": "Es wird nur das Datum der Einsichtnahme gespeichert, nie der Inhalt (§ 72a SGB VIII). Notizen sind deaktiviert.",
+        "inspectedOn": "Einsichtsdatum",
+        "yes": "Ja",
+        "expiryHint": "Leer = Ausstellungsdatum + {{count}} Monate",
+        "empty": "Noch keine Qualifikationen erfasst.",
+        "emptyTypes": "Noch keine Typen angelegt.",
+        "forbidden": "Nur Administratoren und Schriftführer dürfen Qualifikationen sehen.",
+        "loadFailed": "Qualifikationen konnten nicht geladen werden.",
+        "saveFailed": "Die Änderung konnte nicht gespeichert werden.",
+        "status": {
+            "valid": "Gültig",
+            "expiring": "Läuft bald ab",
+            "expired": "Abgelaufen"
+        },
+        "columns": {
+            "status": "Status",
+            "member": "Mitglied",
+            "type": "Qualifikation",
+            "issued": "Ausgestellt",
+            "expiry": "Läuft ab",
+            "note": "Notiz"
+        },
+        "tabs": {
+            "overview": "Übersicht",
+            "types": "Typen"
+        },
+        "dashboard": {
+            "title": "Ablaufende Qualifikationen",
             "all": "Alle {{count}} anzeigen"
         }
     }
