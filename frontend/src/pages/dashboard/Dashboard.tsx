@@ -13,6 +13,7 @@ import MemberGrowthChart from '../../components/dashboard/MemberGrowthChart';
 import FinanceChart from '../../components/dashboard/FinanceChart';
 import FeeStatusChart from '../../components/dashboard/FeeStatusChart';
 import UpcomingJubilees from '../../components/dashboard/UpcomingJubilees';
+import QualificationAlerts from '../../components/dashboard/QualificationAlerts';
 import MembersBySectionChart from '../../components/dashboard/MembersBySectionChart';
 import { useNavGroups } from '../../components/menu/navItems';
 import { useStatistics, useChartStatistics } from '../../hooks/statistics';
@@ -218,6 +219,7 @@ export default function Dashboard() {
             )}
 
             <UpcomingJubilees />
+            <QualificationAlerts />
 
             {charts && (
                 <Box component="section" sx={{ mt: { xs: 4, sm: 5 } }}>

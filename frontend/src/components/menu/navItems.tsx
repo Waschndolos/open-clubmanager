@@ -8,6 +8,7 @@ import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
 import HubOutlined from "@mui/icons-material/HubOutlined";
 import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
 import ManageAccountsOutlined from "@mui/icons-material/ManageAccountsOutlined";
+import WorkspacePremiumOutlined from "@mui/icons-material/WorkspacePremiumOutlined";
 import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import SpaceDashboardOutlined from "@mui/icons-material/SpaceDashboardOutlined";
 import { useAuth } from "../../context/AuthContext";
@@ -42,6 +43,8 @@ export function useNavGroups(): NavGroup[] {
         ...(canViewFinance ? [{ label: t("nav.finance"), icon: <AccountBalanceOutlined />, link: "/finance" }] : []),
         ...(inventoryArea !== "none" ? [{ label: t("nav.inventory"), icon: <Inventory2Outlined />, link: "/inventory" }] : []),
         ...(membersArea !== "none" ? [{ label: t("nav.honors"), icon: <CelebrationOutlined />, link: "/honors" }] : []),
+        ...(membersArea !== "none" && (appRole === "ADMIN" || appRole === "SECRETARY")
+            ? [{ label: t("nav.qualifications"), icon: <WorkspacePremiumOutlined />, link: "/qualifications" }] : []),
         { label: t("nav.entities"), icon: <AccountTreeOutlined />, link: "/entities" },
     ];
 

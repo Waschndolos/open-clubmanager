@@ -910,7 +910,8 @@
             "SECRETARY": "Secretary",
             "READONLY": "Read only"
         },
-        "honors": "Anniversaries & honors"
+        "honors": "Anniversaries & honors",
+        "qualifications": "Qualifications"
     },
     "honors": {
         "title": "Anniversaries & honors",
@@ -955,6 +956,52 @@
         },
         "dashboard": {
             "title": "Upcoming anniversaries",
+            "all": "Show all {{count}}"
+        }
+    },
+    "qualifications": {
+        "title": "Qualifications & licences",
+        "subtitle": "Trainer licences, first aid and clearance certificates with expiry warnings",
+        "add": "Record qualification",
+        "addType": "Add qualification type",
+        "editType": "Edit type",
+        "deleteType": "Delete type",
+        "delete": "Delete qualification",
+        "confirmDelete": "Delete this qualification?",
+        "confirmDeleteType": "Delete this type including all qualifications of it?",
+        "validity": "Validity (months)",
+        "validityHint": "Leave empty if the qualification does not expire.",
+        "months": "{{count}} months",
+        "unlimited": "unlimited",
+        "inspectionOnly": "Store inspection date only",
+        "inspectionHint": "Only the date of inspection is stored, never the content (§ 72a SGB VIII). Notes are disabled.",
+        "inspectedOn": "Inspection date",
+        "yes": "Yes",
+        "expiryHint": "Empty = issue date + {{count}} months",
+        "empty": "No qualifications recorded yet.",
+        "emptyTypes": "No types created yet.",
+        "forbidden": "Only administrators and secretaries may view qualifications.",
+        "loadFailed": "Qualifications could not be loaded.",
+        "saveFailed": "The change could not be saved.",
+        "status": {
+            "valid": "Valid",
+            "expiring": "Expires soon",
+            "expired": "Expired"
+        },
+        "columns": {
+            "status": "Status",
+            "member": "Member",
+            "type": "Qualification",
+            "issued": "Issued",
+            "expiry": "Expires",
+            "note": "Note"
+        },
+        "tabs": {
+            "overview": "Overview",
+            "types": "Types"
+        },
+        "dashboard": {
+            "title": "Expiring qualifications",
             "all": "Show all {{count}}"
         }
     }

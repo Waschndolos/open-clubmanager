@@ -50,6 +50,8 @@ var SyncedTables = []Table{
 	{Name: "member_sections", Scope: ScopeMembersCore, PK: []string{"member_id", "section_id"}},
 	{Name: "member_honors", Scope: ScopeMembersCore, PK: idPK},
 	{Name: "member_membership", Scope: ScopeMembersCore, PK: []string{"member_id"}},
+	{Name: "qualification_types", Scope: ScopeMembersCore, PK: idPK},
+	{Name: "member_qualifications", Scope: ScopeMembersCore, PK: idPK},
 
 	{Name: "member_contacts", Scope: ScopeMembersContact, PK: []string{"member_id"}},
 
@@ -101,4 +103,5 @@ var UniqueColumns = []UniqueColumn{
 	{Table: "roles", Column: "name"},
 	{Table: "groups", Column: "name"},
 	{Table: "sections", Column: "name"},
+	{Table: "qualification_types", Column: "name"},
 }

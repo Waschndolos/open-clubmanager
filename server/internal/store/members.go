@@ -355,7 +355,7 @@ func (s *Store) DeleteMember(ctx context.Context, id string) error {
 			return err
 		}
 		for _, table := range []string{"member_contacts", "member_bank_details", "member_roles", "member_groups",
-			"member_sections", "member_honors", "member_membership", "member_fees", "inventory_loans"} {
+			"member_sections", "member_honors", "member_membership", "member_qualifications", "member_fees", "inventory_loans"} {
 			if _, err := w.update(table, `member_id = ? AND deleted_at IS NULL`, []any{id}, tombstone); err != nil {
 				return err
 			}
