@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import MemberGrowthChart from '../../components/dashboard/MemberGrowthChart';
 import FinanceChart from '../../components/dashboard/FinanceChart';
 import FeeStatusChart from '../../components/dashboard/FeeStatusChart';
+import MyTasks from '../../components/dashboard/MyTasks';
 import UpcomingJubilees from '../../components/dashboard/UpcomingJubilees';
 import QualificationAlerts from '../../components/dashboard/QualificationAlerts';
 import MembersBySectionChart from '../../components/dashboard/MembersBySectionChart';
@@ -218,6 +219,7 @@ export default function Dashboard() {
                 </Box>
             )}
 
+            <MyTasks />
             <UpcomingJubilees />
             <QualificationAlerts />
 

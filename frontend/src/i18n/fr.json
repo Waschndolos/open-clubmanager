@@ -560,7 +560,8 @@
             "READONLY": "Lecture seule"
         },
         "honors": "Anniversaires & distinctions",
-        "qualifications": "Qualifications"
+        "qualifications": "Qualifications",
+        "tasks": "Tâches"
     },
     "honors": {
         "title": "Anniversaires & distinctions",
@@ -651,6 +652,54 @@
         },
         "dashboard": {
             "title": "Qualifications arrivant à expiration",
+            "all": "Tout afficher ({{count}})"
+        }
+    },
+    "tasks": {
+        "title": "Tâches",
+        "subtitle": "Qui s'occupe de quoi – pour le comité et les rôles",
+        "add": "Ajouter une tâche",
+        "edit": "Modifier la tâche",
+        "delete": "Supprimer la tâche",
+        "confirmDelete": "Supprimer cette tâche ?",
+        "description": "Description",
+        "overdue": "En retard",
+        "empty": "Aucune tâche.",
+        "assignTo": "Responsable",
+        "assignNone": "Personne",
+        "assignMember": "Membre",
+        "assignRole": "Rôle",
+        "linkedMember": "Membre lié (facultatif)",
+        "recurrenceNeedsDue": "Les tâches récurrentes ont besoin d'une échéance.",
+        "loadFailed": "Impossible de charger les tâches.",
+        "saveFailed": "La modification n'a pas pu être enregistrée.",
+        "columns": {
+            "title": "Titre",
+            "status": "Statut",
+            "due": "Échéance",
+            "assignee": "Responsable",
+            "recurrence": "Répétition"
+        },
+        "status": {
+            "open": "Ouverte",
+            "in_progress": "En cours",
+            "done": "Terminée"
+        },
+        "recurrence": {
+            "none": "Une fois",
+            "weekly": "Chaque semaine",
+            "monthly": "Chaque mois",
+            "yearly": "Chaque année"
+        },
+        "filter": {
+            "label": "Filtre",
+            "all": "Toutes",
+            "mine": "Les miennes",
+            "overdue": "En retard",
+            "done": "Terminées"
+        },
+        "dashboard": {
+            "title": "Mes tâches",
             "all": "Tout afficher ({{count}})"
         }
     }

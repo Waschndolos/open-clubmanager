@@ -911,7 +911,8 @@
             "READONLY": "Read only"
         },
         "honors": "Anniversaries & honors",
-        "qualifications": "Qualifications"
+        "qualifications": "Qualifications",
+        "tasks": "Tasks"
     },
     "honors": {
         "title": "Anniversaries & honors",
@@ -1002,6 +1003,54 @@
         },
         "dashboard": {
             "title": "Expiring qualifications",
+            "all": "Show all {{count}}"
+        }
+    },
+    "tasks": {
+        "title": "Tasks",
+        "subtitle": "Who takes care of what – for the board and roles",
+        "add": "Add task",
+        "edit": "Edit task",
+        "delete": "Delete task",
+        "confirmDelete": "Delete this task?",
+        "description": "Description",
+        "overdue": "Overdue",
+        "empty": "No tasks.",
+        "assignTo": "Assigned to",
+        "assignNone": "Nobody",
+        "assignMember": "Member",
+        "assignRole": "Role",
+        "linkedMember": "Linked member (optional)",
+        "recurrenceNeedsDue": "Recurring tasks need a due date.",
+        "loadFailed": "Tasks could not be loaded.",
+        "saveFailed": "The change could not be saved.",
+        "columns": {
+            "title": "Title",
+            "status": "Status",
+            "due": "Due",
+            "assignee": "Assignee",
+            "recurrence": "Repeats"
+        },
+        "status": {
+            "open": "Open",
+            "in_progress": "In progress",
+            "done": "Done"
+        },
+        "recurrence": {
+            "none": "Once",
+            "weekly": "Weekly",
+            "monthly": "Monthly",
+            "yearly": "Yearly"
+        },
+        "filter": {
+            "label": "Filter",
+            "all": "All",
+            "mine": "Mine",
+            "overdue": "Overdue",
+            "done": "Done"
+        },
+        "dashboard": {
+            "title": "My tasks",
             "all": "Show all {{count}}"
         }
     }

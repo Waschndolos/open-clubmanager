@@ -911,7 +911,8 @@
             "READONLY": "Nur lesen"
         },
         "honors": "Jubiläen & Ehrungen",
-        "qualifications": "Qualifikationen"
+        "qualifications": "Qualifikationen",
+        "tasks": "Aufgaben"
     },
     "honors": {
         "title": "Jubiläen & Ehrungen",
@@ -1002,6 +1003,54 @@
         },
         "dashboard": {
             "title": "Ablaufende Qualifikationen",
+            "all": "Alle {{count}} anzeigen"
+        }
+    },
+    "tasks": {
+        "title": "Aufgaben",
+        "subtitle": "Wer kümmert sich um was – für Vorstand und Rollen",
+        "add": "Aufgabe anlegen",
+        "edit": "Aufgabe bearbeiten",
+        "delete": "Aufgabe löschen",
+        "confirmDelete": "Diese Aufgabe löschen?",
+        "description": "Beschreibung",
+        "overdue": "Überfällig",
+        "empty": "Keine Aufgaben.",
+        "assignTo": "Zuständig",
+        "assignNone": "Niemand",
+        "assignMember": "Mitglied",
+        "assignRole": "Rolle",
+        "linkedMember": "Verknüpftes Mitglied (optional)",
+        "recurrenceNeedsDue": "Wiederkehrende Aufgaben brauchen eine Fälligkeit.",
+        "loadFailed": "Aufgaben konnten nicht geladen werden.",
+        "saveFailed": "Die Änderung konnte nicht gespeichert werden.",
+        "columns": {
+            "title": "Titel",
+            "status": "Status",
+            "due": "Fällig",
+            "assignee": "Zuständig",
+            "recurrence": "Wiederholung"
+        },
+        "status": {
+            "open": "Offen",
+            "in_progress": "In Arbeit",
+            "done": "Erledigt"
+        },
+        "recurrence": {
+            "none": "Einmalig",
+            "weekly": "Wöchentlich",
+            "monthly": "Monatlich",
+            "yearly": "Jährlich"
+        },
+        "filter": {
+            "label": "Filter",
+            "all": "Alle",
+            "mine": "Meine",
+            "overdue": "Überfällig",
+            "done": "Erledigt"
+        },
+        "dashboard": {
+            "title": "Meine Aufgaben",
             "all": "Alle {{count}} anzeigen"
         }
     }

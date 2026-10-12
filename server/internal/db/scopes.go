@@ -50,6 +50,7 @@ var SyncedTables = []Table{
 	{Name: "member_sections", Scope: ScopeMembersCore, PK: []string{"member_id", "section_id"}},
 	{Name: "member_honors", Scope: ScopeMembersCore, PK: idPK},
 	{Name: "member_membership", Scope: ScopeMembersCore, PK: []string{"member_id"}},
+	{Name: "tasks", Scope: ScopeMembersCore, PK: idPK},
 	{Name: "qualification_types", Scope: ScopeMembersCore, PK: idPK},
 	{Name: "member_qualifications", Scope: ScopeMembersCore, PK: idPK},
 

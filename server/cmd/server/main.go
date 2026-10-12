@@ -128,6 +128,12 @@ func main() {
 	router.Delete("/api/v2/qualifications/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteQualification))
 	router.Post("/api/v2/members/{id}/qualifications", bearerAuthRequired(cfg.JWTSecret, api.CreateQualification))
 
+	// Tasks for the board and roles.
+	router.Get("/api/v2/tasks", bearerAuthRequired(cfg.JWTSecret, api.ListTasks))
+	router.Post("/api/v2/tasks", bearerAuthRequired(cfg.JWTSecret, api.CreateTask))
+	router.Put("/api/v2/tasks/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateTask))
+	router.Delete("/api/v2/tasks/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteTask))
+
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))
