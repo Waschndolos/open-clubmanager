@@ -111,6 +111,14 @@ func main() {
 	// GDPR data export for a member (Art. 15/20), PDF or JSON.
 	router.Get("/api/v2/members/{id}/data-export", bearerAuthRequired(cfg.JWTSecret, api.ExportMemberData))
 
+	// Jubilees and honors (Jubiläen & Ehrungen).
+	router.Get("/api/v2/jubilees", bearerAuthRequired(cfg.JWTSecret, api.ListJubilees))
+	router.Get("/api/v2/honors", bearerAuthRequired(cfg.JWTSecret, api.ListHonors))
+	router.Delete("/api/v2/honors/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteHonor))
+	router.Post("/api/v2/members/{id}/honors", bearerAuthRequired(cfg.JWTSecret, api.CreateHonor))
+	router.Get("/api/v2/members/{id}/membership-adjustment", bearerAuthRequired(cfg.JWTSecret, api.GetMembershipAdjust))
+	router.Put("/api/v2/members/{id}/membership-adjustment", bearerAuthRequired(cfg.JWTSecret, api.SetMembershipAdjust))
+
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import AccountBalanceOutlined from "@mui/icons-material/AccountBalanceOutlined";
 import AccountTreeOutlined from "@mui/icons-material/AccountTreeOutlined";
 import GroupsOutlined from "@mui/icons-material/GroupsOutlined";
+import CelebrationOutlined from "@mui/icons-material/CelebrationOutlined";
 import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
 import HubOutlined from "@mui/icons-material/HubOutlined";
 import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
@@ -33,12 +34,14 @@ export function useNavGroups(): NavGroup[] {
     // The device's role in a collaboration club limits what this login sees (UX F10).
     const financeArea = usePermission("finance");
     const inventoryArea = usePermission("inventory");
+    const membersArea = usePermission("membersCore");
     const canViewFinance = (appRole === "ADMIN" || appRole === "TREASURER") && financeArea !== "none";
 
     const club: NavItem[] = [
         { label: t("nav.members"), icon: <GroupsOutlined />, link: "/members" },
         ...(canViewFinance ? [{ label: t("nav.finance"), icon: <AccountBalanceOutlined />, link: "/finance" }] : []),
         ...(inventoryArea !== "none" ? [{ label: t("nav.inventory"), icon: <Inventory2Outlined />, link: "/inventory" }] : []),
+        ...(membersArea !== "none" ? [{ label: t("nav.honors"), icon: <CelebrationOutlined />, link: "/honors" }] : []),
         { label: t("nav.entities"), icon: <AccountTreeOutlined />, link: "/entities" },
     ];
 

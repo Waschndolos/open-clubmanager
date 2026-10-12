@@ -558,6 +558,53 @@
             "TREASURER": "Trésorier",
             "SECRETARY": "Secrétaire",
             "READONLY": "Lecture seule"
+        },
+        "honors": "Anniversaires & distinctions"
+    },
+    "honors": {
+        "title": "Anniversaires & distinctions",
+        "subtitle": "Anniversaires d'adhésion et anniversaires ronds à venir, et distinctions enregistrées",
+        "from": "Du",
+        "to": "Au",
+        "export": "Exporter en CSV",
+        "record": "Enregistrer une distinction",
+        "delete": "Supprimer la distinction",
+        "confirmDelete": "Supprimer cette distinction ? L'étape sera de nouveau proposée.",
+        "empty": "Aucun anniversaire à venir sur la période choisie.",
+        "emptyGiven": "Aucune distinction enregistrée.",
+        "note": "Note",
+        "titleHint": "p. ex. épinglette en argent",
+        "loadFailed": "Impossible de charger les anniversaires.",
+        "saveFailed": "La modification n'a pas pu être enregistrée.",
+        "exportFailed": "L'export a échoué.",
+        "kind": {
+            "membership": "{{count}} ans d'adhésion",
+            "birthday": "{{count}} ans",
+            "other": "Autre distinction"
+        },
+        "columns": {
+            "date": "Date",
+            "member": "Membre",
+            "occasion": "Occasion",
+            "honor": "Distinction"
+        },
+        "tabs": {
+            "upcoming": "À venir",
+            "given": "Distinctions enregistrées"
+        },
+        "stages": {
+            "years": "Années d'adhésion",
+            "ages": "Anniversaires ronds",
+            "hint": "Séparés par des virgules"
+        },
+        "adjust": {
+            "title": "Corriger les années d'adhésion",
+            "years": "Correction en années",
+            "hint": "Ajoutée aux années calculées depuis la date d'entrée, p. ex. -3 après une interruption."
+        },
+        "dashboard": {
+            "title": "Anniversaires à venir",
+            "all": "Tout afficher ({{count}})"
         }
     }
 }

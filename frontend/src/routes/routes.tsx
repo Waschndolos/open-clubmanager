@@ -15,6 +15,7 @@ import { RequireRole } from "../guards/RequireRole";
 import History from "../pages/history/History";
 import Users from "../pages/users/Users";
 import Inventory from "../pages/inventory/Inventory";
+import Honors from "../pages/honors/Honors";
 import CollaborationSettings from "../pages/collaboration/CollaborationSettings";
 import CreateClubWizard from "../pages/collaboration/CreateClubWizard";
 import JoinClubWizard from "../pages/collaboration/JoinClubWizard";
@@ -99,6 +100,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth>
             <Inventory />
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "honors",
+        element: (
+          <RequireAuth>
+            <Honors />
           </RequireAuth>
         ),
             },

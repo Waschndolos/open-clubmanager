@@ -909,6 +909,53 @@
             "TREASURER": "Kassenwart",
             "SECRETARY": "Schriftführer",
             "READONLY": "Nur lesen"
+        },
+        "honors": "Jubiläen & Ehrungen"
+    },
+    "honors": {
+        "title": "Jubiläen & Ehrungen",
+        "subtitle": "Anstehende Mitgliedsjubiläen und runde Geburtstage sowie erfasste Ehrungen",
+        "from": "Von",
+        "to": "Bis",
+        "export": "Als CSV exportieren",
+        "record": "Ehrung erfassen",
+        "delete": "Ehrung löschen",
+        "confirmDelete": "Diese Ehrung löschen? Die Stufe wird dann wieder vorgeschlagen.",
+        "empty": "Keine anstehenden Jubiläen im gewählten Zeitraum.",
+        "emptyGiven": "Noch keine Ehrungen erfasst.",
+        "note": "Notiz",
+        "titleHint": "z. B. Ehrennadel Silber",
+        "loadFailed": "Jubiläen konnten nicht geladen werden.",
+        "saveFailed": "Die Änderung konnte nicht gespeichert werden.",
+        "exportFailed": "Der Export ist fehlgeschlagen.",
+        "kind": {
+            "membership": "{{count}} Jahre Mitgliedschaft",
+            "birthday": "{{count}}. Geburtstag",
+            "other": "Sonstige Ehrung"
+        },
+        "columns": {
+            "date": "Datum",
+            "member": "Mitglied",
+            "occasion": "Anlass",
+            "honor": "Ehrung"
+        },
+        "tabs": {
+            "upcoming": "Anstehend",
+            "given": "Erfasste Ehrungen"
+        },
+        "stages": {
+            "years": "Mitgliedsjahre",
+            "ages": "Runde Geburtstage",
+            "hint": "Kommagetrennt"
+        },
+        "adjust": {
+            "title": "Mitgliedsjahre korrigieren",
+            "years": "Korrektur in Jahren",
+            "hint": "Wird zu den aus dem Eintrittsdatum berechneten Jahren addiert, z. B. -3 bei einer Unterbrechung."
+        },
+        "dashboard": {
+            "title": "Anstehende Jubiläen",
+            "all": "Alle {{count}} anzeigen"
         }
     }
 }
