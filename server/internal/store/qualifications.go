@@ -252,13 +252,20 @@ func currentQualifications(all []Qualification, now time.Time, warnDays int) []Q
 		if rank[a.Status] != rank[b.Status] {
 			return rank[a.Status] < rank[b.Status]
 		}
-		if a.ExpiryDate != nil && b.ExpiryDate != nil && !a.ExpiryDate.Equal(*b.ExpiryDate) {
+		// Entries without an expiry date come last within their status.
+		if (a.ExpiryDate == nil) != (b.ExpiryDate == nil) {
+			return b.ExpiryDate == nil
+		}
+		if a.ExpiryDate != nil && !a.ExpiryDate.Equal(*b.ExpiryDate) {
 			return a.ExpiryDate.Before(*b.ExpiryDate)
 		}
 		if a.Member.Number != b.Member.Number {
 			return a.Member.Number < b.Member.Number
 		}
-		return a.Type.Name < b.Type.Name
+		if a.Type.Name != b.Type.Name {
+			return a.Type.Name < b.Type.Name
+		}
+		return a.ID < b.ID
 	})
 	return result
 }
