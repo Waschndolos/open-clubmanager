@@ -611,7 +611,8 @@
         "honors": "Anniversaires & distinctions",
         "qualifications": "Qualifications",
         "tasks": "Tâches",
-        "households": "Familles & foyers"
+        "households": "Familles & foyers",
+        "events": "Événements"
     },
     "honors": {
         "title": "Anniversaires & distinctions",
@@ -803,6 +804,76 @@
         "dashboard": {
             "title": "Foyers sans payeur principal",
             "action": "Désigner un payeur principal"
+        }
+    },
+    "events": {
+        "title": "Événements",
+        "subtitle": "Entraînements, fêtes, assemblées et compétitions dans le calendrier du club.",
+        "add": "Créer un événement",
+        "edit": "Modifier l'événement",
+        "editSeries": "Modifier la série",
+        "delete": "Supprimer l'événement",
+        "deleteSeries": "Supprimer la série",
+        "excludeOccurrence": "Retirer uniquement cette date",
+        "excluded": "La date a été retirée de la série.",
+        "confirmDelete": "Supprimer cet événement ?",
+        "confirmDeleteSeries": "Supprimer toute la série ? Pour sauter une seule date, choisissez « Retirer uniquement cette date ».",
+        "downloadIcs": "Télécharger .ics",
+        "exportCalendar": "Exporter le calendrier (.ics)",
+        "loadFailed": "Impossible de charger les événements.",
+        "saveFailed": "L'enregistrement a échoué.",
+        "today": "Aujourd'hui",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "view": "Vue",
+        "views": {
+            "month": "Mois",
+            "week": "Semaine",
+            "list": "Liste"
+        },
+        "audience": "Public",
+        "allAudiences": "Tous les événements",
+        "wholeClub": "Tout le club",
+        "allDay": "Toute la journée",
+        "recurring": "Événement récurrent",
+        "more_one": "+{{count}} autre",
+        "more_other": "+{{count}} autres",
+        "empty": "Aucun événement sur cette période.",
+        "endBeforeStart": "La fin est avant le début.",
+        "untilHelp": "Laisser vide pour une série sans fin.",
+        "audienceHelp": "Sans groupes, sections ni rôles, l'événement concerne tout le club.",
+        "fields": {
+            "title": "Titre",
+            "category": "Catégorie",
+            "allDay": "Toute la journée",
+            "start": "Début",
+            "end": "Fin",
+            "startDay": "Premier jour",
+            "endDay": "Dernier jour",
+            "recurrence": "Répétition",
+            "until": "Répéter jusqu'au",
+            "location": "Lieu",
+            "description": "Description",
+            "groups": "Groupes",
+            "sections": "Sections",
+            "roles": "Rôles"
+        },
+        "category": {
+            "training": "Entraînement",
+            "festival": "Fête",
+            "meeting": "Assemblée",
+            "competition": "Compétition",
+            "other": "Autre"
+        },
+        "recurrence": {
+            "none": "Aucune",
+            "weekly": "Chaque semaine",
+            "biweekly": "Toutes les 2 semaines",
+            "monthly": "Chaque mois"
+        },
+        "dashboard": {
+            "title": "Prochains événements",
+            "all": "Ouvrir le calendrier"
         }
     }
 }
