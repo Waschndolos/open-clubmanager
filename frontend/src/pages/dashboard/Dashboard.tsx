@@ -15,6 +15,7 @@ import FeeStatusChart from '../../components/dashboard/FeeStatusChart';
 import MyTasks from '../../components/dashboard/MyTasks';
 import UpcomingJubilees from '../../components/dashboard/UpcomingJubilees';
 import QualificationAlerts from '../../components/dashboard/QualificationAlerts';
+import MaintenanceAlerts from '../../components/dashboard/MaintenanceAlerts';
 import HouseholdAlerts from '../../components/dashboard/HouseholdAlerts';
 import MembersBySectionChart from '../../components/dashboard/MembersBySectionChart';
 import { useNavGroups } from '../../components/menu/navItems';
@@ -223,6 +224,7 @@ export default function Dashboard() {
             <MyTasks />
             <UpcomingJubilees />
             <QualificationAlerts />
+            <MaintenanceAlerts />
             <HouseholdAlerts />
 
             {charts && (

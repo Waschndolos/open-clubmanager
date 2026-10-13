@@ -4,6 +4,7 @@ import { assignRoleMembers, createRole } from './roles';
 import { assignSectionMembers, createSection } from './sections';
 import { createMemberFee, createTransaction } from './finance';
 import { createInventoryItem, createInventoryLoan } from './inventory';
+import { recordMaintenance, setItemStatus } from './maintenance';
 import { Member } from './types';
 
 export interface SetupDemoDataResult {
@@ -308,6 +309,30 @@ export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
         });
         itemIds.set(key, created.id);
     }
+
+    // Inspection schedules: the rescue boat is overdue, the helmets are due
+    // soon, one kite is damaged and the radios are in repair (not lendable).
+    const day = (offset: number) => {
+        const d = new Date();
+        d.setUTCDate(d.getUTCDate() + offset);
+        return d.toISOString().slice(0, 10);
+    };
+    const yearAgo = (offset: number) => {
+        const d = new Date(`${day(offset)}T00:00:00Z`);
+        d.setUTCFullYear(d.getUTCFullYear() - 1);
+        return d.toISOString().slice(0, 10);
+    };
+    await setItemStatus(itemIds.get('boat')!, { condition: 'ready', intervalMonths: 12 });
+    await recordMaintenance(itemIds.get('boat')!, {
+        date: yearAgo(-12), performedBy: 'Bootsservice Fehmarn', note: 'Motorinspektion und Schlauchprüfung', cost: 320,
+    });
+    await setItemStatus(itemIds.get('helmet')!, { condition: 'ready', intervalMonths: 24, nextDue: day(14) });
+    await setItemStatus(itemIds.get('kite9')!, { condition: 'ready', intervalMonths: 12, nextDue: day(120) });
+    await setItemStatus(itemIds.get('kite12')!, { condition: 'damaged' });
+    await recordMaintenance(itemIds.get('kite12')!, {
+        date: day(-5), performedBy: 'Kiteschule', note: 'Riss in der Leading Edge festgestellt',
+    });
+    await setItemStatus(itemIds.get('radio')!, { condition: 'in_repair' });
 
     const memberByNumber = new Map(createdMembers.map(({ id, demo }) => [demo.data.number, id]));
     const loans = [
