@@ -532,14 +532,20 @@ var writeScopes = []struct {
 	{"/api/v2/events", []dbpkg.Scope{dbpkg.ScopeMembersCore}},
 }
 
-// ScopeGuard rejects writes to data this device may not change in its club
+// ScopeGuard rejects writes the app role of the login may not make
+// (roleWrites) and writes to data this device may not change in its club
 // (spec §4.2). Other devices would ignore such changes anyway. In local mode
-// everything is allowed.
+// every device scope is allowed. It runs after the JWT middleware.
 func (a *API) ScopeGuard(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet, http.MethodHead, http.MethodOptions:
 			next.ServeHTTP(w, r)
+			return
+		}
+		if !roleMayWrite(r, r.URL.Path) {
+			code := "FORBIDDEN"
+			writeJSON(w, http.StatusForbidden, openapi.ErrorResponse{Code: &code, Error: "your role may not change this data"})
 			return
 		}
 		for _, ws := range writeScopes {

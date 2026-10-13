@@ -13,6 +13,9 @@ import {useEffect, useState} from "react";
 import {EntityManagerProps, NamedEntity} from "./types";
 import {useTranslation} from "react-i18next";
 import {EntityListEntry} from "./EntityListEntry";
+import {canEditData} from "../../api/types";
+import {useAuth} from "../../context/AuthContext";
+import {usePermission} from "../../context/CollaborationContext";
 
 export function EntityManager<T extends NamedEntity>({
                                                          description,
@@ -25,6 +28,8 @@ export function EntityManager<T extends NamedEntity>({
                                                          labels = {},
                                                      }: EntityManagerProps<T>) {
     const {t} = useTranslation();
+    const {appRole} = useAuth();
+    const canEdit = canEditData(appRole) && usePermission('membersCore') === 'write';
     const [entities, setEntities] = useState<T[]>([]);
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
@@ -65,11 +70,11 @@ export function EntityManager<T extends NamedEntity>({
                 )}
             </Box>
 
-            <Box display="flex" justifyContent="flex-end">
+            {canEdit && <Box display="flex" justifyContent="flex-end">
                 <Button variant="contained" onClick={() => setOpen(true)}>
                     {labels.createButton ?? t("buttons.save")}
                 </Button>
-            </Box>
+            </Box>}
 
             <Paper sx={{
                 p: 2,
@@ -78,6 +83,7 @@ export function EntityManager<T extends NamedEntity>({
                     <EntityListEntry
                         key={e.id}
                         item={e}
+                        canEdit={canEdit}
                         onEdit={handleUpdate}
                         onDelete={handleDelete}
                         fetchMembersFn={fetchMembersFn}

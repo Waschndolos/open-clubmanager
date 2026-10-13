@@ -21,7 +21,7 @@ import { usePermission } from '../../context/CollaborationContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
 import { fetchMembers } from '../../api/members';
-import { Member } from '../../api/types';
+import { Member, canEditData } from '../../api/types';
 import {
     createGuardian,
     deleteGuardian,
@@ -119,7 +119,7 @@ function Guardians({ member, canEdit }: { member: Member; canEdit: boolean }) {
     const { t } = useTranslation();
     const { appRole } = useAuth();
     const { addNotification } = useNotification();
-    const writable = canEdit && appRole !== 'READONLY';
+    const writable = canEdit && canEditData(appRole);
     const [guardians, setGuardians] = useState<Guardian[]>([]);
     const [adding, setAdding] = useState(false);
 

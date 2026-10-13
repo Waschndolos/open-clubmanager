@@ -27,6 +27,7 @@ import { useNotification } from '../../context/NotificationContext';
 import { fetchGroups } from '../../api/groups';
 import { fetchRoles } from '../../api/roles';
 import { fetchSections } from '../../api/sections';
+import { canEditData } from '../../api/types';
 import {
     addDays,
     AudienceFilter,
@@ -56,7 +57,7 @@ export default function Events() {
     const { t, i18n } = useTranslation();
     const { appRole } = useAuth();
     const area = usePermission('membersCore');
-    const canEdit = area === 'write' && appRole !== 'READONLY';
+    const canEdit = area === 'write' && canEditData(appRole);
     const { addNotification } = useNotification();
     const [params, setParams] = useSearchParams();
 

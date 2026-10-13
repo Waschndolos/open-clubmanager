@@ -35,7 +35,9 @@ import {
     deleteMemberFee,
 } from '../../api/finance';
 import { fetchMembers } from '../../api/members';
-import { FinanceTransaction, MemberFee, Member } from '../../api/types';
+import { FinanceTransaction, MemberFee, Member, canEditFinance } from '../../api/types';
+import { useAuth } from '../../context/AuthContext';
+import { usePermission } from '../../context/CollaborationContext';
 import PageHeader from '../../components/common/PageHeader';
 
 const FINANCE_RESET_CONFIRM_TEXT = 'DELETE';
@@ -268,6 +270,8 @@ function BalanceSummary({ transactions, fees }: { transactions: FinanceTransacti
 
 export function Finance() {
     const { t } = useTranslation();
+    const { appRole } = useAuth();
+    const canEdit = canEditFinance(appRole) && usePermission('finance') === 'write';
     const [tab, setTab] = useState(0);
     const [loading, setLoading] = useState(true);
     const [transactions, setTransactions] = useState<FinanceTransaction[]>([]);
@@ -407,7 +411,7 @@ export function Finance() {
             ),
         },
         { field: 'category', headerName: t('finance.transactions.fields.category'), flex: 1, minWidth: 120 },
-        {
+        ...(canEdit ? [{
             field: 'actions',
             headerName: t('members.table.header.actions'),
             width: 100,
@@ -434,7 +438,7 @@ export function Finance() {
                     </Tooltip>
                 </Box>
             ),
-        },
+        } as GridColDef] : []),
     ];
 
     const feeColumns: GridColDef[] = [
@@ -477,7 +481,7 @@ export function Finance() {
                 ),
         },
         { field: 'description', headerName: t('finance.memberfees.fields.description'), flex: 1.5, minWidth: 140 },
-        {
+        ...(canEdit ? [{
             field: 'actions',
             headerName: t('members.table.header.actions'),
             width: 100,
@@ -504,7 +508,7 @@ export function Finance() {
                     </Tooltip>
                 </Box>
             ),
-        },
+        } as GridColDef] : []),
     ];
 
     if (loading) return <CircularProgress />;
@@ -516,7 +520,7 @@ export function Finance() {
                 icon={<AccountBalance fontSize="small" />}
             />
 
-            <Box display="flex" justifyContent="flex-end" mb={2}>
+            {canEdit && <Box display="flex" justifyContent="flex-end" mb={2}>
                 <Button
                     variant="outlined"
                     color="error"
@@ -525,7 +529,7 @@ export function Finance() {
                 >
                     {t('finance.ledgerReset.button')}
                 </Button>
-            </Box>
+            </Box>}
 
             <BalanceSummary transactions={transactions} fees={fees} />
 
@@ -536,7 +540,7 @@ export function Finance() {
 
             {tab === 0 && (
                 <Box>
-                    <Box display="flex" justifyContent="flex-end" mb={1}>
+                    {canEdit && <Box display="flex" justifyContent="flex-end" mb={1}>
                         <Button
                             component="label"
                             variant="outlined"
@@ -575,7 +579,7 @@ export function Finance() {
                         >
                             {t('finance.transactions.create')}
                         </Button>
-                    </Box>
+                    </Box>}
                     <DataGrid
                         autoHeight
                         rows={transactions}
@@ -592,7 +596,7 @@ export function Finance() {
 
             {tab === 1 && (
                 <Box>
-                    <Box display="flex" justifyContent="flex-end" mb={1}>
+                    {canEdit && <Box display="flex" justifyContent="flex-end" mb={1}>
                         <Button
                             variant="contained"
                             startIcon={<EuroSymbol />}
@@ -609,7 +613,7 @@ export function Finance() {
                         >
                             {t('finance.memberfees.create')}
                         </Button>
-                    </Box>
+                    </Box>}
                     <DataGrid
                         autoHeight
                         rows={fees}

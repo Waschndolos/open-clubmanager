@@ -25,6 +25,8 @@ export type Entity = {
 
 type EntityListEntryProps<T extends Entity> = {
     item: T;
+    /** Without edit rights the entry shows no actions. */
+    canEdit?: boolean;
     onEdit: (item: T) => void;
     onDelete: (item: T) => void;
     labels?: {
@@ -37,6 +39,7 @@ type EntityListEntryProps<T extends Entity> = {
 
 export function EntityListEntry<T extends Entity>({
     item,
+    canEdit = true,
     onEdit,
     onDelete,
     labels = {},
@@ -60,7 +63,7 @@ export function EntityListEntry<T extends Entity>({
         <>
             <ListItem
                 divider
-                secondaryAction={
+                secondaryAction={canEdit && (
                     <Box>
                         {showMembersButton && (
                             <Tooltip title={t("entities.assignMembers.tooltip")}>
@@ -81,7 +84,7 @@ export function EntityListEntry<T extends Entity>({
                             <Delete />
                         </IconButton>
                     </Box>
-                }
+                )}
                 sx={{
                     borderRadius: 2,
                     mb: 1,

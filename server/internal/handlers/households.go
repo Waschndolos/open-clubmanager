@@ -81,10 +81,10 @@ func toHouseholdJSON(h store.Household, now time.Time) householdJSON {
 }
 
 // scopeAccess checks that the login may read (or, for writes, change) the
-// given scopes; read-only logins never write.
+// given scopes; only data editors (canEditData) write.
 func (a *API) scopeAccess(w http.ResponseWriter, r *http.Request, write bool, what string, scopes ...db.Scope) bool {
 	claims, ok := auth.ClaimsFromContext(r.Context())
-	allowed := ok && (!write || claims.AppRole != openapi.READONLY)
+	allowed := ok && (!write || canEditData(claims.AppRole))
 	for _, s := range scopes {
 		if !allowed {
 			break

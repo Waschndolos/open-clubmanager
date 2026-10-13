@@ -24,7 +24,7 @@ import { usePermission } from '../../context/CollaborationContext';
 import { useNotification } from '../../context/NotificationContext';
 import { fetchMembers } from '../../api/members';
 import { fetchRoles } from '../../api/roles';
-import { Member, Role } from '../../api/types';
+import { Member, Role, canEditData } from '../../api/types';
 import {
     createTask,
     deleteTask,
@@ -47,7 +47,7 @@ export default function Tasks() {
     const { appRole } = useAuth();
     const { addNotification } = useNotification();
     const area = usePermission('membersCore');
-    const canEdit = appRole !== 'READONLY' && area === 'write';
+    const canEdit = canEditData(appRole) && area === 'write';
 
     const [filter, setFilter] = useState<TaskFilter>('all');
     const [tasks, setTasks] = useState<Task[]>([]);
