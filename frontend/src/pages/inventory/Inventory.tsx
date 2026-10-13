@@ -1,7 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+    Alert,
     Box,
     Button,
+    Chip,
+    FormControlLabel,
+    Switch,
     Dialog,
     DialogActions,
     DialogContent,
@@ -16,7 +20,8 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { Add, Clear, Edit, Delete, Inventory2 } from '@mui/icons-material';
+import { Add, BuildOutlined, Clear, Edit, Delete, Inventory2 } from '@mui/icons-material';
+import { isAxiosError } from 'axios';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/common/PageHeader';
@@ -31,6 +36,10 @@ import {
     updateInventoryItem,
     updateInventoryLoan,
 } from '../../api/inventory';
+import { CONDITION_COLOR, fetchMaintenanceStates, MaintenanceState } from '../../api/maintenance';
+import { useAuth } from '../../context/AuthContext';
+import { usePermission } from '../../context/CollaborationContext';
+import MaintenanceDialog from './MaintenanceDialog';
 
 type ItemDialogProps = {
     item: Partial<InventoryItem>;
@@ -91,12 +100,13 @@ function ItemDialog({ item, isNew, onClose, onSave }: ItemDialogProps) {
 
 type LoanDialogProps = {
     items: InventoryItem[];
+    states: Map<string, MaintenanceState>;
     members: Member[];
     onClose: () => void;
     onSave: (loan: Partial<InventoryLoan>) => Promise<void>;
 };
 
-function LoanDialog({ items, members, onClose, onSave }: LoanDialogProps) {
+function LoanDialog({ items, states, members, onClose, onSave }: LoanDialogProps) {
     const { t } = useTranslation();
     const [form, setForm] = useState<Partial<InventoryLoan>>({
         loanedAt: new Date().toISOString(),
@@ -119,9 +129,16 @@ function LoanDialog({ items, members, onClose, onSave }: LoanDialogProps) {
                             value={form.itemId ?? ''}
                             onChange={(e) => setField('itemId', e.target.value)}
                         >
-                            {items.map((item) => (
-                                <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
-                            ))}
+                            {items.map((item) => {
+                                // Items that are not ready for use cannot be lent.
+                                const condition = states.get(item.id)?.condition ?? 'ready';
+                                return (
+                                    <MenuItem key={item.id} value={item.id} disabled={condition !== 'ready'}>
+                                        {item.name}
+                                        {condition !== 'ready' && ` (${t(`inventory.condition.${condition}`)})`}
+                                    </MenuItem>
+                                );
+                            })}
                         </Select>
                     </FormControl>
                     <FormControl fullWidth>
@@ -167,7 +184,15 @@ function LoanDialog({ items, members, onClose, onSave }: LoanDialogProps) {
 }
 
 export default function Inventory() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const { appRole } = useAuth();
+    const inventoryArea = usePermission('inventory');
+    const financeArea = usePermission('finance');
+    const canEdit = inventoryArea === 'write' && appRole !== 'READONLY';
+    const canBook = (appRole === 'ADMIN' || appRole === 'TREASURER') && financeArea === 'write';
+    const [states, setStates] = useState<MaintenanceState[]>([]);
+    const [maintenanceItem, setMaintenanceItem] = useState<InventoryItem | null>(null);
+    const [onlyDue, setOnlyDue] = useState(false);
     const [items, setItems] = useState<InventoryItem[]>([]);
     const [loans, setLoans] = useState<InventoryLoan[]>([]);
     const [members, setMembers] = useState<Member[]>([]);
@@ -192,6 +217,14 @@ export default function Inventory() {
             .catch(() => setError(t('inventory.loadError')));
     }, [t]);
 
+    const reloadStates = useCallback(() => {
+        fetchMaintenanceStates().then(setStates).catch(() => setStates([]));
+    }, []);
+    useEffect(reloadStates, [reloadStates]);
+
+    const stateById = useMemo(() => new Map(states.map((s) => [s.itemId, s])), [states]);
+    const dueCount = states.filter((s) => s.due === 'due' || s.due === 'overdue').length;
+
     const categories = useMemo(
         () => Array.from(new Set(items.map((item) => item.category))).sort((a, b) => a.localeCompare(b)),
         [items]
@@ -207,9 +240,11 @@ export default function Inventory() {
                 item.category.toLowerCase().includes(query) ||
                 item.location.toLowerCase().includes(query) ||
                 (item.serialNumber ?? '').toLowerCase().includes(query);
-            return matchesCategory && matchesSearch;
+            const due = stateById.get(item.id)?.due;
+            const matchesDue = !onlyDue || due === 'due' || due === 'overdue';
+            return matchesCategory && matchesSearch && matchesDue;
         });
-    }, [items, search, categoryFilter]);
+    }, [items, search, categoryFilter, onlyDue, stateById]);
 
     const activeLoans = useMemo(() => loans.filter((loan) => !loan.returnedAt), [loans]);
     const itemById = useMemo(() => new Map(items.map((item) => [item.id, item])), [items]);
@@ -243,8 +278,9 @@ export default function Inventory() {
             setLoans((prev) => [created, ...prev]);
             setLoanDialogOpen(false);
             setError(null);
-        } catch {
-            setError(t('inventory.loadError'));
+        } catch (e) {
+            const notReady = isAxiosError(e) && e.response?.data?.code === 'ITEM_NOT_READY';
+            setError(t(notReady ? 'inventory.maintenance.notLendable' : 'inventory.loadError'));
         }
     };
 
@@ -275,12 +311,47 @@ export default function Inventory() {
         { field: 'location', headerName: t('inventory.fields.location'), flex: 1, minWidth: 120 },
         { field: 'serialNumber', headerName: t('inventory.fields.serialNumber'), flex: 1, minWidth: 140 },
         {
+            field: 'condition',
+            headerName: t('inventory.maintenance.condition'),
+            minWidth: 140,
+            valueGetter: (_v, row: InventoryItem) => stateById.get(row.id)?.condition ?? 'ready',
+            renderCell: ({ value }) => (
+                <Chip size="small" variant="outlined" color={CONDITION_COLOR[value as keyof typeof CONDITION_COLOR]}
+                      label={t(`inventory.condition.${value}`)} />
+            ),
+        },
+        {
+            field: 'nextDue',
+            headerName: t('inventory.maintenance.nextDue'),
+            minWidth: 210,
+            valueGetter: (_v, row: InventoryItem) => stateById.get(row.id)?.nextDue ?? '',
+            renderCell: ({ row }) => {
+                const st = stateById.get((row as InventoryItem).id);
+                if (!st?.nextDue) return '—';
+                return (
+                    <>
+                        {new Date(`${st.nextDue}T00:00:00`).toLocaleDateString(i18n.language)}
+                        {(st.due === 'due' || st.due === 'overdue') && (
+                            <Chip size="small" sx={{ ml: 1 }} color={st.due === 'overdue' ? 'error' : 'warning'}
+                                  label={t(`inventory.due.${st.due}`)} />
+                        )}
+                    </>
+                );
+            },
+        },
+        {
             field: 'actions',
             headerName: t('members.table.header.actions'),
             sortable: false,
-            width: 100,
+            width: 140,
             renderCell: (params) => (
                 <Box>
+                    <Tooltip title={t('inventory.maintenance.open')}>
+                        <IconButton size="small" aria-label={t('inventory.maintenance.open')}
+                                    onClick={() => setMaintenanceItem(params.row as InventoryItem)}>
+                            <BuildOutlined fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip title={t('tooltips.edit')}>
                         <IconButton size="small" onClick={() => setItemDialog({ open: true, isNew: false, item: params.row as InventoryItem })}>
                             <Edit fontSize="small" />
@@ -369,6 +440,13 @@ export default function Inventory() {
             {error && (
                 <Typography color="error" mb={2}>{error}</Typography>
             )}
+            {dueCount > 0 && (
+                <Alert severity="warning" sx={{ mb: 2 }} action={
+                    <Button color="inherit" size="small" onClick={() => setOnlyDue(true)}>{t('inventory.maintenance.showDue')}</Button>
+                }>
+                    {t('inventory.maintenance.dueAlert', { count: dueCount })}
+                </Alert>
+            )}
             <Box display="flex" gap={2} mb={2} flexWrap="wrap">
                 <TextField
                     label={t('inventory.search')}
@@ -400,6 +478,8 @@ export default function Inventory() {
                         ))}
                     </Select>
                 </FormControl>
+                <FormControlLabel control={<Switch checked={onlyDue} onChange={(e) => setOnlyDue(e.target.checked)} />}
+                                  label={t('inventory.maintenance.onlyDue')} />
             </Box>
 
             <DataGrid autoHeight rows={filteredItems} columns={itemColumns} pageSizeOptions={[10, 25, 50]} />
@@ -418,9 +498,20 @@ export default function Inventory() {
             {loanDialogOpen && (
                 <LoanDialog
                     items={items}
+                    states={stateById}
                     members={members}
                     onClose={() => setLoanDialogOpen(false)}
                     onSave={saveLoan}
+                />
+            )}
+            {maintenanceItem && (
+                <MaintenanceDialog
+                    item={maintenanceItem}
+                    state={stateById.get(maintenanceItem.id)}
+                    canEdit={canEdit}
+                    canBook={canBook}
+                    onClose={() => setMaintenanceItem(null)}
+                    onChanged={reloadStates}
                 />
             )}
         </Box>

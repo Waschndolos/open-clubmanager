@@ -133,15 +133,19 @@ func itemColumns(in ItemInput) row {
 	}
 }
 
-// DeleteItem tombstones an item and its loans.
+// DeleteItem tombstones an item with its loans, status and maintenance history.
 func (s *Store) DeleteItem(ctx context.Context, id string) error {
 	return s.inWriteTx(ctx, func(w *writer) error {
 		tombstone := row{"deleted_at": db.Now()}
 		if err := affected(w.update("inventory_items", `id = ? AND deleted_at IS NULL`, []any{id}, tombstone)); err != nil {
 			return err
 		}
-		_, err := w.update("inventory_loans", `item_id = ? AND deleted_at IS NULL`, []any{id}, tombstone)
-		return err
+		for _, table := range []string{"inventory_loans", "inventory_item_status", "inventory_maintenance"} {
+			if _, err := w.update(table, `item_id = ? AND deleted_at IS NULL`, []any{id}, tombstone); err != nil {
+				return err
+			}
+		}
+		return nil
 	})
 }
 
@@ -183,11 +187,14 @@ func (s *Store) GetLoan(ctx context.Context, id string) (Loan, error) {
 	return scanLoan(s.db.QueryRowContext(ctx, loanSelect+` AND id = ?`, id))
 }
 
-// CreateLoan inserts a loan of a live item to a live member.
+// CreateLoan inserts a loan of a live, ready item to a live member.
 func (s *Store) CreateLoan(ctx context.Context, in LoanInput) (Loan, error) {
 	id := db.NewID()
 	err := s.inWriteTx(ctx, func(w *writer) error {
 		if err := requireLiveLoanRefs(ctx, w.Tx, in); err != nil {
+			return err
+		}
+		if err := requireReadyItem(w, in.ItemID); err != nil {
 			return err
 		}
 		values := loanColumns(in)
@@ -200,11 +207,22 @@ func (s *Store) CreateLoan(ctx context.Context, in LoanInput) (Loan, error) {
 	return s.GetLoan(ctx, id)
 }
 
-// UpdateLoan replaces the writable fields of a live loan.
+// UpdateLoan replaces the writable fields of a live loan. An open loan can
+// only be moved to an item that is ready; returning a damaged item works.
 func (s *Store) UpdateLoan(ctx context.Context, id string, in LoanInput) (Loan, error) {
 	err := s.inWriteTx(ctx, func(w *writer) error {
 		if err := requireLiveLoanRefs(ctx, w.Tx, in); err != nil {
 			return err
+		}
+		var current string
+		err := w.QueryRowContext(ctx, `SELECT item_id FROM inventory_loans WHERE id = ? AND deleted_at IS NULL`, id).Scan(&current)
+		if err != nil {
+			return mapErr(err)
+		}
+		if current != in.ItemID && in.ReturnedAt == nil {
+			if err := requireReadyItem(w, in.ItemID); err != nil {
+				return err
+			}
 		}
 		return affected(w.update("inventory_loans", `id = ? AND deleted_at IS NULL`, []any{id}, loanColumns(in)))
 	})

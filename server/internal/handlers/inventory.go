@@ -174,7 +174,7 @@ func (a *API) CreateInventoryLoan(w http.ResponseWriter, r *http.Request) {
 		ItemID: req.ItemId, MemberID: req.MemberId, LoanedAt: req.LoanedAt, DueDate: req.DueDate, Notes: req.Notes,
 	})
 	if err != nil {
-		writeStoreError(w, err, "", "failed to create inventory loan")
+		writeLoanError(w, err, "", "failed to create inventory loan")
 		return
 	}
 	st.Audit(r.Context(), "CREATE", "InventoryLoan", loan.ID, currentUserID(r))
@@ -223,7 +223,7 @@ func (a *API) UpdateInventoryLoan(w http.ResponseWriter, r *http.Request, id str
 
 	loan, err := st.UpdateLoan(r.Context(), id, in)
 	if err != nil {
-		writeStoreError(w, err, "inventory loan not found", "failed to update inventory loan")
+		writeLoanError(w, err, "inventory loan not found", "failed to update inventory loan")
 		return
 	}
 	st.Audit(r.Context(), "UPDATE", "InventoryLoan", id, currentUserID(r))

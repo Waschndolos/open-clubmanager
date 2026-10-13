@@ -177,7 +177,8 @@
         "export": "Exportieren",
         "import": "Importieren",
         "back": "Zurück",
-        "next": "Weiter"
+        "next": "Weiter",
+        "close": "Schließen"
     },
     "entities": {
         "edit": "Bearbeiten",
@@ -498,6 +499,53 @@
             "create": "Ausleihe erfassen",
             "activeTitle": "Aktuell ausgeliehene Gegenstände",
             "markReturned": "Als zurückgegeben markieren"
+        },
+        "condition": {
+            "ready": "Einsatzbereit",
+            "damaged": "Beschädigt",
+            "in_repair": "In Reparatur",
+            "retired": "Ausgemustert"
+        },
+        "due": {
+            "none": "Keine Prüfung",
+            "ok": "Im Plan",
+            "due": "Bald fällig",
+            "overdue": "Überfällig"
+        },
+        "maintenance": {
+            "open": "Prüfung & Wartung",
+            "title": "Prüfung & Wartung: {{name}}",
+            "status": "Zustand und Prüfintervall",
+            "condition": "Zustand",
+            "interval": "Intervall (Monate)",
+            "nextDue": "Nächste Prüfung",
+            "notLendable": "Nur einsatzbereite Gegenstände können ausgeliehen werden.",
+            "record": "Prüfung / Wartung erfassen",
+            "date": "Datum",
+            "performedBy": "Durchgeführt von",
+            "cost": "Kosten (€)",
+            "note": "Notiz",
+            "conditionAfter": "Zustand danach",
+            "unchanged": "Unverändert",
+            "bookExpense": "Kosten als Ausgabe im Kassenbuch buchen",
+            "add": "Erfassen",
+            "movesDue_one": "Die nächste Prüfung wird automatisch um {{count}} Monat nach dem Datum verschoben.",
+            "movesDue_other": "Die nächste Prüfung wird automatisch um {{count}} Monate nach dem Datum verschoben.",
+            "history": "Wartungshistorie",
+            "noHistory": "Noch keine Prüfungen oder Wartungen erfasst.",
+            "booked": "im Kassenbuch gebucht",
+            "confirmDelete": "Diesen Eintrag löschen? Eine bereits gebuchte Ausgabe bleibt im Kassenbuch.",
+            "loadFailed": "Wartungshistorie konnte nicht geladen werden.",
+            "saveFailed": "Speichern fehlgeschlagen.",
+            "expenseBooked": "Die Kosten wurden als Ausgabe im Kassenbuch gebucht.",
+            "expenseDescription": "Prüfung/Wartung: {{name}}",
+            "expenseCategory": "Material",
+            "dueAlert_one": "{{count}} Gegenstand muss bald oder ist überfällig zu prüfen.",
+            "dueAlert_other": "{{count}} Gegenstände müssen bald oder sind überfällig zu prüfen.",
+            "showDue": "Anzeigen",
+            "onlyDue": "Nur fällige",
+            "dashboardTitle": "Fällige Prüfungen & Wartungen",
+            "dashboardAll": "Alle {{count}} anzeigen"
         }
     },
     "history": {

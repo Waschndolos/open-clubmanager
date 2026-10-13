@@ -177,7 +177,8 @@
         "export": "Export",
         "import": "Import",
         "back": "Back",
-        "next": "Next"
+        "next": "Next",
+        "close": "Close"
     },
     "entities": {
         "edit": "Edit",
@@ -498,6 +499,53 @@
             "create": "Create loan",
             "activeTitle": "Currently loaned items",
             "markReturned": "Mark as returned"
+        },
+        "condition": {
+            "ready": "Ready",
+            "damaged": "Damaged",
+            "in_repair": "In repair",
+            "retired": "Retired"
+        },
+        "due": {
+            "none": "No inspection",
+            "ok": "On schedule",
+            "due": "Due soon",
+            "overdue": "Overdue"
+        },
+        "maintenance": {
+            "open": "Inspection & maintenance",
+            "title": "Inspection & maintenance: {{name}}",
+            "status": "Condition and inspection interval",
+            "condition": "Condition",
+            "interval": "Interval (months)",
+            "nextDue": "Next inspection",
+            "notLendable": "Only items that are ready can be lent.",
+            "record": "Record inspection / maintenance",
+            "date": "Date",
+            "performedBy": "Performed by",
+            "cost": "Cost (€)",
+            "note": "Note",
+            "conditionAfter": "Condition afterwards",
+            "unchanged": "Unchanged",
+            "bookExpense": "Book the cost as an expense in the cash book",
+            "add": "Record",
+            "movesDue_one": "The next inspection is set to {{count}} month after the date.",
+            "movesDue_other": "The next inspection is set to {{count}} months after the date.",
+            "history": "Maintenance history",
+            "noHistory": "No inspections or maintenance recorded yet.",
+            "booked": "booked in the cash book",
+            "confirmDelete": "Delete this entry? An expense already booked stays in the cash book.",
+            "loadFailed": "The maintenance history could not be loaded.",
+            "saveFailed": "Saving failed.",
+            "expenseBooked": "The cost was booked as an expense in the cash book.",
+            "expenseDescription": "Inspection/maintenance: {{name}}",
+            "expenseCategory": "Equipment",
+            "dueAlert_one": "{{count}} item is due or overdue for inspection.",
+            "dueAlert_other": "{{count}} items are due or overdue for inspection.",
+            "showDue": "Show",
+            "onlyDue": "Only due",
+            "dashboardTitle": "Due inspections & maintenance",
+            "dashboardAll": "Show all {{count}}"
         }
     },
     "history": {

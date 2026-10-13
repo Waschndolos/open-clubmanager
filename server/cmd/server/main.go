@@ -134,6 +134,13 @@ func main() {
 	router.Put("/api/v2/tasks/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateTask))
 	router.Delete("/api/v2/tasks/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteTask))
 
+	// Inventory condition, inspection/maintenance schedule and history.
+	router.Get("/api/v2/inventory/maintenance", bearerAuthRequired(cfg.JWTSecret, api.ListMaintenanceStates))
+	router.Delete("/api/v2/inventory/maintenance/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteMaintenance))
+	router.Put("/api/v2/inventory/items/{id}/status", bearerAuthRequired(cfg.JWTSecret, api.SetItemStatus))
+	router.Get("/api/v2/inventory/items/{id}/maintenance", bearerAuthRequired(cfg.JWTSecret, api.ListItemMaintenance))
+	router.Post("/api/v2/inventory/items/{id}/maintenance", bearerAuthRequired(cfg.JWTSecret, api.RecordMaintenance))
+
 	// Households (families) and guardians.
 	router.Get("/api/v2/households", bearerAuthRequired(cfg.JWTSecret, api.ListHouseholds))
 	router.Post("/api/v2/households", bearerAuthRequired(cfg.JWTSecret, api.CreateHousehold))

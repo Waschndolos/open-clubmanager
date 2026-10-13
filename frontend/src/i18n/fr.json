@@ -177,7 +177,8 @@
         "export": "Exporter",
         "import": "Importer",
         "back": "Retour",
-        "next": "Suivant"
+        "next": "Suivant",
+        "close": "Fermer"
     },
     "entities": {
         "edit": "Modifier",
@@ -498,6 +499,53 @@
             "create": "Créer un prêt",
             "activeTitle": "Articles actuellement prêtés",
             "markReturned": "Marquer comme rendu"
+        },
+        "condition": {
+            "ready": "Opérationnel",
+            "damaged": "Endommagé",
+            "in_repair": "En réparation",
+            "retired": "Réformé"
+        },
+        "due": {
+            "none": "Aucun contrôle",
+            "ok": "À jour",
+            "due": "Bientôt dû",
+            "overdue": "En retard"
+        },
+        "maintenance": {
+            "open": "Contrôle & entretien",
+            "title": "Contrôle & entretien : {{name}}",
+            "status": "État et intervalle de contrôle",
+            "condition": "État",
+            "interval": "Intervalle (mois)",
+            "nextDue": "Prochain contrôle",
+            "notLendable": "Seuls les objets opérationnels peuvent être prêtés.",
+            "record": "Enregistrer un contrôle / entretien",
+            "date": "Date",
+            "performedBy": "Effectué par",
+            "cost": "Coût (€)",
+            "note": "Note",
+            "conditionAfter": "État après",
+            "unchanged": "Inchangé",
+            "bookExpense": "Comptabiliser le coût comme dépense dans le livre de caisse",
+            "add": "Enregistrer",
+            "movesDue_one": "Le prochain contrôle est fixé à {{count}} mois après la date.",
+            "movesDue_other": "Le prochain contrôle est fixé à {{count}} mois après la date.",
+            "history": "Historique d'entretien",
+            "noHistory": "Aucun contrôle ni entretien enregistré.",
+            "booked": "comptabilisé dans le livre de caisse",
+            "confirmDelete": "Supprimer cette entrée ? Une dépense déjà comptabilisée reste dans le livre de caisse.",
+            "loadFailed": "Impossible de charger l'historique d'entretien.",
+            "saveFailed": "L'enregistrement a échoué.",
+            "expenseBooked": "Le coût a été comptabilisé comme dépense dans le livre de caisse.",
+            "expenseDescription": "Contrôle/entretien : {{name}}",
+            "expenseCategory": "Matériel",
+            "dueAlert_one": "{{count}} objet doit bientôt être contrôlé ou est en retard.",
+            "dueAlert_other": "{{count}} objets doivent bientôt être contrôlés ou sont en retard.",
+            "showDue": "Afficher",
+            "onlyDue": "Seulement dus",
+            "dashboardTitle": "Contrôles & entretiens à faire",
+            "dashboardAll": "Afficher les {{count}}"
         }
     },
     "history": {

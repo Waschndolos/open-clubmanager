@@ -66,6 +66,8 @@ var SyncedTables = []Table{
 
 	{Name: "inventory_items", Scope: ScopeInventory, PK: idPK},
 	{Name: "inventory_loans", Scope: ScopeInventory, PK: idPK},
+	{Name: "inventory_item_status", Scope: ScopeInventory, PK: []string{"item_id"}},
+	{Name: "inventory_maintenance", Scope: ScopeInventory, PK: idPK},
 }
 
 // LocalTables are application tables that stay on this device.
