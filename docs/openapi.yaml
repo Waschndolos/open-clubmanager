@@ -199,7 +199,8 @@ components:
 
     AppRole:
       type: string
-      enum: [ADMIN, TREASURER, SECRETARY, READONLY]
+      enum: [ADMIN, TREASURER, SECRETARY, READONLY, TRAINER]
+      description: TRAINER may only record and see attendance for the groups and sections of the member linked to the login (by e-mail); elsewhere it reads like READONLY.
 
     UserProfile:
       type: object

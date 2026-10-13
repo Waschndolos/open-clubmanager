@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 export type Notification = {
     id: string;
@@ -20,17 +20,23 @@ const NotificationContext = createContext<NotificationContextType>({
 export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
-    const addNotification = (message: string) => {
+    // Stable identities: components list addNotification in effect
+    // dependencies, so a new function per render would re-run those effects
+    // after every notification (and loop when the effect itself notifies).
+    const addNotification = useCallback((message: string) => {
         setNotifications((prev) => [
             ...prev,
             { id: crypto.randomUUID(), message },
         ]);
-    };
+    }, []);
 
-    const clearNotifications = () => setNotifications([]);
+    const clearNotifications = useCallback(() => setNotifications([]), []);
+
+    const value = useMemo(() => ({ notifications, addNotification, clearNotifications }),
+        [notifications, addNotification, clearNotifications]);
 
     return (
-        <NotificationContext.Provider value={{ notifications, addNotification, clearNotifications }}>
+        <NotificationContext.Provider value={value}>
             {children}
         </NotificationContext.Provider>
     );

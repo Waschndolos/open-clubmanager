@@ -338,14 +338,14 @@ func writeAudiences(w *writer, eventID string, in EventInput) error {
 	return nil
 }
 
-// DeleteEvent tombstones an event with its audiences and exceptions.
+// DeleteEvent tombstones an event with its audiences, exceptions and attendance.
 func (s *Store) DeleteEvent(ctx context.Context, id string) error {
 	return s.inWriteTx(ctx, func(w *writer) error {
 		tombstone := row{"deleted_at": db.Now()}
 		if err := affected(w.update("events", `id = ? AND deleted_at IS NULL`, []any{id}, tombstone)); err != nil {
 			return err
 		}
-		for _, table := range []string{"event_audiences", "event_exceptions"} {
+		for _, table := range []string{"event_audiences", "event_exceptions", "event_attendance"} {
 			if _, err := w.update(table, `event_id = ? AND deleted_at IS NULL`, []any{id}, tombstone); err != nil {
 				return err
 			}

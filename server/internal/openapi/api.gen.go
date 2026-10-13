@@ -28,6 +28,7 @@ const (
 	ADMIN     AppRole = "ADMIN"
 	READONLY  AppRole = "READONLY"
 	SECRETARY AppRole = "SECRETARY"
+	TRAINER   AppRole = "TRAINER"
 	TREASURER AppRole = "TREASURER"
 )
 
@@ -39,6 +40,8 @@ func (e AppRole) Valid() bool {
 	case READONLY:
 		return true
 	case SECRETARY:
+		return true
+	case TRAINER:
 		return true
 	case TREASURER:
 		return true
@@ -262,11 +265,12 @@ type AccessTokenResponse struct {
 // AppPreferences defines model for AppPreferences.
 type AppPreferences map[string]interface{}
 
-// AppRole defines model for AppRole.
+// AppRole TRAINER may only record and see attendance for the groups and sections of the member linked to the login (by e-mail); elsewhere it reads like READONLY.
 type AppRole string
 
 // AppUser defines model for AppUser.
 type AppUser struct {
+	// AppRole TRAINER may only record and see attendance for the groups and sections of the member linked to the login (by e-mail); elsewhere it reads like READONLY.
 	AppRole   AppRole             `json:"appRole"`
 	CreatedAt time.Time           `json:"createdAt"`
 	Email     openapi_types.Email `json:"email"`
@@ -454,6 +458,7 @@ type ConfigureDatabaseResponse struct {
 
 // CreateAppUserRequest defines model for CreateAppUserRequest.
 type CreateAppUserRequest struct {
+	// AppRole TRAINER may only record and see attendance for the groups and sections of the member linked to the login (by e-mail); elsewhere it reads like READONLY.
 	AppRole  AppRole             `json:"appRole"`
 	Email    openapi_types.Email `json:"email"`
 	Password string              `json:"password"`
@@ -1023,6 +1028,7 @@ type UpdateAppPreferenceRequest struct {
 
 // UpdateAppUserRequest defines model for UpdateAppUserRequest.
 type UpdateAppUserRequest struct {
+	// AppRole TRAINER may only record and see attendance for the groups and sections of the member linked to the login (by e-mail); elsewhere it reads like READONLY.
 	AppRole *AppRole             `json:"appRole,omitempty"`
 	Email   *openapi_types.Email `json:"email,omitempty"`
 }
@@ -1061,6 +1067,7 @@ type UserPreferenceValueResponse struct {
 
 // UserProfile defines model for UserProfile.
 type UserProfile struct {
+	// AppRole TRAINER may only record and see attendance for the groups and sections of the member linked to the login (by e-mail); elsewhere it reads like READONLY.
 	AppRole *AppRole            `json:"appRole,omitempty"`
 	Email   openapi_types.Email `json:"email"`
 }

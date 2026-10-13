@@ -66,9 +66,9 @@ func TestAppRoleWrites(t *testing.T) {
 		{http.MethodPost, "/api/v2/finance/reset", ""},
 	}
 
-	// TRAINER is not part of the spec yet; a role unknown to the rule stays
-	// read-only all the same.
-	readOnly := []openapi.AppRole{openapi.READONLY, openapi.AppRole("TRAINER")}
+	// Trainers only record attendance; roles unknown to the rule stay
+	// read-only as well.
+	readOnly := []openapi.AppRole{openapi.READONLY, openapi.TRAINER, openapi.AppRole("GUEST")}
 	for _, role := range readOnly {
 		for _, c := range append(data, finance...) {
 			if rec := call(role, c.method, c.path, c.body); rec.Code != http.StatusForbidden ||
