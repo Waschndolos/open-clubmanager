@@ -374,7 +374,8 @@
             "ADMIN": "Administrateur",
             "TREASURER": "Trésorier",
             "SECRETARY": "Secrétaire",
-            "READONLY": "Lecture seule"
+            "READONLY": "Lecture seule",
+            "TRAINER": "Entraîneur"
         },
         "columns": {
             "email": "E-mail",
@@ -606,13 +607,15 @@
             "ADMIN": "Administrateur",
             "TREASURER": "Trésorier",
             "SECRETARY": "Secrétaire",
-            "READONLY": "Lecture seule"
+            "READONLY": "Lecture seule",
+            "TRAINER": "Entraîneur"
         },
         "honors": "Anniversaires & distinctions",
         "qualifications": "Qualifications",
         "tasks": "Tâches",
         "households": "Familles & foyers",
-        "events": "Événements"
+        "events": "Événements",
+        "attendance": "Présences"
     },
     "honors": {
         "title": "Anniversaires & distinctions",
@@ -874,6 +877,51 @@
         "dashboard": {
             "title": "Prochains événements",
             "all": "Ouvrir le calendrier"
-        }
+        },
+        "attendance": "Présences"
+    },
+    "attendance": {
+        "title": "Présences",
+        "subtitle": "Saisir et analyser la participation aux entraînements – aussi hors ligne sur tablette ou téléphone.",
+        "pending_one": "Les présences de {{count}} séance saisies hors ligne attendent d'être envoyées.",
+        "pending_other": "Les présences de {{count}} séances saisies hors ligne attendent d'être envoyées.",
+        "tabs": {
+            "record": "Saisir",
+            "stats": "Statistiques"
+        },
+        "filter": "Groupe/section",
+        "allGroups": "Tous",
+        "period": "Période",
+        "lastDays_one": "Dernier jour",
+        "lastDays_other": "{{count}} derniers jours",
+        "noOccurrences": "Aucun événement sur cette période.",
+        "recorded": "{{present}} sur {{count}} présents",
+        "notRecorded": "Pas encore saisi",
+        "loadFailed": "Impossible de charger les présences.",
+        "saveFailed": "L'enregistrement a échoué.",
+        "exportFailed": "L'export a échoué.",
+        "back": "Retour",
+        "open": "ouvert",
+        "offlineSaved": "Pas de connexion – la saisie est enregistrée sur cet appareil et sera envoyée automatiquement.",
+        "readOnly": "Votre rôle permet seulement de consulter les présences.",
+        "search": "Rechercher nom ou numéro",
+        "clearSearch": "Effacer la recherche",
+        "allPresent_one": "Autres présents ({{count}})",
+        "allPresent_other": "Autres présents ({{count}})",
+        "noMembers": "Aucun participant n'est défini pour cet événement. Des invités peuvent être ajoutés ci-dessous.",
+        "guest": "Invité",
+        "addGuest": "Ajouter un invité",
+        "status": {
+            "present": "présent",
+            "excused": "excusé",
+            "unexcused": "non excusé"
+        },
+        "from": "Du",
+        "to": "Au",
+        "history": "Évolution du taux de présence",
+        "rate": "Taux",
+        "member": "Membre",
+        "noRecords": "Aucune présence saisie sur cette période.",
+        "offline": "enregistré hors ligne"
     }
 }

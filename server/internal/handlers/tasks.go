@@ -71,7 +71,7 @@ func (a *API) taskAccess(w http.ResponseWriter, r *http.Request, write bool) boo
 	claims, ok := auth.ClaimsFromContext(r.Context())
 	allowed := ok
 	if write {
-		allowed = ok && claims.AppRole != openapi.READONLY && a.collab.CanWrite(r.Context(), db.ScopeMembersCore)
+		allowed = ok && canEditData(claims.AppRole) && a.collab.CanWrite(r.Context(), db.ScopeMembersCore)
 	} else {
 		allowed = ok && a.collab.CanRead(r.Context(), db.ScopeMembersCore)
 	}

@@ -32,7 +32,7 @@ import PageHeader from '../../components/common/PageHeader';
 import { AppRole, AppUser } from '../../api/types';
 import { createAppUser, deleteAppUser, listAppUsers, updateAppUser } from '../../api/users';
 
-const APP_ROLES: AppRole[] = ['ADMIN', 'TREASURER', 'SECRETARY', 'READONLY'];
+const APP_ROLES: AppRole[] = ['ADMIN', 'TREASURER', 'SECRETARY', 'TRAINER', 'READONLY'];
 
 interface UserFormState {
     email: string;

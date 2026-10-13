@@ -51,7 +51,12 @@ export type Role = MemberContainingNamedArtifact
 
 export type ClubSection = MemberContainingNamedArtifact
 
-export type AppRole = 'ADMIN' | 'TREASURER' | 'SECRETARY' | 'READONLY';
+export type AppRole = 'ADMIN' | 'TREASURER' | 'SECRETARY' | 'READONLY' | 'TRAINER';
+
+/** Whether the role may change club data in general; trainers only record attendance. */
+export function canEditData(role: AppRole | null | undefined): boolean {
+    return !!role && role !== 'READONLY' && role !== 'TRAINER';
+}
 
 export type AppUser = {
     id: string;

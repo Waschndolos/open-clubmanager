@@ -26,7 +26,7 @@ import { useAuth } from '../../context/AuthContext';
 import { usePermission } from '../../context/CollaborationContext';
 import { useNotification } from '../../context/NotificationContext';
 import { fetchMembers } from '../../api/members';
-import { Member } from '../../api/types';
+import { Member, canEditData } from '../../api/types';
 import {
     createHousehold,
     deleteHousehold,
@@ -43,7 +43,7 @@ export default function Households() {
     const { addNotification } = useNotification();
     const navigate = useNavigate();
     const area = usePermission('membersCore');
-    const canEdit = appRole !== 'READONLY' && area === 'write';
+    const canEdit = canEditData(appRole) && area === 'write';
 
     const [households, setHouseholds] = useState<Household[]>([]);
     const [editing, setEditing] = useState<Partial<Household> | null>(null);

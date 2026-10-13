@@ -81,10 +81,10 @@ func toHouseholdJSON(h store.Household, now time.Time) householdJSON {
 }
 
 // scopeAccess checks that the login may read (or, for writes, change) the
-// given scopes; read-only logins never write.
+// given scopes; read-only and trainer logins never write.
 func (a *API) scopeAccess(w http.ResponseWriter, r *http.Request, write bool, what string, scopes ...db.Scope) bool {
 	claims, ok := auth.ClaimsFromContext(r.Context())
-	allowed := ok && (!write || claims.AppRole != openapi.READONLY)
+	allowed := ok && (!write || canEditData(claims.AppRole))
 	for _, s := range scopes {
 		if !allowed {
 			break
@@ -100,6 +100,12 @@ func (a *API) scopeAccess(w http.ResponseWriter, r *http.Request, write bool, wh
 		writeJSON(w, http.StatusForbidden, openapi.ErrorResponse{Code: &code, Error: "your role may not access " + what})
 	}
 	return allowed
+}
+
+// canEditData reports whether an app role may change club data in general.
+// Trainers only record attendance (see attendanceAccess).
+func canEditData(role openapi.AppRole) bool {
+	return role != openapi.READONLY && role != openapi.TRAINER
 }
 
 func writeHouseholdError(w http.ResponseWriter, err error, failure string) {
