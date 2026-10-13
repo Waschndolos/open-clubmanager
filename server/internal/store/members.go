@@ -274,7 +274,11 @@ func (s *Store) UpdateMember(ctx context.Context, id string, in MemberInput) (Me
 		if err := w.requireUnique("members", "number", in.Number, "id", id); err != nil {
 			return err
 		}
-		return writeMemberParts(w, id, in, db.Now())
+		now := db.Now()
+		if err := writeMemberParts(w, id, in, now); err != nil {
+			return err
+		}
+		return shareHouseholdData(w, id, now)
 	})
 	if err != nil {
 		return Member{}, err
@@ -347,7 +351,8 @@ func writeMemberParts(w *writer, id string, in MemberInput, now string) error {
 }
 
 // DeleteMember tombstones a member together with everything that belongs to
-// it: contact data, bank details, links, fees and inventory loans.
+// it: contact data, bank details, links, household membership, guardians,
+// fees and inventory loans. A household the member paid for loses its payer.
 func (s *Store) DeleteMember(ctx context.Context, id string) error {
 	return s.inWriteTx(ctx, func(w *writer) error {
 		tombstone := row{"deleted_at": db.Now()}
@@ -355,11 +360,16 @@ func (s *Store) DeleteMember(ctx context.Context, id string) error {
 			return err
 		}
 		for _, table := range []string{"member_contacts", "member_bank_details", "member_roles", "member_groups",
-			"member_sections", "member_honors", "member_membership", "member_qualifications", "member_fees", "inventory_loans"} {
+			"member_sections", "member_honors", "member_membership", "member_qualifications", "household_members",
+			"member_guardians", "member_fees", "inventory_loans"} {
 			if _, err := w.update(table, `member_id = ? AND deleted_at IS NULL`, []any{id}, tombstone); err != nil {
 				return err
 			}
 		}
-		return nil
+		if _, err := w.update("member_guardians", `guardian_member_id = ? AND deleted_at IS NULL`, []any{id}, tombstone); err != nil {
+			return err
+		}
+		_, err := w.update("households", `payer_member_id = ? AND deleted_at IS NULL`, []any{id}, row{"payer_member_id": nil})
+		return err
 	})
 }

@@ -15,6 +15,7 @@ import FeeStatusChart from '../../components/dashboard/FeeStatusChart';
 import MyTasks from '../../components/dashboard/MyTasks';
 import UpcomingJubilees from '../../components/dashboard/UpcomingJubilees';
 import QualificationAlerts from '../../components/dashboard/QualificationAlerts';
+import HouseholdAlerts from '../../components/dashboard/HouseholdAlerts';
 import MembersBySectionChart from '../../components/dashboard/MembersBySectionChart';
 import { useNavGroups } from '../../components/menu/navItems';
 import { useStatistics, useChartStatistics } from '../../hooks/statistics';
@@ -222,6 +223,7 @@ export default function Dashboard() {
             <MyTasks />
             <UpcomingJubilees />
             <QualificationAlerts />
+            <HouseholdAlerts />
 
             {charts && (
                 <Box component="section" sx={{ mt: { xs: 4, sm: 5 } }}>

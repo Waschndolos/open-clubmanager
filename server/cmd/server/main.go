@@ -134,6 +134,15 @@ func main() {
 	router.Put("/api/v2/tasks/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateTask))
 	router.Delete("/api/v2/tasks/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteTask))
 
+	// Households (families) and guardians.
+	router.Get("/api/v2/households", bearerAuthRequired(cfg.JWTSecret, api.ListHouseholds))
+	router.Post("/api/v2/households", bearerAuthRequired(cfg.JWTSecret, api.CreateHousehold))
+	router.Put("/api/v2/households/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateHousehold))
+	router.Delete("/api/v2/households/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteHousehold))
+	router.Get("/api/v2/members/{id}/guardians", bearerAuthRequired(cfg.JWTSecret, api.ListGuardians))
+	router.Post("/api/v2/members/{id}/guardians", bearerAuthRequired(cfg.JWTSecret, api.CreateGuardian))
+	router.Delete("/api/v2/guardians/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteGuardian))
+
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))

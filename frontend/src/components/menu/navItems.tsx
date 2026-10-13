@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import AccountBalanceOutlined from "@mui/icons-material/AccountBalanceOutlined";
 import AccountTreeOutlined from "@mui/icons-material/AccountTreeOutlined";
 import GroupsOutlined from "@mui/icons-material/GroupsOutlined";
+import FamilyRestroomOutlined from "@mui/icons-material/FamilyRestroomOutlined";
 import CelebrationOutlined from "@mui/icons-material/CelebrationOutlined";
 import TaskAltOutlined from "@mui/icons-material/TaskAltOutlined";
 import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
@@ -41,6 +42,7 @@ export function useNavGroups(): NavGroup[] {
 
     const club: NavItem[] = [
         { label: t("nav.members"), icon: <GroupsOutlined />, link: "/members" },
+        ...(membersArea !== "none" ? [{ label: t("nav.households"), icon: <FamilyRestroomOutlined />, link: "/households" }] : []),
         ...(canViewFinance ? [{ label: t("nav.finance"), icon: <AccountBalanceOutlined />, link: "/finance" }] : []),
         ...(inventoryArea !== "none" ? [{ label: t("nav.inventory"), icon: <Inventory2Outlined />, link: "/inventory" }] : []),
         ...(membersArea !== "none" ? [{ label: t("nav.honors"), icon: <CelebrationOutlined />, link: "/honors" }] : []),

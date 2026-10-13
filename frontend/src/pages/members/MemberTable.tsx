@@ -24,6 +24,9 @@ type MemberTableProps = {
     members: Member[];
     onMemberUpdated: (newMember: Member) => void;
     onMembersDeleted: (deletedMember: Member[]) => void;
+    /** Opens the edit dialog of this member (deep link), then calls onOpened. */
+    openMemberId?: string | null;
+    onOpened?: () => void;
 };
 
 function getImportMatchValue(member: Partial<Member>, matchField: ImportMatchField): string | null {
@@ -41,7 +44,7 @@ function getImportMatchValue(member: Partial<Member>, matchField: ImportMatchFie
     return null;
 }
 
-export default function MemberTable({members, onMemberUpdated, onMembersDeleted}: MemberTableProps) {
+export default function MemberTable({members, onMemberUpdated, onMembersDeleted, openMemberId, onOpened}: MemberTableProps) {
     const {t} = useTranslation();
     const [editingMember, setEditingMember] = useState<Member | null>(null);
     const [exportOpened, setExportOpened] = useState<boolean>(false);
@@ -58,6 +61,18 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
         return Object.keys(members[0]) as (keyof Member)[];
     }, [members]);
     const theme = useTheme();
+
+    const openMember = (id: string) => {
+        const m = members.find((x) => x.id === id);
+        if (m) setEditingMember(m);
+    };
+
+    useEffect(() => {
+        if (!openMemberId || members.length === 0) return;
+        const m = members.find((x) => x.id === openMemberId);
+        if (m) setEditingMember(m);
+        onOpened?.();
+    }, [openMemberId, members, onOpened]);
 
     const columnDefs: GridColDef[] = useMemo(() => {
         if (!members || members.length === 0) return [];
@@ -312,7 +327,9 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted}
             </Box>
             {editingMember && (
                 <EditMemberDialog
+                    key={editingMember.id}
                     member={editingMember!}
+                    onOpenMember={openMember}
                     onClose={() => setEditingMember(null)}
                     onSave={(update: Member) => {
                         handleSaveEdit(update);
