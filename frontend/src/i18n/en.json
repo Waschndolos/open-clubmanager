@@ -374,7 +374,8 @@
             "ADMIN": "Administrator",
             "TREASURER": "Treasurer",
             "SECRETARY": "Secretary",
-            "READONLY": "Read Only"
+            "READONLY": "Read Only",
+            "TRAINER": "Trainer"
         },
         "columns": {
             "email": "Email",
@@ -957,13 +958,15 @@
             "ADMIN": "Administrator",
             "TREASURER": "Treasurer",
             "SECRETARY": "Secretary",
-            "READONLY": "Read only"
+            "READONLY": "Read only",
+            "TRAINER": "Trainer"
         },
         "honors": "Anniversaries & honors",
         "qualifications": "Qualifications",
         "tasks": "Tasks",
         "households": "Families & households",
-        "events": "Events"
+        "events": "Events",
+        "attendance": "Attendance"
     },
     "honors": {
         "title": "Anniversaries & honors",
@@ -1225,6 +1228,51 @@
         "dashboard": {
             "title": "Upcoming events",
             "all": "Open calendar"
-        }
+        },
+        "attendance": "Attendance"
+    },
+    "attendance": {
+        "title": "Attendance",
+        "subtitle": "Record and analyse training attendance – also offline on a tablet or phone.",
+        "pending_one": "Attendance of {{count}} event recorded offline is waiting to be sent.",
+        "pending_other": "Attendance of {{count}} events recorded offline is waiting to be sent.",
+        "tabs": {
+            "record": "Record",
+            "stats": "Statistics"
+        },
+        "filter": "Group/section",
+        "allGroups": "All",
+        "period": "Period",
+        "lastDays_one": "Last day",
+        "lastDays_other": "Last {{count}} days",
+        "noOccurrences": "No events in this period.",
+        "recorded": "{{present}} of {{count}} present",
+        "notRecorded": "Not recorded yet",
+        "loadFailed": "Attendance could not be loaded.",
+        "saveFailed": "Saving failed.",
+        "exportFailed": "Export failed.",
+        "back": "Back",
+        "open": "open",
+        "offlineSaved": "No connection – the attendance is saved on this device and will be sent automatically.",
+        "readOnly": "Your role may only view attendance.",
+        "search": "Search name or number",
+        "clearSearch": "Clear search",
+        "allPresent_one": "Rest present ({{count}})",
+        "allPresent_other": "Rest present ({{count}})",
+        "noMembers": "No participants are set for this event. Guests can be added below.",
+        "guest": "Guest",
+        "addGuest": "Add guest",
+        "status": {
+            "present": "present",
+            "excused": "excused",
+            "unexcused": "unexcused"
+        },
+        "from": "From",
+        "to": "To",
+        "history": "Attendance rate over time",
+        "rate": "Rate",
+        "member": "Member",
+        "noRecords": "No attendance recorded in this period.",
+        "offline": "saved offline"
     }
 }

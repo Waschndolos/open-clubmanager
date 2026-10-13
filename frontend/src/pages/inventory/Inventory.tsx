@@ -25,7 +25,7 @@ import { isAxiosError } from 'axios';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/common/PageHeader';
-import { Member, InventoryItem, InventoryLoan } from '../../api/types';
+import { Member, InventoryItem, InventoryLoan, canEditData } from '../../api/types';
 import { fetchMembers } from '../../api/members';
 import {
     createInventoryItem,
@@ -188,7 +188,7 @@ export default function Inventory() {
     const { appRole } = useAuth();
     const inventoryArea = usePermission('inventory');
     const financeArea = usePermission('finance');
-    const canEdit = inventoryArea === 'write' && appRole !== 'READONLY';
+    const canEdit = inventoryArea === 'write' && canEditData(appRole);
     const canBook = (appRole === 'ADMIN' || appRole === 'TREASURER') && financeArea === 'write';
     const [states, setStates] = useState<MaintenanceState[]>([]);
     const [maintenanceItem, setMaintenanceItem] = useState<InventoryItem | null>(null);

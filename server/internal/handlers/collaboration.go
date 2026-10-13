@@ -530,6 +530,7 @@ var writeScopes = []struct {
 	{"/api/v2/finance", []dbpkg.Scope{dbpkg.ScopeFinance}},
 	{"/api/v2/inventory", []dbpkg.Scope{dbpkg.ScopeInventory}},
 	{"/api/v2/events", []dbpkg.Scope{dbpkg.ScopeMembersCore}},
+	{"/api/v2/attendance", []dbpkg.Scope{dbpkg.ScopeMembersCore}},
 }
 
 // ScopeGuard rejects writes to data this device may not change in its club

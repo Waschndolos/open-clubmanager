@@ -141,6 +141,13 @@ func main() {
 	router.Get("/api/v2/inventory/items/{id}/maintenance", bearerAuthRequired(cfg.JWTSecret, api.ListItemMaintenance))
 	router.Post("/api/v2/inventory/items/{id}/maintenance", bearerAuthRequired(cfg.JWTSecret, api.RecordMaintenance))
 
+	// Attendance at event occurrences.
+	router.Get("/api/v2/attendance/occurrences", bearerAuthRequired(cfg.JWTSecret, api.ListAttendanceOccurrences))
+	router.Get("/api/v2/attendance/sheet", bearerAuthRequired(cfg.JWTSecret, api.GetAttendanceSheet))
+	router.Put("/api/v2/attendance/sheet", bearerAuthRequired(cfg.JWTSecret, api.SetAttendance))
+	router.Get("/api/v2/attendance/stats", bearerAuthRequired(cfg.JWTSecret, api.AttendanceStats))
+	router.Get("/api/v2/attendance/export", bearerAuthRequired(cfg.JWTSecret, api.ExportAttendance))
+
 	// Households (families) and guardians.
 	router.Get("/api/v2/households", bearerAuthRequired(cfg.JWTSecret, api.ListHouseholds))
 	router.Post("/api/v2/households", bearerAuthRequired(cfg.JWTSecret, api.CreateHousehold))

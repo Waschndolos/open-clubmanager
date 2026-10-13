@@ -25,7 +25,7 @@ function extractRole(token: string | null): AppRole | null {
     const payload = decodeJwtPayload(token);
     if (!payload) return null;
     const role = payload["appRole"] as string;
-    if (["ADMIN", "TREASURER", "SECRETARY", "READONLY"].includes(role)) {
+    if (["ADMIN", "TREASURER", "SECRETARY", "READONLY", "TRAINER"].includes(role)) {
         return role as AppRole;
     }
     return null;

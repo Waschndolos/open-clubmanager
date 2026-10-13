@@ -17,9 +17,10 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { Add, ChevronLeft, ChevronRight, Download, EventOutlined, PlaceOutlined, Repeat } from '@mui/icons-material';
+import { Add, ChevronLeft, ChevronRight, Download, EventOutlined, FactCheckOutlined, PlaceOutlined, Repeat } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { canEditData } from '../../api/types';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PageHeader from '../../components/common/PageHeader';
 import { useAuth } from '../../context/AuthContext';
 import { usePermission } from '../../context/CollaborationContext';
@@ -56,9 +57,10 @@ export default function Events() {
     const { t, i18n } = useTranslation();
     const { appRole } = useAuth();
     const area = usePermission('membersCore');
-    const canEdit = area === 'write' && appRole !== 'READONLY';
+    const canEdit = area === 'write' && canEditData(appRole);
     const { addNotification } = useNotification();
     const [params, setParams] = useSearchParams();
+    const navigate = useNavigate();
 
     const [view, setView] = useState<View>('month');
     const [anchor, setAnchor] = useState(() => new Date());
@@ -281,7 +283,8 @@ export default function Events() {
                                       setSelected(null);
                                       void run(() => deleteEvent(o.eventId));
                                   }}
-                                  onDownload={() => void run(() => downloadEventIcs(selected.eventId, selected.title, selected.occurrenceDate))} />
+                                  onDownload={() => void run(() => downloadEventIcs(selected.eventId, selected.title, selected.occurrenceDate))}
+                                  onAttendance={() => navigate(`/attendance?event=${encodeURIComponent(selected.eventId)}&date=${selected.occurrenceDate}`)} />
             )}
             {editing && (
                 <EventDialog event={editing.event} initialDate={editing.date} onClose={() => setEditing(null)}
@@ -295,7 +298,7 @@ export default function Events() {
     );
 }
 
-function OccurrenceDialog({ occurrence: o, canEdit, onClose, onEdit, onExclude, onDelete, onDownload }: {
+function OccurrenceDialog({ occurrence: o, canEdit, onClose, onEdit, onExclude, onDelete, onDownload, onAttendance }: {
     occurrence: EventOccurrence;
     canEdit: boolean;
     onClose: () => void;
@@ -303,6 +306,7 @@ function OccurrenceDialog({ occurrence: o, canEdit, onClose, onEdit, onExclude, 
     onExclude: () => void;
     onDelete: () => void;
     onDownload: () => void;
+    onAttendance: () => void;
 }) {
     const { t, i18n } = useTranslation();
     const start = new Date(o.start);
@@ -345,6 +349,7 @@ function OccurrenceDialog({ occurrence: o, canEdit, onClose, onEdit, onExclude, 
             </DialogContent>
             <DialogActions sx={{ flexWrap: 'wrap', gap: 1 }}>
                 <Button startIcon={<Download />} onClick={onDownload}>{t('events.downloadIcs')}</Button>
+                <Button startIcon={<FactCheckOutlined />} onClick={onAttendance}>{t('events.attendance')}</Button>
                 <Box flexGrow={1} />
                 {canEdit && <>
                     {o.recurring && <Button color="warning" onClick={onExclude}>{t('events.excludeOccurrence')}</Button>}

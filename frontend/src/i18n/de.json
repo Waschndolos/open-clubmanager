@@ -374,7 +374,8 @@
             "ADMIN": "Administrator",
             "TREASURER": "Kassenwart",
             "SECRETARY": "Schriftführer",
-            "READONLY": "Nur Lesen"
+            "READONLY": "Nur Lesen",
+            "TRAINER": "Trainer"
         },
         "columns": {
             "email": "E-Mail",
@@ -957,13 +958,15 @@
             "ADMIN": "Administrator",
             "TREASURER": "Kassenwart",
             "SECRETARY": "Schriftführer",
-            "READONLY": "Nur lesen"
+            "READONLY": "Nur lesen",
+            "TRAINER": "Trainer"
         },
         "honors": "Jubiläen & Ehrungen",
         "qualifications": "Qualifikationen",
         "tasks": "Aufgaben",
         "households": "Familien & Haushalte",
-        "events": "Termine"
+        "events": "Termine",
+        "attendance": "Anwesenheit"
     },
     "honors": {
         "title": "Jubiläen & Ehrungen",
@@ -1225,6 +1228,51 @@
         "dashboard": {
             "title": "Nächste Termine",
             "all": "Zum Kalender"
-        }
+        },
+        "attendance": "Anwesenheit"
+    },
+    "attendance": {
+        "title": "Anwesenheit",
+        "subtitle": "Trainingsbeteiligung erfassen und auswerten – auch offline auf dem Tablet oder Handy.",
+        "pending_one": "{{count}} Termin mit offline erfasster Anwesenheit wartet auf Übertragung.",
+        "pending_other": "{{count}} Termine mit offline erfasster Anwesenheit warten auf Übertragung.",
+        "tabs": {
+            "record": "Erfassen",
+            "stats": "Auswertung"
+        },
+        "filter": "Gruppe/Abteilung",
+        "allGroups": "Alle",
+        "period": "Zeitraum",
+        "lastDays_one": "Letzter Tag",
+        "lastDays_other": "Letzte {{count}} Tage",
+        "noOccurrences": "Keine Termine im Zeitraum.",
+        "recorded": "{{present}} von {{count}} anwesend",
+        "notRecorded": "Noch nicht erfasst",
+        "loadFailed": "Anwesenheit konnte nicht geladen werden.",
+        "saveFailed": "Speichern fehlgeschlagen.",
+        "exportFailed": "Export fehlgeschlagen.",
+        "back": "Zurück",
+        "open": "offen",
+        "offlineSaved": "Keine Verbindung – die Erfassung ist auf diesem Gerät gespeichert und wird automatisch übertragen.",
+        "readOnly": "Deine Rolle darf die Anwesenheit nur ansehen.",
+        "search": "Name oder Nummer suchen",
+        "clearSearch": "Suche leeren",
+        "allPresent_one": "Übrige anwesend ({{count}})",
+        "allPresent_other": "Übrige anwesend ({{count}})",
+        "noMembers": "Für diesen Termin sind keine Teilnehmenden hinterlegt. Gäste lassen sich unten hinzufügen.",
+        "guest": "Gast",
+        "addGuest": "Gast hinzufügen",
+        "status": {
+            "present": "anwesend",
+            "excused": "entschuldigt",
+            "unexcused": "unentschuldigt"
+        },
+        "from": "Von",
+        "to": "Bis",
+        "history": "Verlauf der Anwesenheitsquote",
+        "rate": "Quote",
+        "member": "Mitglied",
+        "noRecords": "Keine Anwesenheit im Zeitraum erfasst.",
+        "offline": "offline gespeichert"
     }
 }

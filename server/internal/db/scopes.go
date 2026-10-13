@@ -58,6 +58,7 @@ var SyncedTables = []Table{
 	{Name: "events", Scope: ScopeMembersCore, PK: idPK},
 	{Name: "event_audiences", Scope: ScopeMembersCore, PK: []string{"event_id", "kind", "target_id"}},
 	{Name: "event_exceptions", Scope: ScopeMembersCore, PK: []string{"event_id", "occurrence_date"}},
+	{Name: "event_attendance", Scope: ScopeMembersCore, PK: []string{"event_id", "occurrence_date", "member_id"}},
 
 	{Name: "member_contacts", Scope: ScopeMembersContact, PK: []string{"member_id"}},
 	{Name: "member_guardians", Scope: ScopeMembersContact, PK: idPK},

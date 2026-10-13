@@ -5,7 +5,8 @@ import { assignSectionMembers, createSection } from './sections';
 import { createMemberFee, createTransaction } from './finance';
 import { createInventoryItem, createInventoryLoan } from './inventory';
 import { recordMaintenance, setItemStatus } from './maintenance';
-import { createEvent, localTimeZone } from './events';
+import { addDays, createEvent, localTimeZone, ymd } from './events';
+import { saveAttendance } from './attendance';
 import { Member } from './types';
 
 export interface SetupDemoDataResult {
@@ -387,16 +388,31 @@ export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
             description: 'Grillen, Musik und Siegerehrung der Vereinsmeisterschaft. Familien willkommen!',
         },
     ];
+    let youthTrainingId: string | undefined;
     for (const e of events) {
         const allDay = e.allDayUntil !== undefined;
         const end = allDay
             ? new Date(e.start.getFullYear(), e.start.getMonth(), e.start.getDate() + e.allDayUntil! + 1)
             : new Date(e.start.getTime() + e.minutes! * 60000);
-        await createEvent({
+        const created = await createEvent({
             title: e.title, category: e.category, location: e.location, description: e.description,
             start: e.start.toISOString(), end: end.toISOString(), allDay, timeZone: tz, recurrence: e.recurrence,
             groupIds: e.groupIds ?? [], sectionIds: e.sectionIds ?? [], roleIds: e.roleIds ?? [],
         });
+        if (e.title === 'Jugendtraining Twintip') youthTrainingId = created.id;
+    }
+
+    // Attendance of the two past youth trainings: most were there, one was
+    // excused and one missed a session.
+    const youth = groupMembers.get('Jugend (U18)') ?? [];
+    if (youthTrainingId && youth.length > 0) {
+        const firstTraining = events[0].start;
+        for (const [week, excused, missing] of [[0, 1, -1], [1, -1, 2]] as const) {
+            await saveAttendance(youthTrainingId, ymd(addDays(firstTraining, 7 * week)), youth.map((memberId, i) => ({
+                memberId,
+                status: i === excused ? 'excused' : i === missing ? 'unexcused' : 'present',
+            })));
+        }
     }
 
     return {

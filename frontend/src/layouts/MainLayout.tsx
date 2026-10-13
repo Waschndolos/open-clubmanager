@@ -4,6 +4,14 @@ import { useState } from "react";
 import AppMenu from "../components/menu/AppMenu";
 import Content from "../components/content/Content";
 import Header from "../components/header/Header";
+import { useAuth } from "../context/AuthContext";
+import { useAttendanceSync } from "../pages/attendance/useAttendanceSync";
+
+/** Sends attendance recorded offline once the server is reachable again. */
+function AttendanceSync() {
+  useAttendanceSync();
+  return null;
+}
 
 const SIDEBAR_WIDTH = 248;
 const SIDEBAR_COLLAPSED_WIDTH = 72;
@@ -35,9 +43,11 @@ export default function MainLayout() {
   };
 
   const width = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+  const { appRole } = useAuth();
 
   return (
     <Box sx={{ display: "flex", height: "100vh", width: "100%", bgcolor: "background.default" }}>
+      {appRole && <AttendanceSync />}
       {isMobile ? (
         <Drawer
           open={drawerOpen}
