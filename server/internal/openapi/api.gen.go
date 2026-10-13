@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -48,19 +49,19 @@ func (e AppRole) Valid() bool {
 
 // Defines values for AreaPermission.
 const (
-	None  AreaPermission = "none"
-	Read  AreaPermission = "read"
-	Write AreaPermission = "write"
+	AreaPermissionNone  AreaPermission = "none"
+	AreaPermissionRead  AreaPermission = "read"
+	AreaPermissionWrite AreaPermission = "write"
 )
 
 // Valid indicates whether the value is a known member of the AreaPermission enum.
 func (e AreaPermission) Valid() bool {
 	switch e {
-	case None:
+	case AreaPermissionNone:
 		return true
-	case Read:
+	case AreaPermissionRead:
 		return true
-	case Write:
+	case AreaPermissionWrite:
 		return true
 	default:
 		return false
@@ -121,6 +122,57 @@ const (
 func (e DatabaseMode) Valid() bool {
 	switch e {
 	case SqliteLocal:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EventCategory.
+const (
+	Competition EventCategory = "competition"
+	Festival    EventCategory = "festival"
+	Meeting     EventCategory = "meeting"
+	Other       EventCategory = "other"
+	Training    EventCategory = "training"
+)
+
+// Valid indicates whether the value is a known member of the EventCategory enum.
+func (e EventCategory) Valid() bool {
+	switch e {
+	case Competition:
+		return true
+	case Festival:
+		return true
+	case Meeting:
+		return true
+	case Other:
+		return true
+	case Training:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EventRecurrence.
+const (
+	EventRecurrenceBiweekly EventRecurrence = "biweekly"
+	EventRecurrenceMonthly  EventRecurrence = "monthly"
+	EventRecurrenceNone     EventRecurrence = "none"
+	EventRecurrenceWeekly   EventRecurrence = "weekly"
+)
+
+// Valid indicates whether the value is a known member of the EventRecurrence enum.
+func (e EventRecurrence) Valid() bool {
+	switch e {
+	case EventRecurrenceBiweekly:
+		return true
+	case EventRecurrenceMonthly:
+		return true
+	case EventRecurrenceNone:
+		return true
+	case EventRecurrenceWeekly:
 		return true
 	default:
 		return false
@@ -459,6 +511,95 @@ type ErrorResponse struct {
 	Code  *string `json:"code,omitempty"`
 	Error string  `json:"error"`
 }
+
+// Event A club event. Recurring events are stored once as a series and expanded
+// into occurrences by `GET /events`; single occurrences can be excluded
+// via `exceptions`. Occurrences repeat at the same local wall-clock time
+// in `timeZone`, also across daylight saving changes.
+type Event struct {
+	AllDay      bool          `json:"allDay"`
+	Category    EventCategory `json:"category"`
+	CreatedAt   time.Time     `json:"createdAt"`
+	Description *string       `json:"description,omitempty"`
+
+	// End For all-day events the midnight after the last day (exclusive, as in iCalendar).
+	End time.Time `json:"end"`
+
+	// Exceptions Local dates of excluded occurrences.
+	Exceptions []openapi_types.Date `json:"exceptions"`
+	Groups     []NamedEntity        `json:"groups"`
+	Id         string               `json:"id"`
+	Location   *string              `json:"location,omitempty"`
+
+	// Recurrence Repetition of the event; `biweekly` means every 14 days.
+	Recurrence EventRecurrence `json:"recurrence"`
+
+	// RecurrenceUntil Last day (inclusive) an occurrence may start on; open-ended when empty.
+	RecurrenceUntil *openapi_types.Date `json:"recurrenceUntil,omitempty"`
+	Roles           []NamedEntity       `json:"roles"`
+	Sections        []NamedEntity       `json:"sections"`
+	Start           time.Time           `json:"start"`
+
+	// TimeZone IANA time zone the recurrence is computed in, e.g. `Europe/Berlin`.
+	TimeZone  string    `json:"timeZone"`
+	Title     string    `json:"title"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// EventCategory defines model for EventCategory.
+type EventCategory string
+
+// EventExceptionRequest defines model for EventExceptionRequest.
+type EventExceptionRequest struct {
+	Date openapi_types.Date `json:"date"`
+}
+
+// EventInput Writable fields of an event. Without groups, sections and roles the event is for the whole club.
+type EventInput struct {
+	AllDay      *bool         `json:"allDay,omitempty"`
+	Category    EventCategory `json:"category"`
+	Description *string       `json:"description,omitempty"`
+
+	// End For all-day events the midnight after the last day (exclusive, as in iCalendar).
+	End      time.Time `json:"end"`
+	GroupIds *[]string `json:"groupIds,omitempty"`
+	Location *string   `json:"location,omitempty"`
+
+	// Recurrence Repetition of the event; `biweekly` means every 14 days.
+	Recurrence      *EventRecurrence    `json:"recurrence,omitempty"`
+	RecurrenceUntil *openapi_types.Date `json:"recurrenceUntil,omitempty"`
+	RoleIds         *[]string           `json:"roleIds,omitempty"`
+	SectionIds      *[]string           `json:"sectionIds,omitempty"`
+	Start           time.Time           `json:"start"`
+
+	// TimeZone IANA time zone; defaults to UTC.
+	TimeZone *string `json:"timeZone,omitempty"`
+	Title    string  `json:"title"`
+}
+
+// EventOccurrence One occurrence of an event within the requested range.
+type EventOccurrence struct {
+	AllDay      bool          `json:"allDay"`
+	Category    EventCategory `json:"category"`
+	Description *string       `json:"description,omitempty"`
+
+	// End For all-day events the midnight after the last day (exclusive, as in iCalendar).
+	End      time.Time     `json:"end"`
+	EventId  string        `json:"eventId"`
+	Groups   []NamedEntity `json:"groups"`
+	Location *string       `json:"location,omitempty"`
+
+	// OccurrenceDate Local start date of this occurrence; identifies it for exceptions.
+	OccurrenceDate openapi_types.Date `json:"occurrenceDate"`
+	Recurring      bool               `json:"recurring"`
+	Roles          []NamedEntity      `json:"roles"`
+	Sections       []NamedEntity      `json:"sections"`
+	Start          time.Time          `json:"start"`
+	Title          string             `json:"title"`
+}
+
+// EventRecurrence Repetition of the event; `biweekly` means every 14 days.
+type EventRecurrence string
 
 // FinanceResetRequest defines model for FinanceResetRequest.
 type FinanceResetRequest struct {
@@ -965,6 +1106,32 @@ type bearerAuthContextKey string
 // refreshTokenCookieContextKey is the context key for refreshTokenCookie security scheme
 type refreshTokenCookieContextKey string
 
+// ExportCalendarIcsParams defines parameters for ExportCalendarIcs.
+type ExportCalendarIcsParams struct {
+	From      *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
+	To        *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
+	GroupId   *string             `form:"groupId,omitempty" json:"groupId,omitempty"`
+	SectionId *string             `form:"sectionId,omitempty" json:"sectionId,omitempty"`
+	RoleId    *string             `form:"roleId,omitempty" json:"roleId,omitempty"`
+}
+
+// ListEventsParams defines parameters for ListEvents.
+type ListEventsParams struct {
+	// From First day (inclusive).
+	From openapi_types.Date `form:"from" json:"from"`
+
+	// To Last day (inclusive); at most 400 days after `from`.
+	To        openapi_types.Date `form:"to" json:"to"`
+	GroupId   *string            `form:"groupId,omitempty" json:"groupId,omitempty"`
+	SectionId *string            `form:"sectionId,omitempty" json:"sectionId,omitempty"`
+	RoleId    *string            `form:"roleId,omitempty" json:"roleId,omitempty"`
+}
+
+// ExportEventIcsParams defines parameters for ExportEventIcs.
+type ExportEventIcsParams struct {
+	Date *openapi_types.Date `form:"date,omitempty" json:"date,omitempty"`
+}
+
 // ListMembersParams defines parameters for ListMembers.
 type ListMembersParams struct {
 	Page     *int    `form:"page,omitempty" json:"page,omitempty"`
@@ -1010,6 +1177,15 @@ type RecoverCollaborationClubJSONRequestBody = RecoverRequest
 
 // ApproveCollaborationRequestJSONRequestBody defines body for ApproveCollaborationRequest for application/json ContentType.
 type ApproveCollaborationRequestJSONRequestBody = ApproveRequest
+
+// CreateEventJSONRequestBody defines body for CreateEvent for application/json ContentType.
+type CreateEventJSONRequestBody = EventInput
+
+// UpdateEventJSONRequestBody defines body for UpdateEvent for application/json ContentType.
+type UpdateEventJSONRequestBody = EventInput
+
+// AddEventExceptionJSONRequestBody defines body for AddEventException for application/json ContentType.
+type AddEventExceptionJSONRequestBody = EventExceptionRequest
 
 // CreateMemberFeeJSONRequestBody defines body for CreateMemberFee for application/json ContentType.
 type CreateMemberFeeJSONRequestBody = MemberFeeCreateRequest
@@ -1277,6 +1453,9 @@ type ServerInterface interface {
 	// Reset password using a valid reset token
 	// (POST /auth/reset-password)
 	ResetPassword(w http.ResponseWriter, r *http.Request)
+	// Export the club calendar as iCalendar (.ics)
+	// (GET /calendar.ics)
+	ExportCalendarIcs(w http.ResponseWriter, r *http.Request, params ExportCalendarIcsParams)
 	// Create a club for collaboration
 	// (POST /collaboration/club)
 	CreateCollaborationClub(w http.ResponseWriter, r *http.Request)
@@ -1337,6 +1516,30 @@ type ServerInterface interface {
 	// Synchronize now
 	// (POST /collaboration/sync)
 	SyncCollaboration(w http.ResponseWriter, r *http.Request)
+	// List event occurrences in a date range
+	// (GET /events)
+	ListEvents(w http.ResponseWriter, r *http.Request, params ListEventsParams)
+	// Create an event
+	// (POST /events)
+	CreateEvent(w http.ResponseWriter, r *http.Request)
+	// Delete an event (whole series)
+	// (DELETE /events/{id})
+	DeleteEvent(w http.ResponseWriter, r *http.Request, id string)
+	// Get an event (series)
+	// (GET /events/{id})
+	GetEvent(w http.ResponseWriter, r *http.Request, id string)
+	// Replace an event (whole series)
+	// (PUT /events/{id})
+	UpdateEvent(w http.ResponseWriter, r *http.Request, id string)
+	// Exclude one occurrence of a recurring event
+	// (POST /events/{id}/exceptions)
+	AddEventException(w http.ResponseWriter, r *http.Request, id string)
+	// Restore an excluded occurrence
+	// (DELETE /events/{id}/exceptions/{date})
+	RemoveEventException(w http.ResponseWriter, r *http.Request, id string, date openapi_types.Date)
+	// Export an event as iCalendar (.ics)
+	// (GET /events/{id}/ics)
+	ExportEventIcs(w http.ResponseWriter, r *http.Request, id string, params ExportEventIcsParams)
 	// List member fees
 	// (GET /finance/memberfees)
 	ListMemberFees(w http.ResponseWriter, r *http.Request)
@@ -1586,6 +1789,12 @@ func (_ Unimplemented) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Export the club calendar as iCalendar (.ics)
+// (GET /calendar.ics)
+func (_ Unimplemented) ExportCalendarIcs(w http.ResponseWriter, r *http.Request, params ExportCalendarIcsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Create a club for collaboration
 // (POST /collaboration/club)
 func (_ Unimplemented) CreateCollaborationClub(w http.ResponseWriter, r *http.Request) {
@@ -1703,6 +1912,54 @@ func (_ Unimplemented) GetCollaborationStatus(w http.ResponseWriter, r *http.Req
 // Synchronize now
 // (POST /collaboration/sync)
 func (_ Unimplemented) SyncCollaboration(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List event occurrences in a date range
+// (GET /events)
+func (_ Unimplemented) ListEvents(w http.ResponseWriter, r *http.Request, params ListEventsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create an event
+// (POST /events)
+func (_ Unimplemented) CreateEvent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete an event (whole series)
+// (DELETE /events/{id})
+func (_ Unimplemented) DeleteEvent(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get an event (series)
+// (GET /events/{id})
+func (_ Unimplemented) GetEvent(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Replace an event (whole series)
+// (PUT /events/{id})
+func (_ Unimplemented) UpdateEvent(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Exclude one occurrence of a recurring event
+// (POST /events/{id}/exceptions)
+func (_ Unimplemented) AddEventException(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Restore an excluded occurrence
+// (DELETE /events/{id}/exceptions/{date})
+func (_ Unimplemented) RemoveEventException(w http.ResponseWriter, r *http.Request, id string, date openapi_types.Date) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Export an event as iCalendar (.ics)
+// (GET /events/{id}/ics)
+func (_ Unimplemented) ExportEventIcs(w http.ResponseWriter, r *http.Request, id string, params ExportEventIcsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2239,6 +2496,97 @@ func (siw *ServerInterfaceWrapper) ResetPassword(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r)
 }
 
+// ExportCalendarIcs operation middleware
+func (siw *ServerInterfaceWrapper) ExportCalendarIcs(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ExportCalendarIcsParams
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "groupId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "groupId", r.URL.Query(), &params.GroupId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "groupId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "groupId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "sectionId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "sectionId", r.URL.Query(), &params.SectionId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "sectionId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sectionId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "roleId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "roleId", r.URL.Query(), &params.RoleId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "roleId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "roleId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExportCalendarIcs(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // CreateCollaborationClub operation middleware
 func (siw *ServerInterfaceWrapper) CreateCollaborationClub(w http.ResponseWriter, r *http.Request) {
 
@@ -2690,6 +3038,334 @@ func (siw *ServerInterfaceWrapper) SyncCollaboration(w http.ResponseWriter, r *h
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SyncCollaboration(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListEvents operation middleware
+func (siw *ServerInterfaceWrapper) ListEvents(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListEventsParams
+
+	// ------------- Required query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Required query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "groupId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "groupId", r.URL.Query(), &params.GroupId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "groupId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "groupId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "sectionId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "sectionId", r.URL.Query(), &params.SectionId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "sectionId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sectionId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "roleId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "roleId", r.URL.Query(), &params.RoleId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "roleId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "roleId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListEvents(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateEvent operation middleware
+func (siw *ServerInterfaceWrapper) CreateEvent(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateEvent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteEvent operation middleware
+func (siw *ServerInterfaceWrapper) DeleteEvent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteEvent(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetEvent operation middleware
+func (siw *ServerInterfaceWrapper) GetEvent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetEvent(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateEvent operation middleware
+func (siw *ServerInterfaceWrapper) UpdateEvent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateEvent(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AddEventException operation middleware
+func (siw *ServerInterfaceWrapper) AddEventException(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AddEventException(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RemoveEventException operation middleware
+func (siw *ServerInterfaceWrapper) RemoveEventException(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "date" -------------
+	var date openapi_types.Date
+
+	err = runtime.BindStyledParameterWithOptions("simple", "date", chi.URLParam(r, "date"), &date, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "date"})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "date", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoveEventException(w, r, id, date)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ExportEventIcs operation middleware
+func (siw *ServerInterfaceWrapper) ExportEventIcs(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ExportEventIcsParams
+
+	// ------------- Optional query parameter "date" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "date", r.URL.Query(), &params.Date, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "date"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "date", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ExportEventIcs(w, r, id, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4417,6 +5093,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/auth/reset-password", wrapper.ResetPassword)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/calendar.ics", wrapper.ExportCalendarIcs)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/collaboration/club", wrapper.CreateCollaborationClub)
 	})
 	r.Group(func(r chi.Router) {
@@ -4475,6 +5154,30 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/collaboration/sync", wrapper.SyncCollaboration)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/events", wrapper.ListEvents)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/events", wrapper.CreateEvent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/events/{id}", wrapper.DeleteEvent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/events/{id}", wrapper.GetEvent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/events/{id}", wrapper.UpdateEvent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/events/{id}/exceptions", wrapper.AddEventException)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/events/{id}/exceptions/{date}", wrapper.RemoveEventException)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/events/{id}/ics", wrapper.ExportEventIcs)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/finance/memberfees", wrapper.ListMemberFees)
@@ -5042,6 +5745,76 @@ func (response ResetPassword500JSONResponse) VisitResetPasswordResponse(w http.R
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportCalendarIcsRequestObject struct {
+	Params ExportCalendarIcsParams
+}
+
+type ExportCalendarIcsResponseObject interface {
+	VisitExportCalendarIcsResponse(w http.ResponseWriter) error
+}
+
+type ExportCalendarIcs200TextcalendarResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response ExportCalendarIcs200TextcalendarResponse) VisitExportCalendarIcsResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "text/calendar")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type ExportCalendarIcs400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response ExportCalendarIcs400JSONResponse) VisitExportCalendarIcsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportCalendarIcs401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ExportCalendarIcs401JSONResponse) VisitExportCalendarIcsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportCalendarIcs403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response ExportCalendarIcs403JSONResponse) VisitExportCalendarIcsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
 	_, err := buf.WriteTo(w)
 	return err
 }
@@ -6139,6 +6912,549 @@ func (response SyncCollaboration401JSONResponse) VisitSyncCollaborationResponse(
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListEventsRequestObject struct {
+	Params ListEventsParams
+}
+
+type ListEventsResponseObject interface {
+	VisitListEventsResponse(w http.ResponseWriter) error
+}
+
+type ListEvents200JSONResponse []EventOccurrence
+
+func (response ListEvents200JSONResponse) VisitListEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListEvents400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response ListEvents400JSONResponse) VisitListEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListEvents401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ListEvents401JSONResponse) VisitListEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListEvents403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response ListEvents403JSONResponse) VisitListEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateEventRequestObject struct {
+	Body *CreateEventJSONRequestBody
+}
+
+type CreateEventResponseObject interface {
+	VisitCreateEventResponse(w http.ResponseWriter) error
+}
+
+type CreateEvent201JSONResponse Event
+
+func (response CreateEvent201JSONResponse) VisitCreateEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateEvent400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response CreateEvent400JSONResponse) VisitCreateEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateEvent401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response CreateEvent401JSONResponse) VisitCreateEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateEvent403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response CreateEvent403JSONResponse) VisitCreateEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteEventRequestObject struct {
+	Id string `json:"id"`
+}
+
+type DeleteEventResponseObject interface {
+	VisitDeleteEventResponse(w http.ResponseWriter) error
+}
+
+type DeleteEvent204Response = NoContentResponse
+
+func (response DeleteEvent204Response) VisitDeleteEventResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteEvent401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response DeleteEvent401JSONResponse) VisitDeleteEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteEvent403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response DeleteEvent403JSONResponse) VisitDeleteEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteEvent404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response DeleteEvent404JSONResponse) VisitDeleteEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetEventRequestObject struct {
+	Id string `json:"id"`
+}
+
+type GetEventResponseObject interface {
+	VisitGetEventResponse(w http.ResponseWriter) error
+}
+
+type GetEvent200JSONResponse Event
+
+func (response GetEvent200JSONResponse) VisitGetEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetEvent401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response GetEvent401JSONResponse) VisitGetEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetEvent403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response GetEvent403JSONResponse) VisitGetEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetEvent404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response GetEvent404JSONResponse) VisitGetEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateEventRequestObject struct {
+	Id   string `json:"id"`
+	Body *UpdateEventJSONRequestBody
+}
+
+type UpdateEventResponseObject interface {
+	VisitUpdateEventResponse(w http.ResponseWriter) error
+}
+
+type UpdateEvent200JSONResponse Event
+
+func (response UpdateEvent200JSONResponse) VisitUpdateEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateEvent400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response UpdateEvent400JSONResponse) VisitUpdateEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateEvent401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response UpdateEvent401JSONResponse) VisitUpdateEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateEvent403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response UpdateEvent403JSONResponse) VisitUpdateEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateEvent404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response UpdateEvent404JSONResponse) VisitUpdateEventResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AddEventExceptionRequestObject struct {
+	Id   string `json:"id"`
+	Body *AddEventExceptionJSONRequestBody
+}
+
+type AddEventExceptionResponseObject interface {
+	VisitAddEventExceptionResponse(w http.ResponseWriter) error
+}
+
+type AddEventException200JSONResponse Event
+
+func (response AddEventException200JSONResponse) VisitAddEventExceptionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AddEventException400JSONResponse struct{ BadRequestJSONResponse }
+
+func (response AddEventException400JSONResponse) VisitAddEventExceptionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AddEventException401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response AddEventException401JSONResponse) VisitAddEventExceptionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AddEventException403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response AddEventException403JSONResponse) VisitAddEventExceptionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AddEventException404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response AddEventException404JSONResponse) VisitAddEventExceptionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveEventExceptionRequestObject struct {
+	Id   string             `json:"id"`
+	Date openapi_types.Date `json:"date"`
+}
+
+type RemoveEventExceptionResponseObject interface {
+	VisitRemoveEventExceptionResponse(w http.ResponseWriter) error
+}
+
+type RemoveEventException200JSONResponse Event
+
+func (response RemoveEventException200JSONResponse) VisitRemoveEventExceptionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveEventException401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response RemoveEventException401JSONResponse) VisitRemoveEventExceptionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveEventException403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response RemoveEventException403JSONResponse) VisitRemoveEventExceptionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveEventException404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response RemoveEventException404JSONResponse) VisitRemoveEventExceptionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportEventIcsRequestObject struct {
+	Id     string `json:"id"`
+	Params ExportEventIcsParams
+}
+
+type ExportEventIcsResponseObject interface {
+	VisitExportEventIcsResponse(w http.ResponseWriter) error
+}
+
+type ExportEventIcs200TextcalendarResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response ExportEventIcs200TextcalendarResponse) VisitExportEventIcsResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "text/calendar")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type ExportEventIcs401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response ExportEventIcs401JSONResponse) VisitExportEventIcsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportEventIcs403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response ExportEventIcs403JSONResponse) VisitExportEventIcsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ExportEventIcs404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response ExportEventIcs404JSONResponse) VisitExportEventIcsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
 	_, err := buf.WriteTo(w)
 	return err
 }
@@ -9329,6 +10645,9 @@ type StrictServerInterface interface {
 	// Reset password using a valid reset token
 	// (POST /auth/reset-password)
 	ResetPassword(ctx context.Context, request ResetPasswordRequestObject) (ResetPasswordResponseObject, error)
+	// Export the club calendar as iCalendar (.ics)
+	// (GET /calendar.ics)
+	ExportCalendarIcs(ctx context.Context, request ExportCalendarIcsRequestObject) (ExportCalendarIcsResponseObject, error)
 	// Create a club for collaboration
 	// (POST /collaboration/club)
 	CreateCollaborationClub(ctx context.Context, request CreateCollaborationClubRequestObject) (CreateCollaborationClubResponseObject, error)
@@ -9389,6 +10708,30 @@ type StrictServerInterface interface {
 	// Synchronize now
 	// (POST /collaboration/sync)
 	SyncCollaboration(ctx context.Context, request SyncCollaborationRequestObject) (SyncCollaborationResponseObject, error)
+	// List event occurrences in a date range
+	// (GET /events)
+	ListEvents(ctx context.Context, request ListEventsRequestObject) (ListEventsResponseObject, error)
+	// Create an event
+	// (POST /events)
+	CreateEvent(ctx context.Context, request CreateEventRequestObject) (CreateEventResponseObject, error)
+	// Delete an event (whole series)
+	// (DELETE /events/{id})
+	DeleteEvent(ctx context.Context, request DeleteEventRequestObject) (DeleteEventResponseObject, error)
+	// Get an event (series)
+	// (GET /events/{id})
+	GetEvent(ctx context.Context, request GetEventRequestObject) (GetEventResponseObject, error)
+	// Replace an event (whole series)
+	// (PUT /events/{id})
+	UpdateEvent(ctx context.Context, request UpdateEventRequestObject) (UpdateEventResponseObject, error)
+	// Exclude one occurrence of a recurring event
+	// (POST /events/{id}/exceptions)
+	AddEventException(ctx context.Context, request AddEventExceptionRequestObject) (AddEventExceptionResponseObject, error)
+	// Restore an excluded occurrence
+	// (DELETE /events/{id}/exceptions/{date})
+	RemoveEventException(ctx context.Context, request RemoveEventExceptionRequestObject) (RemoveEventExceptionResponseObject, error)
+	// Export an event as iCalendar (.ics)
+	// (GET /events/{id}/ics)
+	ExportEventIcs(ctx context.Context, request ExportEventIcsRequestObject) (ExportEventIcsResponseObject, error)
 	// List member fees
 	// (GET /finance/memberfees)
 	ListMemberFees(ctx context.Context, request ListMemberFeesRequestObject) (ListMemberFeesResponseObject, error)
@@ -9810,6 +11153,32 @@ func (sh *strictHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ResetPasswordResponseObject); ok {
 		if err := validResponse.VisitResetPasswordResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ExportCalendarIcs operation middleware
+func (sh *strictHandler) ExportCalendarIcs(w http.ResponseWriter, r *http.Request, params ExportCalendarIcsParams) {
+	var request ExportCalendarIcsRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ExportCalendarIcs(ctx, request.(ExportCalendarIcsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ExportCalendarIcs")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ExportCalendarIcsResponseObject); ok {
+		if err := validResponse.VisitExportCalendarIcsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -10349,6 +11718,235 @@ func (sh *strictHandler) SyncCollaboration(w http.ResponseWriter, r *http.Reques
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(SyncCollaborationResponseObject); ok {
 		if err := validResponse.VisitSyncCollaborationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListEvents operation middleware
+func (sh *strictHandler) ListEvents(w http.ResponseWriter, r *http.Request, params ListEventsParams) {
+	var request ListEventsRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListEvents(ctx, request.(ListEventsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListEvents")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListEventsResponseObject); ok {
+		if err := validResponse.VisitListEventsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateEvent operation middleware
+func (sh *strictHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
+	var request CreateEventRequestObject
+
+	var body CreateEventJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateEvent(ctx, request.(CreateEventRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateEvent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateEventResponseObject); ok {
+		if err := validResponse.VisitCreateEventResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteEvent operation middleware
+func (sh *strictHandler) DeleteEvent(w http.ResponseWriter, r *http.Request, id string) {
+	var request DeleteEventRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteEvent(ctx, request.(DeleteEventRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteEvent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteEventResponseObject); ok {
+		if err := validResponse.VisitDeleteEventResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetEvent operation middleware
+func (sh *strictHandler) GetEvent(w http.ResponseWriter, r *http.Request, id string) {
+	var request GetEventRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetEvent(ctx, request.(GetEventRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetEvent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetEventResponseObject); ok {
+		if err := validResponse.VisitGetEventResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateEvent operation middleware
+func (sh *strictHandler) UpdateEvent(w http.ResponseWriter, r *http.Request, id string) {
+	var request UpdateEventRequestObject
+
+	request.Id = id
+
+	var body UpdateEventJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateEvent(ctx, request.(UpdateEventRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateEvent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateEventResponseObject); ok {
+		if err := validResponse.VisitUpdateEventResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AddEventException operation middleware
+func (sh *strictHandler) AddEventException(w http.ResponseWriter, r *http.Request, id string) {
+	var request AddEventExceptionRequestObject
+
+	request.Id = id
+
+	var body AddEventExceptionJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AddEventException(ctx, request.(AddEventExceptionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AddEventException")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AddEventExceptionResponseObject); ok {
+		if err := validResponse.VisitAddEventExceptionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RemoveEventException operation middleware
+func (sh *strictHandler) RemoveEventException(w http.ResponseWriter, r *http.Request, id string, date openapi_types.Date) {
+	var request RemoveEventExceptionRequestObject
+
+	request.Id = id
+	request.Date = date
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RemoveEventException(ctx, request.(RemoveEventExceptionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RemoveEventException")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RemoveEventExceptionResponseObject); ok {
+		if err := validResponse.VisitRemoveEventExceptionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ExportEventIcs operation middleware
+func (sh *strictHandler) ExportEventIcs(w http.ResponseWriter, r *http.Request, id string, params ExportEventIcsParams) {
+	var request ExportEventIcsRequestObject
+
+	request.Id = id
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ExportEventIcs(ctx, request.(ExportEventIcsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ExportEventIcs")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ExportEventIcsResponseObject); ok {
+		if err := validResponse.VisitExportEventIcsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

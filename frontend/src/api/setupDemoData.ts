@@ -5,6 +5,7 @@ import { assignSectionMembers, createSection } from './sections';
 import { createMemberFee, createTransaction } from './finance';
 import { createInventoryItem, createInventoryLoan } from './inventory';
 import { recordMaintenance, setItemStatus } from './maintenance';
+import { createEvent, localTimeZone } from './events';
 import { Member } from './types';
 
 export interface SetupDemoDataResult {
@@ -347,6 +348,54 @@ export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
             loanedAt: new Date(`${currentYear}-08-01T09:00:00.000Z`).toISOString(),
             dueDate: new Date(`${currentYear}-08-15T18:00:00.000Z`).toISOString(),
             notes: loan.notes,
+        });
+    }
+
+    // Club calendar: weekly youth training, a monthly board meeting, a
+    // competition weekend and the summer party, relative to today.
+    const at = (offsetDays: number, hour: number, minute = 0) => {
+        const d = new Date();
+        d.setDate(d.getDate() + offsetDays);
+        d.setHours(hour, minute, 0, 0);
+        return d;
+    };
+    const nextWeekday = (weekday: number) => (weekday - new Date().getDay() + 7) % 7;
+    const tz = localTimeZone();
+    const events = [
+        {
+            title: 'Jugendtraining Twintip', category: 'training' as const, location: 'Kitespot Nordstrand',
+            start: at(nextWeekday(2) - 14, 17, 30), minutes: 90, recurrence: 'weekly' as const,
+            groupIds: [groupIds.get('Jugend (U18)')!], sectionIds: [sectionIds.get('Twintip & Freestyle')!],
+        },
+        {
+            title: 'Foil-Treff', category: 'training' as const, location: 'Vereinsheim Slipanlage',
+            start: at(nextWeekday(6) - 7, 10, 0), minutes: 120, recurrence: 'biweekly' as const,
+            sectionIds: [sectionIds.get('Foil')!],
+        },
+        {
+            title: 'Vorstandssitzung', category: 'meeting' as const, location: 'Vereinsheim Büro',
+            start: at(nextWeekday(3) + 7, 19, 0), minutes: 120, recurrence: 'monthly' as const,
+            roleIds: [roleIds.get('Vorstand')!, roleIds.get('Kassenwart')!, roleIds.get('Schriftführer')!],
+        },
+        {
+            title: 'Fehmarn Kite Cup', category: 'competition' as const, location: 'Fehmarn, Grüner Brink',
+            start: at(nextWeekday(6) + 14, 0), allDayUntil: 1, recurrence: 'none' as const,
+        },
+        {
+            title: 'Sommerfest am Strand', category: 'festival' as const, location: 'Vereinsheim',
+            start: at(nextWeekday(5) + 21, 16, 0), minutes: 360, recurrence: 'none' as const,
+            description: 'Grillen, Musik und Siegerehrung der Vereinsmeisterschaft. Familien willkommen!',
+        },
+    ];
+    for (const e of events) {
+        const allDay = e.allDayUntil !== undefined;
+        const end = allDay
+            ? new Date(e.start.getFullYear(), e.start.getMonth(), e.start.getDate() + e.allDayUntil! + 1)
+            : new Date(e.start.getTime() + e.minutes! * 60000);
+        await createEvent({
+            title: e.title, category: e.category, location: e.location, description: e.description,
+            start: e.start.toISOString(), end: end.toISOString(), allDay, timeZone: tz, recurrence: e.recurrence,
+            groupIds: e.groupIds ?? [], sectionIds: e.sectionIds ?? [], roleIds: e.roleIds ?? [],
         });
     }
 

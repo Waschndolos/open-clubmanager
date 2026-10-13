@@ -18,6 +18,7 @@ tags:
   - name: system
   - name: setup
   - name: auth
+  - name: users
   - name: members
   - name: roles
   - name: groups
@@ -27,7 +28,10 @@ tags:
   - name: settings
   - name: statistics
   - name: finance
+  - name: inventory
+  - name: events
   - name: history
+  - name: collaboration
 
 components:
   securitySchemes:
@@ -80,7 +84,7 @@ components:
 
     DatabaseMode:
       type: string
-      enum: [sqlite-local, mysql-shared]
+      enum: [sqlite-local]
 
     SetupStatus:
       type: object
@@ -157,15 +161,7 @@ components:
       required: [email, password]
       additionalProperties: false
 
-    AccessTokenResponse:
-      type: object
-      properties:
-        accessToken:
-          type: string
-      required: [accessToken]
-      additionalProperties: false
-
-    UserProfile:
+    ForgotPasswordRequest:
       type: object
       properties:
         email:
@@ -174,11 +170,104 @@ components:
       required: [email]
       additionalProperties: false
 
+    ResetPasswordRequest:
+      type: object
+      properties:
+        token:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+      required: [token, newPassword]
+      additionalProperties: false
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+      additionalProperties: false
+
+    AccessTokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+      required: [accessToken]
+      additionalProperties: false
+
+    AppRole:
+      type: string
+      enum: [ADMIN, TREASURER, SECRETARY, READONLY]
+
+    UserProfile:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+      required: [email]
+      additionalProperties: false
+
+    AppUser:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, email, appRole, createdAt]
+      additionalProperties: false
+
+    CreateAppUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+      required: [email, password, appRole]
+      additionalProperties: false
+
+    UpdateAppUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        appRole:
+          $ref: '#/components/schemas/AppRole'
+      additionalProperties: false
+
+    ChangePasswordRequest:
+      type: object
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+      required: [newPassword]
+      additionalProperties: false
+
     NamedEntity:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         name:
           type: string
       required: [id, name]
@@ -188,7 +277,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
       required: [id]
       additionalProperties: false
 
@@ -204,11 +293,21 @@ components:
       allOf:
         - $ref: '#/components/schemas/NamedEntityCreateRequest'
 
+    BulkMemberAssignRequest:
+      type: object
+      properties:
+        memberIds:
+          type: array
+          items:
+            type: string
+      required: [memberIds]
+      additionalProperties: false
+
     Member:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         versionToken:
           type: string
         number:
@@ -387,15 +486,15 @@ components:
         roleIds:
           type: array
           items:
-            type: integer
+            type: string
         groupIds:
           type: array
           items:
-            type: integer
+            type: string
         sectionIds:
           type: array
           items:
-            type: integer
+            type: string
         roles:
           type: array
           items:
@@ -443,9 +542,9 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         userId:
-          type: integer
+          type: string
         key:
           type: string
         value:
@@ -585,7 +684,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         date:
           type: string
           format: date-time
@@ -718,7 +817,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         firstName:
           type: string
         lastName:
@@ -732,9 +831,9 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         memberId:
-          type: integer
+          type: string
         amount:
           type: number
         dueDate:
@@ -768,7 +867,7 @@ components:
       type: object
       properties:
         memberId:
-          type: integer
+          type: string
         amount:
           type: number
         dueDate:
@@ -792,7 +891,7 @@ components:
       type: object
       properties:
         memberId:
-          type: integer
+          type: string
         amount:
           type: number
         dueDate:
@@ -810,19 +909,190 @@ components:
         year:
           type: integer
       additionalProperties: false
-
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        serialNumber:
+          type: string
+          nullable: true
+        category:
+          type: string
+        quantity:
+          type: integer
+        location:
+          type: string
+        purchaseDate:
+          type: string
+          format: date-time
+          nullable: true
+        purchasePrice:
+          type: number
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - category
+      - quantity
+      - location
+      - createdAt
+      - updatedAt
+      additionalProperties: false
+    InventoryItemCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        serialNumber:
+          type: string
+          nullable: true
+        category:
+          type: string
+        quantity:
+          type: integer
+        location:
+          type: string
+        purchaseDate:
+          type: string
+          format: date-time
+          nullable: true
+        purchasePrice:
+          type: number
+          nullable: true
+      required:
+      - name
+      - category
+      - quantity
+      - location
+      additionalProperties: false
+    InventoryItemUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        serialNumber:
+          type: string
+          nullable: true
+        category:
+          type: string
+        quantity:
+          type: integer
+        location:
+          type: string
+        purchaseDate:
+          type: string
+          format: date-time
+          nullable: true
+        purchasePrice:
+          type: number
+          nullable: true
+      additionalProperties: false
+    InventoryLoan:
+      type: object
+      properties:
+        id:
+          type: string
+        itemId:
+          type: string
+        memberId:
+          type: string
+        loanedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - itemId
+      - memberId
+      - loanedAt
+      - notes
+      - createdAt
+      additionalProperties: false
+    InventoryLoanCreateRequest:
+      type: object
+      properties:
+        itemId:
+          type: string
+        memberId:
+          type: string
+        loanedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+      required:
+      - itemId
+      - memberId
+      - loanedAt
+      - notes
+      additionalProperties: false
+    InventoryLoanUpdateRequest:
+      type: object
+      properties:
+        itemId:
+          type: string
+        memberId:
+          type: string
+        loanedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+      additionalProperties: false
     AuditLog:
       type: object
       properties:
         id:
-          type: integer
+          type: string
         action:
           type: string
           enum: [CREATE, UPDATE, DELETE]
         entity:
           type: string
         entityId:
-          type: integer
+          type: string
         userId:
           type: string
         data:
@@ -835,6 +1105,378 @@ components:
       required: [id, action, entity, entityId, userId, createdAt]
       additionalProperties: false
 
+    AreaPermission:
+      type: string
+      description: What this device may do in a data area (docs/sync-protocol.md §4).
+      enum: [none, read, write]
+    AreaPermissions:
+      type: object
+      properties:
+        membersCore: { $ref: '#/components/schemas/AreaPermission' }
+        membersContact: { $ref: '#/components/schemas/AreaPermission' }
+        membersBank: { $ref: '#/components/schemas/AreaPermission' }
+        finance: { $ref: '#/components/schemas/AreaPermission' }
+        inventory: { $ref: '#/components/schemas/AreaPermission' }
+        admin: { $ref: '#/components/schemas/AreaPermission' }
+      required: [membersCore, membersContact, membersBank, finance, inventory, admin]
+    CollaborationStatus:
+      type: object
+      properties:
+        mode:
+          type: string
+          enum: [local, joining, member, revoked]
+        locked:
+          type: boolean
+          description: Device keys exist but are locked until the user who set up collaboration logs in.
+        clubName: { type: string }
+        clubId: { type: string }
+        storagePath: { type: string }
+        storageError:
+          type: boolean
+          description: The storage location could not be opened.
+        deviceId: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        role: { type: string }
+        isAdmin: { type: boolean }
+        permissions: { $ref: '#/components/schemas/AreaPermissions' }
+        lastSync: { type: string, format: date-time }
+        lastError: { type: string }
+        syncing: { type: boolean }
+        pendingChanges: { type: integer }
+        pendingRequests: { type: integer }
+        conflicts: { type: integer }
+        lostChanges:
+          type: integer
+          description: Own ACL changes that lost against a concurrent change and must be redone.
+        badKeys: { type: integer }
+        waitingStreams:
+          type: integer
+          description: Change streams of other devices waiting for a missing file, key, ACL version or app update.
+        quarantinedStreams:
+          type: integer
+          description: Change streams stopped because a file failed verification (security warning).
+        waitingChanges:
+          type: integer
+          description: Received changes waiting for a row they reference.
+        incompleteAreas:
+          type: integer
+          description: Readable areas without a verified starting snapshot yet.
+        clockWarnings:
+          type: integer
+          description: Devices whose changes carried a clock far ahead of this device's clock.
+      required: [mode, locked, isAdmin, permissions, syncing, pendingChanges, pendingRequests, conflicts, lostChanges, badKeys, waitingStreams, quarantinedStreams, waitingChanges, incompleteAreas, clockWarnings]
+    FolderClub:
+      type: object
+      properties:
+        path: { type: string }
+        name: { type: string }
+      required: [path, name]
+    FolderInfo:
+      type: object
+      properties:
+        path: { type: string }
+        writable: { type: boolean }
+        kind:
+          type: string
+          enum: [sync, network, local]
+        provider: { type: string }
+        club: { $ref: '#/components/schemas/FolderClub' }
+        clubsInside:
+          type: array
+          items: { $ref: '#/components/schemas/FolderClub' }
+      required: [path, writable, kind, clubsInside]
+    CheckFolderRequest:
+      type: object
+      properties:
+        path: { type: string }
+      required: [path]
+    CreateClubRequest:
+      type: object
+      properties:
+        folder: { type: string, description: Parent folder; the club gets its own subfolder in it. }
+        clubName: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        password: { type: string, description: Login password of the current user; protects the device keys. }
+      required: [folder, clubName, person, deviceName, password]
+    CreateClubResponse:
+      type: object
+      properties:
+        path: { type: string }
+        recoveryKit: { type: string, description: Shown once, never stored by the app. }
+      required: [path, recoveryKit]
+    JoinClubRequest:
+      type: object
+      properties:
+        folder: { type: string }
+        code: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        password: { type: string }
+        replaceLocalData:
+          type: boolean
+          description: Back up and clear existing local data before joining.
+      required: [folder, code, person, deviceName, password]
+    SafetyCodeResponse:
+      type: object
+      properties:
+        safetyCode: { type: string }
+      required: [safetyCode]
+    RecoverRequest:
+      type: object
+      properties:
+        folder: { type: string }
+        recoveryKit: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        password: { type: string }
+        replaceLocalData: { type: boolean }
+      required: [recoveryKit, person, deviceName, password]
+    LocalDataResponse:
+      type: object
+      properties:
+        hasLocalData: { type: boolean }
+      required: [hasLocalData]
+    ClubInvite:
+      type: object
+      properties:
+        id: { type: string }
+        person: { type: string }
+        role: { type: string }
+        createdAt: { type: string, format: date-time }
+        expiresAt: { type: string, format: date-time }
+        usedAt: { type: string, format: date-time }
+        code: { type: string, description: Only returned when the invite is created. }
+      required: [id, person, role, createdAt, expiresAt]
+    CreateInviteRequest:
+      type: object
+      properties:
+        person: { type: string }
+        role: { type: string }
+      required: [person, role]
+    ClubJoinRequest:
+      type: object
+      properties:
+        deviceId: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        role: { type: string }
+        error:
+          type: string
+          description: Set if the request cannot be approved (unknown, expired or used invite, contested, forged).
+      required: [deviceId, person]
+    ApproveRequest:
+      type: object
+      properties:
+        safetyCode: { type: string }
+      required: [safetyCode]
+    ClubDevice:
+      type: object
+      properties:
+        deviceId: { type: string }
+        person: { type: string }
+        deviceName: { type: string }
+        role: { type: string }
+        active: { type: boolean }
+        me: { type: boolean }
+      required: [deviceId, person, role, active, me]
+    ChangeDeviceRoleRequest:
+      type: object
+      properties:
+        role: { type: string }
+      required: [role]
+    ClubRole:
+      type: object
+      properties:
+        id: { type: string }
+        permissions: { $ref: '#/components/schemas/AreaPermissions' }
+      required: [id, permissions]
+    SyncConflict:
+      type: object
+      properties:
+        table: { type: string }
+        rowId: { type: string }
+        column: { type: string }
+        value: { type: string }
+        keptRowId: { type: string }
+        detectedAt: { type: string, format: date-time }
+      required: [table, rowId, column, value, keptRowId, detectedAt]
+    EventCategory:
+      type: string
+      enum: [training, festival, meeting, competition, other]
+    EventRecurrence:
+      type: string
+      description: Repetition of the event; `biweekly` means every 14 days.
+      enum: [none, weekly, biweekly, monthly]
+    Event:
+      type: object
+      description: |
+        A club event. Recurring events are stored once as a series and expanded
+        into occurrences by `GET /events`; single occurrences can be excluded
+        via `exceptions`. Occurrences repeat at the same local wall-clock time
+        in `timeZone`, also across daylight saving changes.
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        category:
+          $ref: '#/components/schemas/EventCategory'
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+          description: For all-day events the midnight after the last day (exclusive, as in iCalendar).
+        allDay:
+          type: boolean
+        timeZone:
+          type: string
+          description: IANA time zone the recurrence is computed in, e.g. `Europe/Berlin`.
+        recurrence:
+          $ref: '#/components/schemas/EventRecurrence'
+        recurrenceUntil:
+          type: string
+          format: date
+          nullable: true
+          description: Last day (inclusive) an occurrence may start on; open-ended when empty.
+        exceptions:
+          type: array
+          description: Local dates of excluded occurrences.
+          items:
+            type: string
+            format: date
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, title, category, start, end, allDay, timeZone, recurrence, exceptions, groups, sections, roles, createdAt, updatedAt]
+      additionalProperties: false
+    EventInput:
+      type: object
+      description: Writable fields of an event. Without groups, sections and roles the event is for the whole club.
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          maxLength: 5000
+        location:
+          type: string
+          nullable: true
+          maxLength: 200
+        category:
+          $ref: '#/components/schemas/EventCategory'
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+          description: For all-day events the midnight after the last day (exclusive, as in iCalendar).
+        allDay:
+          type: boolean
+        timeZone:
+          type: string
+          description: IANA time zone; defaults to UTC.
+        recurrence:
+          $ref: '#/components/schemas/EventRecurrence'
+        recurrenceUntil:
+          type: string
+          format: date
+          nullable: true
+        groupIds:
+          type: array
+          items:
+            type: string
+        sectionIds:
+          type: array
+          items:
+            type: string
+        roleIds:
+          type: array
+          items:
+            type: string
+      required: [title, category, start, end]
+      additionalProperties: false
+    EventOccurrence:
+      type: object
+      description: One occurrence of an event within the requested range.
+      properties:
+        eventId:
+          type: string
+        occurrenceDate:
+          type: string
+          format: date
+          description: Local start date of this occurrence; identifies it for exceptions.
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        category:
+          $ref: '#/components/schemas/EventCategory'
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+          description: For all-day events the midnight after the last day (exclusive, as in iCalendar).
+        allDay:
+          type: boolean
+        recurring:
+          type: boolean
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+      required: [eventId, occurrenceDate, title, category, start, end, allDay, recurring, groups, sections, roles]
+      additionalProperties: false
+    EventExceptionRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+      required: [date]
+      additionalProperties: false
   responses:
     NoContent:
       description: Request completed successfully. No response body is returned.
@@ -1025,6 +1667,79 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /auth/forgot-password:
+    post:
+      tags: [auth]
+      summary: Request a password reset email
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: Reset email sent (always returns 200 to prevent email enumeration).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /auth/reset-password:
+    post:
+      tags: [auth]
+      summary: Reset password using a valid reset token
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /auth/change-password:
+    post:
+      tags: [auth]
+      summary: Change the current user's password
+      operationId: changePassword
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /auth/profile:
     get:
       tags: [auth]
@@ -1115,7 +1830,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     get:
       tags: [members]
       summary: Get a member by id
@@ -1230,7 +1945,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [roles]
       summary: Update a role
@@ -1259,6 +1974,58 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
+  /roles/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [roles]
+      summary: Get members of a role
+      operationId: getRoleMembers
+      responses:
+        '200':
+          description: List of members assigned to the role.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [roles]
+      summary: Bulk assign members to a role
+      operationId: bulkAssignRoleMembers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMemberAssignRequest'
+      responses:
+        '200':
+          description: Members assigned to the role.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
 
   /groups:
     get:
@@ -1300,7 +2067,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [groups]
       summary: Update a group
@@ -1329,6 +2096,58 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
+  /groups/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [groups]
+      summary: Get members of a group
+      operationId: getGroupMembers
+      responses:
+        '200':
+          description: List of members assigned to the group.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [groups]
+      summary: Bulk assign members to a group
+      operationId: bulkAssignGroupMembers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMemberAssignRequest'
+      responses:
+        '200':
+          description: Members assigned to the group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
 
   /sections:
     get:
@@ -1370,7 +2189,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [sections]
       summary: Update a section
@@ -1399,6 +2218,58 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+
+  /sections/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [sections]
+      summary: Get members of a section
+      operationId: getSectionMembers
+      responses:
+        '200':
+          description: List of members assigned to the section.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [sections]
+      summary: Bulk assign members to a section
+      operationId: bulkAssignSectionMembers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMemberAssignRequest'
+      responses:
+        '200':
+          description: Members assigned to the section.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
 
   /preferences:
     get:
@@ -1724,7 +2595,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [finance]
       summary: Update a finance transaction
@@ -1845,7 +2716,7 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     put:
       tags: [finance]
       summary: Update a member fee
@@ -1913,7 +2784,246 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
+  /inventory/items:
+    get:
+      tags:
+      - inventory
+      summary: List inventory items
+      operationId: listInventoryItems
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: List of inventory items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+      - inventory
+      summary: Create an inventory item
+      operationId: createInventoryItem
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItemCreateRequest'
+      responses:
+        '201':
+          description: Inventory item created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /inventory/items/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - inventory
+      summary: Get an inventory item
+      operationId: getInventoryItem
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Inventory item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - inventory
+      summary: Update an inventory item
+      operationId: updateInventoryItem
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItemUpdateRequest'
+      responses:
+        '200':
+          description: Updated inventory item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - inventory
+      summary: Delete an inventory item
+      operationId: deleteInventoryItem
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Inventory item deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /inventory/loans:
+    get:
+      tags:
+      - inventory
+      summary: List inventory loans
+      operationId: listInventoryLoans
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: List of inventory loans.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryLoan'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+      - inventory
+      summary: Create an inventory loan
+      operationId: createInventoryLoan
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryLoanCreateRequest'
+      responses:
+        '201':
+          description: Inventory loan created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryLoan'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /inventory/loans/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - inventory
+      summary: Get an inventory loan
+      operationId: getInventoryLoan
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Inventory loan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryLoan'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - inventory
+      summary: Update an inventory loan
+      operationId: updateInventoryLoan
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryLoanUpdateRequest'
+      responses:
+        '200':
+          description: Updated inventory loan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryLoan'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - inventory
+      summary: Delete an inventory loan
+      operationId: deleteInventoryLoan
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Inventory loan deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /history:
     get:
       tags: [history]
@@ -1935,3 +3045,654 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
+
+  /users:
+    get:
+      tags: [users]
+      summary: List all app users
+      operationId: listAppUsers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of app users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [users]
+      summary: Create a new app user
+      operationId: createAppUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppUserRequest'
+      responses:
+        '201':
+          description: User created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      tags: [users]
+      summary: Update an app user
+      operationId: updateAppUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAppUserRequest'
+      responses:
+        '200':
+          description: User updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [users]
+      summary: Delete an app user
+      operationId: deleteAppUser
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /collaboration/status:
+    get:
+      tags: [collaboration]
+      summary: Collaboration status of this device
+      operationId: getCollaborationStatus
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current status.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CollaborationStatus' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/sync:
+    post:
+      tags: [collaboration]
+      summary: Synchronize now
+      operationId: syncCollaboration
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Status after synchronizing.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CollaborationStatus' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/folders:
+    get:
+      tags: [collaboration]
+      summary: Folders of sync clients found on this computer
+      operationId: listCollaborationFolders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Suggested folders.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/FolderInfo' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/folders/check:
+    post:
+      tags: [collaboration]
+      summary: Check a folder chosen by the user
+      operationId: checkCollaborationFolder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CheckFolderRequest' }
+      responses:
+        '200':
+          description: Folder details.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FolderInfo' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /collaboration/club:
+    post:
+      tags: [collaboration]
+      summary: Create a club for collaboration
+      operationId: createCollaborationClub
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateClubRequest' }
+      responses:
+        '201':
+          description: Club created. The recovery kit is returned only here.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CreateClubResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/join:
+    post:
+      tags: [collaboration]
+      summary: Ask to join a club with an invite code
+      operationId: joinCollaborationClub
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JoinClubRequest' }
+      responses:
+        '201':
+          description: Join request written; read the safety code to the admin.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SafetyCodeResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/join/safety-code:
+    get:
+      tags: [collaboration]
+      summary: Safety code of this device while its join request is pending
+      operationId: getCollaborationSafetyCode
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Safety code.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SafetyCodeResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/recover:
+    post:
+      tags: [collaboration]
+      summary: Use the recovery kit to become an admin device
+      operationId: recoverCollaborationClub
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RecoverRequest' }
+      responses:
+        '200':
+          description: Status after recovery.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CollaborationStatus' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/local-data:
+    get:
+      tags: [collaboration]
+      summary: Whether this device holds data that joining would replace
+      operationId: getCollaborationLocalData
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Local data state.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LocalDataResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/invites:
+    get:
+      tags: [collaboration]
+      summary: Invites created on this device
+      operationId: listCollaborationInvites
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Invites, newest first.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ClubInvite' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [collaboration]
+      summary: Invite a person
+      operationId: createCollaborationInvite
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateInviteRequest' }
+      responses:
+        '201':
+          description: Invite with its code.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClubInvite' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /collaboration/invites/{inviteId}:
+    delete:
+      tags: [collaboration]
+      summary: Withdraw an unused invite
+      operationId: withdrawCollaborationInvite
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: inviteId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /collaboration/requests:
+    get:
+      tags: [collaboration]
+      summary: Pending join requests (admin devices)
+      operationId: listCollaborationRequests
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Requests found by the last synchronization.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ClubJoinRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/requests/{deviceId}/approve:
+    post:
+      tags: [collaboration]
+      summary: Approve a join request with the safety code read out by the new member
+      operationId: approveCollaborationRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ApproveRequest' }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422':
+          description: Wrong safety code (code WRONG_SAFETY_CODE) or request rejected after too many attempts (TOO_MANY_ATTEMPTS).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /collaboration/requests/{deviceId}/reject:
+    post:
+      tags: [collaboration]
+      summary: Reject a join request
+      operationId: rejectCollaborationRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /collaboration/devices:
+    get:
+      tags: [collaboration]
+      summary: People and devices of the club
+      operationId: listCollaborationDevices
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Devices of the current access list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ClubDevice' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/devices/{deviceId}/role:
+    put:
+      tags: [collaboration]
+      summary: Change the role of a device
+      operationId: changeCollaborationDeviceRole
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChangeDeviceRoleRequest' }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/devices/{deviceId}/revoke:
+    post:
+      tags: [collaboration]
+      summary: Remove a device from the club
+      operationId: revokeCollaborationDevice
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/roles:
+    get:
+      tags: [collaboration]
+      summary: Roles and what they may see and change
+      operationId: listCollaborationRoles
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Roles of the club.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ClubRole' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /collaboration/conflicts:
+    get:
+      tags: [collaboration]
+      summary: Duplicate values found after synchronizing (docs/sync-protocol.md §14.2)
+      operationId: listCollaborationConflicts
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Rows whose unique value must be changed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/SyncConflict' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /events:
+    get:
+      tags: [events]
+      summary: List event occurrences in a date range
+      description: Expands recurring events. Events without groups, sections and roles are for the whole club and always match the audience filters.
+      operationId: listEvents
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: from, in: query, required: true, description: First day (inclusive)., schema: { type: string, format: date } }
+        - { name: to, in: query, required: true, description: Last day (inclusive); at most 400 days after `from`., schema: { type: string, format: date } }
+        - { name: groupId, in: query, required: false, schema: { type: string } }
+        - { name: sectionId, in: query, required: false, schema: { type: string } }
+        - { name: roleId, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: Occurrences ordered by start.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/EventOccurrence' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [events]
+      summary: Create an event
+      operationId: createEvent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EventInput' }
+      responses:
+        '201':
+          description: Event created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /events/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      tags: [events]
+      summary: Get an event (series)
+      operationId: getEvent
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The event.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [events]
+      summary: Replace an event (whole series)
+      operationId: updateEvent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EventInput' }
+      responses:
+        '200':
+          description: Event updated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [events]
+      summary: Delete an event (whole series)
+      operationId: deleteEvent
+      security:
+        - bearerAuth: []
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /events/{id}/exceptions:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    post:
+      tags: [events]
+      summary: Exclude one occurrence of a recurring event
+      operationId: addEventException
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EventExceptionRequest' }
+      responses:
+        '200':
+          description: Event with the updated exceptions.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /events/{id}/exceptions/{date}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+      - { name: date, in: path, required: true, schema: { type: string, format: date } }
+    delete:
+      tags: [events]
+      summary: Restore an excluded occurrence
+      operationId: removeEventException
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Event with the updated exceptions.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /events/{id}/ics:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      tags: [events]
+      summary: Export an event as iCalendar (.ics)
+      description: Exports one occurrence when `date` is given, otherwise the occurrences of the series from 30 days ago up to one year ahead (or its end).
+      operationId: exportEventIcs
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: date, in: query, required: false, schema: { type: string, format: date } }
+      responses:
+        '200':
+          description: iCalendar file (RFC 5545).
+          content:
+            text/calendar:
+              schema: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /calendar.ics:
+    get:
+      tags: [events]
+      summary: Export the club calendar as iCalendar (.ics)
+      description: Occurrences in the range (default 30 days ago up to one year ahead), optionally filtered by audience like `GET /events`.
+      operationId: exportCalendarIcs
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: from, in: query, required: false, schema: { type: string, format: date } }
+        - { name: to, in: query, required: false, schema: { type: string, format: date } }
+        - { name: groupId, in: query, required: false, schema: { type: string } }
+        - { name: sectionId, in: query, required: false, schema: { type: string } }
+        - { name: roleId, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: iCalendar file (RFC 5545).
+          content:
+            text/calendar:
+              schema: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }

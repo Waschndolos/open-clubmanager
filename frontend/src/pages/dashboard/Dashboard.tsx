@@ -13,6 +13,7 @@ import MemberGrowthChart from '../../components/dashboard/MemberGrowthChart';
 import FinanceChart from '../../components/dashboard/FinanceChart';
 import FeeStatusChart from '../../components/dashboard/FeeStatusChart';
 import MyTasks from '../../components/dashboard/MyTasks';
+import UpcomingEvents from '../../components/dashboard/UpcomingEvents';
 import UpcomingJubilees from '../../components/dashboard/UpcomingJubilees';
 import QualificationAlerts from '../../components/dashboard/QualificationAlerts';
 import MaintenanceAlerts from '../../components/dashboard/MaintenanceAlerts';
@@ -221,6 +222,7 @@ export default function Dashboard() {
                 </Box>
             )}
 
+            <UpcomingEvents />
             <MyTasks />
             <UpcomingJubilees />
             <QualificationAlerts />

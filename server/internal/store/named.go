@@ -17,12 +17,14 @@ type NamedKind struct {
 	table     string
 	linkTable string
 	linkCol   string
+	// audience is the event_audiences.kind of this entity.
+	audience string
 }
 
 var (
-	Roles    = NamedKind{table: "roles", linkTable: "member_roles", linkCol: "role_id"}
-	Groups   = NamedKind{table: "groups", linkTable: "member_groups", linkCol: "group_id"}
-	Sections = NamedKind{table: "sections", linkTable: "member_sections", linkCol: "section_id"}
+	Roles    = NamedKind{table: "roles", linkTable: "member_roles", linkCol: "role_id", audience: AudienceRole}
+	Groups   = NamedKind{table: "groups", linkTable: "member_groups", linkCol: "group_id", audience: AudienceGroup}
+	Sections = NamedKind{table: "sections", linkTable: "member_sections", linkCol: "section_id", audience: AudienceSection}
 )
 
 // ListNamed returns all live entities of a kind ordered by name.
@@ -66,14 +68,17 @@ func (s *Store) RenameNamed(ctx context.Context, k NamedKind, id, name string) (
 	return NamedEntity{ID: id, Name: name}, err
 }
 
-// DeleteNamed tombstones an entity and its member links.
+// DeleteNamed tombstones an entity with its member links and event audiences.
 func (s *Store) DeleteNamed(ctx context.Context, k NamedKind, id string) error {
 	return s.inWriteTx(ctx, func(w *writer) error {
 		tombstone := row{"deleted_at": db.Now()}
 		if err := affected(w.update(k.table, `id = ? AND deleted_at IS NULL`, []any{id}, tombstone)); err != nil {
 			return err
 		}
-		_, err := w.update(k.linkTable, k.linkCol+` = ? AND deleted_at IS NULL`, []any{id}, tombstone)
+		if _, err := w.update(k.linkTable, k.linkCol+` = ? AND deleted_at IS NULL`, []any{id}, tombstone); err != nil {
+			return err
+		}
+		_, err := w.update("event_audiences", `kind = ? AND target_id = ? AND deleted_at IS NULL`, []any{k.audience, id}, tombstone)
 		return err
 	})
 }

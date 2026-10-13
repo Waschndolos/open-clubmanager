@@ -29,6 +29,7 @@ tags:
   - name: statistics
   - name: finance
   - name: inventory
+  - name: events
   - name: history
   - name: collaboration
 
@@ -1301,6 +1302,181 @@ components:
         keptRowId: { type: string }
         detectedAt: { type: string, format: date-time }
       required: [table, rowId, column, value, keptRowId, detectedAt]
+    EventCategory:
+      type: string
+      enum: [training, festival, meeting, competition, other]
+    EventRecurrence:
+      type: string
+      description: Repetition of the event; `biweekly` means every 14 days.
+      enum: [none, weekly, biweekly, monthly]
+    Event:
+      type: object
+      description: |
+        A club event. Recurring events are stored once as a series and expanded
+        into occurrences by `GET /events`; single occurrences can be excluded
+        via `exceptions`. Occurrences repeat at the same local wall-clock time
+        in `timeZone`, also across daylight saving changes.
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        category:
+          $ref: '#/components/schemas/EventCategory'
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+          description: For all-day events the midnight after the last day (exclusive, as in iCalendar).
+        allDay:
+          type: boolean
+        timeZone:
+          type: string
+          description: IANA time zone the recurrence is computed in, e.g. `Europe/Berlin`.
+        recurrence:
+          $ref: '#/components/schemas/EventRecurrence'
+        recurrenceUntil:
+          type: string
+          format: date
+          nullable: true
+          description: Last day (inclusive) an occurrence may start on; open-ended when empty.
+        exceptions:
+          type: array
+          description: Local dates of excluded occurrences.
+          items:
+            type: string
+            format: date
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, title, category, start, end, allDay, timeZone, recurrence, exceptions, groups, sections, roles, createdAt, updatedAt]
+      additionalProperties: false
+    EventInput:
+      type: object
+      description: Writable fields of an event. Without groups, sections and roles the event is for the whole club.
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          maxLength: 5000
+        location:
+          type: string
+          nullable: true
+          maxLength: 200
+        category:
+          $ref: '#/components/schemas/EventCategory'
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+          description: For all-day events the midnight after the last day (exclusive, as in iCalendar).
+        allDay:
+          type: boolean
+        timeZone:
+          type: string
+          description: IANA time zone; defaults to UTC.
+        recurrence:
+          $ref: '#/components/schemas/EventRecurrence'
+        recurrenceUntil:
+          type: string
+          format: date
+          nullable: true
+        groupIds:
+          type: array
+          items:
+            type: string
+        sectionIds:
+          type: array
+          items:
+            type: string
+        roleIds:
+          type: array
+          items:
+            type: string
+      required: [title, category, start, end]
+      additionalProperties: false
+    EventOccurrence:
+      type: object
+      description: One occurrence of an event within the requested range.
+      properties:
+        eventId:
+          type: string
+        occurrenceDate:
+          type: string
+          format: date
+          description: Local start date of this occurrence; identifies it for exceptions.
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        category:
+          $ref: '#/components/schemas/EventCategory'
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+          description: For all-day events the midnight after the last day (exclusive, as in iCalendar).
+        allDay:
+          type: boolean
+        recurring:
+          type: boolean
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedEntity'
+      required: [eventId, occurrenceDate, title, category, start, end, allDay, recurring, groups, sections, roles]
+      additionalProperties: false
+    EventExceptionRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+      required: [date]
+      additionalProperties: false
   responses:
     NoContent:
       description: Request completed successfully. No response body is returned.
@@ -3338,3 +3514,185 @@ paths:
                 type: array
                 items: { $ref: '#/components/schemas/SyncConflict' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+  /events:
+    get:
+      tags: [events]
+      summary: List event occurrences in a date range
+      description: Expands recurring events. Events without groups, sections and roles are for the whole club and always match the audience filters.
+      operationId: listEvents
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: from, in: query, required: true, description: First day (inclusive)., schema: { type: string, format: date } }
+        - { name: to, in: query, required: true, description: Last day (inclusive); at most 400 days after `from`., schema: { type: string, format: date } }
+        - { name: groupId, in: query, required: false, schema: { type: string } }
+        - { name: sectionId, in: query, required: false, schema: { type: string } }
+        - { name: roleId, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: Occurrences ordered by start.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/EventOccurrence' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [events]
+      summary: Create an event
+      operationId: createEvent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EventInput' }
+      responses:
+        '201':
+          description: Event created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /events/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      tags: [events]
+      summary: Get an event (series)
+      operationId: getEvent
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The event.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [events]
+      summary: Replace an event (whole series)
+      operationId: updateEvent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EventInput' }
+      responses:
+        '200':
+          description: Event updated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [events]
+      summary: Delete an event (whole series)
+      operationId: deleteEvent
+      security:
+        - bearerAuth: []
+      responses:
+        '204': { $ref: '#/components/responses/NoContent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /events/{id}/exceptions:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    post:
+      tags: [events]
+      summary: Exclude one occurrence of a recurring event
+      operationId: addEventException
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EventExceptionRequest' }
+      responses:
+        '200':
+          description: Event with the updated exceptions.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /events/{id}/exceptions/{date}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+      - { name: date, in: path, required: true, schema: { type: string, format: date } }
+    delete:
+      tags: [events]
+      summary: Restore an excluded occurrence
+      operationId: removeEventException
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Event with the updated exceptions.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /events/{id}/ics:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      tags: [events]
+      summary: Export an event as iCalendar (.ics)
+      description: Exports one occurrence when `date` is given, otherwise the occurrences of the series from 30 days ago up to one year ahead (or its end).
+      operationId: exportEventIcs
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: date, in: query, required: false, schema: { type: string, format: date } }
+      responses:
+        '200':
+          description: iCalendar file (RFC 5545).
+          content:
+            text/calendar:
+              schema: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /calendar.ics:
+    get:
+      tags: [events]
+      summary: Export the club calendar as iCalendar (.ics)
+      description: Occurrences in the range (default 30 days ago up to one year ahead), optionally filtered by audience like `GET /events`.
+      operationId: exportCalendarIcs
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: from, in: query, required: false, schema: { type: string, format: date } }
+        - { name: to, in: query, required: false, schema: { type: string, format: date } }
+        - { name: groupId, in: query, required: false, schema: { type: string } }
+        - { name: sectionId, in: query, required: false, schema: { type: string } }
+        - { name: roleId, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: iCalendar file (RFC 5545).
+          content:
+            text/calendar:
+              schema: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }

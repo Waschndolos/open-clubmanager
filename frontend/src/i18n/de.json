@@ -962,7 +962,8 @@
         "honors": "Jubiläen & Ehrungen",
         "qualifications": "Qualifikationen",
         "tasks": "Aufgaben",
-        "households": "Familien & Haushalte"
+        "households": "Familien & Haushalte",
+        "events": "Termine"
     },
     "honors": {
         "title": "Jubiläen & Ehrungen",
@@ -1154,6 +1155,76 @@
         "dashboard": {
             "title": "Haushalte ohne Hauptzahler",
             "action": "Hauptzahler bestimmen"
+        }
+    },
+    "events": {
+        "title": "Termine & Veranstaltungen",
+        "subtitle": "Trainings, Feste, Versammlungen und Wettkämpfe im Vereinskalender.",
+        "add": "Termin anlegen",
+        "edit": "Termin bearbeiten",
+        "editSeries": "Serie bearbeiten",
+        "delete": "Termin löschen",
+        "deleteSeries": "Serie löschen",
+        "excludeOccurrence": "Nur diesen Termin entfernen",
+        "excluded": "Der Termin wurde aus der Serie entfernt.",
+        "confirmDelete": "Diesen Termin löschen?",
+        "confirmDeleteSeries": "Die ganze Terminserie löschen? Um nur einen Termin auszulassen, „Nur diesen Termin entfernen“ wählen.",
+        "downloadIcs": ".ics herunterladen",
+        "exportCalendar": "Kalender exportieren (.ics)",
+        "loadFailed": "Termine konnten nicht geladen werden.",
+        "saveFailed": "Speichern fehlgeschlagen.",
+        "today": "Heute",
+        "previous": "Zurück",
+        "next": "Weiter",
+        "view": "Ansicht",
+        "views": {
+            "month": "Monat",
+            "week": "Woche",
+            "list": "Liste"
+        },
+        "audience": "Zielgruppe",
+        "allAudiences": "Alle Termine",
+        "wholeClub": "Ganzer Verein",
+        "allDay": "Ganztägig",
+        "recurring": "Wiederkehrender Termin",
+        "more_one": "+{{count}} weiterer",
+        "more_other": "+{{count}} weitere",
+        "empty": "Keine Termine in diesem Zeitraum.",
+        "endBeforeStart": "Das Ende liegt vor dem Beginn.",
+        "untilHelp": "Leer lassen für eine Serie ohne Ende.",
+        "audienceHelp": "Ohne Gruppen, Abteilungen und Rollen gilt der Termin für den ganzen Verein.",
+        "fields": {
+            "title": "Titel",
+            "category": "Kategorie",
+            "allDay": "Ganztägig",
+            "start": "Beginn",
+            "end": "Ende",
+            "startDay": "Erster Tag",
+            "endDay": "Letzter Tag",
+            "recurrence": "Wiederholung",
+            "until": "Wiederholen bis",
+            "location": "Ort",
+            "description": "Beschreibung",
+            "groups": "Gruppen",
+            "sections": "Abteilungen",
+            "roles": "Rollen"
+        },
+        "category": {
+            "training": "Training",
+            "festival": "Fest",
+            "meeting": "Versammlung",
+            "competition": "Wettkampf",
+            "other": "Sonstiges"
+        },
+        "recurrence": {
+            "none": "Keine",
+            "weekly": "Wöchentlich",
+            "biweekly": "Alle 14 Tage",
+            "monthly": "Monatlich"
+        },
+        "dashboard": {
+            "title": "Nächste Termine",
+            "all": "Zum Kalender"
         }
     }
 }

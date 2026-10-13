@@ -962,7 +962,8 @@
         "honors": "Anniversaries & honors",
         "qualifications": "Qualifications",
         "tasks": "Tasks",
-        "households": "Families & households"
+        "households": "Families & households",
+        "events": "Events"
     },
     "honors": {
         "title": "Anniversaries & honors",
@@ -1154,6 +1155,76 @@
         "dashboard": {
             "title": "Households without a main payer",
             "action": "Choose main payer"
+        }
+    },
+    "events": {
+        "title": "Events",
+        "subtitle": "Training sessions, parties, meetings and competitions in the club calendar.",
+        "add": "Add event",
+        "edit": "Edit event",
+        "editSeries": "Edit series",
+        "delete": "Delete event",
+        "deleteSeries": "Delete series",
+        "excludeOccurrence": "Remove only this date",
+        "excluded": "The date was removed from the series.",
+        "confirmDelete": "Delete this event?",
+        "confirmDeleteSeries": "Delete the whole series? To skip a single date, choose “Remove only this date”.",
+        "downloadIcs": "Download .ics",
+        "exportCalendar": "Export calendar (.ics)",
+        "loadFailed": "Events could not be loaded.",
+        "saveFailed": "Saving failed.",
+        "today": "Today",
+        "previous": "Previous",
+        "next": "Next",
+        "view": "View",
+        "views": {
+            "month": "Month",
+            "week": "Week",
+            "list": "List"
+        },
+        "audience": "Audience",
+        "allAudiences": "All events",
+        "wholeClub": "Whole club",
+        "allDay": "All day",
+        "recurring": "Recurring event",
+        "more_one": "+{{count}} more",
+        "more_other": "+{{count}} more",
+        "empty": "No events in this period.",
+        "endBeforeStart": "The end is before the start.",
+        "untilHelp": "Leave empty for a series without end.",
+        "audienceHelp": "Without groups, sections and roles the event is for the whole club.",
+        "fields": {
+            "title": "Title",
+            "category": "Category",
+            "allDay": "All day",
+            "start": "Start",
+            "end": "End",
+            "startDay": "First day",
+            "endDay": "Last day",
+            "recurrence": "Repeat",
+            "until": "Repeat until",
+            "location": "Location",
+            "description": "Description",
+            "groups": "Groups",
+            "sections": "Sections",
+            "roles": "Roles"
+        },
+        "category": {
+            "training": "Training",
+            "festival": "Festival",
+            "meeting": "Meeting",
+            "competition": "Competition",
+            "other": "Other"
+        },
+        "recurrence": {
+            "none": "Never",
+            "weekly": "Weekly",
+            "biweekly": "Every 2 weeks",
+            "monthly": "Monthly"
+        },
+        "dashboard": {
+            "title": "Upcoming events",
+            "all": "Open calendar"
         }
     }
 }
