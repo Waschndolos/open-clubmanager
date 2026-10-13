@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 import MemberTable from "./MemberTable";
 import {Member} from "../../api/types";
 import {Add, Clear, ManageAccounts} from "@mui/icons-material";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import {EditMemberDialog} from "./EditMemberDialog";
 import {createMember, deleteMembers, fetchMembers} from "../../api/members";
@@ -49,17 +49,23 @@ export default function Members() {
     const [newMemberDialogOpen, setNewMemberDialogOpen] = useState(false);
     const { addNotification } = useNotification();
     const [params, setParams] = useSearchParams();
+    const [openMemberId, setOpenMemberId] = useState<string | null>(null);
 
-    // Deep links from the command palette: ?new=1 opens the dialog, ?q= prefills the search.
+    // Deep links: ?new=1 opens the dialog, ?q= prefills the search (command
+    // palette), ?edit=<id> opens a member (household page).
     useEffect(() => {
         const q = params.get("q");
         const wantsNew = params.get("new") === "1";
+        const edit = params.get("edit");
         if (q !== null) setSearch(q);
         if (wantsNew) setNewMemberDialogOpen(true);
-        if (q !== null || wantsNew) setParams({}, {replace: true});
+        if (edit) setOpenMemberId(edit);
+        if (q !== null || wantsNew || edit) setParams({}, {replace: true});
     }, [params, setParams]);
 
 
+
+    const clearOpenMember = useCallback(() => setOpenMemberId(null), []);
 
     const filtered = members.filter((member) =>
         Object.values(member ?? {}).some((value) => {
@@ -169,7 +175,8 @@ export default function Members() {
                     }}
                 />
             </Box>
-            <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated} onMembersDeleted={handleMemberDeleted}/>
+            <MemberTable members={filtered} onMemberUpdated={handleMemberUpdated} onMembersDeleted={handleMemberDeleted}
+                         openMemberId={openMemberId} onOpened={clearOpenMember}/>
             {newMemberDialogOpen && (
                 <EditMemberDialog
                     member={createEmptyMember()}

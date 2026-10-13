@@ -16,6 +16,7 @@ import History from "../pages/history/History";
 import Users from "../pages/users/Users";
 import Inventory from "../pages/inventory/Inventory";
 import Tasks from "../pages/tasks/Tasks";
+import Households from "../pages/households/Households";
 import Honors from "../pages/honors/Honors";
 import Qualifications from "../pages/qualifications/Qualifications";
 import CollaborationSettings from "../pages/collaboration/CollaborationSettings";
@@ -128,6 +129,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth>
             <Tasks />
+          </RequireAuth>
+        ),
+            },
+            {
+        path: "households",
+        element: (
+          <RequireAuth>
+            <Households />
           </RequireAuth>
         ),
             },

@@ -250,7 +250,8 @@
                 "bank": "Bankinformationen",
                 "membership": "Mitgliedschaft",
                 "assignments": "Zugehörigkeiten",
-                "entities": "Vereinsverwaltung"
+                "entities": "Vereinsverwaltung",
+                "family": "Familie & Erziehungsberechtigte"
             },
             "validation": {
                 "emailRequired": "Email ist ein Pflichtfeld"
@@ -912,7 +913,8 @@
         },
         "honors": "Jubiläen & Ehrungen",
         "qualifications": "Qualifikationen",
-        "tasks": "Aufgaben"
+        "tasks": "Aufgaben",
+        "households": "Familien & Haushalte"
     },
     "honors": {
         "title": "Jubiläen & Ehrungen",
@@ -1052,6 +1054,58 @@
         "dashboard": {
             "title": "Meine Aufgaben",
             "all": "Alle {{count}} anzeigen"
+        }
+    },
+    "households": {
+        "title": "Familien & Haushalte",
+        "subtitle": "Mitglieder zu Haushalten mit gemeinsamem Hauptzahler zusammenfassen.",
+        "add": "Haushalt anlegen",
+        "edit": "Haushalt bearbeiten",
+        "delete": "Haushalt löschen",
+        "confirmDelete": "Diesen Haushalt löschen? Die Mitglieder bleiben erhalten.",
+        "empty": "Noch keine Haushalte angelegt.",
+        "loadFailed": "Haushalte konnten nicht geladen werden.",
+        "saveFailed": "Speichern fehlgeschlagen.",
+        "memberInOther": "Ein Mitglied gehört bereits zu einem anderen Haushalt. Ein Mitglied kann nur in einem Haushalt sein.",
+        "payerMissing": "Kein aktiver Hauptzahler – bitte einen neuen Hauptzahler bestimmen.",
+        "payerMissingList": "Ohne aktiven Hauptzahler: {{names}}. Bitte einen neuen Hauptzahler bestimmen.",
+        "payerLeaving": "Dieses Mitglied ist Hauptzahler von „{{household}}“. Nach dem Austritt bleiben {{names}} ohne Hauptzahler – bitte im Haushalt einen neuen Hauptzahler bestimmen.",
+        "left": "ausgetreten",
+        "columns": {
+            "name": "Name",
+            "members": "Mitglieder",
+            "payer": "Hauptzahler",
+            "sharing": "Gemeinsam"
+        },
+        "shareAddress": "Gemeinsame Adresse",
+        "shareBank": "Gemeinsame Bankverbindung",
+        "shareHelp": "Die Daten des Hauptzahlers werden für alle Mitglieder übernommen. Ändert sich die Adresse oder Bankverbindung eines Mitglieds, gilt das für den ganzen Haushalt.",
+        "payerHelp": "Zahlt die Beiträge für den ganzen Haushalt (Lastschrift, Zahlungsabgleich).",
+        "noPayer": "Kein Hauptzahler",
+        "namePlaceholder": "z. B. Familie Müller",
+        "defaultName": "Familie {{name}}",
+        "household": "Haushalt",
+        "noHousehold": "Keinem Haushalt zugeordnet.",
+        "manage": "Haushalte verwalten",
+        "guardians": {
+            "title": "Erziehungsberechtigte",
+            "none": "Keine Erziehungsberechtigten hinterlegt.",
+            "minorHint": "Das Mitglied ist minderjährig. Bitte mindestens eine erziehungsberechtigte Person als Kontakt hinterlegen.",
+            "add": "Hinzufügen",
+            "delete": "Entfernen",
+            "loadFailed": "Erziehungsberechtigte konnten nicht geladen werden.",
+            "isMember": "Vereinsmitglied",
+            "kind": "Art",
+            "kindMember": "Vereinsmitglied",
+            "kindPerson": "Andere Person",
+            "member": "Mitglied",
+            "name": "Name",
+            "relation": "Beziehung",
+            "relationPlaceholder": "z. B. Mutter"
+        },
+        "dashboard": {
+            "title": "Haushalte ohne Hauptzahler",
+            "action": "Hauptzahler bestimmen"
         }
     }
 }

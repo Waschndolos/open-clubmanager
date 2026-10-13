@@ -15,6 +15,8 @@ func init() {
 	Register(Provider{Key: "contact", Title: "Contact details", Scope: db.ScopeMembersContact, Collect: collectContact})
 	Register(Provider{Key: "bank", Title: "Bank details", Scope: db.ScopeMembersBank, Collect: collectBank})
 	Register(Provider{Key: "assignments", Title: "Roles, groups and sections", Scope: db.ScopeMembersCore, Collect: collectAssignments})
+	Register(Provider{Key: "household", Title: "Household", Scope: db.ScopeMembersCore, Collect: collectHousehold})
+	Register(Provider{Key: "guardians", Title: "Guardians", Scope: db.ScopeMembersContact, Collect: collectGuardians})
 	Register(Provider{Key: "fees", Title: "Membership fees", Scope: db.ScopeFinance, Collect: collectFees})
 	Register(Provider{Key: "loans", Title: "Inventory loans", Scope: db.ScopeInventory, Collect: collectLoans})
 	Register(Provider{Key: "history", Title: "Change history", Scope: db.ScopeMembersCore, Collect: collectHistory})
@@ -94,6 +96,53 @@ func collectAssignments(ctx context.Context, st *store.Store, id string) ([]Reco
 	add("role", m.Roles)
 	add("group", m.Groups)
 	add("section", m.Sections)
+	return out, nil
+}
+
+func collectHousehold(ctx context.Context, st *store.Store, id string) ([]Record, error) {
+	list, err := st.ListHouseholds(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, h := range list {
+		for _, m := range h.Members {
+			if m.ID != id {
+				continue
+			}
+			var payer any
+			if h.Payer != nil {
+				payer = h.Payer.FirstName + " " + h.Payer.LastName
+			}
+			return []Record{{
+				{"id", "ID", h.ID},
+				{"name", "Household", h.Name},
+				{"payer", "Main payer", payer},
+				{"members", "Members", len(h.Members)},
+			}}, nil
+		}
+	}
+	return nil, nil
+}
+
+func collectGuardians(ctx context.Context, st *store.Store, id string) ([]Record, error) {
+	list, err := st.ListGuardians(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	var out []Record
+	for _, g := range list {
+		var name any = g.Name
+		if g.Member != nil {
+			name = g.Member.FirstName + " " + g.Member.LastName
+		}
+		out = append(out, Record{
+			{"id", "ID", g.ID},
+			{"name", "Name", name},
+			{"relation", "Relation", g.Relation},
+			{"email", "E-mail", g.Email},
+			{"phone", "Phone", g.Phone},
+		})
+	}
 	return out, nil
 }
 

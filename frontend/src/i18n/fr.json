@@ -250,7 +250,8 @@
                 "bank": "Coordonnées bancaires",
                 "membership": "Adhésion",
                 "assignments": "Affectations",
-                "entities": "Entités du club"
+                "entities": "Entités du club",
+                "family": "Famille & représentants légaux"
             },
             "validation": {
                 "emailRequired": "L'e-mail est un champ obligatoire"
@@ -561,7 +562,8 @@
         },
         "honors": "Anniversaires & distinctions",
         "qualifications": "Qualifications",
-        "tasks": "Tâches"
+        "tasks": "Tâches",
+        "households": "Familles & foyers"
     },
     "honors": {
         "title": "Anniversaires & distinctions",
@@ -701,6 +703,58 @@
         "dashboard": {
             "title": "Mes tâches",
             "all": "Tout afficher ({{count}})"
+        }
+    },
+    "households": {
+        "title": "Familles & foyers",
+        "subtitle": "Regrouper les membres en foyers avec un payeur principal commun.",
+        "add": "Créer un foyer",
+        "edit": "Modifier le foyer",
+        "delete": "Supprimer le foyer",
+        "confirmDelete": "Supprimer ce foyer ? Les membres sont conservés.",
+        "empty": "Aucun foyer pour le moment.",
+        "loadFailed": "Impossible de charger les foyers.",
+        "saveFailed": "L'enregistrement a échoué.",
+        "memberInOther": "Un membre appartient déjà à un autre foyer. Un membre ne peut faire partie que d'un seul foyer.",
+        "payerMissing": "Aucun payeur principal actif – veuillez en désigner un nouveau.",
+        "payerMissingList": "Sans payeur principal actif : {{names}}. Veuillez désigner un nouveau payeur principal.",
+        "payerLeaving": "Ce membre est le payeur principal de « {{household}} ». Après son départ, {{names}} resteront sans payeur principal – veuillez en désigner un nouveau dans le foyer.",
+        "left": "a quitté le club",
+        "columns": {
+            "name": "Nom",
+            "members": "Membres",
+            "payer": "Payeur principal",
+            "sharing": "En commun"
+        },
+        "shareAddress": "Adresse commune",
+        "shareBank": "Coordonnées bancaires communes",
+        "shareHelp": "Les données du payeur principal sont reprises pour tous les membres. Si l'adresse ou les coordonnées bancaires d'un membre changent, la modification s'applique à tout le foyer.",
+        "payerHelp": "Paie les cotisations de tout le foyer (prélèvement, rapprochement des paiements).",
+        "noPayer": "Aucun payeur principal",
+        "namePlaceholder": "p. ex. Famille Martin",
+        "defaultName": "Famille {{name}}",
+        "household": "Foyer",
+        "noHousehold": "N'appartient à aucun foyer.",
+        "manage": "Gérer les foyers",
+        "guardians": {
+            "title": "Représentants légaux",
+            "none": "Aucun représentant légal enregistré.",
+            "minorHint": "Ce membre est mineur. Veuillez enregistrer au moins un représentant légal comme contact.",
+            "add": "Ajouter",
+            "delete": "Retirer",
+            "loadFailed": "Impossible de charger les représentants légaux.",
+            "isMember": "Membre du club",
+            "kind": "Type",
+            "kindMember": "Membre du club",
+            "kindPerson": "Autre personne",
+            "member": "Membre",
+            "name": "Nom",
+            "relation": "Lien",
+            "relationPlaceholder": "p. ex. mère"
+        },
+        "dashboard": {
+            "title": "Foyers sans payeur principal",
+            "action": "Désigner un payeur principal"
         }
     }
 }

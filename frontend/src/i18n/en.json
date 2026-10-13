@@ -250,7 +250,8 @@
                 "bank": "Bank Details",
                 "membership": "Membership",
                 "assignments": "Assignments",
-                "entities": "Club Entities"
+                "entities": "Club Entities",
+                "family": "Family & guardians"
             },
             "validation": {
                 "emailRequired": "Email is a required field"
@@ -912,7 +913,8 @@
         },
         "honors": "Anniversaries & honors",
         "qualifications": "Qualifications",
-        "tasks": "Tasks"
+        "tasks": "Tasks",
+        "households": "Families & households"
     },
     "honors": {
         "title": "Anniversaries & honors",
@@ -1052,6 +1054,58 @@
         "dashboard": {
             "title": "My tasks",
             "all": "Show all {{count}}"
+        }
+    },
+    "households": {
+        "title": "Families & households",
+        "subtitle": "Group members into households with a common main payer.",
+        "add": "Add household",
+        "edit": "Edit household",
+        "delete": "Delete household",
+        "confirmDelete": "Delete this household? The members are kept.",
+        "empty": "No households yet.",
+        "loadFailed": "Households could not be loaded.",
+        "saveFailed": "Saving failed.",
+        "memberInOther": "A member already belongs to another household. A member can only be in one household.",
+        "payerMissing": "No active main payer – please choose a new main payer.",
+        "payerMissingList": "Without an active main payer: {{names}}. Please choose a new main payer.",
+        "payerLeaving": "This member is the main payer of “{{household}}”. After leaving, {{names}} remain without a main payer – please choose a new one in the household.",
+        "left": "left the club",
+        "columns": {
+            "name": "Name",
+            "members": "Members",
+            "payer": "Main payer",
+            "sharing": "Shared"
+        },
+        "shareAddress": "Shared address",
+        "shareBank": "Shared bank details",
+        "shareHelp": "The main payer's data is taken over for all members. When the address or bank details of one member change, the change applies to the whole household.",
+        "payerHelp": "Pays the fees for the whole household (direct debit, payment matching).",
+        "noPayer": "No main payer",
+        "namePlaceholder": "e.g. Miller family",
+        "defaultName": "{{name}} family",
+        "household": "Household",
+        "noHousehold": "Not part of a household.",
+        "manage": "Manage households",
+        "guardians": {
+            "title": "Guardians",
+            "none": "No guardians recorded.",
+            "minorHint": "This member is a minor. Please add at least one guardian as a contact.",
+            "add": "Add",
+            "delete": "Remove",
+            "loadFailed": "Guardians could not be loaded.",
+            "isMember": "Club member",
+            "kind": "Type",
+            "kindMember": "Club member",
+            "kindPerson": "Other person",
+            "member": "Member",
+            "name": "Name",
+            "relation": "Relation",
+            "relationPlaceholder": "e.g. mother"
+        },
+        "dashboard": {
+            "title": "Households without a main payer",
+            "action": "Choose main payer"
         }
     }
 }

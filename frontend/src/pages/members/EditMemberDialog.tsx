@@ -24,15 +24,18 @@ import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {useCollaboration, usePermission} from "../../context/CollaborationContext";
 import {useRoleName} from "../../components/collaboration/common";
+import {FamilySection, PayerExitWarning, useMemberHousehold} from "./FamilySection";
 
 type Props = {
     member: Member;
     onClose: () => void;
     onSave: (updated: Member) => void;
     isNew?: boolean;
+    /** Opens another member, for the links to family members. */
+    onOpenMember?: (id: string) => void;
 };
 
-export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
+export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}: Props) {
     const {t} = useTranslation();
     const [formData, setFormData] = useState<Member>({...member});
     const [expandedPanel, setExpandedPanel] = useState<string | false>('personal');
@@ -52,6 +55,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
     const [allRoles, setAllRoles] = useState<Role[]>([]);
     const [allGroups, setAllGroups] = useState<Group[]>([]);
     const [allSections, setAllSections] = useState<ClubSection[]>([]);
+    const household = useMemberHousehold(isNew ? '' : member.id);
 
     useEffect(() => {
         fetchRoles().then(setAllRoles);
@@ -205,8 +209,20 @@ export function EditMemberDialog({member, onClose, onSave, isNew}: Props) {
                                 />
                             </Grid>
                         </Box>
+                            <PayerExitWarning memberId={member.id} exitDate={formData.exitDate} household={household}/>
                         </AccordionDetails>
                     </Accordion>
+
+                    {!isNew && (core !== 'none' || contact !== 'none') && (
+                        <Accordion expanded={expandedPanel === 'family'} onChange={handleAccordionChange('family')}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                                <Typography>{t("members.dialogs.sections.family")}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <FamilySection member={formData} household={household} onOpenMember={onOpenMember}/>
+                            </AccordionDetails>
+                        </Accordion>
+                    )}
 
 
                     <Accordion expanded={expandedPanel === 'entities'} onChange={handleAccordionChange('entities')}>
