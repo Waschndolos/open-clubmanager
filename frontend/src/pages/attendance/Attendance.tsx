@@ -24,6 +24,7 @@ import { usePermission } from '../../context/CollaborationContext';
 import { useNotification } from '../../context/NotificationContext';
 import { fetchGroups } from '../../api/groups';
 import { fetchSections } from '../../api/sections';
+import { canEditData } from '../../api/types';
 import { addDays, CATEGORY_COLOR, NamedRef, ymd } from '../../api/events';
 import {
     AttendanceFilter,
@@ -40,7 +41,7 @@ export default function Attendance() {
     const { t } = useTranslation();
     const { appRole } = useAuth();
     const area = usePermission('membersCore');
-    const canEdit = area === 'write' && appRole !== 'READONLY';
+    const canEdit = area === 'write' && (canEditData(appRole) || appRole === 'TRAINER');
     const [params, setParams] = useSearchParams();
     const [tab, setTab] = useState<'record' | 'stats'>('record');
     const pending = useAttendanceSync();

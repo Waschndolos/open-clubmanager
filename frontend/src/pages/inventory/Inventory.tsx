@@ -25,7 +25,7 @@ import { isAxiosError } from 'axios';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/common/PageHeader';
-import { Member, InventoryItem, InventoryLoan, canEditData } from '../../api/types';
+import { Member, InventoryItem, InventoryLoan, canEditData, canEditFinance } from '../../api/types';
 import { fetchMembers } from '../../api/members';
 import {
     createInventoryItem,
@@ -189,7 +189,7 @@ export default function Inventory() {
     const inventoryArea = usePermission('inventory');
     const financeArea = usePermission('finance');
     const canEdit = inventoryArea === 'write' && canEditData(appRole);
-    const canBook = (appRole === 'ADMIN' || appRole === 'TREASURER') && financeArea === 'write';
+    const canBook = canEditFinance(appRole) && financeArea === 'write';
     const [states, setStates] = useState<MaintenanceState[]>([]);
     const [maintenanceItem, setMaintenanceItem] = useState<InventoryItem | null>(null);
     const [onlyDue, setOnlyDue] = useState(false);
@@ -352,19 +352,23 @@ export default function Inventory() {
                             <BuildOutlined fontSize="small" />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={t('tooltips.edit')}>
-                        <IconButton size="small" onClick={() => setItemDialog({ open: true, isNew: false, item: params.row as InventoryItem })}>
-                            <Edit fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={t('tooltips.delete')}>
-                        <IconButton
-                            size="small"
-                            onClick={() => void handleDeleteItem((params.row as InventoryItem).id)}
-                        >
-                            <Delete fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                    {canEdit && (
+                        <>
+                            <Tooltip title={t('tooltips.edit')}>
+                                <IconButton size="small" onClick={() => setItemDialog({ open: true, isNew: false, item: params.row as InventoryItem })}>
+                                    <Edit fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={t('tooltips.delete')}>
+                                <IconButton
+                                    size="small"
+                                    onClick={() => void handleDeleteItem((params.row as InventoryItem).id)}
+                                >
+                                    <Delete fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    )}
                 </Box>
             ),
         },
@@ -408,7 +412,7 @@ export default function Inventory() {
             headerName: t('members.table.header.actions'),
             sortable: false,
             width: 150,
-            renderCell: (params) => (
+            renderCell: (params) => canEdit && (
                 <Button size="small" variant="outlined" onClick={() => void markReturned(params.row as InventoryLoan)}>
                     {t('inventory.loans.markReturned')}
                 </Button>
@@ -421,7 +425,7 @@ export default function Inventory() {
             <PageHeader
                 title={t('inventory.title')}
                 icon={<Inventory2 fontSize="small" />}
-                actions={
+                actions={canEdit && (
                     <>
                         <Button variant="outlined" onClick={() => setLoanDialogOpen(true)}>
                             {t('inventory.loans.create')}
@@ -434,7 +438,7 @@ export default function Inventory() {
                             {t('inventory.items.create')}
                         </Button>
                     </>
-                }
+                )}
             />
 
             {error && (

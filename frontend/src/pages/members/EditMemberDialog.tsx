@@ -15,7 +15,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useTranslation} from "react-i18next";
 import React, {useEffect, useState} from "react";
-import {Member, Role, Group, ClubSection} from "../../api/types";
+import {Member, Role, Group, ClubSection, canEditData} from "../../api/types";
 import {fetchRoles} from "../../api/roles";
 import {fetchGroups} from "../../api/groups";
 import {fetchSections} from "../../api/sections";
@@ -25,6 +25,7 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {useCollaboration, usePermission} from "../../context/CollaborationContext";
 import {useRoleName} from "../../components/collaboration/common";
 import {FamilySection, PayerExitWarning, useMemberHousehold} from "./FamilySection";
+import {useAuth} from "../../context/AuthContext";
 
 type Props = {
     member: Member;
@@ -42,13 +43,16 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
 
     // In a collaboration club the device's role decides which member data is
     // shown and editable (UX F10): hidden areas are not rendered at all,
-    // read-only areas are disabled.
+    // read-only areas are disabled. Logins without edit rights (canEditData)
+    // see everything read-only.
+    const {appRole} = useAuth();
+    const editable = canEditData(appRole);
     const core = usePermission('membersCore');
     const contact = usePermission('membersContact');
     const bank = usePermission('membersBank');
-    const coreRO = core !== 'write';
-    const contactRO = contact !== 'write';
-    const bankRO = bank !== 'write';
+    const coreRO = !editable || core !== 'write';
+    const contactRO = !editable || contact !== 'write';
+    const bankRO = !editable || bank !== 'write';
     const canSave = !coreRO || !contactRO || !bankRO;
     const {status} = useCollaboration();
     const roleName = useRoleName();
@@ -159,7 +163,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                             <Typography>{t("members.dialogs.sections.bank")}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {bankRO && <Typography variant="body2" color="text.secondary" sx={{mb: 1}}>{t("collaboration.readOnly", {role: roleName(status?.role)})}</Typography>}
+                            {bank !== 'write' && <Typography variant="body2" color="text.secondary" sx={{mb: 1}}>{t("collaboration.readOnly", {role: roleName(status?.role)})}</Typography>}
                             <Box component="fieldset" disabled={bankRO} sx={{border: 0, p: 0, m: 0, minWidth: 0}}>
                             <Grid container spacing={2}>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth

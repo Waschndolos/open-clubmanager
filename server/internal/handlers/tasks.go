@@ -65,8 +65,8 @@ func toTaskJSON(t store.Task, now time.Time) taskJSON {
 	return j
 }
 
-// taskAccess checks read access, or for writes the board roles (everyone but
-// read-only users) on a device that may change member data.
+// taskAccess checks read access, or for writes the board roles (data
+// editors, see canEditData) on a device that may change member data.
 func (a *API) taskAccess(w http.ResponseWriter, r *http.Request, write bool) bool {
 	claims, ok := auth.ClaimsFromContext(r.Context())
 	allowed := ok

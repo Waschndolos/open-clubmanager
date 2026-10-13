@@ -2,7 +2,9 @@ import {Button, CircularProgress, IconButton, InputAdornment, TextField, Typogra
 import Box from "@mui/material/Box";
 import {useTranslation} from "react-i18next";
 import MemberTable from "./MemberTable";
-import {Member} from "../../api/types";
+import {Member, canEditData} from "../../api/types";
+import {useAuth} from "../../context/AuthContext";
+import {usePermission} from "../../context/CollaborationContext";
 import {Add, Clear, ManageAccounts} from "@mui/icons-material";
 import {useCallback, useEffect, useState} from "react";
 import {useSearchParams} from "react-router-dom";
@@ -50,6 +52,8 @@ export default function Members() {
     const { addNotification } = useNotification();
     const [params, setParams] = useSearchParams();
     const [openMemberId, setOpenMemberId] = useState<string | null>(null);
+    const {appRole} = useAuth();
+    const canEdit = canEditData(appRole) && usePermission('membersCore') === 'write';
 
     // Deep links: ?new=1 opens the dialog, ?q= prefills the search (command
     // palette), ?edit=<id> opens a member (household page).
@@ -58,10 +62,10 @@ export default function Members() {
         const wantsNew = params.get("new") === "1";
         const edit = params.get("edit");
         if (q !== null) setSearch(q);
-        if (wantsNew) setNewMemberDialogOpen(true);
+        if (wantsNew && canEdit) setNewMemberDialogOpen(true);
         if (edit) setOpenMemberId(edit);
         if (q !== null || wantsNew || edit) setParams({}, {replace: true});
-    }, [params, setParams]);
+    }, [params, setParams, canEdit]);
 
 
 
@@ -102,8 +106,9 @@ export default function Members() {
         }).catch(setError);
     }, []);
 
-    // Automatic member deletion
+    // Automatic member deletion, by logins that may delete members
     useEffect(() => {
+        if (!canEdit) return;
         const now = new Date();
 
         setMembers((prev) => {
@@ -127,7 +132,7 @@ export default function Members() {
 
             return stillActive;
         });
-    }, [t, addNotification, members.length]);
+    }, [t, addNotification, members.length, canEdit]);
 
     const handleMemberCreated = async (member: Member) => {
         createMember(member).then((member) => {
@@ -145,11 +150,11 @@ export default function Members() {
             <PageHeader
                 title={t("members.title")}
                 icon={<ManageAccounts fontSize="small" />}
-                actions={
+                actions={canEdit && (
                     <Button variant="contained" startIcon={<Add/>} onClick={() => setNewMemberDialogOpen(true)}>
                         {t("members.create")}
                     </Button>
-                }
+                )}
             />
             <Box display="flex" justifyContent="flex-start" alignItems="center" mb={2}>
                 <TextField

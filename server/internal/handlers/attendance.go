@@ -83,7 +83,7 @@ func (a *API) attendanceAccess(w http.ResponseWriter, r *http.Request, st *store
 	claims, ok := auth.ClaimsFromContext(r.Context())
 	allowed := ok && a.collab.CanRead(r.Context(), db.ScopeMembersCore)
 	if allowed && write {
-		allowed = claims.AppRole != openapi.READONLY && a.collab.CanWrite(r.Context(), db.ScopeMembersCore)
+		allowed = (canEditData(claims.AppRole) || claims.AppRole == openapi.TRAINER) && a.collab.CanWrite(r.Context(), db.ScopeMembersCore)
 	}
 	if !allowed {
 		code := "FORBIDDEN"

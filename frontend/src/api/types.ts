@@ -53,9 +53,19 @@ export type ClubSection = MemberContainingNamedArtifact
 
 export type AppRole = 'ADMIN' | 'TREASURER' | 'SECRETARY' | 'READONLY' | 'TRAINER';
 
-/** Whether the role may change club data in general; trainers only record attendance. */
+/**
+ * Whether the role may change club data in general (members, club structure,
+ * inventory, events, households, tasks). Mirrors dataEditors in the server; any
+ * other role, such as READONLY or TRAINER (who only records attendance), is
+ * read-only.
+ */
 export function canEditData(role: AppRole | null | undefined): boolean {
-    return !!role && role !== 'READONLY' && role !== 'TRAINER';
+    return role === 'ADMIN' || role === 'TREASURER' || role === 'SECRETARY';
+}
+
+/** Whether the role may change finance data. Mirrors financeEditors in the server. */
+export function canEditFinance(role: AppRole | null | undefined): boolean {
+    return role === 'ADMIN' || role === 'TREASURER';
 }
 
 export type AppUser = {

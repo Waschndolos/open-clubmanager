@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"slices"
 	"strconv"
 	"time"
 
@@ -185,7 +186,7 @@ func (a *API) RecordMaintenance(w http.ResponseWriter, r *http.Request) {
 	}
 	if req.BookExpense != nil && in.Cost != nil && *in.Cost > 0 {
 		claims, _ := auth.ClaimsFromContext(r.Context())
-		treasurer := claims != nil && (claims.AppRole == openapi.ADMIN || claims.AppRole == openapi.TREASURER)
+		treasurer := claims != nil && slices.Contains(financeEditors, claims.AppRole)
 		if !treasurer || !a.collab.CanWrite(r.Context(), db.ScopeFinance) {
 			code := "FORBIDDEN"
 			writeJSON(w, http.StatusForbidden, openapi.ErrorResponse{Code: &code, Error: "your role may not book expenses"})

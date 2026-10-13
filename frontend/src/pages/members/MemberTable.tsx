@@ -1,7 +1,9 @@
 import {Backdrop, Box, CircularProgress, IconButton, Tooltip, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import React, {useEffect, useMemo, useState} from "react";
-import {ClubSection, Group, Member, Role} from "../../api/types";
+import {ClubSection, Group, Member, Role, canEditData} from "../../api/types";
+import {useAuth} from "../../context/AuthContext";
+import {usePermission} from "../../context/CollaborationContext";
 import {Delete, FileDownload, FileUpload} from "@mui/icons-material";
 import DataExportButton from "./DataExportButton";
 import {EditMemberDialog} from "./EditMemberDialog";
@@ -46,6 +48,8 @@ function getImportMatchValue(member: Partial<Member>, matchField: ImportMatchFie
 
 export default function MemberTable({members, onMemberUpdated, onMembersDeleted, openMemberId, onOpened}: MemberTableProps) {
     const {t} = useTranslation();
+    const {appRole} = useAuth();
+    const canEdit = canEditData(appRole) && usePermission('membersCore') === 'write';
     const [editingMember, setEditingMember] = useState<Member | null>(null);
     const [exportOpened, setExportOpened] = useState<boolean>(false);
     const [deletingMembers, setDeletingMembers] = useState<Member[] | null>(null);
@@ -273,22 +277,22 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted,
                             <EditIcon/>
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={t("tooltips.delete")}>
+                    {canEdit && <Tooltip title={t("tooltips.delete")}>
                         <IconButton onClick={handleDeleteMembers} disabled={!selectedMembers?.length} color="primary">
                             <Delete/>
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip>}
                     <DataExportButton member={selectedMembers?.length === 1 ? selectedMembers[0] : null}/>
                     <Tooltip title={t("tooltips.export")}>
                         <IconButton onClick={handleExport} color={"primary"}>
                             <FileDownload/>
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={t("tooltips.import")}>
+                    {canEdit && <Tooltip title={t("tooltips.import")}>
                         <IconButton onClick={() => setImportWizardOpen(true)} color={"primary"}>
                             <FileUpload/>
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip>}
 
                     {importWizardOpen && (
                         <ImportMembersWizard
