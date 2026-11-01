@@ -265,6 +265,23 @@ func (w *writer) requireUnique(table, col string, value any, selfCol, selfID str
 	return ErrConflict
 }
 
+// holds reports whether the live row whose selfCol equals selfID already has
+// value in column col. Updates use it to skip requireUnique for unchanged
+// values, so a row that is part of an open uniqueness conflict stays editable.
+func (w *writer) holds(table, col string, value any, selfCol, selfID string) (bool, error) {
+	var one int
+	err := w.QueryRowContext(w.ctx,
+		`SELECT 1 FROM `+table+` WHERE `+selfCol+` = ? AND `+col+` IS ? AND deleted_at IS NULL`,
+		selfID, value).Scan(&one)
+	switch {
+	case err == sql.ErrNoRows:
+		return false, nil
+	case err != nil:
+		return false, err
+	}
+	return true, nil
+}
+
 // refreshConflicts re-evaluates open uniqueness conflicts of the tables
 // written in this transaction, so that a local fix (e.g. a new member
 // number) clears its flag. Local writes cannot create new duplicates because
