@@ -37,6 +37,8 @@ func TestFeeModelsAndBillingRuns(t *testing.T) {
 	router.Get("/api/v2/fee-models", wrap(api.ListFeeModels))
 	router.Post("/api/v2/fee-models", wrap(api.CreateFeeModel))
 	router.Get("/api/v2/fee-models/members", wrap(api.ListMemberFeeModels))
+	router.Get("/api/v2/finance/memberfees", wrap(api.ListMemberFees))
+	router.Get("/api/v2/finance/transactions", wrap(api.ListFinanceTransactions))
 	router.Put("/api/v2/fee-models/{id}", wrap(api.UpdateFeeModel))
 	router.Delete("/api/v2/fee-models/{id}", wrap(api.DeleteFeeModel))
 	router.Get("/api/v2/members/{id}/fee-model", wrap(api.GetMemberFeeModel))
@@ -98,8 +100,16 @@ func TestFeeModelsAndBillingRuns(t *testing.T) {
 		!strings.Contains(rec.Body.String(), "FEE_MODEL_NAME_TAKEN") {
 		t.Errorf("duplicate name: %d %s", rec.Code, rec.Body)
 	}
-	if rec := call(openapi.READONLY, http.MethodGet, "/api/v2/fee-models", ""); rec.Code != http.StatusOK {
-		t.Errorf("read-only login cannot list models: %d", rec.Code)
+	// Finances are only visible to the roles that manage them.
+	for _, role := range []openapi.AppRole{openapi.SECRETARY, openapi.READONLY, openapi.TRAINER} {
+		for _, path := range []string{"/api/v2/fee-models", "/api/v2/fee-models/members", "/api/v2/finance/memberfees", "/api/v2/finance/transactions"} {
+			if rec := call(role, http.MethodGet, path, ""); rec.Code != http.StatusForbidden {
+				t.Errorf("%s may read %s: %d", role, path, rec.Code)
+			}
+		}
+	}
+	if rec := call(openapi.TREASURER, http.MethodGet, "/api/v2/fee-models", ""); rec.Code != http.StatusOK {
+		t.Errorf("treasurer cannot list models: %d", rec.Code)
 	}
 
 	members := []map[string]any{
@@ -146,7 +156,7 @@ func TestFeeModelsAndBillingRuns(t *testing.T) {
 		t.Errorf("get assignment: %s", rec.Body)
 	}
 	var onDay []memberFeeModelJSON
-	decode(call(openapi.READONLY, http.MethodGet, "/api/v2/fee-models/members?date=2027-01-01", ""), &onDay)
+	decode(call(openapi.TREASURER, http.MethodGet, "/api/v2/fee-models/members?date=2027-01-01", ""), &onDay)
 	byNumber := map[int]memberFeeModelJSON{}
 	for _, m := range onDay {
 		byNumber[m.Member.Number] = m
@@ -205,7 +215,7 @@ func TestFeeModelsAndBillingRuns(t *testing.T) {
 
 	// Nothing is saved by the preview; the run creates the fees once.
 	var fees []openapi.MemberFee
-	doJSON(t, router, http.MethodGet, "/api/v2/finance/memberfees", nil, &fees)
+	doJSONAs(t, router, secret, openapi.TREASURER, "/api/v2/finance/memberfees", &fees)
 	if len(fees) != 0 {
 		t.Fatalf("preview created %d fees", len(fees))
 	}
@@ -221,7 +231,7 @@ func TestFeeModelsAndBillingRuns(t *testing.T) {
 	if run.Count != 8 || run.Total != 315 || run.From != "2027-01" || run.To != "2027-12" {
 		t.Errorf("run: %+v", run)
 	}
-	doJSON(t, router, http.MethodGet, "/api/v2/finance/memberfees", nil, &fees)
+	doJSONAs(t, router, secret, openapi.TREASURER, "/api/v2/finance/memberfees", &fees)
 	if len(fees) != 8 {
 		t.Fatalf("%d fees after the run", len(fees))
 	}

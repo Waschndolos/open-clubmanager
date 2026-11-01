@@ -197,7 +197,7 @@ type mandateJSON struct {
 // GetSEPAMandate: GET /api/v2/members/{id}/sepa-mandate.
 func (a *API) GetSEPAMandate(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.scopeAccess(w, r, false, "bank details", db.ScopeMembersBank) {
+	if !ok || !a.financeAccess(w, r, false) || !a.scopeAccess(w, r, false, "bank details", db.ScopeMembersBank) {
 		return
 	}
 	ref, err := st.GetMandateReference(r.Context(), chi.URLParam(r, "id"))

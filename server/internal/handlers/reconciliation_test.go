@@ -44,6 +44,7 @@ func TestPaymentReconciliation(t *testing.T) {
 	}
 	router.Post("/api/v2/households", wrap(api.CreateHousehold))
 	router.Get("/api/v2/sepa/candidates", wrap(api.ListSEPACandidates))
+	router.Get("/api/v2/finance/memberfees", wrap(api.ListMemberFees))
 	router.Get("/api/v2/reconciliation", wrap(api.GetReconciliation))
 	router.Post("/api/v2/reconciliation/confirm-certain", wrap(api.ConfirmCertainReconciliations))
 	router.Post("/api/v2/reconciliation/{id}/confirm", wrap(api.ConfirmReconciliation))
@@ -186,7 +187,7 @@ func TestPaymentReconciliation(t *testing.T) {
 		t.Helper()
 		var f openapi.MemberFee
 		var list []openapi.MemberFee
-		doJSON(t, router, http.MethodGet, "/api/v2/finance/memberfees", nil, &list)
+		doJSONAs(t, router, secret, openapi.TREASURER, "/api/v2/finance/memberfees", &list)
 		for _, x := range list {
 			if x.Id == fee[number] {
 				f = x

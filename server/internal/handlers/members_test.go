@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/Waschndolos/open-clubmanager/server/internal/auth"
 	"github.com/Waschndolos/open-clubmanager/server/internal/config"
 	dbpkg "github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
@@ -45,6 +46,26 @@ func doJSON(t *testing.T, h http.Handler, method, path string, body any, out any
 	if out != nil && rec.Code < 300 {
 		if err := json.Unmarshal(rec.Body.Bytes(), out); err != nil {
 			t.Fatalf("%s %s: decode %q: %v", method, path, rec.Body.String(), err)
+		}
+	}
+	return rec.Code
+}
+
+// doJSONAs is doJSON for a GET on a route behind the JWT middleware, sent as a
+// login with the given role.
+func doJSONAs(t *testing.T, h http.Handler, secret string, role openapi.AppRole, path string, out any) int {
+	t.Helper()
+	token, err := auth.NewToken("kasse@example.org", role, secret)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := httptest.NewRequest(http.MethodGet, path, nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	if out != nil && rec.Code < 300 {
+		if err := json.Unmarshal(rec.Body.Bytes(), out); err != nil {
+			t.Fatalf("GET %s: decode %q: %v", path, rec.Body.String(), err)
 		}
 	}
 	return rec.Code

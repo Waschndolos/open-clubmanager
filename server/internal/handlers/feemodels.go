@@ -97,19 +97,20 @@ func toFeeRunJSON(r store.FeeRun) feeRunJSON {
 		Total: db.FromCents(r.TotalCents), PaidCount: r.PaidCount}
 }
 
-// feeAccess checks that the login may read the finances or, for writes,
-// change them (only the roles that manage finances).
-func (a *API) feeAccess(w http.ResponseWriter, r *http.Request, write bool) bool {
+// financeAccess checks that the login may read the finances or, for writes,
+// change them. Only the roles in financeEditors see finances at all, as the
+// documented roles of Nur lesen, Schriftführer and Trainer exclude them.
+func (a *API) financeAccess(w http.ResponseWriter, r *http.Request, write bool) bool {
 	claims, ok := auth.ClaimsFromContext(r.Context())
-	allowed := ok
+	allowed := ok && slices.Contains(financeEditors, claims.AppRole)
 	if allowed && write {
-		allowed = slices.Contains(financeEditors, claims.AppRole) && a.collab.CanWrite(r.Context(), db.ScopeFinance)
+		allowed = a.collab.CanWrite(r.Context(), db.ScopeFinance)
 	} else if allowed {
 		allowed = a.collab.CanRead(r.Context(), db.ScopeFinance)
 	}
 	if !allowed {
 		code := "FORBIDDEN"
-		writeJSON(w, http.StatusForbidden, openapi.ErrorResponse{Code: &code, Error: "your role may not access fee models"})
+		writeJSON(w, http.StatusForbidden, openapi.ErrorResponse{Code: &code, Error: "your role may not access finances"})
 	}
 	return allowed
 }
@@ -117,7 +118,7 @@ func (a *API) feeAccess(w http.ResponseWriter, r *http.Request, write bool) bool
 // ListFeeModels: GET /api/v2/fee-models.
 func (a *API) ListFeeModels(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, false) {
+	if !ok || !a.financeAccess(w, r, false) {
 		return
 	}
 	list, err := st.ListFeeModels(r.Context())
@@ -170,7 +171,7 @@ func writeFeeModelError(w http.ResponseWriter, err error, notFound, failure stri
 // CreateFeeModel: POST /api/v2/fee-models.
 func (a *API) CreateFeeModel(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, true) {
+	if !ok || !a.financeAccess(w, r, true) {
 		return
 	}
 	in, ok := decodeFeeModel(w, r)
@@ -189,7 +190,7 @@ func (a *API) CreateFeeModel(w http.ResponseWriter, r *http.Request) {
 // UpdateFeeModel: PUT /api/v2/fee-models/{id}.
 func (a *API) UpdateFeeModel(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, true) {
+	if !ok || !a.financeAccess(w, r, true) {
 		return
 	}
 	in, ok := decodeFeeModel(w, r)
@@ -209,7 +210,7 @@ func (a *API) UpdateFeeModel(w http.ResponseWriter, r *http.Request) {
 // DeleteFeeModel: DELETE /api/v2/fee-models/{id}.
 func (a *API) DeleteFeeModel(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, true) {
+	if !ok || !a.financeAccess(w, r, true) {
 		return
 	}
 	id := chi.URLParam(r, "id")
@@ -225,7 +226,7 @@ func (a *API) DeleteFeeModel(w http.ResponseWriter, r *http.Request) {
 // the fee model of every member on the day (default today).
 func (a *API) ListMemberFeeModels(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, false) {
+	if !ok || !a.financeAccess(w, r, false) {
 		return
 	}
 	on := time.Now()
@@ -257,7 +258,7 @@ func (a *API) ListMemberFeeModels(w http.ResponseWriter, r *http.Request) {
 // GetMemberFeeModel: GET /api/v2/members/{id}/fee-model.
 func (a *API) GetMemberFeeModel(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, false) {
+	if !ok || !a.financeAccess(w, r, false) {
 		return
 	}
 	asg, err := st.GetFeeAssignment(r.Context(), chi.URLParam(r, "id"))
@@ -271,7 +272,7 @@ func (a *API) GetMemberFeeModel(w http.ResponseWriter, r *http.Request) {
 // SetMemberFeeModel: PUT /api/v2/members/{id}/fee-model {"mode", "feeModelId"}.
 func (a *API) SetMemberFeeModel(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, true) {
+	if !ok || !a.financeAccess(w, r, true) {
 		return
 	}
 	var req feeAssignmentJSON
@@ -362,7 +363,7 @@ func toFeeRunPlanJSON(p store.FeeRunPlan) feeRunPlanJSON {
 // would create, without saving anything.
 func (a *API) PreviewFeeRun(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, false) {
+	if !ok || !a.financeAccess(w, r, false) {
 		return
 	}
 	in, ok := decodeFeeRun(w, r)
@@ -380,7 +381,7 @@ func (a *API) PreviewFeeRun(w http.ResponseWriter, r *http.Request) {
 // ListFeeRuns: GET /api/v2/fee-runs.
 func (a *API) ListFeeRuns(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, false) {
+	if !ok || !a.financeAccess(w, r, false) {
 		return
 	}
 	runs, err := st.ListFeeRuns(r.Context())
@@ -400,7 +401,7 @@ func (a *API) ListFeeRuns(w http.ResponseWriter, r *http.Request) {
 // no fee is rejected with FEE_RUN_EMPTY.
 func (a *API) CreateFeeRun(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, true) {
+	if !ok || !a.financeAccess(w, r, true) {
 		return
 	}
 	in, ok := decodeFeeRun(w, r)
@@ -425,7 +426,7 @@ func (a *API) CreateFeeRun(w http.ResponseWriter, r *http.Request) {
 // DeleteFeeRun: DELETE /api/v2/fee-runs/{id} removes the open fees of a run.
 func (a *API) DeleteFeeRun(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok || !a.feeAccess(w, r, true) {
+	if !ok || !a.financeAccess(w, r, true) {
 		return
 	}
 	id := chi.URLParam(r, "id")
