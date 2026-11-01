@@ -39,8 +39,10 @@ npm run dev:browser
 ```bash
 cd server
 go mod tidy
-go run ./cmd/server   # start the backend server
+CORS_ALLOWED_ORIGINS=http://localhost:5173 go run ./cmd/server   # start the backend server
 ```
+
+The API only accepts browser requests from the Tauri app and from the origins listed in `CORS_ALLOWED_ORIGINS`, so set it to the Vite dev server's origin when using the browser frontend (`npm run dev:browser` does this for you).
 
 #### Database schema
 

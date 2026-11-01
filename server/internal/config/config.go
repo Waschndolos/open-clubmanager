@@ -44,6 +44,17 @@ type Config struct {
 	SMTP           SMTPConfig             `json:"smtp"`
 	AppPreferences map[string]interface{} `json:"appPreferences,omitempty"`
 
+	// AllowedOrigins are extra browser origins (besides the Tauri app) that
+	// may call the API, e.g. a dev server. AllowedHosts are extra host names
+	// accepted in the Host header (besides localhost and IP literals), needed
+	// when the API is reached through a DNS name.
+	AllowedOrigins []string `json:"allowedOrigins,omitempty"`
+	AllowedHosts   []string `json:"allowedHosts,omitempty"`
+
+	// AdminTokensValidAfter (Unix seconds) invalidates access tokens of the
+	// config-based admin issued before the last password change.
+	AdminTokensValidAfter int64 `json:"adminTokensValidAfter,omitempty"`
+
 	// jwtSecretGenerated is true when JWTSecret was read from / written to the
 	// generated secret file. Such a secret is never copied into config.json.
 	jwtSecretGenerated bool

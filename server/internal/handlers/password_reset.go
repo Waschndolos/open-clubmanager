@@ -102,6 +102,7 @@ func (a *API) ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	// Update the in-memory admin password for the running process.
 	a.cfg.AdminPassword = string(hash)
+	a.cfg.AdminTokensValidAfter = time.Now().Unix()
 
 	log.Printf("password reset: admin password updated. New hash: %s", string(hash))
 

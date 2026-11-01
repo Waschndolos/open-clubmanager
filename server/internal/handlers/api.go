@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -33,6 +34,8 @@ type API struct {
 
 	collab *collab.Service
 
+	logins *loginLimiter
+
 	// setupMu serialises the first-run setup so it can only create the admin
 	// once.
 	setupMu sync.Mutex
@@ -44,7 +47,7 @@ func New(cfg *config.Config, conn *sql.DB) *API {
 	if envPath := os.Getenv("SERVER_CONFIG_FILE"); envPath != "" {
 		cfgPath = envPath
 	}
-	a := &API{cfg: cfg, cfgFilePath: cfgPath}
+	a := &API{cfg: cfg, cfgFilePath: cfgPath, logins: newLoginLimiter()}
 	if conn != nil {
 		a.conn, a.st = conn, store.New(conn)
 	}
@@ -249,30 +252,18 @@ func (a *API) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	email := string(req.Email)
-	role := openapi.ADMIN
-
-	// Try the config-based admin first (backwards compatibility).
-	if email == a.cfg.AdminEmail {
-		if bcrypt.CompareHashAndPassword([]byte(a.cfg.AdminPassword), []byte(req.Password)) != nil {
-			writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
-			return
-		}
-	} else if st := a.store(); st != nil {
-		// Fall back to database users.
-		user, err := st.GetUserByEmail(r.Context(), email)
-		if err != nil {
-			writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
-			return
-		}
-		if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)) != nil {
-			writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
-			return
-		}
-		role = openapi.AppRole(user.AppRole)
-	} else {
+	if wait := a.logins.retryAfter(email, r); wait > 0 {
+		w.Header().Set("Retry-After", strconv.Itoa(int(wait.Round(time.Second).Seconds())))
+		writeJSON(w, http.StatusTooManyRequests, openapi.ErrorResponse{Error: "too many failed login attempts, try again later"})
+		return
+	}
+	role, ok := a.checkLogin(r, email, req.Password)
+	if !ok {
+		a.logins.failure(email, r)
 		writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "invalid credentials"})
 		return
 	}
+	a.logins.success(email)
 
 	token, err := auth.NewToken(email, role, a.cfg.JWTSecret)
 	if err != nil {
@@ -289,6 +280,24 @@ func (a *API) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, openapi.AccessTokenResponse{AccessToken: token})
+}
+
+// checkLogin verifies the credentials and returns the account's role.
+func (a *API) checkLogin(r *http.Request, email, password string) (openapi.AppRole, bool) {
+	// Try the config-based admin first (backwards compatibility).
+	if email == a.cfg.AdminEmail {
+		return openapi.ADMIN, bcrypt.CompareHashAndPassword([]byte(a.cfg.AdminPassword), []byte(password)) == nil
+	}
+	st := a.store()
+	if st == nil {
+		return "", false
+	}
+	// Fall back to database users.
+	user, err := st.GetUserByEmail(r.Context(), email)
+	if err != nil || bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
+		return "", false
+	}
+	return openapi.AppRole(user.AppRole), true
 }
 
 func (a *API) GetProfile(w http.ResponseWriter, r *http.Request) {

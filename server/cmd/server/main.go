@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
 	"time"
 
@@ -20,45 +19,14 @@ import (
 	"github.com/Waschndolos/open-clubmanager/server/internal/config"
 	dbpkg "github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/handlers"
+	"github.com/Waschndolos/open-clubmanager/server/internal/httpguard"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
 )
 
 // bearerAuthRequired wraps the given handler so that requests must carry a
 // valid JWT.
-func bearerAuthRequired(jwtSecret string, h http.HandlerFunc) http.HandlerFunc {
-	return auth.Middleware(jwtSecret)(h).ServeHTTP
-}
-
-// corsMiddleware adds CORS headers for the Tauri desktop frontend and the
-// Vite dev server. Only recognised origins are reflected; all others are
-// silently ignored so the default browser same-origin policy still applies.
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := r.Header.Get("Origin")
-		if isCORSAllowed(origin) {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
-		}
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusNoContent)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
-// isCORSAllowed returns true for origins that may call the API:
-//   - tauri://localhost       – Tauri 2 production app (macOS / Linux)
-//   - https://tauri.localhost – Tauri 2 production app (Windows WebView2)
-//   - http://localhost:<port> – Vite dev server (any port)
-func isCORSAllowed(origin string) bool {
-	switch origin {
-	case "tauri://localhost", "https://tauri.localhost":
-		return true
-	}
-	return strings.HasPrefix(origin, "http://localhost:")
+func bearerAuthRequired(jwtMw openapi.MiddlewareFunc, h http.HandlerFunc) http.HandlerFunc {
+	return jwtMw(h).ServeHTTP
 }
 
 func main() {
@@ -90,123 +58,130 @@ func main() {
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
-	router.Use(corsMiddleware)
+	// Extra origins / host names come from the config file or, without being
+	// persisted, from the environment (the dev scripts set the Vite origin).
+	guard := httpguard.New(
+		append(append([]string{}, cfg.AllowedOrigins...), httpguard.SplitList(os.Getenv("CORS_ALLOWED_ORIGINS"))...),
+		append(append([]string{}, cfg.AllowedHosts...), httpguard.SplitList(os.Getenv("ALLOWED_HOSTS"))...),
+	)
+	router.Use(guard.Middleware)
 
 	api := handlers.New(&cfg, conn)
+	jwtAuth := auth.Middleware(cfg.JWTSecret, api.ValidateSession)
 	openapi.HandlerWithOptions(api, openapi.ChiServerOptions{
 		BaseURL:     "/api/v2",
 		BaseRouter:  router,
-		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, auth.MiddlewareAllowing(cfg.JWTSecret, api.AllowAnonymous)},
+		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, auth.MiddlewareAllowing(cfg.JWTSecret, api.AllowAnonymous, api.ValidateSession)},
 	})
 
 	// Backup / restore endpoints are not part of the generated OpenAPI spec, so
 	// they are wired up manually here with the same JWT auth enforcement.
-	router.Post("/api/v2/system/backup", bearerAuthRequired(cfg.JWTSecret, api.BackupDatabase))
-	router.Post("/api/v2/system/restore", bearerAuthRequired(cfg.JWTSecret, api.RestoreDatabase))
+	router.Post("/api/v2/system/backup", bearerAuthRequired(jwtAuth, api.BackupDatabase))
+	router.Post("/api/v2/system/restore", bearerAuthRequired(jwtAuth, api.RestoreDatabase))
 
 	// GDPR data export for a member (Art. 15/20), PDF or JSON.
-	router.Get("/api/v2/members/{id}/data-export", bearerAuthRequired(cfg.JWTSecret, api.ExportMemberData))
+	router.Get("/api/v2/members/{id}/data-export", bearerAuthRequired(jwtAuth, api.ExportMemberData))
 
 	// Jubilees and honors (Jubiläen & Ehrungen).
-	router.Get("/api/v2/jubilees", bearerAuthRequired(cfg.JWTSecret, api.ListJubilees))
-	router.Get("/api/v2/honors", bearerAuthRequired(cfg.JWTSecret, api.ListHonors))
-	router.Delete("/api/v2/honors/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteHonor))
-	router.Post("/api/v2/members/{id}/honors", bearerAuthRequired(cfg.JWTSecret, api.CreateHonor))
-	router.Get("/api/v2/members/{id}/membership-adjustment", bearerAuthRequired(cfg.JWTSecret, api.GetMembershipAdjust))
-	router.Put("/api/v2/members/{id}/membership-adjustment", bearerAuthRequired(cfg.JWTSecret, api.SetMembershipAdjust))
+	router.Get("/api/v2/jubilees", bearerAuthRequired(jwtAuth, api.ListJubilees))
+	router.Get("/api/v2/honors", bearerAuthRequired(jwtAuth, api.ListHonors))
+	router.Delete("/api/v2/honors/{id}", bearerAuthRequired(jwtAuth, api.DeleteHonor))
+	router.Post("/api/v2/members/{id}/honors", bearerAuthRequired(jwtAuth, api.CreateHonor))
+	router.Get("/api/v2/members/{id}/membership-adjustment", bearerAuthRequired(jwtAuth, api.GetMembershipAdjust))
+	router.Put("/api/v2/members/{id}/membership-adjustment", bearerAuthRequired(jwtAuth, api.SetMembershipAdjust))
 
 	// Qualifications and licences with expiry tracking.
-	router.Get("/api/v2/qualification-types", bearerAuthRequired(cfg.JWTSecret, api.ListQualificationTypes))
-	router.Post("/api/v2/qualification-types", bearerAuthRequired(cfg.JWTSecret, api.CreateQualificationType))
-	router.Put("/api/v2/qualification-types/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateQualificationType))
-	router.Delete("/api/v2/qualification-types/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteQualificationType))
-	router.Get("/api/v2/qualifications", bearerAuthRequired(cfg.JWTSecret, api.ListQualifications))
-	router.Delete("/api/v2/qualifications/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteQualification))
-	router.Post("/api/v2/members/{id}/qualifications", bearerAuthRequired(cfg.JWTSecret, api.CreateQualification))
+	router.Get("/api/v2/qualification-types", bearerAuthRequired(jwtAuth, api.ListQualificationTypes))
+	router.Post("/api/v2/qualification-types", bearerAuthRequired(jwtAuth, api.CreateQualificationType))
+	router.Put("/api/v2/qualification-types/{id}", bearerAuthRequired(jwtAuth, api.UpdateQualificationType))
+	router.Delete("/api/v2/qualification-types/{id}", bearerAuthRequired(jwtAuth, api.DeleteQualificationType))
+	router.Get("/api/v2/qualifications", bearerAuthRequired(jwtAuth, api.ListQualifications))
+	router.Delete("/api/v2/qualifications/{id}", bearerAuthRequired(jwtAuth, api.DeleteQualification))
+	router.Post("/api/v2/members/{id}/qualifications", bearerAuthRequired(jwtAuth, api.CreateQualification))
 
 	// Tasks for the board and roles.
-	router.Get("/api/v2/tasks", bearerAuthRequired(cfg.JWTSecret, api.ListTasks))
-	router.Post("/api/v2/tasks", bearerAuthRequired(cfg.JWTSecret, api.CreateTask))
-	router.Put("/api/v2/tasks/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateTask))
-	router.Delete("/api/v2/tasks/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteTask))
+	router.Get("/api/v2/tasks", bearerAuthRequired(jwtAuth, api.ListTasks))
+	router.Post("/api/v2/tasks", bearerAuthRequired(jwtAuth, api.CreateTask))
+	router.Put("/api/v2/tasks/{id}", bearerAuthRequired(jwtAuth, api.UpdateTask))
+	router.Delete("/api/v2/tasks/{id}", bearerAuthRequired(jwtAuth, api.DeleteTask))
 
 	// Inventory condition, inspection/maintenance schedule and history.
-	router.Get("/api/v2/inventory/maintenance", bearerAuthRequired(cfg.JWTSecret, api.ListMaintenanceStates))
-	router.Delete("/api/v2/inventory/maintenance/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteMaintenance))
-	router.Put("/api/v2/inventory/items/{id}/status", bearerAuthRequired(cfg.JWTSecret, api.SetItemStatus))
-	router.Get("/api/v2/inventory/items/{id}/maintenance", bearerAuthRequired(cfg.JWTSecret, api.ListItemMaintenance))
-	router.Post("/api/v2/inventory/items/{id}/maintenance", bearerAuthRequired(cfg.JWTSecret, api.RecordMaintenance))
+	router.Get("/api/v2/inventory/maintenance", bearerAuthRequired(jwtAuth, api.ListMaintenanceStates))
+	router.Delete("/api/v2/inventory/maintenance/{id}", bearerAuthRequired(jwtAuth, api.DeleteMaintenance))
+	router.Put("/api/v2/inventory/items/{id}/status", bearerAuthRequired(jwtAuth, api.SetItemStatus))
+	router.Get("/api/v2/inventory/items/{id}/maintenance", bearerAuthRequired(jwtAuth, api.ListItemMaintenance))
+	router.Post("/api/v2/inventory/items/{id}/maintenance", bearerAuthRequired(jwtAuth, api.RecordMaintenance))
 
 	// Attendance at event occurrences.
-	router.Get("/api/v2/attendance/occurrences", bearerAuthRequired(cfg.JWTSecret, api.ListAttendanceOccurrences))
-	router.Get("/api/v2/attendance/sheet", bearerAuthRequired(cfg.JWTSecret, api.GetAttendanceSheet))
-	router.Put("/api/v2/attendance/sheet", bearerAuthRequired(cfg.JWTSecret, api.SetAttendance))
-	router.Get("/api/v2/attendance/stats", bearerAuthRequired(cfg.JWTSecret, api.AttendanceStats))
-	router.Get("/api/v2/attendance/export", bearerAuthRequired(cfg.JWTSecret, api.ExportAttendance))
+	router.Get("/api/v2/attendance/occurrences", bearerAuthRequired(jwtAuth, api.ListAttendanceOccurrences))
+	router.Get("/api/v2/attendance/sheet", bearerAuthRequired(jwtAuth, api.GetAttendanceSheet))
+	router.Put("/api/v2/attendance/sheet", bearerAuthRequired(jwtAuth, api.SetAttendance))
+	router.Get("/api/v2/attendance/stats", bearerAuthRequired(jwtAuth, api.AttendanceStats))
+	router.Get("/api/v2/attendance/export", bearerAuthRequired(jwtAuth, api.ExportAttendance))
 
 	// Households (families) and guardians.
-	router.Get("/api/v2/households", bearerAuthRequired(cfg.JWTSecret, api.ListHouseholds))
-	router.Post("/api/v2/households", bearerAuthRequired(cfg.JWTSecret, api.CreateHousehold))
-	router.Put("/api/v2/households/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateHousehold))
-	router.Delete("/api/v2/households/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteHousehold))
-	router.Get("/api/v2/members/{id}/guardians", bearerAuthRequired(cfg.JWTSecret, api.ListGuardians))
-	router.Post("/api/v2/members/{id}/guardians", bearerAuthRequired(cfg.JWTSecret, api.CreateGuardian))
-	router.Delete("/api/v2/guardians/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteGuardian))
+	router.Get("/api/v2/households", bearerAuthRequired(jwtAuth, api.ListHouseholds))
+	router.Post("/api/v2/households", bearerAuthRequired(jwtAuth, api.CreateHousehold))
+	router.Put("/api/v2/households/{id}", bearerAuthRequired(jwtAuth, api.UpdateHousehold))
+	router.Delete("/api/v2/households/{id}", bearerAuthRequired(jwtAuth, api.DeleteHousehold))
+	router.Get("/api/v2/members/{id}/guardians", bearerAuthRequired(jwtAuth, api.ListGuardians))
+	router.Post("/api/v2/members/{id}/guardians", bearerAuthRequired(jwtAuth, api.CreateGuardian))
+	router.Delete("/api/v2/guardians/{id}", bearerAuthRequired(jwtAuth, api.DeleteGuardian))
 
 	// SEPA direct debit runs (pain.008) for member fees.
-	router.Get("/api/v2/sepa/creditor", bearerAuthRequired(cfg.JWTSecret, api.GetSEPACreditor))
-	router.Put("/api/v2/sepa/creditor", bearerAuthRequired(cfg.JWTSecret, api.SetSEPACreditor))
-	router.Get("/api/v2/sepa/candidates", bearerAuthRequired(cfg.JWTSecret, api.ListSEPACandidates))
-	router.Get("/api/v2/sepa/runs", bearerAuthRequired(cfg.JWTSecret, api.ListSEPARuns))
-	router.Post("/api/v2/sepa/runs", bearerAuthRequired(cfg.JWTSecret, api.CreateSEPARun))
-	router.Get("/api/v2/sepa/runs/{id}/xml", bearerAuthRequired(cfg.JWTSecret, api.DownloadSEPARun))
-	router.Post("/api/v2/sepa/runs/{id}/confirm", bearerAuthRequired(cfg.JWTSecret, api.ConfirmSEPARun))
-	router.Delete("/api/v2/sepa/runs/{id}", bearerAuthRequired(cfg.JWTSecret, api.CancelSEPARun))
-	router.Get("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(cfg.JWTSecret, api.GetSEPAMandate))
-	router.Put("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(cfg.JWTSecret, api.SetSEPAMandate))
+	router.Get("/api/v2/sepa/creditor", bearerAuthRequired(jwtAuth, api.GetSEPACreditor))
+	router.Put("/api/v2/sepa/creditor", bearerAuthRequired(jwtAuth, api.SetSEPACreditor))
+	router.Get("/api/v2/sepa/candidates", bearerAuthRequired(jwtAuth, api.ListSEPACandidates))
+	router.Get("/api/v2/sepa/runs", bearerAuthRequired(jwtAuth, api.ListSEPARuns))
+	router.Post("/api/v2/sepa/runs", bearerAuthRequired(jwtAuth, api.CreateSEPARun))
+	router.Get("/api/v2/sepa/runs/{id}/xml", bearerAuthRequired(jwtAuth, api.DownloadSEPARun))
+	router.Post("/api/v2/sepa/runs/{id}/confirm", bearerAuthRequired(jwtAuth, api.ConfirmSEPARun))
+	router.Delete("/api/v2/sepa/runs/{id}", bearerAuthRequired(jwtAuth, api.CancelSEPARun))
+	router.Get("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(jwtAuth, api.GetSEPAMandate))
+	router.Put("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(jwtAuth, api.SetSEPAMandate))
 
 	// Fee models and billing runs (Beitragsmodelle & Sollstellung).
-	router.Get("/api/v2/fee-models", bearerAuthRequired(cfg.JWTSecret, api.ListFeeModels))
-	router.Post("/api/v2/fee-models", bearerAuthRequired(cfg.JWTSecret, api.CreateFeeModel))
-	router.Get("/api/v2/fee-models/members", bearerAuthRequired(cfg.JWTSecret, api.ListMemberFeeModels))
-	router.Put("/api/v2/fee-models/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateFeeModel))
-	router.Delete("/api/v2/fee-models/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteFeeModel))
-	router.Get("/api/v2/members/{id}/fee-model", bearerAuthRequired(cfg.JWTSecret, api.GetMemberFeeModel))
-	router.Put("/api/v2/members/{id}/fee-model", bearerAuthRequired(cfg.JWTSecret, api.SetMemberFeeModel))
-	router.Get("/api/v2/fee-runs", bearerAuthRequired(cfg.JWTSecret, api.ListFeeRuns))
-	router.Post("/api/v2/fee-runs", bearerAuthRequired(cfg.JWTSecret, api.CreateFeeRun))
-	router.Post("/api/v2/fee-runs/preview", bearerAuthRequired(cfg.JWTSecret, api.PreviewFeeRun))
-	router.Delete("/api/v2/fee-runs/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteFeeRun))
+	router.Get("/api/v2/fee-models", bearerAuthRequired(jwtAuth, api.ListFeeModels))
+	router.Post("/api/v2/fee-models", bearerAuthRequired(jwtAuth, api.CreateFeeModel))
+	router.Get("/api/v2/fee-models/members", bearerAuthRequired(jwtAuth, api.ListMemberFeeModels))
+	router.Put("/api/v2/fee-models/{id}", bearerAuthRequired(jwtAuth, api.UpdateFeeModel))
+	router.Delete("/api/v2/fee-models/{id}", bearerAuthRequired(jwtAuth, api.DeleteFeeModel))
+	router.Get("/api/v2/members/{id}/fee-model", bearerAuthRequired(jwtAuth, api.GetMemberFeeModel))
+	router.Put("/api/v2/members/{id}/fee-model", bearerAuthRequired(jwtAuth, api.SetMemberFeeModel))
+	router.Get("/api/v2/fee-runs", bearerAuthRequired(jwtAuth, api.ListFeeRuns))
+	router.Post("/api/v2/fee-runs", bearerAuthRequired(jwtAuth, api.CreateFeeRun))
+	router.Post("/api/v2/fee-runs/preview", bearerAuthRequired(jwtAuth, api.PreviewFeeRun))
+	router.Delete("/api/v2/fee-runs/{id}", bearerAuthRequired(jwtAuth, api.DeleteFeeRun))
 
 	// Payment reconciliation: imported bank transactions assigned to member fees.
-	router.Get("/api/v2/reconciliation", bearerAuthRequired(cfg.JWTSecret, api.GetReconciliation))
-	router.Post("/api/v2/reconciliation/confirm-certain", bearerAuthRequired(cfg.JWTSecret, api.ConfirmCertainReconciliations))
-	router.Post("/api/v2/reconciliation/{id}/confirm", bearerAuthRequired(cfg.JWTSecret, api.ConfirmReconciliation))
-	router.Post("/api/v2/reconciliation/{id}/dismiss", bearerAuthRequired(cfg.JWTSecret, api.DismissReconciliation))
-	router.Post("/api/v2/reconciliation/{id}/reopen", bearerAuthRequired(cfg.JWTSecret, api.ReopenReconciliation))
+	router.Get("/api/v2/reconciliation", bearerAuthRequired(jwtAuth, api.GetReconciliation))
+	router.Post("/api/v2/reconciliation/confirm-certain", bearerAuthRequired(jwtAuth, api.ConfirmCertainReconciliations))
+	router.Post("/api/v2/reconciliation/{id}/confirm", bearerAuthRequired(jwtAuth, api.ConfirmReconciliation))
+	router.Post("/api/v2/reconciliation/{id}/dismiss", bearerAuthRequired(jwtAuth, api.DismissReconciliation))
+	router.Post("/api/v2/reconciliation/{id}/reopen", bearerAuthRequired(jwtAuth, api.ReopenReconciliation))
 
 	// Donation receipts (Zuwendungsbestätigungen) after the official template.
-	router.Get("/api/v2/donations", bearerAuthRequired(cfg.JWTSecret, api.ListDonations))
-	router.Get("/api/v2/donations/settings", bearerAuthRequired(cfg.JWTSecret, api.GetDonationSettings))
-	router.Put("/api/v2/donations/settings", bearerAuthRequired(cfg.JWTSecret, api.SetDonationSettings))
-	router.Get("/api/v2/donations/donors", bearerAuthRequired(cfg.JWTSecret, api.ListDonors))
-	router.Post("/api/v2/donations/donors", bearerAuthRequired(cfg.JWTSecret, api.CreateDonor))
-	router.Put("/api/v2/donations/donors/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateDonor))
-	router.Delete("/api/v2/donations/donors/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteDonor))
-	router.Get("/api/v2/donations/candidates", bearerAuthRequired(cfg.JWTSecret, api.ListDonationCandidates))
-	router.Get("/api/v2/donations/receipts", bearerAuthRequired(cfg.JWTSecret, api.ListDonationReceipts))
-	router.Post("/api/v2/donations/receipts", bearerAuthRequired(cfg.JWTSecret, api.CreateDonationReceipt))
-	router.Post("/api/v2/donations/receipts/annual", bearerAuthRequired(cfg.JWTSecret, api.CreateAnnualDonationReceipts))
-	router.Get("/api/v2/donations/receipts/pdf", bearerAuthRequired(cfg.JWTSecret, api.DownloadDonationReceipts))
-	router.Get("/api/v2/donations/receipts/{id}/pdf", bearerAuthRequired(cfg.JWTSecret, api.DownloadDonationReceipts))
-	router.Post("/api/v2/donations/receipts/{id}/duplicate", bearerAuthRequired(cfg.JWTSecret, api.DuplicateDonationReceipt))
-	router.Post("/api/v2/donations/receipts/{id}/void", bearerAuthRequired(cfg.JWTSecret, api.VoidDonationReceipt))
-	router.Put("/api/v2/donations/{id}", bearerAuthRequired(cfg.JWTSecret, api.SetDonation))
-	router.Delete("/api/v2/donations/{id}", bearerAuthRequired(cfg.JWTSecret, api.RemoveDonation))
+	router.Get("/api/v2/donations", bearerAuthRequired(jwtAuth, api.ListDonations))
+	router.Get("/api/v2/donations/settings", bearerAuthRequired(jwtAuth, api.GetDonationSettings))
+	router.Put("/api/v2/donations/settings", bearerAuthRequired(jwtAuth, api.SetDonationSettings))
+	router.Get("/api/v2/donations/donors", bearerAuthRequired(jwtAuth, api.ListDonors))
+	router.Post("/api/v2/donations/donors", bearerAuthRequired(jwtAuth, api.CreateDonor))
+	router.Put("/api/v2/donations/donors/{id}", bearerAuthRequired(jwtAuth, api.UpdateDonor))
+	router.Delete("/api/v2/donations/donors/{id}", bearerAuthRequired(jwtAuth, api.DeleteDonor))
+	router.Get("/api/v2/donations/candidates", bearerAuthRequired(jwtAuth, api.ListDonationCandidates))
+	router.Get("/api/v2/donations/receipts", bearerAuthRequired(jwtAuth, api.ListDonationReceipts))
+	router.Post("/api/v2/donations/receipts", bearerAuthRequired(jwtAuth, api.CreateDonationReceipt))
+	router.Post("/api/v2/donations/receipts/annual", bearerAuthRequired(jwtAuth, api.CreateAnnualDonationReceipts))
+	router.Get("/api/v2/donations/receipts/pdf", bearerAuthRequired(jwtAuth, api.DownloadDonationReceipts))
+	router.Get("/api/v2/donations/receipts/{id}/pdf", bearerAuthRequired(jwtAuth, api.DownloadDonationReceipts))
+	router.Post("/api/v2/donations/receipts/{id}/duplicate", bearerAuthRequired(jwtAuth, api.DuplicateDonationReceipt))
+	router.Post("/api/v2/donations/receipts/{id}/void", bearerAuthRequired(jwtAuth, api.VoidDonationReceipt))
+	router.Put("/api/v2/donations/{id}", bearerAuthRequired(jwtAuth, api.SetDonation))
+	router.Delete("/api/v2/donations/{id}", bearerAuthRequired(jwtAuth, api.RemoveDonation))
 
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
-	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))
+	router.Get("/api/v2/statistics/charts", bearerAuthRequired(jwtAuth, api.GetStatisticsCharts))
 
 	// Refresh the collaboration club in the background (spec §18.2).
 	collabCtx, stopCollab := context.WithCancel(context.Background())

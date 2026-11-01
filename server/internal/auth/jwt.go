@@ -38,22 +38,39 @@ func NewToken(email string, role openapi.AppRole, secret string) (string, error)
 	return token.SignedString([]byte(secret))
 }
 
+// SessionCheck re-validates the claims of a correctly signed token against the
+// current account state, so that deleted users, role changes and password
+// changes take effect immediately instead of when the token expires.
+type SessionCheck func(ctx context.Context, claims *Claims) error
+
+// ErrSessionRevoked is returned by a SessionCheck for a token that no longer
+// matches its account.
+var ErrSessionRevoked = errors.New("session revoked")
+
 // Middleware requires a valid bearer token on every request it wraps.
-func Middleware(secret string) openapi.MiddlewareFunc {
-	return MiddlewareAllowing(secret, nil)
+// Optional checks run after the signature check; any error rejects the
+// request.
+func Middleware(secret string, checks ...SessionCheck) openapi.MiddlewareFunc {
+	return MiddlewareAllowing(secret, nil, checks...)
 }
 
 // MiddlewareAllowing requires a valid bearer token on every request except
 // those anonymous reports as open to callers without one. Authentication is
 // the default: an operation without a security requirement in the OpenAPI
 // spec is not public unless anonymous names it. A valid token on an open
-// request still attaches its claims.
-func MiddlewareAllowing(secret string, anonymous func(*http.Request) bool) openapi.MiddlewareFunc {
+// request still attaches its claims. A token rejected by one of the checks
+// counts as no token.
+func MiddlewareAllowing(secret string, anonymous func(*http.Request) bool, checks ...SessionCheck) openapi.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			open := anonymous != nil && anonymous(r)
 
 			claims, err := parseToken(r.Header.Get("Authorization"), secret)
+			for _, check := range checks {
+				if err == nil {
+					err = check(r.Context(), claims)
+				}
+			}
 			if err != nil {
 				if open {
 					next.ServeHTTP(w, r)

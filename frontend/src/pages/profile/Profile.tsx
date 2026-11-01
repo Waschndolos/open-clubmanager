@@ -3,14 +3,15 @@ import { Alert, Avatar, Box, Button, Paper, Snackbar, TextField, Typography } fr
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LockIcon from "@mui/icons-material/Lock";
 import { useAuth } from "../../context/AuthContext";
-import { getProfile } from "../../api/authentication";
+import { getProfile, login } from "../../api/authentication";
+import { setAccessToken as setApiAccessToken } from "../../api/api";
 import { changePassword } from "../../api/users";
 import PageHeader from "../../components/common/PageHeader";
 import { useTranslation } from "react-i18next";
 
 export default function Profile() {
     const { t } = useTranslation();
-    const { accessToken, appRole } = useAuth();
+    const { accessToken, appRole, setAccessToken } = useAuth();
     const [email, setEmail] = useState("");
 
     const [currentPassword, setCurrentPassword] = useState("");
@@ -51,6 +52,11 @@ export default function Profile() {
         setPwLoading(true);
         try {
             await changePassword(newPassword, currentPassword || undefined);
+            // The server revokes all tokens issued before the change,
+            // including this session's; sign in again with the new password.
+            const { accessToken: token } = await login(email, newPassword);
+            setApiAccessToken(token);
+            setAccessToken(token);
             setCurrentPassword("");
             setNewPassword("");
             setConfirmPassword("");

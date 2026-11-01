@@ -9,7 +9,7 @@
     "install:all": "npm install && npm --prefix frontend install && cd server && go mod tidy",
     "setup": "npm run install:all",
     "tauri:check": "node scripts/check-tauri-prereqs.js",
-    "dev:browser": "concurrently -k -n FRONTEND,SERVER -c yellow,cyan \"npm --prefix frontend run dev:frontend\" \"cd server && go run ./cmd/server\"",
+    "dev:browser": "concurrently -k -n FRONTEND,SERVER -c yellow,cyan \"npm --prefix frontend run dev:frontend\" \"cd server && cross-env CORS_ALLOWED_ORIGINS=http://localhost:5173 go run ./cmd/server\"",
     "dev": "npm run tauri:check && npm run build:backend && npm run prepare:sidecar && tauri dev",
     "build:frontend": "npm --prefix frontend run build",
     "build:backend": "cd server && ./build.sh local",

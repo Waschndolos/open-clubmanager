@@ -39,6 +39,7 @@
         "welcomeTitle": "Welcome to Open ClubManager",
         "welcomeSubtitle": "Manage members, finances, groups, and club processes in a modern, clear, and fast application.",
         "errorInvalidCredentials": "Login failed. Please check your credentials.",
+        "errorTooManyAttempts": "Too many failed attempts. Please wait a moment and try again.",
         "showPassword": "Show password",
         "hidePassword": "Hide password"
     },

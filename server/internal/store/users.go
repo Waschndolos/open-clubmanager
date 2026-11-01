@@ -17,17 +17,21 @@ type User struct {
 	PasswordHash string
 	AppRole      string
 	CreatedAt    time.Time
+	// UpdatedAt changes with every e-mail, role or password change; access
+	// tokens issued before it are no longer accepted.
+	UpdatedAt time.Time
 }
 
-const userSelect = `SELECT id, email, password, app_role, created_at FROM users WHERE deleted_at IS NULL`
+const userSelect = `SELECT id, email, password, app_role, created_at, updated_at FROM users WHERE deleted_at IS NULL`
 
 func scanUser(row scanner) (User, error) {
 	var u User
-	var createdAt string
-	if err := row.Scan(&u.ID, &u.Email, &u.PasswordHash, &u.AppRole, &createdAt); err != nil {
+	var createdAt, updatedAt string
+	if err := row.Scan(&u.ID, &u.Email, &u.PasswordHash, &u.AppRole, &createdAt, &updatedAt); err != nil {
 		return u, mapErr(err)
 	}
 	u.CreatedAt = parseTime(createdAt)
+	u.UpdatedAt = parseTime(updatedAt)
 	return u, nil
 }
 
