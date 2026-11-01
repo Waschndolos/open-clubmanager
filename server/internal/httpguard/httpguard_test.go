@@ -68,3 +68,17 @@ func TestMiddleware(t *testing.T) {
 		})
 	}
 }
+
+// The desktop app sends its refresh token in a header, which a cross-origin
+// request may only carry when the preflight allows it.
+func TestPreflightAllowsRefreshHeader(t *testing.T) {
+	handler := New(nil, nil).Middleware(http.NotFoundHandler())
+	req := httptest.NewRequest(http.MethodOptions, "/api/v2/auth/refresh-token", nil)
+	req.Host = "localhost:3001"
+	req.Header.Set("Origin", "tauri://localhost")
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+	if !strings.Contains(rec.Header().Get("Access-Control-Allow-Headers"), "X-Refresh-Token") {
+		t.Fatalf("Allow-Headers %q lacks X-Refresh-Token", rec.Header().Get("Access-Control-Allow-Headers"))
+	}
+}

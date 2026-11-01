@@ -107,6 +107,7 @@ func (a *API) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to save new password"})
 		return
 	}
+	a.revokeAdminRefreshTokens(r.Context())
 	log.Printf("password reset: admin password updated")
 
 	writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: "Password reset successful."})

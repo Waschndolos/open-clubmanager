@@ -21,6 +21,7 @@ import (
 const (
 	BearerAuthScopes         bearerAuthContextKey         = "bearerAuth.Scopes"
 	RefreshTokenCookieScopes refreshTokenCookieContextKey = "refreshTokenCookie.Scopes"
+	RefreshTokenHeaderScopes refreshTokenHeaderContextKey = "refreshTokenHeader.Scopes"
 )
 
 // Defines values for AppRole.
@@ -260,6 +261,9 @@ func (e FolderInfoKind) Valid() bool {
 // AccessTokenResponse defines model for AccessTokenResponse.
 type AccessTokenResponse struct {
 	AccessToken string `json:"accessToken"`
+
+	// RefreshToken New refresh token, only when it was requested in the body (refreshTokenInBody at login, X-Refresh-Token header on refresh). Otherwise it is set as the `refreshToken` cookie.
+	RefreshToken *string `json:"refreshToken,omitempty"`
 }
 
 // AppPreferences defines model for AppPreferences.
@@ -780,6 +784,9 @@ type LocalDataResponse struct {
 type LoginRequest struct {
 	Email    openapi_types.Email `json:"email"`
 	Password string              `json:"password"`
+
+	// RefreshTokenInBody Return the refresh token in the response body instead of the `refreshToken` cookie. For clients that cannot use a same-site cookie (the desktop app); they send it back in the X-Refresh-Token header.
+	RefreshTokenInBody *bool `json:"refreshTokenInBody,omitempty"`
 }
 
 // Member defines model for Member.
@@ -1112,6 +1119,9 @@ type bearerAuthContextKey string
 
 // refreshTokenCookieContextKey is the context key for refreshTokenCookie security scheme
 type refreshTokenCookieContextKey string
+
+// refreshTokenHeaderContextKey is the context key for refreshTokenHeader security scheme
+type refreshTokenHeaderContextKey string
 
 // ExportCalendarIcsParams defines parameters for ExportCalendarIcs.
 type ExportCalendarIcsParams struct {
@@ -2436,6 +2446,8 @@ func (siw *ServerInterfaceWrapper) Logout(w http.ResponseWriter, r *http.Request
 
 	ctx = context.WithValue(ctx, RefreshTokenCookieScopes, []string{})
 
+	ctx = context.WithValue(ctx, RefreshTokenHeaderScopes, []string{})
+
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -2475,6 +2487,8 @@ func (siw *ServerInterfaceWrapper) RefreshAccessToken(w http.ResponseWriter, r *
 	ctx := r.Context()
 
 	ctx = context.WithValue(ctx, RefreshTokenCookieScopes, []string{})
+
+	ctx = context.WithValue(ctx, RefreshTokenHeaderScopes, []string{})
 
 	r = r.WithContext(ctx)
 
@@ -5810,16 +5824,16 @@ func (response RefreshAccessToken200JSONResponse) VisitRefreshAccessTokenRespons
 	return err
 }
 
-type RefreshAccessToken403JSONResponse struct{ ForbiddenJSONResponse }
+type RefreshAccessToken401JSONResponse ErrorResponse
 
-func (response RefreshAccessToken403JSONResponse) VisitRefreshAccessTokenResponse(w http.ResponseWriter) error {
+func (response RefreshAccessToken401JSONResponse) VisitRefreshAccessTokenResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(403)
+	w.WriteHeader(401)
 	_, err := buf.WriteTo(w)
 	return err
 }

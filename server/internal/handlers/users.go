@@ -202,6 +202,7 @@ func (a *API) ChangePassword(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to save new password"})
 			return
 		}
+		a.revokeAdminRefreshTokens(r.Context())
 		writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
 		return
 	}
