@@ -1,0 +1,2565 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="User guide for Open ClubManager, the free desktop software for clubs.">
+      
+      
+      
+        <link rel="canonical" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/finanzen/">
+      
+      
+        <link rel="prev" href="../anwesenheit/">
+      
+      
+        <link rel="next" href="../inventar/">
+      
+      
+      <link rel="icon" href="../../../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>Finances - Open ClubManager – User Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#finances" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../" title="Open ClubManager – User Guide" class="md-header__button md-logo" aria-label="Open ClubManager – User Guide" data-md-component="logo">
+      
+  <img src="../../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Open ClubManager – User Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Finances
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../funktionen/finanzen/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Waschndolos/open-clubmanager" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Waschndolos/open-clubmanager
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="Open ClubManager – User Guide" class="md-nav__button md-logo" aria-label="Open ClubManager – User Guide" data-md-component="logo">
+      
+  <img src="../../../assets/logo.png" alt="logo">
+
+    </a>
+    Open ClubManager – User Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Waschndolos/open-clubmanager" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Waschndolos/open-clubmanager
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../erste-schritte/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Getting started
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../erste-schritte/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../erste-schritte/einrichtung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    First-run setup
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../erste-schritte/anmelden/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Login & password
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../erste-schritte/oberflaeche/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using the interface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../erste-schritte/rollen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Users & roles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Features
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview (dashboard)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mitglieder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Members
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../haushalte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Families & households
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../termine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anwesenheit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Attendance
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Finances
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Finances
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cash-book" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cash book
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cash book">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing-a-bank-statement-camt053" class="md-nav__link">
+    <span class="md-ellipsis">
+      Importing a bank statement (CAMT.053)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#member-fees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Member fees
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      Open items
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fee-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fee models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fee models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-member-pays-which-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Which member pays which model?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#billing-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Billing run
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Billing run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-duplicate-fees" class="md-nav__link">
+    <span class="md-ellipsis">
+      No duplicate fees
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#joining-and-leaving" class="md-nav__link">
+    <span class="md-ellipsis">
+      Joining and leaving
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pro-rata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pro rata
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#direct-debit-sepa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Direct debit (SEPA)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Direct debit (SEPA)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-time-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      One-time setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-direct-debit-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a direct debit run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-the-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      After the export
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#payment-reconciliation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment reconciliation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Payment reconciliation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-suggestions-are-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      How suggestions are made
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reviewing-and-confirming" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reviewing and confirming
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partial-payments-and-collective-transfers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Partial payments and collective transfers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returned-direct-debits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returned direct debits
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#donation-receipts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Donation receipts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Donation receipts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-time-setup_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      One-time setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recording-donations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recording donations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issuing-receipts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issuing receipts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#numbering-log-and-duplicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Numbering, log and duplicates
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deleting-the-full-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deleting the full ledger
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inventar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inventory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ehrungen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Anniversaries & honors
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qualifikationen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Qualifications
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aufgaben/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tasks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vereinsstruktur/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Club structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../verlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    History
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benutzer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    User management
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../einstellungen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Settings & backup
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../zusammenarbeit/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Collaboration
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Collaboration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zusammenarbeit/einrichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Set up a club
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zusammenarbeit/beitreten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Join a club
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zusammenarbeit/personen-geraete/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    People & devices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zusammenarbeit/konflikte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Needs attention (conflicts)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zusammenarbeit/notfallschluessel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Emergency key
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datenschutz/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Data protection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../migration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Switching & migration
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Switching & migration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/von-excel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Switching from Excel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/von-anderer-software/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    From other club software
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Updates & database versions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/neuer-computer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Moving to a new computer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/lokal-zu-zusammenarbeit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    From local to collaboration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/daten-mitnehmen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Exporting your data
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/versionshinweise/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Release notes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Help
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Help
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hilfe/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hilfe/glossar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mitwirken/dokumentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Maintaining the documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cash-book" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cash book
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cash book">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing-a-bank-statement-camt053" class="md-nav__link">
+    <span class="md-ellipsis">
+      Importing a bank statement (CAMT.053)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#member-fees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Member fees
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      Open items
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fee-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fee models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fee models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-member-pays-which-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Which member pays which model?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#billing-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Billing run
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Billing run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-duplicate-fees" class="md-nav__link">
+    <span class="md-ellipsis">
+      No duplicate fees
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#joining-and-leaving" class="md-nav__link">
+    <span class="md-ellipsis">
+      Joining and leaving
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pro-rata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pro rata
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#direct-debit-sepa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Direct debit (SEPA)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Direct debit (SEPA)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-time-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      One-time setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-direct-debit-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a direct debit run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-the-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      After the export
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#payment-reconciliation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment reconciliation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Payment reconciliation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-suggestions-are-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      How suggestions are made
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reviewing-and-confirming" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reviewing and confirming
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partial-payments-and-collective-transfers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Partial payments and collective transfers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returned-direct-debits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returned direct debits
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#donation-receipts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Donation receipts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Donation receipts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-time-setup_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      One-time setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recording-donations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recording donations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issuing-receipts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issuing receipts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#numbering-log-and-duplicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Numbering, log and duplicates
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deleting-the-full-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deleting the full ledger
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/Waschndolos/open-clubmanager/edit/main/docs/user/funktionen/finanzen.en.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="finances">Finances<a class="headerlink" href="#finances" title="Permanent link">&para;</a></h1>
+<p>Cash book, member fees, fee models with automatic billing runs, open items, fee collection by SEPA direct debit, payment reconciliation with the bank statement and donation receipts. Only visible to <strong>administrators</strong> and <strong>treasurers</strong>.</p>
+<p><img alt="Cash book" class="screenshot" src="../../assets/screenshots/finance.png" /></p>
+<p>At the top you see the <strong>balance</strong>, <strong>total income</strong>, <strong>total expenses</strong> and <strong>outstanding fees</strong>.</p>
+<h2 id="cash-book">Cash book<a class="headerlink" href="#cash-book" title="Permanent link">&para;</a></h2>
+<p>Every income and expense is a transaction with date, description, amount, type (income/expense), category and notes.</p>
+<ul>
+<li><strong>Add Transaction</strong> creates a new transaction.</li>
+<li>Use the pencil and bin icons to edit or delete transactions.</li>
+</ul>
+<p>Costs from <a href="../inventar/#inspection-maintenance">maintenance in the inventory</a> can be booked straight into the cash book as an expense.</p>
+<h3 id="importing-a-bank-statement-camt053">Importing a bank statement (CAMT.053)<a class="headerlink" href="#importing-a-bank-statement-camt053" title="Permanent link">&para;</a></h3>
+<p>Instead of typing every transaction, import your bank's statement in <strong>CAMT.053</strong> format (XML). Most banks offer this in online banking, often under "export statement" or "export transactions → CAMT".</p>
+<ol>
+<li>Click <strong>Import CAMT.053</strong> and select the file.</li>
+<li>Open ClubManager creates a transaction for every bank movement: credits as income, debits as expenses. The payer's name and IBAN and the direct debit references are kept for the <a href="#payment-reconciliation">payment reconciliation</a>.</li>
+<li>Afterwards you see a summary of how many transactions were imported, and for how many there is a suggestion which open fee they pay. <strong>Open reconciliation</strong> takes you straight to the review.</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Current limitations</p>
+<p>Import each statement <strong>only once</strong>. Already imported movements are not detected yet and would be booked twice.</p>
+</div>
+<h2 id="member-fees">Member fees<a class="headerlink" href="#member-fees" title="Permanent link">&para;</a></h2>
+<p><img alt="Member fees" class="screenshot" src="../../assets/screenshots/finance-fees.png" /></p>
+<p>Here you manage the fees per member and year: amount, due date, paid date and description. Open fees are marked as <strong>Unpaid</strong>.</p>
+<p>A fee counts as paid once you enter the paid date, a <a href="#direct-debit-sepa">direct debit run</a> is confirmed, or enough payments are assigned to it in the <a href="#payment-reconciliation">payment reconciliation</a>. A <strong>partly paid</strong> fee stays unpaid until the rest arrives.</p>
+<p>Add single fees (e.g. an admission fee) with <strong>Add Member Fee</strong>. The regular fees of all members are better created at once from <a href="#fee-models">fee models</a> with a <a href="#billing-run">billing run</a>.</p>
+<h2 id="open-items">Open items<a class="headerlink" href="#open-items" title="Permanent link">&para;</a></h2>
+<p><img alt="Open items" class="screenshot" src="../../assets/screenshots/finance-open-items.png" /></p>
+<p>The <strong>Open items</strong> tab shows all unpaid fees, grouped per member: number of fees, open amount, oldest due date and which fees they are. At the top you see the <strong>total open amount</strong>, how much of it is <strong>overdue</strong> and how many members have open items. Overdue items are marked red. Members with the highest open amount come first.</p>
+<h2 id="fee-models">Fee models<a class="headerlink" href="#fee-models" title="Permanent link">&para;</a></h2>
+<p><img alt="Fee models" class="screenshot" src="../../assets/screenshots/finance-fee-models.png" /></p>
+<p>A fee model is one of your club's fee classes, e.g. <em>adults</em>, <em>youth</em>, <em>family</em>, <em>passive</em> or <em>reduced</em>. Create them in the <strong>Fee models</strong> tab with <strong>Add fee model</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Name</strong></td>
+<td>Used in the description of the created fees, e.g. "Adults 2027". Must be unique.</td>
+</tr>
+<tr>
+<td><strong>Amount</strong></td>
+<td>Amount <strong>per period</strong> of the interval (for <em>quarterly</em>, the quarterly fee).</td>
+</tr>
+<tr>
+<td><strong>Interval</strong></td>
+<td>yearly, half-yearly, quarterly or monthly. Periods follow the calendar year (first half = January–June, first quarter = January–March, …).</td>
+</tr>
+<tr>
+<td><strong>Minimum / maximum age</strong></td>
+<td>Optional. Models with an age limit are assigned automatically by age (see below). Both limits are inclusive: <em>maximum age 17</em> means "up to and including 17".</td>
+</tr>
+<tr>
+<td><strong>Pro rata</strong></td>
+<td>When members join or leave during a period, charge only the months of membership (see <a href="#pro-rata">Pro rata</a>).</td>
+</tr>
+</tbody>
+</table>
+<p>A changed amount applies to all future billing runs; fees already created stay unchanged.</p>
+<h3 id="which-member-pays-which-model">Which member pays which model?<a class="headerlink" href="#which-member-pays-which-model" title="Permanent link">&para;</a></h3>
+<p><strong>Member assignments</strong> lists all current members with their age on 1 January and the fee they pay this year. Change the assignment right in the list or in the <a href="../mitglieder/#adding-or-editing-a-member">member dialog</a> under <strong>Membership → Fee model</strong>:</p>
+<ul>
+<li><strong>Automatic by age</strong> (default): the member gets the model with an age limit that fits their age. If several fit, the one with the narrowest age range wins (e.g. <em>students 18–27</em> before <em>adults 18 and over</em>).</li>
+<li><strong>A specific model</strong>, e.g. <em>family</em> or <em>passive</em>: applies regardless of age.</li>
+<li><strong>Exempt from fees</strong>, e.g. for honorary members: the member gets no fees.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">Coming of age</p>
+<p>What counts is the <strong>age on 1 January of the fee year</strong>. A member who turns 18 in June still pays the youth fee that year and the adult fee automatically from the next year. This way the change never leaves a gap or charges twice, even if the two models have different intervals.</p>
+</div>
+<p>Members without a birthday or without a matching model are marked yellow and skipped by billing runs. When a model is deleted, its members get their model by age again.</p>
+<h2 id="billing-run">Billing run<a class="headerlink" href="#billing-run" title="Permanent link">&para;</a></h2>
+<p><img alt="Billing run with preview" class="screenshot" src="../../assets/screenshots/finance-fee-run.png" /></p>
+<p>A billing run creates the fees of all members for a range at once, typically at the start of the year for the whole year.</p>
+<ol>
+<li>In the <strong>Billing run</strong> tab, choose the range: <strong>From (month)</strong> and <strong>To (month)</strong>, e.g. January to December 2027. All fee periods that <strong>start</strong> in these months are charged.</li>
+<li>Set <strong>Due on</strong>, e.g. 1 March. Periods that start later (e.g. the third quarter) are due when they start.</li>
+<li>Click <strong>Preview</strong>. Nothing is saved yet. The preview shows the <strong>number and total</strong> of the fees, every single fee with amount and due date, and below who is skipped and why:<ul>
+<li><strong>already charged</strong>: the member already has a fee from a billing run for this period,</li>
+<li><strong>without a matching fee model</strong>: e.g. the birthday is missing,</li>
+<li><strong>exempt from fees</strong>.</li>
+</ul>
+</li>
+<li>If everything is right, <strong>Save billing run</strong>. The fees appear under <a href="#member-fees">Member fees</a> and <a href="#open-items">Open items</a> and can be collected by <a href="#direct-debit-sepa">direct debit</a> as usual.</li>
+</ol>
+<p><strong>Previous billing runs</strong> lists every saved run with the number of fees, the total and how many fees are already paid.</p>
+<h3 id="no-duplicate-fees">No duplicate fees<a class="headerlink" href="#no-duplicate-fees" title="Permanent link">&para;</a></h3>
+<p>Open ClubManager records which period every created fee is for. A period that has already been charged to a member is <strong>never charged a second time</strong>:</p>
+<ul>
+<li>If you start the same billing run again, the preview shows "nothing to charge" and saving is refused.</li>
+<li>If the range overlaps an earlier run, only the missing periods are charged. So you can, for example, repeat the run in summer to charge <strong>members who joined since</strong>.</li>
+<li>If you delete a created fee, its period is free again and can be charged again.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Fees added by hand</p>
+<p>This only applies to fees from a billing run. If you have already added fees of a period by hand with <strong>Add Member Fee</strong> (e.g. the yearly fee before switching to fee models), they would be charged a second time. Start the first billing run with the next period, or delete the open fees added by hand first.</p>
+</div>
+<p>To undo a billing run created by mistake, use the bin icon in <strong>Previous billing runs</strong>: all open fees of the run are deleted, paid ones stay. If fees are in a <a href="#direct-debit-sepa">direct debit run</a> that has not been confirmed, cancel or confirm that run first.</p>
+<h3 id="joining-and-leaving">Joining and leaving<a class="headerlink" href="#joining-and-leaving" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Members who <strong>left</strong> are no longer charged from their exit date: periods that start on or after the exit date get no fee. On the exit date itself the person is no longer a member.</li>
+<li>Members who <strong>join</strong> only after a period has ended get no fee for that period.</li>
+</ul>
+<h3 id="pro-rata">Pro rata<a class="headerlink" href="#pro-rata" title="Permanent link">&para;</a></h3>
+<p>Without the <strong>Pro rata</strong> option, the full amount is due for a period as soon as the person is a member on at least one day of it. With <strong>Pro rata</strong>, every month of the period counts in which the person is a member on at least one day; the corresponding share is charged, rounded to the cent.</p>
+<table>
+<thead>
+<tr>
+<th>Example (yearly fee €120, pro rata)</th>
+<th>Months</th>
+<th>Fee</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Joins on 1 or 30 April</td>
+<td>April–December = 9</td>
+<td>€90.00</td>
+</tr>
+<tr>
+<td>Leaves on 1 July (last day: 30 June)</td>
+<td>January–June = 6</td>
+<td>€60.00</td>
+</tr>
+<tr>
+<td>Joins 15 March, leaves 20 August</td>
+<td>March–August = 6</td>
+<td>€60.00</td>
+</tr>
+</tbody>
+</table>
+<p>In the preview, pro rata fees are marked "pro rata of …".</p>
+<h2 id="direct-debit-sepa">Direct debit (SEPA)<a class="headerlink" href="#direct-debit-sepa" title="Permanent link">&para;</a></h2>
+<p><img alt="Direct debit runs" class="screenshot" src="../../assets/screenshots/finance-direct-debit.png" /></p>
+<p>In the <strong>Direct debit</strong> tab you collect open fees by SEPA Core direct debit. Open ClubManager creates a file in the <strong>pain.008</strong> bank format that you upload in online banking. The tab only appears if your role may edit finances and, with <a href="../../zusammenarbeit/">collaboration</a>, your device receives bank and finance data.</p>
+<h3 id="one-time-setup">One-time setup<a class="headerlink" href="#one-time-setup" title="Permanent link">&para;</a></h3>
+<ol>
+<li>In the <a href="../einstellungen/#sepa-direct-debit">settings</a> under <strong>SEPA direct debit</strong>, enter the club name, the <strong>creditor identifier</strong> (issued by your national bank, e.g. <code>DE98ZZZ09999999999</code>), the <strong>IBAN of the club account</strong> and optionally a <strong>remittance template</strong>.</li>
+<li>For every member who pays by direct debit, enter the IBAN, <strong>SEPA Mandate Date</strong> and a unique <strong>mandate reference</strong> (e.g. <code>NW-1001</code>) under <strong>Bank Details</strong> in the <a href="../mitglieder/#adding-or-editing-a-member">member dialog</a>.</li>
+</ol>
+<h3 id="creating-a-direct-debit-run">Creating a direct debit run<a class="headerlink" href="#creating-a-direct-debit-run" title="Permanent link">&para;</a></h3>
+<p>Click <strong>Create direct debit run</strong>. A wizard guides you through three steps:</p>
+<ol>
+<li><strong>Select fees:</strong> all open fees are listed; partly paid fees with the amount still due. Fees that can't be collected (no IBAN, no mandate, no mandate reference, invalid IBAN …) are listed under <strong>Cannot be collected</strong> with the reason; complete the member's data.</li>
+<li><strong>Due date &amp; remittance:</strong> the <strong>collection date</strong>. The file must reach the bank at least one business day before. Below it you see a preview of the remittance text.</li>
+<li><strong>Review &amp; export:</strong> check the count, total, first (FRST) and recurring (RCUR) collections, then click <strong>Create &amp; download</strong>.</li>
+</ol>
+<p>The fees are then marked as <strong>Being collected</strong>.</p>
+<h3 id="after-the-export">After the export<a class="headerlink" href="#after-the-export" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Upload the <code>.xml</code> file in online banking and authorise it</td>
+<td>at your bank</td>
+</tr>
+<tr>
+<td>Once the bank has collected: <strong>Confirm as paid</strong> and enter the date; all fees of the run are marked as paid</td>
+<td>the run in the list</td>
+</tr>
+<tr>
+<td>Returned debits: import the bank statement and confirm them in the reconciliation; the fee is open again and can be collected once more</td>
+<td><a href="#returned-direct-debits">Payment reconciliation</a></td>
+</tr>
+<tr>
+<td>Created a run by mistake? <strong>Cancel run</strong> and the fees are open again. Then don't upload the file, or revoke the order at the bank</td>
+<td>the run in the list</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Download XML file</strong> gives you a run's file again.</p>
+<div class="admonition info">
+<p class="admonition-title">First and recurring collections</p>
+<p>When a mandate is used for the first time, Open ClubManager marks the debit as a first collection (FRST), afterwards as recurring (RCUR). This happens automatically.</p>
+</div>
+<h2 id="payment-reconciliation">Payment reconciliation<a class="headerlink" href="#payment-reconciliation" title="Permanent link">&para;</a></h2>
+<p><img alt="Payment reconciliation" class="screenshot" src="../../assets/screenshots/finance-reconciliation.png" /></p>
+<p>In the <strong>Reconciliation</strong> tab you assign imported incoming payments to open fees instead of looking up every transfer by hand. Open ClubManager suggests which fees each transaction pays; <strong>nothing is booked until you confirm</strong>. Like <a href="#direct-debit-sepa">direct debit</a>, the tab only appears if your role may edit finances and your device receives bank and finance data.</p>
+<h3 id="how-suggestions-are-made">How suggestions are made<a class="headerlink" href="#how-suggestions-are-made" title="Permanent link">&para;</a></h3>
+<p>For every incoming payment Open ClubManager checks:</p>
+<ul>
+<li>the <strong>member number</strong> in the remittance text, e.g. "Fee 2026 member 1013" or "No. 12" (short numbers only with a word such as "Mitglied", "member", "Nr.", "No." or "#" in front),</li>
+<li>the <strong>payer's IBAN</strong> against the members' bank details,</li>
+<li>the <strong>name</strong> of the payer and in the remittance text, also with umlauts ("Möller" = "Moeller") and small typos,</li>
+<li>the <strong>amount</strong>: does it match one open fee, all open fees of the member, or of their <a href="../haushalte/">household</a>?</li>
+</ul>
+<p>This gives the <strong>match quality</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Match quality</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Certain</strong></td>
+<td>Member number or IBAN recognised and the amount matches exactly</td>
+</tr>
+<tr>
+<td><strong>Probable</strong></td>
+<td>Member number or IBAN recognised but the amount differs (partial or overpayment), or name and amount match</td>
+</tr>
+<tr>
+<td><strong>Unclear</strong></td>
+<td>Only the name matches, not the amount; check carefully</td>
+</tr>
+<tr>
+<td><strong>No suggestion</strong></td>
+<td>No matching open fee, e.g. for donations or sponsoring</td>
+</tr>
+</tbody>
+</table>
+<p>The chips below a suggestion show what it was recognised by (e.g. <em>Member number</em>, <em>IBAN</em>, <em>Amount matches</em>, <em>Household</em>, <em>Partial payment</em>).</p>
+<h3 id="reviewing-and-confirming">Reviewing and confirming<a class="headerlink" href="#reviewing-and-confirming" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Confirm</strong> (tick) takes over the suggestion. The fee gets the booking date as paid date.</li>
+<li><strong>Confirm all certain</strong> takes over all suggestions rated <em>Certain</em> at once.</li>
+<li><strong>Change assignment</strong> (pencil) opens a searchable list of all open fees. Tick the right fees and adjust the amounts; this is how you correct a suggestion or assign a transaction without one yourself.</li>
+<li><strong>Mark as reviewed without fee</strong> is for a transaction that pays no fee (e.g. a donation). It disappears from the open transactions.</li>
+<li><strong>Undo</strong> (under <strong>Done</strong>) takes an assignment back. The fees return to their previous state.</li>
+</ul>
+<h3 id="partial-payments-and-collective-transfers">Partial payments and collective transfers<a class="headerlink" href="#partial-payments-and-collective-transfers" title="Permanent link">&para;</a></h3>
+<ul>
+<li>If a member pays in <strong>instalments</strong>, assign every instalment to the same fee. The fee stays <em>Unpaid</em> until the total is reached; a direct debit then only collects the rest.</li>
+<li>If parents pay for <strong>several children</strong> at once, the suggestion splits the amount across the household's fees. In the dialog you can pick any number of fees, also of different members, each with its own amount.</li>
+<li>If an overpayment leaves a rest, it is shown and not assigned to any fee.</li>
+</ul>
+<h3 id="returned-direct-debits">Returned direct debits<a class="headerlink" href="#returned-direct-debits" title="Permanent link">&para;</a></h3>
+<p>Open ClubManager recognises a returned direct debit on import by its bank code or return reason and shows it in red with the reason, e.g. <em>Insufficient funds</em> or <em>Refund requested by payer</em>. The suggestion names the fee that had been paid: reliably by the debit reference for runs created in Open ClubManager, otherwise by IBAN, member number and amount.</p>
+<p>When you confirm the returned debit, the fee is <strong>open</strong> again and can be collected in a new <a href="#direct-debit-sepa">direct debit run</a>. Bank charges for the return remain as a rest without fee.</p>
+<div class="admonition tip">
+<p class="admonition-title">Trying it with the demo data</p>
+<p>If you chose the demo data during setup, you can try the reconciliation with the example file <a href="https://github.com/Waschndolos/open-clubmanager/blob/main/testdata/camt053-reconciliation.xml"><code>testdata/camt053-reconciliation.xml</code></a>: it contains certain, probable and unclear payments, a family transfer, a returned direct debit and a sponsoring income.</p>
+</div>
+<h2 id="donation-receipts">Donation receipts<a class="headerlink" href="#donation-receipts" title="Permanent link">&para;</a></h2>
+<p><img alt="Donation receipts" class="screenshot" src="../../assets/screenshots/finance-donations.png" /></p>
+<p>Charitable clubs in Germany may issue <strong>donation receipts</strong> (<em>Zuwendungsbestätigungen</em>) for donations (and, depending on their purposes, membership fees), which donors use to deduct the donation from their taxes. Open ClubManager creates them as PDF after the <strong>official template</strong> of the Federal Ministry of Finance – as a single receipt or as a collective receipt with annex. Administrators and treasurers see the <strong>Donations</strong> tab when their device receives the finances and the members' addresses.</p>
+<div class="admonition warning">
+<p class="admonition-title">The club is liable for correct receipts</p>
+<p>Whoever issues a wrong donation receipt intentionally or through gross negligence is liable for the lost tax (§ 10b (4) EStG). Check donor, amount and date before you issue a receipt. When in doubt, ask your tax adviser or the tax office.</p>
+</div>
+<h3 id="one-time-setup_1">One-time setup<a class="headerlink" href="#one-time-setup_1" title="Permanent link">&para;</a></h3>
+<p>Enter the data of your tax office notice in the <a href="../einstellungen/#donation-receipts">settings</a>: club name and address, tax office, tax number, kind and date of the notice and the <strong>privileged purposes</strong> exactly as in the notice (in German, e.g. "des Sports (§ 52 Abs. 2 Satz 1 Nr. 21 AO)").</p>
+<table>
+<thead>
+<tr>
+<th>Kind of notice</th>
+<th>Valid for receipts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Exemption notice</strong> (<em>Freistellungsbescheid</em>) or annex to the corporate tax assessment</td>
+<td>5 years from the date of the notice</td>
+</tr>
+<tr>
+<td><strong>Assessment under § 60a AO</strong> (e.g. for a newly founded club)</td>
+<td>3 years from the date of the notice</td>
+</tr>
+</tbody>
+</table>
+<p>If the notice is older, the tax office no longer recognises the receipts (§ 63 (5) AO). Open ClubManager then shows a <strong>warning</strong> in the settings and in the tab, with the date until which the notice was valid.</p>
+<div class="admonition info">
+<p class="admonition-title">Membership fees</p>
+<p>For sports clubs and clubs with leisure purposes (e.g. culture of a leisure nature, local heritage, allotments) membership fees are <strong>not</strong> deductible (§ 10b (1) sentence 8 EStG). Leave the switch <em>Membership fees are tax-deductible</em> off: only donations are certified, and the receipt confirms that it is not a membership fee. With the switch on, the paid fees of the year are listed as well.</p>
+</div>
+<h3 id="recording-donations">Recording donations<a class="headerlink" href="#recording-donations" title="Permanent link">&para;</a></h3>
+<p>A donation is an <strong>income in the cash book</strong> with the category <strong>Spende</strong> (or "Spenden"). <strong>Donations → Donations</strong> lists all such incomes.</p>
+<ol>
+<li>Click the pencil next to a donation and choose the <strong>member</strong> or an <strong>external donor</strong>. Add external donors (e.g. companies) below under <strong>External donors</strong> or right in the dialog.</li>
+<li>Tick <strong>Waiver of reimbursement of expenses</strong> for an <em>expense donation</em>, i.e. when someone waives the reimbursement of travel costs or similar.</li>
+<li>An income without a category gets the category "Spende" when you assign it.</li>
+</ol>
+<p>A receipt needs the donor's complete <strong>address</strong> (street, postal code and town). For members it comes from their contact details.</p>
+<h3 id="issuing-receipts">Issuing receipts<a class="headerlink" href="#issuing-receipts" title="Permanent link">&para;</a></h3>
+<p>Under <strong>Donations → Issue receipts</strong> choose the <strong>year</strong> and the <strong>issue date</strong>. The list shows every donor with their donations of the year; items already certified are marked with the receipt number.</p>
+<ul>
+<li><strong>Single receipt</strong> certifies exactly one donation.</li>
+<li><strong>Collective receipt</strong> combines all open donations of a donor in the year. The annex lists each donation with date, kind and amount.</li>
+<li><strong>Annual run</strong> creates the missing receipts for all donors of the year at once – a collective receipt for several donations, a single receipt otherwise. Donors without a complete address are skipped and named.</li>
+</ul>
+<p>The PDFs are downloaded right away (for the annual run all in one file, each receipt starting on a new page). Print and sign them.</p>
+<h3 id="numbering-log-and-duplicates">Numbering, log and duplicates<a class="headerlink" href="#numbering-log-and-duplicates" title="Permanent link">&para;</a></h3>
+<p>Every receipt gets a <strong>sequential number</strong> per year, e.g. <code>2026-0001</code>. <strong>Donations → Log</strong> shows which receipt was issued when, for whom and by whom.</p>
+<ul>
+<li>A donation can be certified only <strong>once</strong>. If you create a receipt for the same donations again – or click <strong>Create duplicate</strong> in the log – you get a <strong>duplicate</strong> with the same number, clearly marked <em>DUPLIKAT</em> on the PDF, which is logged as well.</li>
+<li>If a receipt was wrong (e.g. wrong amount), <strong>void</strong> it with a reason. It stays in the log and is marked as voided on the PDF; its donations can then be certified again. A certified donation can only be assigned to another donor after the receipt was voided.</li>
+</ul>
+<h2 id="deleting-the-full-ledger">Deleting the full ledger<a class="headerlink" href="#deleting-the-full-ledger" title="Permanent link">&para;</a></h2>
+<p>For a fresh start (e.g. after trying things out with demo data) you can delete all transactions, fees and billing runs at once; fee models and member assignments stay. For safety you have to type a confirmation word. <strong>This cannot be undone</strong>; create a <a href="../einstellungen/#backup">backup</a> first.</p>
+<div class="admonition warning">
+<p class="admonition-title">Not a replacement for accounting</p>
+<p>The cash book is a helper for everyday club life. It does not replace tax-compliant bookkeeping, accounting exports or advice from tax advisors or auditors.</p>
+</div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../anwesenheit/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Attendance">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Attendance
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../inventar/" class="md-footer__link md-footer__link--next" aria-label="Next: Inventory">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Inventory
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Open ClubManager · AGPL-3.0-or-later
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tracking", "navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "search.suggest", "search.highlight", "content.action.edit", "content.tabs.link", "toc.follow"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

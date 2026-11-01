@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/datenschutz/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/datenschutz/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/datenschutz/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/erste-schritte/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/erste-schritte/anmelden/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/anmelden/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/anmelden/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/erste-schritte/einrichtung/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/einrichtung/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/einrichtung/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/erste-schritte/installation/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/installation/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/installation/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/erste-schritte/oberflaeche/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/oberflaeche/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/oberflaeche/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/erste-schritte/rollen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/rollen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/rollen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/anwesenheit/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/anwesenheit/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/anwesenheit/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/aufgaben/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/aufgaben/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/aufgaben/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/benutzer/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/benutzer/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/benutzer/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/dashboard/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/dashboard/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/dashboard/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/ehrungen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/ehrungen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/ehrungen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/einstellungen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/einstellungen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/einstellungen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/finanzen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/finanzen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/finanzen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/haushalte/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/haushalte/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/haushalte/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/inventar/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/inventar/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/inventar/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/mitglieder/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/mitglieder/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/mitglieder/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/qualifikationen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/qualifikationen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/qualifikationen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/termine/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/termine/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/termine/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/vereinsstruktur/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/vereinsstruktur/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/vereinsstruktur/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/funktionen/verlauf/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/verlauf/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/verlauf/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/hilfe/faq/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/hilfe/faq/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/hilfe/faq/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/hilfe/glossar/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/hilfe/glossar/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/hilfe/glossar/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/migration/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/migration/daten-mitnehmen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/daten-mitnehmen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/daten-mitnehmen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/migration/lokal-zu-zusammenarbeit/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/lokal-zu-zusammenarbeit/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/lokal-zu-zusammenarbeit/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/migration/neuer-computer/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/neuer-computer/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/neuer-computer/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/migration/updates/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/updates/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/updates/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/migration/versionshinweise/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/versionshinweise/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/versionshinweise/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/migration/von-anderer-software/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/von-anderer-software/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/von-anderer-software/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/migration/von-excel/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/von-excel/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/von-excel/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/mitwirken/dokumentation/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/mitwirken/dokumentation/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/mitwirken/dokumentation/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/zusammenarbeit/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/zusammenarbeit/beitreten/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/beitreten/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/beitreten/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/zusammenarbeit/einrichten/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/einrichten/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/einrichten/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/zusammenarbeit/konflikte/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/konflikte/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/konflikte/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/zusammenarbeit/notfallschluessel/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/notfallschluessel/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/notfallschluessel/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/zusammenarbeit/personen-geraete/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/personen-geraete/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/personen-geraete/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/datenschutz/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/datenschutz/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/datenschutz/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/erste-schritte/anmelden/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/anmelden/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/anmelden/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/erste-schritte/einrichtung/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/einrichtung/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/einrichtung/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/erste-schritte/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/erste-schritte/installation/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/installation/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/installation/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/erste-schritte/oberflaeche/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/oberflaeche/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/oberflaeche/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/erste-schritte/rollen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/erste-schritte/rollen/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/erste-schritte/rollen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/anwesenheit/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/anwesenheit/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/anwesenheit/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/aufgaben/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/aufgaben/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/aufgaben/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/benutzer/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/benutzer/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/benutzer/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/dashboard/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/dashboard/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/dashboard/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/ehrungen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/ehrungen/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/ehrungen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/einstellungen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/einstellungen/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/einstellungen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/finanzen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/finanzen/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/finanzen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/haushalte/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/haushalte/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/haushalte/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/inventar/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/inventar/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/inventar/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/mitglieder/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/mitglieder/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/mitglieder/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/qualifikationen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/qualifikationen/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/qualifikationen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/termine/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/termine/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/termine/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/vereinsstruktur/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/vereinsstruktur/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/vereinsstruktur/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/funktionen/verlauf/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/funktionen/verlauf/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/funktionen/verlauf/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/hilfe/faq/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/hilfe/faq/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/hilfe/faq/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/hilfe/glossar/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/hilfe/glossar/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/hilfe/glossar/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/migration/daten-mitnehmen/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/daten-mitnehmen/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/daten-mitnehmen/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/migration/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/migration/lokal-zu-zusammenarbeit/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/lokal-zu-zusammenarbeit/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/lokal-zu-zusammenarbeit/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/migration/neuer-computer/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/neuer-computer/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/neuer-computer/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/migration/updates/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/updates/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/updates/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/migration/versionshinweise/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/versionshinweise/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/versionshinweise/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/migration/von-anderer-software/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/von-anderer-software/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/von-anderer-software/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/migration/von-excel/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/migration/von-excel/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/migration/von-excel/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/mitwirken/dokumentation/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/mitwirken/dokumentation/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/mitwirken/dokumentation/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/beitreten/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/beitreten/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/beitreten/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/einrichten/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/einrichten/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/einrichten/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/konflikte/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/konflikte/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/konflikte/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/notfallschluessel/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/notfallschluessel/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/notfallschluessel/"/>
+    </url>
+    <url>
+        <loc>https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/personen-geraete/</loc>
+        <lastmod>2026-11-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://waschndolos.github.io/open-clubmanager/en/zusammenarbeit/personen-geraete/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://waschndolos.github.io/open-clubmanager/zusammenarbeit/personen-geraete/"/>
+    </url>
+</urlset>
