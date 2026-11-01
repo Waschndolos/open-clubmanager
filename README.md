@@ -1,431 +1,186 @@
-# Open ClubManager
+<p align="center">
+  <img src="assets/clubmanager-icon.png" alt="Open ClubManager" width="96" />
+</p>
 
-[![CI](https://github.com/Waschndolos/open-clubmanager/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Waschndolos/open-clubmanager/actions/workflows/ci.yml)
+<h1 align="center">Open ClubManager</h1>
 
-🚧 This project is currently under construction. Features and structure may change frequently. 🚧
+<p align="center">
+  <strong>Free desktop software for small clubs and associations (Vereine).</strong><br/>
+  Members, fees, events, attendance, inventory – on your own computer, without a subscription, without a cloud account.
+</p>
 
-**Open ClubManager** is an open source web application for managing clubs. It features a modern React-based frontend and
-a Go + Chi backend API. ClubManager is designed to be lightweight, self-hostable,
-and suitable for small to medium-sized clubs or associations.
+<p align="center">
+  <a href="https://github.com/Waschndolos/open-clubmanager/actions/workflows/ci.yml"><img src="https://github.com/Waschndolos/open-clubmanager/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0--or--later-blue" alt="License: AGPL-3.0-or-later" /></a>
+  <a href="https://waschndolos.github.io/open-clubmanager/"><img src="https://img.shields.io/badge/docs-Benutzerhandbuch-2e7d5b" alt="User documentation" /></a>
+</p>
 
----
-## 💡 Idea of this project
-To contribute meaningfully to this project, it helps to understand the motivation behind it.
+<p align="center">
+  <img src="docs/user/assets/screenshots/dashboard.en.png" alt="Dashboard of Open ClubManager" width="860" />
+</p>
 
-In Germany — and likely many other places — small clubs or "Vereine" often manage their members, finances, and activities using Excel spreadsheets or Word documents. That works — until the club starts growing. Suddenly, more people are involved: a treasurer, a board, maybe a youth coordinator. Everyone needs access to the same information, and coordination becomes painful.
+> 🚧 **Status: under active development.** The local mode is usable for testing; collaboration (sync between board members) is being built. There is no stable release yet – do not manage real bank data with it before the 1.0 release and the planned cryptography review.
 
-Eventually, the club ends up maintaining dozens of separate lists and files — and the chaos begins. At that point, most clubs start looking for a centralized software solution. The problem? Most of those systems are proprietary and expensive — perfectly fine for large organizations, but a real hurdle for small clubs with limited budgets and no IT team.
-
-That's where Open ClubManager comes in.
-
-This project aims to provide a free, open source, and easy-to-use management tool for small to medium-sized clubs. It's designed to work out of the box — no cloud infrastructure, no complicated database setup.
-
-Open ClubManager supports two modes:
-
-* **Local** – one person manages the club on one computer. Data lives in a local SQLite database.
-* **Collaboration** – board, treasurer, secretary and coaches work on the same data, even if they are not on the same network. Each device keeps its own local database and syncs **encrypted, signed changes** through storage the club already has (a Nextcloud/OneDrive/Dropbox folder or WebDAV), or through an optional, easy-to-host Open ClubManager server.
-
-Access rights are enforced technically, not just hidden in the UI: e.g. a coach cannot read members' bank details, because their device never receives the key for that data.
-
-> 🚧 Collaboration mode is being built. See [ADR 0001: Collaboration and sync architecture](docs/adr/0001-collaboration-and-sync-architecture.md) for the design and why we decided against putting a database file on a shared drive.
-
-The goal is to reduce complexity and cost — and to empower small clubs to manage themselves better without needing tech expertise or subscriptions.
-
-Open ClubManager is built by volunteers for volunteers.
----
-
-## 🗄️ Database-Only Architecture
-
-Open ClubManager runs exclusively with the backend API and a database.
-
-- `npm run dev:browser` starts frontend + backend in the browser.
-- `npm run dev` starts the full Tauri desktop app (frontend + backend + Tauri shell).
-- In all environments, application data is loaded and persisted through `/api/v2`.
+📖 **User guide:** [English](https://waschndolos.github.io/open-clubmanager/en/) · [Deutsch](https://waschndolos.github.io/open-clubmanager/) – source in [`docs/user/`](docs/user)
 
 ---
 
+## What is Open ClubManager?
 
+Open ClubManager is a **desktop application** (Windows, macOS, Linux) for the day-to-day administration of small to medium-sized clubs – the kind of club that today runs on a handful of Excel sheets, a Word template for the membership form and the treasurer's memory.
 
-* 🧑‍🤝‍🧑 Manage members, roles, groups, and sections
-* 📄 Track addresses, banking information, SEPA mandates
-* 🗓️ Record entry/exit dates, comments, and status
-* 🔒 Local-first: SQLite on every device, works offline
-* 🔄 Collaboration via encrypted sync over a shared folder, WebDAV or an optional server *(in progress)*
-* 🛡️ Role-based access enforced by encryption *(in progress)*
-* 🎨 React + TypeScript frontend
-* ⚙️ Go + Chi backend
-* 🖥️ Tauri 2 desktop shell (~10 MB bundle)
-* 🌱 Seed system for demo data in development
+It is built for the volunteers who do the work: the board, the treasurer, the secretary, the coach. You install it like any other program, create an admin account, and start. There is no server to rent, no database to install and no account to sign up for.
 
----
+When several people need to work on the same data, they can switch on **collaboration**: every device keeps its own copy and exchanges **encrypted, signed changes** through a folder the club already has (Nextcloud, OneDrive, Dropbox, Google Drive or a network drive). Who may see what – e.g. a coach never receives bank details – is enforced with cryptography, not just by hiding buttons.
 
-## 📦 Tech Stack
+### What it is not
 
-* **Frontend**: React, TypeScript, Axios, Vite
-* **Backend**: Go, Chi, oapi-codegen
-* **Desktop**: Tauri 2 (Rust)
-* **Database**: SQLite (embedded, pure Go, schema via embedded goose migrations – see [data model](docs/data-model.md) and [ADR 0001](docs/adr/0001-collaboration-and-sync-architecture.md))
-* **Dev Tools**: go toolchain, npm, Rust/Cargo, WebStorm/VS Code
+| Open ClubManager is **not** … | … because |
+|---|---|
+| a **web application** or SaaS | It is and will stay a desktop app. There is no hosted version, no browser login and no "open it on your phone" URL. |
+| a **member portal** | Members do not log in. Only club officials use the software. |
+| an **accounting system** for tax purposes | The cash book helps with fees and transactions, but it is no replacement for double-entry bookkeeping, DATEV export or your tax advisor. |
+| a **communication tool** | No newsletters, no mass e-mail, no chat. You can export lists and calendars (.xlsx, .csv, .ics) and use the tools you already have. |
+| a **website builder** or **online registration form** | Data is entered by officials, not by members on the internet. |
+| a solution for **large federations** | It targets clubs with tens to a few thousand members, not multi-level associations with hundreds of sub-clubs. |
+| **finished** | See status above. Features and data format may still change before 1.0 (migrations are handled automatically, see [migration docs](docs/user/migration/index.md)). |
 
----
+## Why use it?
 
-## 📁 Project Structure
+- **It costs nothing – forever.** AGPL licensed, no tiers, no per-member pricing.
+- **Your data stays with you.** One SQLite file on your computer. No vendor sees member data, no data processing agreement with a cloud provider is needed for the local mode.
+- **Works offline.** Training hall without Wi‑Fi? Attendance is recorded anyway and synced later.
+- **Made for volunteers.** German-first UI (also English and French), guided wizards, demo data to try everything out.
+- **No lock-in.** Open file format (SQLite), Excel export of members, GDPR data export per member (PDF + JSON), iCal export of the calendar.
+- **Privacy built in.** Per-member GDPR export (Art. 15/20), audit history, police clearance certificates stored as "inspected on" date only (§ 72a SGB VIII).
+
+## Advantages and drawbacks of the approach
+
+Open ClubManager is deliberately **local-first**: the desktop app is the product, every device has its own database, and collaboration is a sync of encrypted changes. This is a trade-off – here it is, honestly.
+
+### ✅ Advantages
+
+| | |
+|---|---|
+| **Zero operations** | Nothing to host, patch, back up on a server or pay for. Install → use. |
+| **Data sovereignty** | Data never leaves the club's devices and storage. Cloud folders only see encrypted data. |
+| **Offline by default** | Works on a laptop at the general meeting, on a tablet in the gym, on the train. |
+| **Real permissions** | A device that is not allowed to see bank data never gets the key for it – even if someone opens the shared folder directly. |
+| **Fast** | Local database, no network round-trips; small native app (Tauri, ~10 MB). |
+| **Long-lived** | If the project stopped tomorrow, the app keeps working and your data is a plain SQLite file. |
+
+### ⚠️ Drawbacks
+
+| | |
+|---|---|
+| **Installation per device** | Every official needs the app installed. No "just open a link". Updates have to be installed on each device. |
+| **No access from anywhere** | No smartphone app, no browser access. If you are not at a device with the app, you cannot look something up. |
+| **Members cannot self-serve** | No self-registration, no "update your own address" portal. |
+| **Sync is not real-time** | Changes arrive when the cloud folder has synced (seconds to minutes). Simultaneous edits of the same field are resolved "last writer wins"; duplicate member numbers etc. are shown for manual resolution. |
+| **Backups are your job** | No provider keeps backups for you. The app has a backup button – use it (and enable disk encryption, the local database is not encrypted). |
+| **Key management** | Collaboration needs an emergency key that must be printed and kept safe. Losing all board devices *and* the key means losing admin control. |
+| **Young project** | Own sync protocol, not yet externally reviewed. Small team of volunteers. |
+
+If you need members to log in online, a website or a hosted multi-tenant system, a classic web-based club software is the better fit. If you want a free, private, low-maintenance tool for the board, read on.
+
+## Features
+
+| Area | What you can do | |
+|---|---|---|
+| **Members** | Master data, address, bank details & SEPA mandate, entry/exit, groups, sections, roles; Excel import with column mapping and Excel export; GDPR data export | [📷](docs/user/assets/screenshots/members.en.png) |
+| **Families & households** | Households with a main payer, shared address/bank details, guardians for minors | [📷](docs/user/assets/screenshots/households.en.png) |
+| **Events** | Club calendar (month/week/list), recurring events, target groups, iCal export | [📷](docs/user/assets/screenshots/events.en.png) |
+| **Attendance** | Record training attendance (also offline), statistics, CSV/PDF export, trainer role | [📷](docs/user/assets/screenshots/attendance-stats.en.png) |
+| **Finance** | Cash book, member fees, CAMT.053 bank statement import | [📷](docs/user/assets/screenshots/finance.en.png) |
+| **Inventory** | Items, loans, condition, inspection schedules, maintenance log (optionally booked as expense) | [📷](docs/user/assets/screenshots/inventory.en.png) |
+| **Anniversaries & honors** | Upcoming membership anniversaries and round birthdays, recorded honors, CSV export | [📷](docs/user/assets/screenshots/honors.en.png) |
+| **Qualifications** | Coach licences, first aid, police clearance with expiry warnings | [📷](docs/user/assets/screenshots/qualifications.en.png) |
+| **Tasks** | Tasks for board members and roles, recurring, due dates | [📷](docs/user/assets/screenshots/tasks.en.png) |
+| **Administration** | Users and app roles, audit history, backup/restore, language, dark mode, global search (Ctrl/Cmd + K) | [📷](docs/user/assets/screenshots/settings.en.png) |
+| **Collaboration** *(in progress)* | Invite board members, roles per device, conflict resolution, emergency key | [📷](docs/user/assets/screenshots/collaboration.en.png) |
+
+The full, illustrated description of every feature is in the **[user guide](https://waschndolos.github.io/open-clubmanager/en/)** (also available [in German](https://waschndolos.github.io/open-clubmanager/)).
+
+## Download
+
+Installers for Windows (`.msi`/`.exe`), macOS (`.dmg`) and Linux (`.deb`/`.AppImage`/`.rpm`) will be published on the [Releases page](https://github.com/Waschndolos/open-clubmanager/releases) with the first release. Until then, build it yourself (see below).
+
+## How it works
 
 ```
-/clubmanager
-├── assets/          # App icons
-├── docs/            # Data model, API docs
-│   └── adr/         # Architecture decision records
-├── server/          # Go API + Chi router
-│   ├── cmd/server/  # binary entry point
-│   └── internal/    # OpenAPI bindings, handlers, store (SQL) and db (migrations)
-├── src-tauri/       # Tauri 2 desktop shell (Rust)
-│   ├── src/         # Rust source (lib.rs spawns the Go sidecar)
-│   ├── capabilities/# Tauri capability definitions
-│   ├── binaries/    # Go sidecar binary (populated by prepare:sidecar)
-│   └── tauri.conf.json
-├── frontend/        # React client
-└── scripts/         # Helper scripts (prepare-sidecar.js, …)
+┌──────────────── Desktop app (Tauri) ────────────────┐
+│  React UI  ──HTTP 127.0.0.1──►  Go backend (sidecar)│
+│                                   │                 │
+│                                   ▼                 │
+│                         SQLite file on this device  │
+└───────────────────────────────────┬─────────────────┘
+                                    │ optional: encrypted, signed change files
+                                    ▼
+              Club folder (Nextcloud / OneDrive / Dropbox / network drive)
+                                    ▲
+                                    │
+                 other board members' devices (same app)
 ```
 
----
+- **Frontend:** React 19, TypeScript, MUI, Vite
+- **Backend:** Go, Chi, OpenAPI ([`openapi.yaml`](openapi.yaml), generated with oapi-codegen), runs as a sidecar bound to `127.0.0.1`
+- **Desktop shell:** Tauri 2 (Rust)
+- **Database:** SQLite (pure Go driver), schema via embedded goose migrations that run automatically on start
+- **Sync:** see [ADR 0001](docs/adr/0001-collaboration-and-sync-architecture.md) and the [sync protocol](docs/sync-protocol.md)
 
-## 🐳 Dev Container (recommended for contributors)
+> The backend speaks HTTP only so that the desktop UI can talk to it. It is an implementation detail of the desktop app, not a web server meant to be exposed to the network.
 
-The repository ships with a ready-to-use Dev Container configuration in `.devcontainer/`.
-It includes all required toolchains and system dependencies so you can start coding without any manual setup.
+## Development
 
-### What's included
-
-| Tool                       | Version      |
-|----------------------------|--------------|
-| Node.js + npm              | 22 (LTS)     |
-| Go                         | 1.25.0       |
-| Rust + Cargo               | 1.77.2       |
-| Python 3                   | system       |
-| SQLite CLI                 | system       |
-| Tauri 2 Linux dependencies | Ubuntu 24.04 |
-
-### Using the Dev Container
-
-#### Option A — VS Code / GitHub Codespaces
-
-1. Open the repository in VS Code (or create a Codespace on GitHub).
-2. When prompted, click **"Reopen in Container"** — or open the Command Palette and run:
-   ```
-   Dev Containers: Reopen in Container
-   ```
-3. The container builds automatically and runs the bootstrap script, which:
-   - installs all npm workspaces (`root`, `frontend`)
-   - downloads Go modules (`go mod download`)
-   - pre-fetches Rust crates (`cargo fetch`)
-   - checks Tauri prerequisites
-
-#### Option B — Dev Container CLI
+Prerequisites: Node.js 22, Go (see `server/go.mod`), Rust + Cargo and the [Tauri prerequisites](https://tauri.app/start/prerequisites/). Or use the ready-made **Dev Container** in [`.devcontainer/`](.devcontainer).
 
 ```bash
-# Install the CLI once
-npm install -g @devcontainers/cli
-
-# Open the container
-devcontainer up --workspace-folder .
-
-# Execute a command inside it
-devcontainer exec --workspace-folder . npm run dev:browser
+npm run setup        # install all dependencies (root, frontend, Go modules)
+npm run dev          # desktop app: frontend + backend + Tauri window
+npm run dev:browser  # UI in the browser for faster frontend iteration (development only)
+npm run build        # build installers into src-tauri/target/release/bundle/
+npm run lint         # frontend lint + Go tests
 ```
 
-### Available ports
+On first start the app asks where to store the database and lets you create the first admin account (optionally with demo data of a kitesurf club).
 
-| Port   | Service                    |
-|--------|----------------------------|
-| `5173` | Frontend (Vite dev server) |
-| `3001` | Backend (Go API)           |
+<details>
+<summary>Backend configuration</summary>
 
-### Before you start
-
-Create the required environment files if they don't exist yet:
-
-**`server/.env`**
-```plaintext
-DATABASE_URL="file:/home/myUser/clubmanager.db"
-```
-
-**`frontend/.env`**
-```plaintext
-VITE_APP_VERSION=1.0.0
-VITE_BACKEND_ORIGIN=http://localhost:3001
-```
-
-> **Note:** Running `npm run dev` with the native Tauri window inside a container requires display forwarding (X11 or Wayland) from the host. For browser-based development, `npm run dev:browser` works out of the box.
-
----
-
-## 🛠️ Getting Started
-
-### Prerequisites
-
-* Node.js 20+
-* npm
-* Go 1.24+
-* Rust + Cargo (for Tauri desktop builds) – install via [rustup](https://rustup.rs)
-* System dependencies for Tauri 2 – see [Tauri prerequisites](https://tauri.app/start/prerequisites/)
-
-> If `npm run dev` fails with a `cargo metadata` error, Rust/Cargo is not available in the current shell or IDE PATH yet.
-> Install Rust via `rustup` and restart the terminal / IDE so `cargo` and `rustc` are available.
-
-### ⚡ Quick Setup (recommended)
-
-> **One-command setup** – installs all dependencies in one step.
-
-First, create a file named `.env` in the `server` directory with the following content:
-```plaintext
-# Default local database URL (SQLite)
-DATABASE_URL="file:/home/myUser/clubmanager.db"
-```
-
-Then, from the project root run:
-
-```bash
-npm run setup
-```
-
-This will:
-1. Install all dependencies (root, frontend, Go modules)
-
-If the database contains no users yet, the app will guide you through the setup flow:
-1. Choose where the local SQLite database file lives
-2. Create the first admin account
-
-The schema is created and migrated automatically on server start.
-
-Once setup is complete, start the development servers:
-
-```bash
-# Start frontend + backend in the browser (no desktop shell)
-npm run dev:browser
-
-# Start the full Tauri desktop app (frontend + backend + Tauri window)
-npm run dev
-```
-
----
-
-### Manual Setup
-
-If you prefer to set up each part individually:
-
-#### Backend
-
-Optionally point the backend at a database file (otherwise the setup flow asks for it):
-```bash
-export DATABASE_PATH=/home/myUser/clubmanager.db
-```
-
-```bash
-cd server
-go run ./cmd/server   # start the backend server
-```
-
-#### Backend configuration
-
-Settings are read from `config.json` (default `~/.config/open-clubmanager/config.json`,
-override with `SERVER_CONFIG_FILE`); environment variables take precedence.
+Settings are read from `config.json` (default `~/.config/open-clubmanager/config.json`, override with `SERVER_CONFIG_FILE`); environment variables take precedence.
 
 | Env variable | `config.json` key | Default | Description |
 |---|---|---|---|
-| `PORT` | `port` | `3001` | HTTP port of the API |
-| `BIND_ADDRESS` | `bindAddress` | `127.0.0.1` | Interface the API listens on. The default only accepts connections from this machine (desktop/sidecar mode). Set `0.0.0.0` **only** for a server deployment that must be reachable from the network – and put it behind TLS. |
-| `JWT_SECRET` / `JWT_ACCESS_SECRET` | `jwtSecret` | *generated* | Secret used to sign login tokens. If unset, a random 256-bit secret is generated on first start and stored in `jwt_secret` next to `config.json` (permissions `0600`); later starts reuse it. Delete the file to invalidate all issued tokens. |
-| `JWT_SECRET_FILE` | – | `<config dir>/jwt_secret` | Alternative location for the generated secret file |
-| `DATABASE_PATH` | `databasePath` | `./clubmanager.db` | Path of the SQLite database file. It is created and migrated on first use. |
+| `PORT` | `port` | `3001` | Port of the local API |
+| `BIND_ADDRESS` | `bindAddress` | `127.0.0.1` | Interface the API listens on. Keep the default – the API is meant for the desktop UI on the same machine. |
+| `JWT_SECRET` / `JWT_ACCESS_SECRET` | `jwtSecret` | *generated* | Secret for login tokens. Generated on first start and stored in `jwt_secret` next to `config.json` (`0600`). |
+| `JWT_SECRET_FILE` | – | `<config dir>/jwt_secret` | Alternative location of the generated secret |
+| `DATABASE_PATH` | `databasePath` | `./clubmanager.db` | SQLite database file, created and migrated on first use |
 
-> The former hard-coded fallback secret `dev_access_secret_change_me` is no longer used. If it is still stored in an existing `config.json`, it is ignored and replaced by a generated secret (users have to log in again once).
+> When running the backend for tests, always set `SERVER_CONFIG_FILE` and `DATABASE_PATH` to throwaway paths – otherwise setup overwrites the config of your installed app.
+</details>
 
-#### Frontend
+More: [CONTRIBUTING.md](CONTRIBUTING.md) · [Data model](docs/data-model.md) · [API reference (ReDoc)](https://waschndolos.github.io/open-clubmanager/api/) · [Architecture decisions](docs/adr)
 
-Create a file named `.env` in the `frontend` directory with the following content:
+### Documentation
 
-```plaintext
-VITE_APP_VERSION=1.0.0
-VITE_BACKEND_ORIGIN=http://localhost:3001
-```
+The user guide is built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) and [mkdocs-static-i18n](https://ultrabug.github.io/mkdocs-static-i18n/) from [`docs/user/`](docs/user), in German (`page.md`, default) and English (`page.en.md`), and published to GitHub Pages on every push to `main`. **Every feature PR updates both languages** – CI fails if a page of the app has no documentation page or a page has no translation. Screenshots are generated automatically with Playwright in both languages. See [docs/user/mitwirken/dokumentation.en.md](docs/user/mitwirken/dokumentation.en.md).
 
 ```bash
-cd frontend
-npm install
-npm run dev        # start the Vite dev server
+pip install -r docs/requirements.txt
+mkdocs serve          # live preview on http://127.0.0.1:8000
 ```
 
-#### Tauri (desktop)
+## Contributing
 
-```bash
-# From the project root
-npm run dev        # starts frontend + backend + Tauri window
-```
+Contributions, bug reports and ideas are welcome – see [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Commits need a DCO sign-off (`git commit -s`).
 
-### API v2 bootstrap endpoints
+## License
 
-The backend is exposed via the versioned namespace `/api/v2`.
+Open ClubManager is free software under the **GNU Affero General Public License v3.0 or later** ([LICENSE](LICENSE)). You may use, study, modify and distribute it, also commercially. If you distribute a modified version, you must publish its source under the same license.
 
-- `GET /api/v2/system/health`
-- `GET /api/v2/system/meta`
-- `GET /api/v2/setup/status`
-- `POST /api/v2/setup/initialize`
-- `POST /api/v2/auth/login`
-- `POST /api/v2/auth/refresh-token`
-- `POST /api/v2/auth/logout`
-- `GET /api/v2/auth/profile`
-- `GET /api/v2/members`
-- `GET /api/v2/members/:id`
-- `POST /api/v2/members`
-- `PUT /api/v2/members/:id`
-- `DELETE /api/v2/members/:id`
-
-### 📘 API documentation
-
-- OpenAPI spec: [`openapi.yaml`](openapi.yaml)
-- ReDoc page: [`docs/index.html`](docs/index.html)
-
-If you update `openapi.yaml`, regenerate the ReDoc page with:
-
-```bash
-npm run docs:redoc
-```
-
-The repository also contains a publishing workflow in [`.github/workflows/api-docs.yml`](.github/workflows/api-docs.yml).
-Pushes to `main` regenerate the ReDoc bundle and publish it to the `gh-pages` branch.
-
-To expose the hosted documentation in GitHub Pages, set the repository Pages source to:
-
-- **Deploy from a branch**
-- **Branch:** `gh-pages`
-- **Folder:** `/ (root)`
-
-GitHub usually exposes that site under a URL like:
-
-```text
-https://waschndolos.github.io/open-clubmanager/
-```
-
-### Start Frontend and Backend in Dev mode
-```bash
-cd <rootProject>
-# Start the frontend and backend in browser (no desktop shell)
-npm run dev:browser
-
-# Start the full Tauri desktop app
-npm run dev
-```
-
-The initial user for the development mode is:
-```plaintext
-No fixed default user is created by the seed script.
-If there are no users yet, open the setup flow in the app and create the first admin account.
-```
+The software is provided "as is", without warranty. Whoever runs it is responsible for complying with data protection law (e.g. GDPR) for the member data they manage. Project name, logo and icons: see [NOTICE](NOTICE). Third-party licenses: [`licenses/`](licenses).
 
 ---
 
-## 🏗️ Building a distributable package
-
-```bash
-# 1. Build the Go backend binary
-npm run build:backend
-
-# 2. Copy the binary into src-tauri/binaries/ with the correct target-triple suffix
-npm run prepare:sidecar
-
-# 3. Build the Tauri app (also builds the frontend)
-#    The resulting installer is placed in src-tauri/target/release/bundle/
-npm run build
-```
-
-> **Note:** Before the first build, generate the Tauri icon set from the project icon:
-> ```bash
-> npx tauri icon assets/clubmanager-icon.png
-> ```
-
----
-
-## 🌱 Development Mode
-
-Demo data is created by running `npm run setup` or by seeding manually.
-Starting the backend alone does not automatically reseed the database.
-
----
-
-## 📋 Available npm Scripts
-
-All scripts below can be run from the **project root**.
-
-| Script | Description |
-|---|---|
-| `npm run setup` | Install all dependencies for frontend + db tooling + Go server |
-| `npm run install:all` | Install dependencies for root + frontend + db and run `go mod tidy` in `server/` |
-| `npm run dev:browser` | Start frontend + backend in browser dev mode (no Tauri shell) |
-| `npm run dev` | Start full Tauri desktop app (frontend + backend + Tauri window) |
-| `npm run build` | Build backend, copy sidecar binary, and build Tauri app |
-| `npm run build:frontend` | Build the React frontend only |
-| `npm run build:backend` | Build the Go backend binary only |
-| `npm run prepare:sidecar` | Copy Go binary to `src-tauri/binaries/` with target-triple suffix |
-| `npm run lint` | Lint frontend and run Go tests for the server |
-| `npm run licenses` | Regenerate third-party license files (`licenses/`) |
-
----
-
-## 🧪 Testing
-
-You can use Postman or any REST client to test:
-
-* `GET /api/v2/members`
-* `POST /api/v2/members`
-* `PUT /api/v2/members/:id`
-* `DELETE /api/v2/members/:id`
-
----
-
-## 🤝 Contributing
-
-Contributions, issues and feature requests are welcome!
-
-For details, see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-
-Please follow the [Code of Conduct](#-code-of-conduct) and submit only clean, tested code.
-
----
-
-## 📜 Code of Conduct
-
-This project and everyone participating in it is expected to adhere to
-the [Contributor Covenant](CODE_OF_CONDUCT.md).
-
-Be respectful, inclusive, and constructive. We value every contribution, regardless of experience level, background, or
-role.
-
----
-
-## 📄 License
-
-Open ClubManager is free software, licensed under the **GNU Affero General Public License v3.0 or later** (AGPL-3.0-or-later). See [LICENSE](LICENSE).
-
-In short: you may use, study, modify and distribute the software for any purpose, including commercially and as a hosted service. If you distribute it or let others use a modified version over a network, you must make the corresponding source code of your version available under the same license.
-
-The software is provided "as is", without warranty of any kind. Anyone who runs it is responsible for complying with the applicable data protection law (e.g. GDPR) for the member data they manage.
-
-The project name, logo and icons are covered by [NOTICE](NOTICE).
-
----
-
-## 📚 Licenses of Used Libraries
-
-Open ClubManager builds on open source components under permissive or file-level copyleft licenses (MIT, Apache-2.0, BSD, ISC, MPL-2.0, OFL-1.1, Unicode, …), all compatible with AGPL-3.0. Their license texts are in [`licenses/`](licenses):
-
-* [licenses/THIRD_PARTY_LICENSES_NPM.md](licenses/THIRD_PARTY_LICENSES_NPM.md) – frontend
-* [licenses/THIRD_PARTY_LICENSES_GO.md](licenses/THIRD_PARTY_LICENSES_GO.md) – server
-* [licenses/THIRD_PARTY_LICENSES_RUST.md](licenses/THIRD_PARTY_LICENSES_RUST.md) – desktop shell (Tauri)
-
-## 💬 Questions & Feedback
-
-If you have questions, ideas, or feedback, feel free to open an issue or start a discussion.
-
-Let's make club management easier, together! 💙
+<p align="center">Built by volunteers, for volunteers. 💚</p>

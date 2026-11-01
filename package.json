@@ -17,7 +17,10 @@
     "build": "npm run tauri:check && npm run build:backend && npm run prepare:sidecar && tauri build",
     "docs:redoc": "python3 scripts/generate_redoc.py",
     "lint": "npm --prefix frontend run lint && cd server && go test ./...",
-    "licenses": "python3 scripts/generate_licenses.py"
+    "licenses": "python3 scripts/generate_licenses.py",
+    "docs:serve": "mkdocs serve",
+    "docs:build": "python3 scripts/check_docs_coverage.py && mkdocs build --strict",
+    "docs:screenshots": "bash scripts/docs-screenshots/run.sh"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",

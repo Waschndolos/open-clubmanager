@@ -1,0 +1,197 @@
+site_name: Open ClubManager – Benutzerhandbuch
+site_description: Benutzerhandbuch für Open ClubManager, die freie Desktop-Vereinsverwaltung.
+site_url: https://waschndolos.github.io/open-clubmanager/
+repo_url: https://github.com/Waschndolos/open-clubmanager
+repo_name: Waschndolos/open-clubmanager
+edit_uri: edit/main/docs/user/
+copyright: Open ClubManager · AGPL-3.0-or-later
+
+docs_dir: docs/user
+site_dir: site
+strict: true
+
+theme:
+  name: material
+  language: de
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  font: false
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Dunkles Design
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Helles Design
+  features:
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.action.edit
+    - content.tabs.link
+    - toc.follow
+
+extra_css:
+  - assets/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.keys
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search:
+      lang:
+        - de
+        - en
+  # German pages are `page.md`, their English translation `page.en.md` (same folder).
+  # German is served at /, English at /en/. Material shows a language switcher.
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: false
+      languages:
+        - locale: de
+          name: Deutsch
+          default: true
+          build: true
+        - locale: en
+          name: English
+          build: true
+          site_name: Open ClubManager – User Guide
+          site_description: User guide for Open ClubManager, the free desktop software for clubs.
+          theme:
+            palette:
+              - media: "(prefers-color-scheme: light)"
+                scheme: default
+                primary: custom
+                accent: custom
+                toggle:
+                  icon: material/weather-night
+                  name: Dark mode
+              - media: "(prefers-color-scheme: dark)"
+                scheme: slate
+                primary: custom
+                accent: custom
+                toggle:
+                  icon: material/weather-sunny
+                  name: Light mode
+          nav_translations:
+            Start: Home
+            Erste Schritte: Getting started
+            Installation: Installation
+            Ersteinrichtung: First-run setup
+            Anmelden & Passwort: Login & password
+            Bedienung der Oberfläche: Using the interface
+            Benutzer & Rollen: Users & roles
+            Funktionen: Features
+            Übersicht (Dashboard): Overview (dashboard)
+            Mitglieder: Members
+            Familien & Haushalte: Families & households
+            Termine: Events
+            Anwesenheit: Attendance
+            Finanzen: Finances
+            Inventar: Inventory
+            Jubiläen & Ehrungen: Anniversaries & honors
+            Qualifikationen: Qualifications
+            Aufgaben: Tasks
+            Vereinsstruktur: Club structure
+            Verlauf: History
+            Benutzerverwaltung: User management
+            Einstellungen & Datensicherung: Settings & backup
+            Zusammenarbeit: Collaboration
+            Verein einrichten: Set up a club
+            Einem Verein beitreten: Join a club
+            Personen & Geräte: People & devices
+            Klärungsbedarf (Konflikte): Needs attention (conflicts)
+            Notfallschlüssel: Emergency key
+            Datenschutz: Data protection
+            Umstieg & Migration: Switching & migration
+            Von Excel umsteigen: Switching from Excel
+            Von anderer Vereinssoftware: From other club software
+            Updates & Datenbankversionen: Updates & database versions
+            Auf neuen Computer umziehen: Moving to a new computer
+            Von lokal zu Zusammenarbeit: From local to collaboration
+            Daten exportieren & mitnehmen: Exporting your data
+            Versionshinweise: Release notes
+            Hilfe: Help
+            Häufige Fragen: FAQ
+            Begriffe: Glossary
+            Mitwirken: Contributing
+            Dokumentation pflegen: Maintaining the documentation
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+nav:
+  - Start: index.md
+  - Erste Schritte:
+      - erste-schritte/index.md
+      - Installation: erste-schritte/installation.md
+      - Ersteinrichtung: erste-schritte/einrichtung.md
+      - Anmelden & Passwort: erste-schritte/anmelden.md
+      - Bedienung der Oberfläche: erste-schritte/oberflaeche.md
+      - Benutzer & Rollen: erste-schritte/rollen.md
+  - Funktionen:
+      - funktionen/index.md
+      - Übersicht (Dashboard): funktionen/dashboard.md
+      - Mitglieder: funktionen/mitglieder.md
+      - Familien & Haushalte: funktionen/haushalte.md
+      - Termine: funktionen/termine.md
+      - Anwesenheit: funktionen/anwesenheit.md
+      - Finanzen: funktionen/finanzen.md
+      - Inventar: funktionen/inventar.md
+      - Jubiläen & Ehrungen: funktionen/ehrungen.md
+      - Qualifikationen: funktionen/qualifikationen.md
+      - Aufgaben: funktionen/aufgaben.md
+      - Vereinsstruktur: funktionen/vereinsstruktur.md
+      - Verlauf: funktionen/verlauf.md
+      - Benutzerverwaltung: funktionen/benutzer.md
+      - Einstellungen & Datensicherung: funktionen/einstellungen.md
+  - Zusammenarbeit:
+      - zusammenarbeit/index.md
+      - Verein einrichten: zusammenarbeit/einrichten.md
+      - Einem Verein beitreten: zusammenarbeit/beitreten.md
+      - Personen & Geräte: zusammenarbeit/personen-geraete.md
+      - Klärungsbedarf (Konflikte): zusammenarbeit/konflikte.md
+      - Notfallschlüssel: zusammenarbeit/notfallschluessel.md
+  - Datenschutz: datenschutz.md
+  - Umstieg & Migration:
+      - migration/index.md
+      - Von Excel umsteigen: migration/von-excel.md
+      - Von anderer Vereinssoftware: migration/von-anderer-software.md
+      - Updates & Datenbankversionen: migration/updates.md
+      - Auf neuen Computer umziehen: migration/neuer-computer.md
+      - Von lokal zu Zusammenarbeit: migration/lokal-zu-zusammenarbeit.md
+      - Daten exportieren & mitnehmen: migration/daten-mitnehmen.md
+      - Versionshinweise: migration/versionshinweise.md
+  - Hilfe:
+      - Häufige Fragen: hilfe/faq.md
+      - Begriffe: hilfe/glossar.md
+  - Mitwirken:
+      - Dokumentation pflegen: mitwirken/dokumentation.md

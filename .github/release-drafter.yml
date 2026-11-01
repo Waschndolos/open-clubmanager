@@ -3,10 +3,15 @@ template: |
 
   $CHANGES
 
+  📖 User guide: https://waschndolos.github.io/open-clubmanager/en/ (Deutsch: https://waschndolos.github.io/open-clubmanager/) · Update notes: https://waschndolos.github.io/open-clubmanager/en/migration/versionshinweise/
+
 name-template: 'Release v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 
 categories:
+  - title: ⚠️ Manual steps needed when updating
+    labels:
+      - breaking-change
   - title: 🚀 Features
     labels:
       - feature

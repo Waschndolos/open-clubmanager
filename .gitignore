@@ -11,3 +11,6 @@ src-tauri/gen/
 src-tauri/binaries/open-clubmanager-server-*
 # IDE
 .idea/
+
+# MkDocs build output
+site/
