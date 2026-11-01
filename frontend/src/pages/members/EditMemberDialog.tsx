@@ -161,6 +161,11 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
         setFormData((prev) => ({...prev, [key]: value}));
     };
 
+    // A picked calendar day is sent as UTC midnight of that day. toISOString()
+    // would send local midnight, which is the previous day in UTC for Berlin.
+    const calendarDate = (date: dayjs.Dayjs | null) =>
+        date ? `${date.format("YYYY-MM-DD")}T00:00:00.000Z` : undefined;
+
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={language}
                               localeText={pickerLocaleText[language]}>
@@ -198,7 +203,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                     <DatePicker sx={{xs: 12, sm: 6}}
                                                 label={t("members.table.header.birthday")}
                                                 value={formData.birthday ? dayjs(formData.birthday) : null}
-                                                onChange={(date) => handleChange("birthday", date?.toISOString())}
+                                                onChange={(date) => handleChange("birthday", calendarDate(date))}
                                                 disabled={coreRO}
                                     />
                                 </Grid>
@@ -274,7 +279,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                     <DatePicker
                                         label={t("members.table.header.sepaMandateDate")}
                                         value={formData.sepaMandateDate ? dayjs(formData.sepaMandateDate) : null}
-                                        onChange={(date) => handleChange("sepaMandateDate", date?.toISOString())}
+                                        onChange={(date) => handleChange("sepaMandateDate", calendarDate(date))}
                                     />
                                 </Grid>
                                 {!isNew && <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
@@ -300,12 +305,12 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                 <DatePicker
                                     label={t("members.table.header.entryDate")}
                                     value={formData.entryDate ? dayjs(formData.entryDate) : null}
-                                    onChange={(date) => handleChange("entryDate", date?.toISOString())}
+                                    onChange={(date) => handleChange("entryDate", calendarDate(date))}
                                 />
                                 <DatePicker
                                     label={t("members.table.header.exitDate")}
                                     value={formData.exitDate ? dayjs(formData.exitDate) : null}
-                                    onChange={(date) => handleChange("exitDate", date?.toISOString())}
+                                    onChange={(date) => handleChange("exitDate", calendarDate(date))}
                                 />
                             </Grid>
                         </Box>

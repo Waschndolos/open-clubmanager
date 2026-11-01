@@ -265,14 +265,22 @@ func (s *Store) CreateMember(ctx context.Context, in MemberInput) (Member, error
 	return s.GetMember(ctx, id)
 }
 
-// UpdateMember replaces the writable fields of a live member.
+// UpdateMember replaces the writable fields of a live member. The number is
+// only checked for uniqueness when it changes, so a member that is part of an
+// open sync conflict can still be edited as long as its number stays.
 func (s *Store) UpdateMember(ctx context.Context, id string, in MemberInput) (Member, error) {
 	err := s.inWriteTx(ctx, func(w *writer) error {
+		unchanged, err := w.holds("members", "number", in.Number, "id", id)
+		if err != nil {
+			return err
+		}
 		if err := affected(w.update("members", `id = ? AND deleted_at IS NULL`, []any{id}, memberCore(in))); err != nil {
 			return err
 		}
-		if err := w.requireUnique("members", "number", in.Number, "id", id); err != nil {
-			return err
+		if !unchanged {
+			if err := w.requireUnique("members", "number", in.Number, "id", id); err != nil {
+				return err
+			}
 		}
 		now := db.Now()
 		if err := writeMemberParts(w, id, in, now); err != nil {
@@ -308,10 +316,17 @@ func writeMemberParts(w *writer, id string, in MemberInput, now string) error {
 			return err
 		}
 	} else {
-		if err := w.requireUnique("member_contacts", "email", strArg(c.Email), "member_id", id); err != nil {
+		email := strArg(c.Email)
+		unchanged, err := w.holds("member_contacts", "email", email, "member_id", id)
+		if err != nil {
 			return err
 		}
-		err := w.upsert("member_contacts", row{"member_id": id}, row{
+		if !unchanged {
+			if err := w.requireUnique("member_contacts", "email", email, "member_id", id); err != nil {
+				return err
+			}
+		}
+		err = w.upsert("member_contacts", row{"member_id": id}, row{
 			"email": strArg(c.Email), "phone": strArg(c.Phone), "phone_mobile": strArg(c.PhoneMobile),
 			"street": strArg(c.Street), "postal_code": strArg(c.PostalCode), "city": strArg(c.City),
 			"state": strArg(c.State), "deleted_at": nil,

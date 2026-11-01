@@ -252,6 +252,38 @@ func TestLocalTablesAreNotInOutbox(t *testing.T) {
 	}
 }
 
+// A member in an open number conflict must stay editable as long as the
+// duplicated number is kept; only changing the number is checked again.
+func TestUpdateKeepsConflictingMemberEditable(t *testing.T) {
+	ctx := context.Background()
+	s, conn := newTestStore(t)
+
+	if _, err := s.CreateMember(ctx, MemberInput{Number: 1, FirstName: "A", LastName: "A"}); err != nil {
+		t.Fatal(err)
+	}
+	b, err := s.CreateMember(ctx, MemberInput{Number: 2, FirstName: "B", LastName: "B"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Recreate the duplicate a sync merge leaves behind, which the local checks would refuse.
+	if _, err := conn.ExecContext(ctx, `UPDATE members SET number = 1 WHERE id = ?`, b.ID); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := s.UpdateMember(ctx, b.ID, MemberInput{Number: 1, FirstName: "B", LastName: "B", Comment: ptr("kept")}); err != nil {
+		t.Errorf("edit keeping the duplicate number: %v", err)
+	}
+	if _, err := s.UpdateMember(ctx, b.ID, MemberInput{Number: 1, FirstName: "B", LastName: "B", Contact: MemberContact{Email: ptr("b@example.org")}}); err != nil {
+		t.Errorf("edit adding e-mail with duplicate number: %v", err)
+	}
+	if _, err := s.UpdateMember(ctx, b.ID, MemberInput{Number: 3, FirstName: "B", LastName: "B"}); err != nil {
+		t.Errorf("change to free number: %v", err)
+	}
+	if _, err := s.UpdateMember(ctx, b.ID, MemberInput{Number: 1, FirstName: "B", LastName: "B"}); !errors.Is(err, ErrConflict) {
+		t.Errorf("change to taken number: %v, want ErrConflict", err)
+	}
+}
+
 // The local pre-save checks keep returning ErrConflict now that SQLite no
 // longer enforces uniqueness on synced tables.
 func TestPreSaveUniquenessChecks(t *testing.T) {
