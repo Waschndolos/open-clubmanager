@@ -515,6 +515,9 @@ type DbPathResponse struct {
 type ErrorResponse struct {
 	Code  *string `json:"code,omitempty"`
 	Error string  `json:"error"`
+
+	// Fields The problems per field of a `VALIDATION_FAILED` response.
+	Fields *[]FieldError `json:"fields,omitempty"`
 }
 
 // Event A club event. Recurring events are stored once as a series and expanded
@@ -605,6 +608,18 @@ type EventOccurrence struct {
 
 // EventRecurrence Repetition of the event; `biweekly` means every 14 days.
 type EventRecurrence string
+
+// FieldError A problem with one field of a request.
+type FieldError struct {
+	// Code `required`, `too_long`, `not_positive`, `invalid`, `checksum` (IBAN check digits), `before_entry` (exit before entry date) or `in_future` (birthday).
+	Code string `json:"code"`
+
+	// Field JSON name of the field, e.g. `firstName` or `iban`.
+	Field string `json:"field"`
+
+	// Limit Maximum length for `too_long`.
+	Limit *int `json:"limit,omitempty"`
+}
 
 // FinanceResetRequest defines model for FinanceResetRequest.
 type FinanceResetRequest struct {
@@ -810,7 +825,7 @@ type Member struct {
 	VersionToken    *string              `json:"versionToken,omitempty"`
 }
 
-// MemberCreateRequest defines model for MemberCreateRequest.
+// MemberCreateRequest Writable fields of a member. The server trims the texts and writes IBAN and BIC without spaces in upper case. It answers 400 with code `VALIDATION_FAILED` and `fields` when first or last name is empty, the number is below 1, a text is too long (names 100, e-mail 254, phone numbers and postal code 50, comment 2000, other texts 200 characters), the e-mail is malformed, the IBAN has the wrong length for its country or wrong check digits, the BIC is malformed, the exit date lies before the entry date or the birthday lies in the future.
 type MemberCreateRequest struct {
 	AccountHolder   *string                 `json:"accountHolder,omitempty"`
 	BankName        *string                 `json:"bankName,omitempty"`

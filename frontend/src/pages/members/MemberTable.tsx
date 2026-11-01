@@ -20,6 +20,9 @@ import ImportMembersWizard, {ImportMatchField} from "./ImportMembersWizard";
 import {useTheme} from '@mui/material/styles';
 import {DataGrid, GridColDef, GridColumnVisibilityModel, GridRowSelectionModel} from '@mui/x-data-grid';
 import type {GridRenderCellParams} from "@mui/x-data-grid/models/params/gridCellParams";
+import {isAxiosError} from "axios";
+import {useNotification} from "../../context/NotificationContext";
+import {problemText, serverFieldProblems} from "./memberValidation";
 
 
 type MemberTableProps = {
@@ -55,6 +58,7 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted,
     const [deletingMembers, setDeletingMembers] = useState<Member[] | null>(null);
     const [selectedMembers, setSelectedMembers] = useState<Member[] | null>(null);
     const {getPreference, setPreference} = useUserPreference();
+    const {addNotification} = useNotification();
     const [importWizardOpen, setImportWizardOpen] = useState(false);
     const [importInProgress, setImportInProgress] = useState(false);
     const [importProgress, setImportProgress] = useState(0);
@@ -184,6 +188,18 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted,
         return [];
     }
 
+    const importErrorReason = (e: unknown): string => {
+        const problems = serverFieldProblems(e);
+        if (problems) {
+            return Object.entries(problems).map(([field, problem]) => `${field}: ${problemText(t, field, problem!)}`).join("; ");
+        }
+        if (isAxiosError(e)) {
+            if (e.response?.status === 409) return t("members.saveErrors.duplicate");
+            return e.response?.data?.error ?? e.message;
+        }
+        return e instanceof Error ? e.message : String(e);
+    };
+
     async function upsertImportedMembers(imported: Member[], matchField: ImportMatchField) {
         const existingMap = new Map(
             members
@@ -207,56 +223,65 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted,
         const groupsList = [...allGroups] as { id: string; name: string }[];
         const sectionsList = [...allSections] as { id: string; name: string }[];
 
+        // A row the server refuses (e.g. an invalid IBAN, #193) is skipped and
+        // reported; the other rows are still imported.
+        const failures: string[] = [];
         for (const member of imported) {
             const matchValue = getImportMatchValue(member, matchField);
             const progress = Math.round((i / max) * 100);
             setImportProgress(progress);
             i++;
+            try {
+                const roleIds = await resolveEntityIds(
+                    member.roles as unknown as { id: string; name: string }[] | string | undefined,
+                    rolesList,
+                    (data) => createRole(data as unknown as Omit<Role, 'id'>)
+                );
+                const groupIds = await resolveEntityIds(
+                    member.groups as unknown as { id: string; name: string }[] | string | undefined,
+                    groupsList,
+                    (data) => createGroup(data as unknown as Omit<Group, 'id'>)
+                );
+                const sectionIds = await resolveEntityIds(
+                    member.sections as unknown as { id: string; name: string }[] | string | undefined,
+                    sectionsList,
+                    (data) => createSection(data as unknown as Omit<ClubSection, 'id'>)
+                );
 
-            const roleIds = await resolveEntityIds(
-                member.roles as unknown as { id: string; name: string }[] | string | undefined,
-                rolesList,
-                (data) => createRole(data as unknown as Omit<Role, 'id'>)
-            );
-            const groupIds = await resolveEntityIds(
-                member.groups as unknown as { id: string; name: string }[] | string | undefined,
-                groupsList,
-                (data) => createGroup(data as unknown as Omit<Group, 'id'>)
-            );
-            const sectionIds = await resolveEntityIds(
-                member.sections as unknown as { id: string; name: string }[] | string | undefined,
-                sectionsList,
-                (data) => createSection(data as unknown as Omit<ClubSection, 'id'>)
-            );
-
-            if (matchValue && existingMap.has(matchValue)) {
-                const existing = existingMap.get(matchValue)!;
-                // When a field is not mapped (undefined), preserve the existing associations
-                const mergedRoleIds = member.roles !== undefined ? roleIds : (existing.roles?.map(r => r.id) || []);
-                const mergedGroupIds = member.groups !== undefined ? groupIds : (existing.groups?.map(g => g.id) || []);
-                const mergedSectionIds = member.sections !== undefined ? sectionIds : (existing.sections?.map(s => s.id) || []);
-                const updated = {
-                    ...existing,
-                    ...member,
-                    id: existing.id,
-                    roleIds: mergedRoleIds,
-                    groupIds: mergedGroupIds,
-                    sectionIds: mergedSectionIds,
-                };
-                const saved = await updateMember(updated as Member);
-                existingMap.set(matchValue, saved);
-                onMemberUpdated(saved);
-            } else {
-                const payload = { ...member, roleIds, groupIds, sectionIds };
-                const saved = await createMember(payload as unknown as Omit<Member, 'id'>);
-                if (matchValue) {
+                if (matchValue && existingMap.has(matchValue)) {
+                    const existing = existingMap.get(matchValue)!;
+                    // When a field is not mapped (undefined), preserve the existing associations
+                    const mergedRoleIds = member.roles !== undefined ? roleIds : (existing.roles?.map(r => r.id) || []);
+                    const mergedGroupIds = member.groups !== undefined ? groupIds : (existing.groups?.map(g => g.id) || []);
+                    const mergedSectionIds = member.sections !== undefined ? sectionIds : (existing.sections?.map(s => s.id) || []);
+                    const updated = {
+                        ...existing,
+                        ...member,
+                        id: existing.id,
+                        roleIds: mergedRoleIds,
+                        groupIds: mergedGroupIds,
+                        sectionIds: mergedSectionIds,
+                    };
+                    const saved = await updateMember(updated as Member);
                     existingMap.set(matchValue, saved);
+                    onMemberUpdated(saved);
+                } else {
+                    const payload = { ...member, roleIds, groupIds, sectionIds };
+                    const saved = await createMember(payload as unknown as Omit<Member, 'id'>);
+                    if (matchValue) {
+                        existingMap.set(matchValue, saved);
+                    }
+                    onMemberUpdated(saved);
                 }
-                onMemberUpdated(saved);
+            } catch (e) {
+                failures.push(t("members.dialogs.import.errorRow", {row: i + 1, reason: importErrorReason(e)}));
             }
         }
         setImportProgress(100);
         setImportInProgress(false);
+        if (failures.length > 0) {
+            addNotification(t("members.dialogs.import.errors", {count: failures.length, total: max, rows: failures.join(", ")}));
+        }
     }
 
     const agGridThemeClass =
