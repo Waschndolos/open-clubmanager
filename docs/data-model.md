@@ -38,7 +38,7 @@ fails if a table is missing from it or lacks the sync columns.
 | --- | --- | --- |
 | `members.core` | `members`, `roles`, `groups`, `sections`, `member_roles`, `member_groups`, `member_sections` | Who is a member (number, name, birthday, entry/exit date, comment) and club structure |
 | `members.contact` | `member_contacts` (1:1 with `members`) | E-mail, phone, mobile, street, postal code, city, state |
-| `members.bank` | `member_bank_details` (1:1 with `members`) | Account holder, IBAN, BIC, bank name, SEPA mandate date |
+| `members.bank` | `member_bank_details`, `member_sepa_mandates` (1:1 with `members`), `sepa_creditor`, `sepa_runs`, `sepa_run_items` | Account holder, IBAN, BIC, bank name, SEPA mandate date and reference; the club's creditor data and the exported direct debit runs |
 | `finance` | `finance_transactions`, `member_fees` | Cash book and membership fees |
 | `inventory` | `inventory_items`, `inventory_loans` | Club equipment and who has borrowed it |
 | `admin` | – (ACL and club settings, not SQL tables in protocol v1) | |

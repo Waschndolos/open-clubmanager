@@ -26,6 +26,8 @@ import {useCollaboration, usePermission} from "../../context/CollaborationContex
 import {useRoleName} from "../../components/collaboration/common";
 import {FamilySection, PayerExitWarning, useMemberHousehold} from "./FamilySection";
 import {useAuth} from "../../context/AuthContext";
+import {fetchSepaMandate, saveSepaMandate} from "../../api/sepa";
+import {isAxiosError} from "axios";
 
 type Props = {
     member: Member;
@@ -60,12 +62,36 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
     const [allGroups, setAllGroups] = useState<Group[]>([]);
     const [allSections, setAllSections] = useState<ClubSection[]>([]);
     const household = useMemberHousehold(isNew ? '' : member.id);
+    // The mandate reference has its own endpoint, so it can only be set on
+    // members that already exist.
+    const [mandateRef, setMandateRef] = useState<{ loaded?: string; value: string; error?: string }>({value: ''});
 
     useEffect(() => {
         fetchRoles().then(setAllRoles);
         fetchGroups().then(setAllGroups);
         fetchSections().then(setAllSections);
     }, []);
+
+    useEffect(() => {
+        if (isNew || bank === 'none') return;
+        fetchSepaMandate(member.id)
+            .then((ref) => setMandateRef({loaded: ref ?? '', value: ref ?? ''}))
+            .catch(() => undefined);
+    }, [isNew, bank, member.id]);
+
+    const saveMandateRef = async (): Promise<boolean> => {
+        if (bankRO || mandateRef.loaded === undefined || mandateRef.value.trim() === mandateRef.loaded) return true;
+        try {
+            await saveSepaMandate(member.id, mandateRef.value.trim());
+            return true;
+        } catch (e) {
+            const code = isAxiosError(e) ? e.response?.data?.code : undefined;
+            setMandateRef((prev) => ({...prev, error: t(code === 'MANDATE_REFERENCE_TAKEN'
+                ? "members.mandateReference.taken" : "members.mandateReference.invalid")}));
+            setExpandedPanel('bank');
+            return false;
+        }
+    };
 
     const handleAccordionChange = (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
         setExpandedPanel(isExpanded ? panel : false);
@@ -188,6 +214,13 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                         onChange={(date) => handleChange("sepaMandateDate", date?.toISOString())}
                                     />
                                 </Grid>
+                                {!isNew && <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
+                                                                        label={t("members.mandateReference.label")}
+                                                                        value={mandateRef.value}
+                                                                        error={!!mandateRef.error}
+                                                                        helperText={mandateRef.error ?? t("members.mandateReference.help")}
+                                                                        slotProps={{htmlInput: {maxLength: 35}}}
+                                                                        onChange={(e) => setMandateRef((prev) => ({...prev, value: e.target.value, error: undefined}))}/></Grid>}
                             </Grid>
                         </Box>
                         </AccordionDetails>
@@ -299,8 +332,9 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                     <Button
                         variant="contained"
                         disabled={!canSave}
-                        onClick={() => {
+                        onClick={async () => {
                             if (contact !== 'none' && !formData.email) return;
+                            if (!await saveMandateRef()) return;
                             const payload = {
                                 ...formData,
                                 roleIds: formData.roles?.map(r => r.id),

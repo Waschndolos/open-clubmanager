@@ -24,6 +24,7 @@ import {validatePath} from "../../api/validation";
 import {createBackup, restoreBackup} from "../../api/backup";
 import PageHeader from "../../components/common/PageHeader";
 import {useNavigate} from "react-router-dom";
+import {SepaCreditorSettings} from "../finance/SepaDirectDebit";
 
 const LAST_BACKUP_KEY = 'lastBackupDate';
 
@@ -203,6 +204,9 @@ export function Settings() {
                     {t("collaboration.settings.open")}
                 </Button>
             </Paper>
+
+            {/* ── SEPA direct debit (treasurer only) ─────────────────────────── */}
+            <SepaCreditorSettings />
 
             {/* ── Backup & Restore ─────────────────────────────────────────── */}
             <Typography variant="h6" sx={{mt: 4, mb: 1}}>

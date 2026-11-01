@@ -157,6 +157,18 @@ func main() {
 	router.Post("/api/v2/members/{id}/guardians", bearerAuthRequired(cfg.JWTSecret, api.CreateGuardian))
 	router.Delete("/api/v2/guardians/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteGuardian))
 
+	// SEPA direct debit runs (pain.008) for member fees.
+	router.Get("/api/v2/sepa/creditor", bearerAuthRequired(cfg.JWTSecret, api.GetSEPACreditor))
+	router.Put("/api/v2/sepa/creditor", bearerAuthRequired(cfg.JWTSecret, api.SetSEPACreditor))
+	router.Get("/api/v2/sepa/candidates", bearerAuthRequired(cfg.JWTSecret, api.ListSEPACandidates))
+	router.Get("/api/v2/sepa/runs", bearerAuthRequired(cfg.JWTSecret, api.ListSEPARuns))
+	router.Post("/api/v2/sepa/runs", bearerAuthRequired(cfg.JWTSecret, api.CreateSEPARun))
+	router.Get("/api/v2/sepa/runs/{id}/xml", bearerAuthRequired(cfg.JWTSecret, api.DownloadSEPARun))
+	router.Post("/api/v2/sepa/runs/{id}/confirm", bearerAuthRequired(cfg.JWTSecret, api.ConfirmSEPARun))
+	router.Delete("/api/v2/sepa/runs/{id}", bearerAuthRequired(cfg.JWTSecret, api.CancelSEPARun))
+	router.Get("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(cfg.JWTSecret, api.GetSEPAMandate))
+	router.Put("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(cfg.JWTSecret, api.SetSEPAMandate))
+
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))

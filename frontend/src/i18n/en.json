@@ -302,6 +302,12 @@
                 "email": "Email",
                 "actions": "Actions"
             }
+        },
+        "mandateReference": {
+            "label": "Mandate reference",
+            "help": "Up to 35 characters without spaces, e.g. NW-1001",
+            "taken": "Another member already has this mandate reference",
+            "invalid": "Invalid mandate reference: only letters, digits and + ? / - : ( ) . , ' without spaces"
         }
     },
     "settings": {
@@ -424,7 +430,8 @@
         },
         "tabs": {
             "transactions": "Cashbook",
-            "memberfees": "Member Fees"
+            "memberfees": "Member Fees",
+            "directDebit": "Direct debit"
         },
         "summary": {
             "balance": "Balance",
@@ -1274,5 +1281,93 @@
         "member": "Member",
         "noRecords": "No attendance recorded in this period.",
         "offline": "saved offline"
+    },
+    "sepa": {
+        "loadFailed": "Could not load direct debit data",
+        "inCollection": "Being collected",
+        "settings": {
+            "title": "SEPA direct debit",
+            "description": "Creditor identifier and club account for collecting fees by SEPA Core direct debit. Only visible to the treasurer.",
+            "name": "Club name (creditor)",
+            "creditorId": "Creditor identifier",
+            "creditorIdHelp": "Issued by the national bank, e.g. DE98ZZZ09999999999",
+            "iban": "IBAN of the club account",
+            "ibanInvalid": "The IBAN check digits are wrong",
+            "bic": "BIC (optional)",
+            "bicHelp": "Not needed for domestic payments",
+            "template": "Remittance template",
+            "templateHelp": "Placeholders: {{placeholders}}",
+            "saved": "SEPA settings saved",
+            "saveFailed": "Could not save SEPA settings: {{reason}}"
+        },
+        "columns": {
+            "member": "Member",
+            "fee": "Fee",
+            "amount": "Amount",
+            "mandate": "Mandate reference",
+            "iban": "IBAN",
+            "sequence": "Sequence"
+        },
+        "sequence": {
+            "FRST": "First collection: the mandate is used for the first time",
+            "RCUR": "Recurring collection"
+        },
+        "issues": {
+            "MISSING_IBAN": "No IBAN",
+            "INVALID_IBAN": "Invalid IBAN",
+            "INVALID_BIC": "Invalid BIC",
+            "MISSING_MANDATE": "No mandate (date missing)",
+            "MISSING_MANDATE_REFERENCE": "No mandate reference",
+            "INVALID_MANDATE_REFERENCE": "Invalid mandate reference",
+            "INVALID_AMOUNT": "Amount not positive"
+        },
+        "wizard": {
+            "title": "Create direct debit run",
+            "steps": {
+                "fees": "Select fees",
+                "details": "Due date & remittance",
+                "summary": "Review & export"
+            },
+            "noOpenFees": "There are no open fees.",
+            "selectAll": "Select all",
+            "excluded": "Cannot be collected ({{count}})",
+            "excludedHint": "These fees are not exported. Complete the bank details and mandates in the member data.",
+            "collectionDate": "Collection date",
+            "collectionDateHelp": "The file must reach the bank at least one business day before.",
+            "collectionDateInvalid": "The date must be in the future",
+            "preview": "Remittance preview",
+            "summary": "{{count}} debits totalling {{total}}, collected on {{date}}.",
+            "summarySequence": "{{first}} first collections (FRST), {{recurring}} recurring (RCUR)",
+            "creditor": "Creditor: {{name}}, creditor ID {{creditorId}}, account {{iban}}",
+            "afterExport": "After the export the fees are marked as being collected. Upload the file (pain.008) in online banking and confirm the run once the bank has collected.",
+            "back": "Back",
+            "next": "Next",
+            "create": "Create & download",
+            "created": "Direct debit run created",
+            "createFailed": "Could not create the direct debit run",
+            "feesChanged": "Some fees can no longer be collected. Please open the wizard again."
+        },
+        "runs": {
+            "create": "Create direct debit run",
+            "empty": "No direct debit runs yet",
+            "collectionDate": "Collection date",
+            "count": "Count",
+            "total": "Total",
+            "status": "Status",
+            "paid": "Paid on {{date}}",
+            "inCollection": "Being collected",
+            "createdAt": "Created",
+            "download": "Download XML file",
+            "confirm": "Confirm as paid",
+            "cancel": "Cancel run",
+            "actionFailed": "The action failed",
+            "notConfigured": "First enter the creditor identifier and club account in the settings.",
+            "openSettings": "Open settings",
+            "confirmTitle": "Confirm collection",
+            "confirmText": "All fees of this run are marked as paid on this date. Record returned debits on the fee afterwards.",
+            "paidDate": "Paid on",
+            "cancelTitle": "Cancel direct debit run?",
+            "cancelText": "The fees will be open again. Do not upload the file to the bank, or revoke the order there."
+        }
     }
 }
