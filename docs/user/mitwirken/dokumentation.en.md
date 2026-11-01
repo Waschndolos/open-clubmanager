@@ -63,7 +63,7 @@ npm run docs:build        # as in CI: coverage check + strict build
 npm run docs:screenshots  # regenerate all screenshots (needs Go and Node)
 ```
 
-`docs:screenshots` starts its own backend and frontend on ports 3101 and 5273 with a throwaway database, sets it up with demo data and captures every page, once per language. Your own installation is not touched. So that screenshots only change when the UI changes, the browser clock is frozen, animations are off, random IDs and timestamps in tables are replaced by fixed values, and a file is only overwritten if more than 0.1 % of its pixels changed. `DOCS_LANGUAGES=en` captures only one language.
+`docs:screenshots` starts its own backend and frontend on ports 3101 and 5273 with a throwaway database, sets it up with demo data and captures every page, once per language. Your own installation is not touched. So that screenshots only change when the UI changes, the browser clock is frozen, animations are off, random IDs and timestamps in tables are replaced by fixed values, and a file is only overwritten if pixels changed beyond the colour tolerance for anti-aliasing. `DOCS_LANGUAGES=en` captures only one language.
 
 ## Writing style
 

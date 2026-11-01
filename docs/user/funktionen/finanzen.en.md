@@ -5,7 +5,7 @@ routes:
 
 # Finances
 
-Cash book and member fees. Only visible to **administrators** and **treasurers**.
+Cash book, member fees and fee collection by SEPA direct debit. Only visible to **administrators** and **treasurers**.
 
 ![Cash book](../assets/screenshots/finance.png){ .screenshot }
 
@@ -37,6 +37,41 @@ Instead of typing every transaction, import your bank's statement in **CAMT.053*
 ![Member fees](../assets/screenshots/finance-fees.png){ .screenshot }
 
 Here you manage the fees per member and year: amount, due date, paid date and description. Open fees are marked as **Unpaid**.
+
+## Direct debit (SEPA)
+
+![Direct debit runs](../assets/screenshots/finance-direct-debit.png){ .screenshot }
+
+In the **Direct debit** tab you collect open fees by SEPA Core direct debit. Open ClubManager creates a file in the **pain.008** bank format that you upload in online banking. The tab only appears if your role may edit finances and, with [collaboration](../zusammenarbeit/index.md), your device receives bank and finance data.
+
+### One-time setup
+
+1. In the [settings](einstellungen.md#sepa-direct-debit) under **SEPA direct debit**, enter the club name, the **creditor identifier** (issued by your national bank, e.g. `DE98ZZZ09999999999`), the **IBAN of the club account** and optionally a **remittance template**.
+2. For every member who pays by direct debit, enter the IBAN, **SEPA Mandate Date** and a unique **mandate reference** (e.g. `NW-1001`) under **Bank Details** in the [member dialog](mitglieder.md#adding-or-editing-a-member).
+
+### Creating a direct debit run
+
+Click **Create direct debit run**. A wizard guides you through three steps:
+
+1. **Select fees:** all open fees are listed. Fees that can't be collected (no IBAN, no mandate, no mandate reference, invalid IBAN …) are listed under **Cannot be collected** with the reason; complete the member's data.
+2. **Due date & remittance:** the **collection date**. The file must reach the bank at least one business day before. Below it you see a preview of the remittance text.
+3. **Review & export:** check the count, total, first (FRST) and recurring (RCUR) collections, then click **Create & download**.
+
+The fees are then marked as **Being collected**.
+
+### After the export
+
+| Step | Where |
+|---|---|
+| Upload the `.xml` file in online banking and authorise it | at your bank |
+| Once the bank has collected: **Confirm as paid** and enter the date; all fees of the run are marked as paid | the run in the list |
+| Record returned debits on the individual fee | [Member fees](#member-fees) |
+| Created a run by mistake? **Cancel run** and the fees are open again. Then don't upload the file, or revoke the order at the bank | the run in the list |
+
+**Download XML file** gives you a run's file again.
+
+!!! info "First and recurring collections"
+    When a mandate is used for the first time, Open ClubManager marks the debit as a first collection (FRST), afterwards as recurring (RCUR). This happens automatically.
 
 ## Deleting the full ledger
 

@@ -48,8 +48,9 @@ const FIXED_TIME = process.env.DOCS_FIXED_TIME ?? '2026-11-02T08:30:00+01:00';
 const EMAIL = process.env.DOCS_EMAIL ?? (LANG === 'de' ? 'vorstand@example.org' : 'board@example.org');
 const PASSWORD = process.env.DOCS_PASSWORD ?? 'docs-screenshots';
 // An existing screenshot is only replaced if more than this share of its pixels
-// changed, so that anti-aliasing and chart jitter don't produce a diff.
-const MIN_CHANGE = Number(process.env.DOCS_MIN_CHANGE ?? 0.001);
+// changed beyond pixelmatch's colour tolerance (which absorbs anti-aliasing).
+// Keep it at 0: even a changed amount in a summary card is a real change.
+const MIN_CHANGE = Number(process.env.DOCS_MIN_CHANGE ?? 0);
 
 // Animations make screenshots differ from run to run.
 const FREEZE_CSS = `*, *::before, *::after {
@@ -79,6 +80,9 @@ const SHOTS = [
     ['finance', '/finance'],
     ['finance-fees', '/finance', async (page) => {
         await page.getByRole('tab', { name: t('finance.tabs.memberfees') }).click();
+    }],
+    ['finance-direct-debit', '/finance', async (page) => {
+        await page.getByRole('tab', { name: t('finance.tabs.directDebit') }).click();
     }],
     ['inventory', '/inventory'],
     ['honors', '/honors'],

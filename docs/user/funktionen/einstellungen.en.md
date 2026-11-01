@@ -15,6 +15,15 @@ Shows which database file Open ClubManager uses. You can switch to another file 
 
 German, English or French. The setting applies to this device.
 
+## SEPA direct debit
+
+Only visible to administrators and treasurers. Here you enter the details for [collecting fees by direct debit](finanzen.md#direct-debit-sepa):
+
+- **Club name (creditor)**
+- **Creditor identifier**, issued by your national bank, e.g. `DE98ZZZ09999999999`
+- **IBAN of the club account** and optionally the **BIC** (not needed for domestic payments)
+- **Remittance template**, with placeholders that are replaced by the member's and fee's data in each run
+
 ## Collaboration
 
 A short status of [collaboration](../zusammenarbeit/index.md) and a link to its settings.

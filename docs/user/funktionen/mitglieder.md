@@ -35,7 +35,7 @@ Die Angaben sind in aufklappbare Abschnitte gegliedert:
 |---|---|
 | **Persönliche Informationen** | Mitgliedsnummer, E-Mail (Pflichtfeld), Vor- und Nachname, Geburtstag, Telefon, Mobil, Kommentar |
 | **Adresse** | Straße, PLZ, Stadt, Bundesland |
-| **Bankinformationen** | Kontoinhaber, IBAN, BIC, Bank, Datum des SEPA-Mandats |
+| **Bankinformationen** | Kontoinhaber, IBAN, BIC, Bank, Datum des SEPA-Mandats, Mandatsreferenz (für die [Lastschrift](finanzen.md#lastschrift-sepa), bis 35 Zeichen ohne Leerzeichen, eindeutig) |
 | **Mitgliedschaft** | Eintritts- und Austrittsdatum |
 | **Vereinsverwaltung** | Zuordnung zu [Abteilungen, Gruppen und Rollen](vereinsstruktur.md) |
 | **Familie & Erziehungsberechtigte** | [Haushalt](haushalte.md) und Erziehungsberechtigte (bei Minderjährigen) |

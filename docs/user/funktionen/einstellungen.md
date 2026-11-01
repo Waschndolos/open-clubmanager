@@ -15,6 +15,15 @@ Zeigt, welche Datenbankdatei Open ClubManager verwendet. Du kannst hier auf eine
 
 Deutsch, Englisch oder Französisch. Die Einstellung gilt für dieses Gerät.
 
+## SEPA-Lastschrift
+
+Nur sichtbar für Administratoren und Kassenwarte. Hier hinterlegst du die Daten für den [Beitragseinzug per Lastschrift](finanzen.md#lastschrift-sepa):
+
+- **Name des Vereins (Zahlungsempfänger)**
+- **Gläubiger-ID** – von der Deutschen Bundesbank vergeben, z. B. `DE98ZZZ09999999999`
+- **IBAN des Vereinskontos** und optional die **BIC** (für Inlandszahlungen nicht nötig)
+- **Vorlage Verwendungszweck** – mit Platzhaltern, die beim Lauf durch die Daten des Mitglieds und Beitrags ersetzt werden
+
 ## Zusammenarbeit
 
 Kurzinfo zum Stand der [Zusammenarbeit](../zusammenarbeit/index.md) und Link zu ihren Einstellungen.

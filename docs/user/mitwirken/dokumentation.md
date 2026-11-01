@@ -64,7 +64,7 @@ npm run docs:build        # wie in CI: Coverage-Prüfung + strenger Build
 npm run docs:screenshots  # alle Screenshots neu erzeugen (braucht Go und Node)
 ```
 
-`docs:screenshots` startet ein eigenes Backend und Frontend auf den Ports 3101 und 5273 mit einer Wegwerf-Datenbank, richtet sie mit Beispieldaten ein und fotografiert alle Seiten. Deine eigene Installation bleibt unberührt. Das passiert einmal je Sprache. Damit sich Screenshots nur ändern, wenn sich die Oberfläche ändert, ist die Uhr im Browser eingefroren, Animationen sind abgeschaltet, zufällige IDs und Zeitstempel in Tabellen werden durch feste Werte ersetzt, und eine Datei wird nur überschrieben, wenn sich mehr als 0,1 % der Pixel geändert haben. `DOCS_LANGUAGES=en` erzeugt nur eine Sprache.
+`docs:screenshots` startet ein eigenes Backend und Frontend auf den Ports 3101 und 5273 mit einer Wegwerf-Datenbank, richtet sie mit Beispieldaten ein und fotografiert alle Seiten. Deine eigene Installation bleibt unberührt. Das passiert einmal je Sprache. Damit sich Screenshots nur ändern, wenn sich die Oberfläche ändert, ist die Uhr im Browser eingefroren, Animationen sind abgeschaltet, zufällige IDs und Zeitstempel in Tabellen werden durch feste Werte ersetzt, und eine Datei wird nur überschrieben, wenn sich Pixel über die Farbtoleranz für Kantenglättung hinaus geändert haben. `DOCS_LANGUAGES=en` erzeugt nur eine Sprache.
 
 ## Schreibstil
 

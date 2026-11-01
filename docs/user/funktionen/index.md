@@ -9,7 +9,7 @@ Alle Bereiche von Open ClubManager im Überblick. Welche du siehst, hängt von d
 | [Familien & Haushalte](haushalte.md) | Haushalte mit Hauptzahler, Erziehungsberechtigte |
 | [Termine](termine.md) | Vereinskalender mit Serien und Kalender-Export |
 | [Anwesenheit](anwesenheit.md) | Trainingsbeteiligung erfassen und auswerten |
-| [Finanzen](finanzen.md) | Kassenbuch, Mitgliedsbeiträge, Kontoauszug-Import |
+| [Finanzen](finanzen.md) | Kassenbuch, Mitgliedsbeiträge, SEPA-Lastschrift, Kontoauszug-Import |
 | [Inventar](inventar.md) | Gegenstände, Ausleihen, Prüfungen und Wartung |
 | [Jubiläen & Ehrungen](ehrungen.md) | Mitgliedsjubiläen, runde Geburtstage, Ehrungen |
 | [Qualifikationen](qualifikationen.md) | Lizenzen, Erste Hilfe, Führungszeugnisse mit Ablaufwarnung |
