@@ -1,19 +1,17 @@
-import api, { BACKEND_URL } from './api';
+import api from './api';
 import { Member, Role, Group, ClubSection } from './types';
 import { DataClient } from './dataClient';
 
 export const httpApiClient: DataClient = {
     members: {
         list: async (): Promise<Member[]> => {
-            const res = await fetch(`${BACKEND_URL}/members?page=1&pageSize=500`);
-            if (!res.ok) throw new Error('Error fetching members.');
-            const payload = await res.json() as { items?: Member[] } | Member[];
+            const res = await api.get<{ items?: Member[] } | Member[]>('/members', { params: { page: 1, pageSize: 500 } });
+            const payload = res.data;
             return Array.isArray(payload) ? payload : (payload.items ?? []);
         },
         get: async (id: string): Promise<Member> => {
-            const res = await fetch(`${BACKEND_URL}/members/${id}`);
-            if (!res.ok) throw new Error(`Error fetching member ${id}.`);
-            return res.json();
+            const res = await api.get<Member>(`/members/${id}`);
+            return res.data;
         },
         create: async (data: Omit<Member, 'id'>): Promise<Member> => {
             const res = await api.post<Member>('/members', data);
@@ -36,9 +34,8 @@ export const httpApiClient: DataClient = {
 
     roles: {
         list: async (): Promise<Role[]> => {
-            const res = await fetch(`${BACKEND_URL}/roles`);
-            if (!res.ok) throw new Error('Error fetching roles.');
-            return res.json();
+            const res = await api.get<Role[]>('/roles');
+            return res.data;
         },
         create: async (data: Omit<Role, 'id'>): Promise<Role> => {
             const res = await api.post<Role>('/roles', data);
@@ -55,9 +52,8 @@ export const httpApiClient: DataClient = {
 
     groups: {
         list: async (): Promise<Group[]> => {
-            const res = await fetch(`${BACKEND_URL}/groups`);
-            if (!res.ok) throw new Error('Error fetching groups.');
-            return res.json();
+            const res = await api.get<Group[]>('/groups');
+            return res.data;
         },
         create: async (data: Omit<Group, 'id'>): Promise<Group> => {
             const res = await api.post<Group>('/groups', data);
@@ -74,9 +70,8 @@ export const httpApiClient: DataClient = {
 
     sections: {
         list: async (): Promise<ClubSection[]> => {
-            const res = await fetch(`${BACKEND_URL}/sections`);
-            if (!res.ok) throw new Error('Error fetching sections.');
-            return res.json();
+            const res = await api.get<ClubSection[]>('/sections');
+            return res.data;
         },
         create: async (data: Omit<ClubSection, 'id'>): Promise<ClubSection> => {
             const res = await api.post<ClubSection>('/sections', data);

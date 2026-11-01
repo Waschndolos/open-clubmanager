@@ -24,13 +24,9 @@ import (
 )
 
 // bearerAuthRequired wraps the given handler so that requests must carry a
-// valid JWT – mirroring the way the generated openapi middleware applies auth.
+// valid JWT.
 func bearerAuthRequired(jwtSecret string, h http.HandlerFunc) http.HandlerFunc {
-	jwtMw := auth.Middleware(jwtSecret)
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), openapi.BearerAuthScopes, []string{})
-		jwtMw(h).ServeHTTP(w, r.WithContext(ctx))
-	}
+	return auth.Middleware(jwtSecret)(h).ServeHTTP
 }
 
 // corsMiddleware adds CORS headers for the Tauri desktop frontend and the
@@ -100,7 +96,7 @@ func main() {
 	openapi.HandlerWithOptions(api, openapi.ChiServerOptions{
 		BaseURL:     "/api/v2",
 		BaseRouter:  router,
-		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, auth.Middleware(cfg.JWTSecret)},
+		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, auth.MiddlewareAllowing(cfg.JWTSecret, api.AllowAnonymous)},
 	})
 
 	// Backup / restore endpoints are not part of the generated OpenAPI spec, so

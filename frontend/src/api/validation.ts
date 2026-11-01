@@ -1,15 +1,7 @@
-import { BACKEND_URL } from './api';
-
-const BASE_URL = `${BACKEND_URL}/validation`;
+import api from './api';
 
 export async function validatePath(path: string): Promise<{valid: boolean, i18nToken?: string}> {
-    const res = await fetch(BASE_URL + "/check-db-path",  {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ path }),
-    });
-    return await res.json();
+    const res = await api.post<{valid: boolean, i18nToken?: string}>('/validation/check-db-path', { path });
+    return res.data;
 }
 

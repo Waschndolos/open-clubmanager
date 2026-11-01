@@ -1,4 +1,3 @@
-import {BACKEND_URL} from "./api";
 import api from "./api";
 
 export interface Statistic {
@@ -36,14 +35,9 @@ export interface DashboardCharts {
     membersBySection: SectionCount[];
 }
 
-const BASE_URL = `${BACKEND_URL}/statistics`;
-
 export async function fetchStatistics(): Promise<Statistic[]> {
-    const response = await fetch(BASE_URL);
-    if (!response.ok) {
-        throw new Error('Error fetching statistics: ' + response.statusText);
-    }
-    return response.json();
+    const response = await api.get<Statistic[]>('/statistics');
+    return response.data;
 }
 
 export async function fetchChartStatistics(): Promise<DashboardCharts> {

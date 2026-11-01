@@ -38,29 +38,27 @@ func NewToken(email string, role openapi.AppRole, secret string) (string, error)
 	return token.SignedString([]byte(secret))
 }
 
+// Middleware requires a valid bearer token on every request it wraps.
 func Middleware(secret string) openapi.MiddlewareFunc {
+	return MiddlewareAllowing(secret, nil)
+}
+
+// MiddlewareAllowing requires a valid bearer token on every request except
+// those anonymous reports as open to callers without one. Authentication is
+// the default: an operation without a security requirement in the OpenAPI
+// spec is not public unless anonymous names it. A valid token on an open
+// request still attaches its claims.
+func MiddlewareAllowing(secret string, anonymous func(*http.Request) bool) openapi.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.Context().Value(openapi.BearerAuthScopes) == nil {
-				next.ServeHTTP(w, r)
-				return
-			}
+			open := anonymous != nil && anonymous(r)
 
-			rawAuth := r.Header.Get("Authorization")
-			tokenString, err := extractBearer(rawAuth)
+			claims, err := parseToken(r.Header.Get("Authorization"), secret)
 			if err != nil {
-				http.Error(w, "unauthorized", http.StatusUnauthorized)
-				return
-			}
-
-			claims := &Claims{}
-			token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-				if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
-					return nil, errors.New("unexpected jwt signing method")
+				if open {
+					next.ServeHTTP(w, r)
+					return
 				}
-				return []byte(secret), nil
-			})
-			if err != nil || !token.Valid {
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
@@ -68,6 +66,25 @@ func Middleware(secret string) openapi.MiddlewareFunc {
 			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), claimsKey, claims)))
 		})
 	}
+}
+
+// parseToken validates the bearer token in an Authorization header.
+func parseToken(rawAuth, secret string) (*Claims, error) {
+	tokenString, err := extractBearer(rawAuth)
+	if err != nil {
+		return nil, err
+	}
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
+			return nil, errors.New("unexpected jwt signing method")
+		}
+		return []byte(secret), nil
+	})
+	if err != nil || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+	return claims, nil
 }
 
 func ClaimsFromContext(ctx context.Context) (*Claims, bool) {

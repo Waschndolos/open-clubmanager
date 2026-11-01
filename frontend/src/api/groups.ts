@@ -1,6 +1,6 @@
 import { Group, MemberSummary } from './types';
 import { createEntityApi } from './entityApi';
-import api, { BACKEND_URL } from './api';
+import api from './api';
 
 const entityApi = createEntityApi<Group>('groups');
 
@@ -10,9 +10,8 @@ export const updateGroup = entityApi.update;
 export const deleteGroup = entityApi.delete;
 
 export async function fetchGroupMembers(id: string): Promise<MemberSummary[]> {
-    const res = await fetch(`${BACKEND_URL}/groups/${id}/members`);
-    if (!res.ok) throw new Error(`Error fetching members for group ${id}.`);
-    return res.json();
+    const res = await api.get<MemberSummary[]>(`/groups/${id}/members`);
+    return res.data;
 }
 
 export async function assignGroupMembers(id: string, memberIds: string[]): Promise<void> {
