@@ -18,6 +18,7 @@ func init() {
 	Register(Provider{Key: "household", Title: "Household", Scope: db.ScopeMembersCore, Collect: collectHousehold})
 	Register(Provider{Key: "guardians", Title: "Guardians", Scope: db.ScopeMembersContact, Collect: collectGuardians})
 	Register(Provider{Key: "directDebits", Title: "SEPA direct debits", Scope: db.ScopeMembersBank, Collect: collectDirectDebits})
+	Register(Provider{Key: "feeModel", Title: "Fee model", Scope: db.ScopeFinance, Collect: collectFeeModel})
 	Register(Provider{Key: "fees", Title: "Membership fees", Scope: db.ScopeFinance, Collect: collectFees})
 	Register(Provider{Key: "feePayments", Title: "Bank payments assigned to fees", Scope: db.ScopeMembersBank, Collect: collectFeePayments})
 	Register(Provider{Key: "loans", Title: "Inventory loans", Scope: db.ScopeInventory, Collect: collectLoans})
@@ -198,6 +199,22 @@ func collectFees(ctx context.Context, st *store.Store, id string) ([]Record, err
 		})
 	}
 	return out, nil
+}
+
+func collectFeeModel(ctx context.Context, st *store.Store, id string) ([]Record, error) {
+	a, err := st.GetFeeAssignment(ctx, id)
+	if err != nil || a.Mode == store.FeeModeAuto {
+		return nil, err
+	}
+	rec := Record{{"mode", "Assignment", a.Mode}}
+	if a.ModelID != nil {
+		m, err := st.GetFeeModel(ctx, *a.ModelID)
+		if err != nil {
+			return nil, err
+		}
+		rec = append(rec, Field{"model", "Fee model", m.Name})
+	}
+	return []Record{rec}, nil
 }
 
 // collectFeePayments lists the bank statement entries assigned to the

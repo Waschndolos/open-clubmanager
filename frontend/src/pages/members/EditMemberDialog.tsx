@@ -15,7 +15,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useTranslation} from "react-i18next";
 import React, {useEffect, useState} from "react";
-import {Member, Role, Group, ClubSection, canEditData} from "../../api/types";
+import {Member, Role, Group, ClubSection, canEditData, canEditFinance} from "../../api/types";
 import {fetchRoles} from "../../api/roles";
 import {fetchGroups} from "../../api/groups";
 import {fetchSections} from "../../api/sections";
@@ -27,6 +27,8 @@ import {useRoleName} from "../../components/collaboration/common";
 import {FamilySection, PayerExitWarning, useMemberHousehold} from "./FamilySection";
 import {useAuth} from "../../context/AuthContext";
 import {fetchSepaMandate, saveSepaMandate} from "../../api/sepa";
+import {assignmentValue, FeeModel, fetchFeeAssignment, fetchFeeModels, saveFeeAssignment, toAssignment} from "../../api/feeModels";
+import {FeeAssignmentSelect} from "../finance/FeeModels";
 import {isAxiosError} from "axios";
 
 type Props = {
@@ -65,6 +67,12 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
     // The mandate reference has its own endpoint, so it can only be set on
     // members that already exist.
     const [mandateRef, setMandateRef] = useState<{ loaded?: string; value: string; error?: string }>({value: ''});
+    // Likewise the fee model, which belongs to the finances: only roles that
+    // manage finances change it.
+    const finance = usePermission('finance');
+    const feeRO = !canEditFinance(appRole) || finance !== 'write';
+    const [feeModels, setFeeModels] = useState<FeeModel[]>([]);
+    const [feeModel, setFeeModel] = useState<{ loaded?: string; value: string; error?: string }>({value: 'auto'});
 
     useEffect(() => {
         fetchRoles().then(setAllRoles);
@@ -78,6 +86,29 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
             .then((ref) => setMandateRef({loaded: ref ?? '', value: ref ?? ''}))
             .catch(() => undefined);
     }, [isNew, bank, member.id]);
+
+    useEffect(() => {
+        if (isNew || finance === 'none') return;
+        Promise.all([fetchFeeModels(), fetchFeeAssignment(member.id)])
+            .then(([models, assignment]) => {
+                setFeeModels(models);
+                const value = assignmentValue(assignment);
+                setFeeModel({loaded: value, value});
+            })
+            .catch(() => undefined);
+    }, [isNew, finance, member.id]);
+
+    const saveFeeModel = async (): Promise<boolean> => {
+        if (feeRO || feeModel.loaded === undefined || feeModel.value === feeModel.loaded) return true;
+        try {
+            await saveFeeAssignment(member.id, toAssignment(feeModel.value));
+            return true;
+        } catch {
+            setFeeModel((prev) => ({...prev, error: t("members.feeModel.saveFailed")}));
+            setExpandedPanel('membership');
+            return false;
+        }
+    };
 
     const saveMandateRef = async (): Promise<boolean> => {
         if (bankRO || mandateRef.loaded === undefined || mandateRef.value.trim() === mandateRef.loaded) return true;
@@ -246,6 +277,16 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                 />
                             </Grid>
                         </Box>
+                            {!isNew && feeModel.loaded !== undefined && (
+                                <Box sx={{mt: 2, maxWidth: 360}}>
+                                    <FeeAssignmentSelect models={feeModels} value={feeModel.value} disabled={feeRO}
+                                                         label={t("members.feeModel.label")}
+                                                         onChange={(value) => setFeeModel((prev) => ({...prev, value, error: undefined}))}/>
+                                    <Typography variant="caption" color={feeModel.error ? "error" : "text.secondary"}>
+                                        {feeModel.error ?? t("members.feeModel.help")}
+                                    </Typography>
+                                </Box>
+                            )}
                             <PayerExitWarning memberId={member.id} exitDate={formData.exitDate} household={household}/>
                         </AccordionDetails>
                     </Accordion>
@@ -335,6 +376,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                         onClick={async () => {
                             if (contact !== 'none' && !formData.email) return;
                             if (!await saveMandateRef()) return;
+                            if (!await saveFeeModel()) return;
                             const payload = {
                                 ...formData,
                                 roleIds: formData.roles?.map(r => r.id),

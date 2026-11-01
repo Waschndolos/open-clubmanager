@@ -352,7 +352,7 @@ func writeMemberParts(w *writer, id string, in MemberInput, now string) error {
 
 // DeleteMember tombstones a member together with everything that belongs to
 // it: contact data, bank details, links, household membership, guardians,
-// fees and inventory loans. A household the member paid for loses its payer.
+// fees, the fee model assignment and inventory loans. A household the member paid for loses its payer.
 func (s *Store) DeleteMember(ctx context.Context, id string) error {
 	return s.inWriteTx(ctx, func(w *writer) error {
 		tombstone := row{"deleted_at": db.Now()}
@@ -361,7 +361,7 @@ func (s *Store) DeleteMember(ctx context.Context, id string) error {
 		}
 		for _, table := range []string{"member_contacts", "member_bank_details", "member_roles", "member_groups",
 			"member_sections", "member_honors", "member_membership", "member_qualifications", "household_members",
-			"member_guardians", "event_attendance", "member_fees", "inventory_loans", "member_sepa_mandates"} {
+			"member_guardians", "event_attendance", "member_fees", "fee_charges", "member_fee_models", "inventory_loans", "member_sepa_mandates"} {
 			if _, err := w.update(table, `member_id = ? AND deleted_at IS NULL`, []any{id}, tombstone); err != nil {
 				return err
 			}

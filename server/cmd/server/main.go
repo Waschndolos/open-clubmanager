@@ -169,6 +169,19 @@ func main() {
 	router.Get("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(cfg.JWTSecret, api.GetSEPAMandate))
 	router.Put("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(cfg.JWTSecret, api.SetSEPAMandate))
 
+	// Fee models and billing runs (Beitragsmodelle & Sollstellung).
+	router.Get("/api/v2/fee-models", bearerAuthRequired(cfg.JWTSecret, api.ListFeeModels))
+	router.Post("/api/v2/fee-models", bearerAuthRequired(cfg.JWTSecret, api.CreateFeeModel))
+	router.Get("/api/v2/fee-models/members", bearerAuthRequired(cfg.JWTSecret, api.ListMemberFeeModels))
+	router.Put("/api/v2/fee-models/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateFeeModel))
+	router.Delete("/api/v2/fee-models/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteFeeModel))
+	router.Get("/api/v2/members/{id}/fee-model", bearerAuthRequired(cfg.JWTSecret, api.GetMemberFeeModel))
+	router.Put("/api/v2/members/{id}/fee-model", bearerAuthRequired(cfg.JWTSecret, api.SetMemberFeeModel))
+	router.Get("/api/v2/fee-runs", bearerAuthRequired(cfg.JWTSecret, api.ListFeeRuns))
+	router.Post("/api/v2/fee-runs", bearerAuthRequired(cfg.JWTSecret, api.CreateFeeRun))
+	router.Post("/api/v2/fee-runs/preview", bearerAuthRequired(cfg.JWTSecret, api.PreviewFeeRun))
+	router.Delete("/api/v2/fee-runs/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteFeeRun))
+
 	// Payment reconciliation: imported bank transactions assigned to member fees.
 	router.Get("/api/v2/reconciliation", bearerAuthRequired(cfg.JWTSecret, api.GetReconciliation))
 	router.Post("/api/v2/reconciliation/confirm-certain", bearerAuthRequired(cfg.JWTSecret, api.ConfirmCertainReconciliations))
