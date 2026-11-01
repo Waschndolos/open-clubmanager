@@ -20,6 +20,7 @@ func init() {
 	Register(Provider{Key: "directDebits", Title: "SEPA direct debits", Scope: db.ScopeMembersBank, Collect: collectDirectDebits})
 	Register(Provider{Key: "feeModel", Title: "Fee model", Scope: db.ScopeFinance, Collect: collectFeeModel})
 	Register(Provider{Key: "fees", Title: "Membership fees", Scope: db.ScopeFinance, Collect: collectFees})
+	Register(Provider{Key: "feePayments", Title: "Bank payments assigned to fees", Scope: db.ScopeMembersBank, Collect: collectFeePayments})
 	Register(Provider{Key: "loans", Title: "Inventory loans", Scope: db.ScopeInventory, Collect: collectLoans})
 	Register(Provider{Key: "history", Title: "Change history", Scope: db.ScopeMembersCore, Collect: collectHistory})
 }
@@ -214,6 +215,37 @@ func collectFeeModel(ctx context.Context, st *store.Store, id string) ([]Record,
 		rec = append(rec, Field{"model", "Fee model", m.Name})
 	}
 	return []Record{rec}, nil
+}
+
+// collectFeePayments lists the bank statement entries assigned to the
+// member's fees, with the payer as it appeared on the statement.
+func collectFeePayments(ctx context.Context, st *store.Store, id string) ([]Record, error) {
+	entries, err := st.ReconciliationEntries(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var out []Record
+	for _, e := range entries {
+		for _, p := range e.Payments {
+			if p.Member.ID != id {
+				continue
+			}
+			kind := "payment"
+			if e.Bank.IsReturn {
+				kind = "returned direct debit"
+			}
+			out = append(out, Record{
+				{"date", "Booking date", date(&e.Date)},
+				{"type", "Type", kind},
+				{"feeId", "Fee", p.FeeID},
+				{"amount", "Assigned amount", db.FromCents(p.AmountCents)},
+				{"payerName", "Payer", e.Bank.CounterpartyName},
+				{"payerIban", "Payer IBAN", e.Bank.CounterpartyIBAN},
+				{"remittance", "Remittance information", e.Description},
+			})
+		}
+	}
+	return out, nil
 }
 
 func collectLoans(ctx context.Context, st *store.Store, id string) ([]Record, error) {

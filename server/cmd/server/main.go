@@ -182,6 +182,13 @@ func main() {
 	router.Post("/api/v2/fee-runs/preview", bearerAuthRequired(cfg.JWTSecret, api.PreviewFeeRun))
 	router.Delete("/api/v2/fee-runs/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteFeeRun))
 
+	// Payment reconciliation: imported bank transactions assigned to member fees.
+	router.Get("/api/v2/reconciliation", bearerAuthRequired(cfg.JWTSecret, api.GetReconciliation))
+	router.Post("/api/v2/reconciliation/confirm-certain", bearerAuthRequired(cfg.JWTSecret, api.ConfirmCertainReconciliations))
+	router.Post("/api/v2/reconciliation/{id}/confirm", bearerAuthRequired(cfg.JWTSecret, api.ConfirmReconciliation))
+	router.Post("/api/v2/reconciliation/{id}/dismiss", bearerAuthRequired(cfg.JWTSecret, api.DismissReconciliation))
+	router.Post("/api/v2/reconciliation/{id}/reopen", bearerAuthRequired(cfg.JWTSecret, api.ReopenReconciliation))
+
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))

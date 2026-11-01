@@ -11,6 +11,7 @@
 | **Invite code** | 24-character code a new device uses to join a club. Valid for 7 days, usable once. |
 | **Main payer** | Member who pays the fees of a [household](../funktionen/haushalte.md). |
 | **Migration (database)** | Automatic adjustment of the database to a new program version on start. See [Updates](../migration/updates.md). |
+| **Returned direct debit** | A direct debit that the member's bank sends back, e.g. for insufficient funds. See [Payment reconciliation](../funktionen/finanzen.md#returned-direct-debits). |
 | **Role (club structure)** | A member's position in the club, e.g. youth officer. Grants no permissions in the program. |
 | **Safety code** | 6-digit code a joining person tells the board so the board can approve the join request. |
 | **Section** | A division of the club, e.g. football or gymnastics. See [Club structure](../funktionen/vereinsstruktur.md). |

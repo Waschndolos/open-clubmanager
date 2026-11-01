@@ -101,6 +101,19 @@ const SHOTS = [
     ['finance-direct-debit', '/finance', async (page) => {
         await page.getByRole('tab', { name: t('finance.tabs.directDebit') }).click();
     }],
+    // Imports the example statement once (it matches the demo data), then shows the review.
+    ['finance-reconciliation', '/finance', async (page) => {
+        await page.getByRole('tab', { name: t('finance.tabs.reconciliation') }).click();
+        const empty = page.getByText(t('reconciliation.empty'));
+        const table = page.getByRole('columnheader', { name: t('reconciliation.columns.assignment') });
+        await empty.or(table).first().waitFor();
+        if (await empty.isVisible()) {
+            await page.getByRole('tab', { name: t('finance.tabs.transactions') }).click();
+            await page.locator('input[type="file"]').setInputFiles(path.resolve(here, '../../testdata/camt053-reconciliation.xml'));
+            await page.getByRole('button', { name: t('reconciliation.openReview') }).click();
+        }
+        await table.waitFor();
+    }],
     ['inventory', '/inventory'],
     ['honors', '/honors'],
     ['qualifications', '/qualifications'],

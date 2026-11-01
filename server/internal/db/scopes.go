@@ -68,6 +68,7 @@ var SyncedTables = []Table{
 	{Name: "sepa_creditor", Scope: ScopeMembersBank, PK: idPK},
 	{Name: "sepa_runs", Scope: ScopeMembersBank, PK: idPK},
 	{Name: "sepa_run_items", Scope: ScopeMembersBank, PK: idPK},
+	{Name: "finance_transaction_bank", Scope: ScopeMembersBank, PK: []string{"transaction_id"}},
 
 	{Name: "finance_transactions", Scope: ScopeFinance, PK: idPK},
 	{Name: "member_fees", Scope: ScopeFinance, PK: idPK},
@@ -75,6 +76,7 @@ var SyncedTables = []Table{
 	{Name: "member_fee_models", Scope: ScopeFinance, PK: []string{"member_id"}},
 	{Name: "fee_runs", Scope: ScopeFinance, PK: idPK},
 	{Name: "fee_charges", Scope: ScopeFinance, PK: []string{"fee_id"}},
+	{Name: "member_fee_payments", Scope: ScopeFinance, PK: idPK},
 
 	{Name: "inventory_items", Scope: ScopeInventory, PK: idPK},
 	{Name: "inventory_loans", Scope: ScopeInventory, PK: idPK},

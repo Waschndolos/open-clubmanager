@@ -74,10 +74,16 @@ func toSEPARunJSON(r store.SEPARun) sepaRunJSON {
 	return out
 }
 
-// sepaAccess checks that the caller may use direct debits: only roles that
-// manage finances (the treasurer), on a device that may read (or, with
-// write, change) both the bank data and the finances.
+// sepaAccess checks that the caller may use direct debits.
 func (a *API) sepaAccess(w http.ResponseWriter, r *http.Request, write bool) bool {
+	return a.financeBankAccess(w, r, write, "direct debits")
+}
+
+// financeBankAccess checks that the caller may use a feature that combines
+// bank data and finances (direct debits, payment reconciliation): only roles
+// that manage finances (the treasurer), on a device that may read (or, with
+// write, change) both the bank data and the finances.
+func (a *API) financeBankAccess(w http.ResponseWriter, r *http.Request, write bool, feature string) bool {
 	claims, ok := auth.ClaimsFromContext(r.Context())
 	allowed := ok && slices.Contains(financeEditors, claims.AppRole)
 	for _, s := range []db.Scope{db.ScopeMembersBank, db.ScopeFinance} {
@@ -92,7 +98,7 @@ func (a *API) sepaAccess(w http.ResponseWriter, r *http.Request, write bool) boo
 	}
 	if !allowed {
 		code := "FORBIDDEN"
-		writeJSON(w, http.StatusForbidden, openapi.ErrorResponse{Code: &code, Error: "your role may not access direct debits"})
+		writeJSON(w, http.StatusForbidden, openapi.ErrorResponse{Code: &code, Error: "your role may not access " + feature})
 	}
 	return allowed
 }

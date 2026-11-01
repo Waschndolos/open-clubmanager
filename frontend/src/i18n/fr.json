@@ -439,7 +439,8 @@
             "directDebit": "Prélèvement",
             "openItems": "Impayés",
             "feeModels": "Barèmes de cotisation",
-            "feeRuns": "Appel de cotisations"
+            "feeRuns": "Appel de cotisations",
+            "reconciliation": "Rapprochement"
         },
         "summary": {
             "balance": "Solde",
@@ -450,7 +451,7 @@
         "transactions": {
             "create": "Ajouter une transaction",
             "importCamt": "Importer CAMT.053",
-            "importResult": "CAMT.053 : {{imported}} importées, {{skipped}} ignorées ({{total}} au total), associées à {{matched}} membres, {{paid}} cotisations marquées payées, {{createdFees}} cotisations créées",
+            "importResult": "CAMT.053 : {{imported}} importées, {{skipped}} ignorées ({{total}} au total)",
             "importError": "Échec de l'import CAMT.053.",
             "fields": {
                 "date": "Date",
@@ -1025,6 +1026,90 @@
             "paidDate": "Payé le",
             "cancelTitle": "Annuler le lot de prélèvements ?",
             "cancelText": "Les cotisations seront de nouveau ouvertes. Ne déposez plus le fichier à la banque ou révoquez l'ordre."
+        }
+    },
+    "reconciliation": {
+        "loadFailed": "Impossible de charger le rapprochement des paiements",
+        "actionFailed": "L'action a échoué",
+        "feesChanged": "Les cotisations ont changé entre-temps. Veuillez vérifier l'attribution.",
+        "confirmed": "Attribution confirmée",
+        "reopened": "Attribution annulée",
+        "certainConfirmed": "{{count}} attributions sûres confirmées",
+        "importHint": "{{count}} opérations ont une proposition d'attribution à des cotisations ouvertes. Rien n'est comptabilisé sans votre confirmation.",
+        "openReview": "Ouvrir le rapprochement",
+        "empty": "Aucune opération bancaire importée. Importez un relevé (CAMT.053) dans le livre de caisse ; les paiements reçus et les prélèvements rejetés apparaîtront ici pour vérification.",
+        "allDone": "Tout est vérifié – aucune opération ouverte.",
+        "hint": "Les propositions reposent sur le numéro de membre dans le libellé, l'IBAN du payeur ainsi que le nom et le montant. Rien n'est comptabilisé sans confirmation ; chaque attribution peut être annulée.",
+        "unknownPayer": "Payeur inconnu",
+        "return": "Prélèvement rejeté",
+        "noSuggestion": "Aucune cotisation correspondante",
+        "noFee": "Vérifié sans cotisation",
+        "unallocated": "{{amount}} restent sans cotisation",
+        "filter": {
+            "open": "Ouvertes ({{count}})",
+            "done": "Traitées",
+            "all": "Toutes"
+        },
+        "confidence": {
+            "certain": "Sûr",
+            "probable": "Probable",
+            "unclear": "Incertain"
+        },
+        "status": {
+            "unmatched": "Sans proposition",
+            "reconciled": "Attribuée",
+            "dismissed": "Sans cotisation",
+            "open": "Ouverte",
+            "none": "–"
+        },
+        "reasons": {
+            "END_TO_END_ID": "Référence du prélèvement",
+            "MEMBER_NUMBER": "Numéro de membre",
+            "IBAN": "IBAN",
+            "NAME": "Nom",
+            "AMOUNT": "Montant correspondant",
+            "HOUSEHOLD": "Foyer",
+            "PARTIAL": "Paiement partiel",
+            "OVERPAID": "Trop-perçu"
+        },
+        "returnReasons": {
+            "AC04": "Compte clôturé",
+            "AC06": "Compte bloqué",
+            "AM04": "Provision insuffisante",
+            "MD01": "Pas de mandat",
+            "MD06": "Remboursement demandé par le payeur",
+            "MS02": "Motif non précisé",
+            "MS03": "Motif non précisé",
+            "SL01": "Service bancaire"
+        },
+        "columns": {
+            "date": "Date",
+            "payer": "Payeur",
+            "remittance": "Libellé",
+            "amount": "Montant",
+            "assignment": "Attribution",
+            "fee": "Cotisation"
+        },
+        "actions": {
+            "confirm": "Confirmer",
+            "confirmCertain": "Confirmer toutes les sûres ({{count}})",
+            "edit": "Modifier l'attribution",
+            "dismiss": "Marquer comme vérifiée sans cotisation",
+            "undo": "Annuler"
+        },
+        "dialog": {
+            "title": "Attribuer le paiement aux cotisations",
+            "titleReturn": "Attribuer le prélèvement rejeté aux cotisations",
+            "search": "Rechercher un membre ou une cotisation",
+            "due": "Dû",
+            "paid": "Payé",
+            "assigned": "Attribué",
+            "sum": "Attribué : {{assigned}} sur {{amount}}",
+            "rest": "Reste sans cotisation : {{rest}}",
+            "invalidAmount": "Un montant est invalide ou supérieur à ce que permet cette cotisation.",
+            "exceeds": "Les montants attribués dépassent l'opération.",
+            "noOpenFees": "Il n'y a aucune cotisation ouverte.",
+            "noPaidFees": "Il n'y a aucune cotisation payée pouvant être contrepassée."
         }
     },
     "feeModels": {

@@ -126,10 +126,14 @@ func transactionColumns(in TransactionInput) row {
 	}
 }
 
-// DeleteTransaction tombstones a transaction.
+// DeleteTransaction tombstones a transaction. Fees it was assigned to are
+// settled again without it.
 func (s *Store) DeleteTransaction(ctx context.Context, id string) error {
 	return s.inWriteTx(ctx, func(w *writer) error {
-		return affected(w.update("finance_transactions", `id = ? AND deleted_at IS NULL`, []any{id}, row{"deleted_at": db.Now()}))
+		if err := affected(w.update("finance_transactions", `id = ? AND deleted_at IS NULL`, []any{id}, row{"deleted_at": db.Now()})); err != nil {
+			return err
+		}
+		return removePayments(w, `transaction_id = ?`, id)
 	})
 }
 
@@ -216,11 +220,15 @@ func feeColumns(in FeeInput) row {
 	}
 }
 
-// DeleteFee tombstones a fee. A period charged by it can be charged again.
+// DeleteFee tombstones a fee and the payments assigned to it. A period
+// charged by it can be charged again.
 func (s *Store) DeleteFee(ctx context.Context, id string) error {
 	return s.inWriteTx(ctx, func(w *writer) error {
 		tombstone := row{"deleted_at": db.Now()}
 		if err := affected(w.update("member_fees", `id = ? AND deleted_at IS NULL`, []any{id}, tombstone)); err != nil {
+			return err
+		}
+		if _, err := w.update("member_fee_payments", `fee_id = ? AND deleted_at IS NULL`, []any{id}, tombstone); err != nil {
 			return err
 		}
 		_, err := w.update("fee_charges", `fee_id = ? AND deleted_at IS NULL`, []any{id}, tombstone)
@@ -228,9 +236,9 @@ func (s *Store) DeleteFee(ctx context.Context, id string) error {
 	})
 }
 
-// ResetFinance tombstones all live fees, billing runs and transactions and
-// reports how many fees and transactions were removed. Fee models and the
-// members' assignments stay.
+// ResetFinance tombstones all live fees, billing runs, transactions and
+// payment assignments and reports how many fees and transactions were
+// removed. Fee models and the members' assignments stay.
 func (s *Store) ResetFinance(ctx context.Context) (fees, transactions int, err error) {
 	err = s.inWriteTx(ctx, func(w *writer) error {
 		tombstone := row{"deleted_at": db.Now()}
@@ -238,7 +246,7 @@ func (s *Store) ResetFinance(ctx context.Context) (fees, transactions int, err e
 		if fees, err = w.update("member_fees", `deleted_at IS NULL`, nil, tombstone); err != nil {
 			return err
 		}
-		for _, table := range []string{"fee_charges", "fee_runs"} {
+		for _, table := range []string{"fee_charges", "fee_runs", "member_fee_payments"} {
 			if _, err := w.update(table, `deleted_at IS NULL`, nil, tombstone); err != nil {
 				return err
 			}

@@ -62,8 +62,10 @@ type SEPACreditor struct {
 	RemittanceTemplate *string
 }
 
-// SEPACandidate is an open fee (unpaid and not in a run) with the bank and
-// mandate data of its member.
+// SEPACandidate is an open fee (unpaid and not in a run that has not been
+// confirmed) with the bank and mandate data of its member. A fee in a
+// confirmed run is open again after its debit was returned. AmountCents is
+// what is still due after assigned payments.
 type SEPACandidate struct {
 	FeeID         string
 	Member        MemberRef
@@ -251,14 +253,15 @@ func sepaCandidates(ctx context.Context, q queryer, feeIDs []string) ([]SEPACand
 		m.id, m.number, m.first_name, m.last_name,
 		b.account_holder, b.iban, b.bic, b.sepa_mandate_date, sm.mandate_reference,
 		EXISTS (SELECT 1 FROM sepa_run_items i JOIN sepa_runs r ON r.id = i.run_id AND r.deleted_at IS NULL
-			WHERE i.deleted_at IS NULL AND i.member_id = m.id AND i.mandate_reference = sm.mandate_reference)
+			WHERE i.deleted_at IS NULL AND i.member_id = m.id AND i.mandate_reference = sm.mandate_reference),
+		` + paidSinceReturnSQL + `
 	FROM member_fees f
 	JOIN members m ON m.id = f.member_id AND m.deleted_at IS NULL
 	LEFT JOIN member_bank_details b ON b.member_id = m.id AND b.deleted_at IS NULL
 	LEFT JOIN member_sepa_mandates sm ON sm.member_id = m.id AND sm.deleted_at IS NULL
 	WHERE f.deleted_at IS NULL AND f.paid_date IS NULL
 	AND NOT EXISTS (SELECT 1 FROM sepa_run_items i JOIN sepa_runs r ON r.id = i.run_id AND r.deleted_at IS NULL
-		WHERE i.deleted_at IS NULL AND i.fee_id = f.id)`
+		AND r.paid_date IS NULL WHERE i.deleted_at IS NULL AND i.fee_id = f.id)`
 	var args []any
 	if feeIDs != nil {
 		query += ` AND f.id IN (` + placeholders(len(feeIDs)) + `)`
@@ -275,11 +278,14 @@ func sepaCandidates(ctx context.Context, q queryer, feeIDs []string) ([]SEPACand
 		var desc, holder, iban, bic, mandate, ref sql.NullString
 		var due string
 		var used bool
+		var paidCents int64
 		if err := rows.Scan(&c.FeeID, &c.AmountCents, &c.Year, &desc, &due,
 			&c.Member.ID, &c.Member.Number, &c.Member.FirstName, &c.Member.LastName,
-			&holder, &iban, &bic, &mandate, &ref, &used); err != nil {
+			&holder, &iban, &bic, &mandate, &ref, &used, &paidCents); err != nil {
 			return nil, err
 		}
+		// Only what is still due after partial payments.
+		c.AmountCents -= paidCents
 		c.Description, c.DueDate = nullStr(desc), parseTime(due)
 		c.AccountHolder, c.IBAN, c.BIC, c.MandateDate, c.MandateRef = nullStr(holder), nullStr(iban), nullStr(bic), nullTime(mandate), nullStr(ref)
 		c.SequenceType = sepa.SeqFirst
