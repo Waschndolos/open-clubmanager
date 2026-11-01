@@ -63,6 +63,16 @@ func (s *Store) GetUserByEmail(ctx context.Context, email string) (User, error) 
 	return scanUser(s.db.QueryRowContext(ctx, userSelect+` AND email = ?`, email))
 }
 
+// UserEmailTaken reports whether another live user than exceptID (empty for
+// none) has the given e-mail address, ignoring case.
+func (s *Store) UserEmailTaken(ctx context.Context, email, exceptID string) (bool, error) {
+	var n int
+	err := s.db.QueryRowContext(ctx,
+		`SELECT COUNT(*) FROM users WHERE deleted_at IS NULL AND lower(email) = lower(?) AND id != ?`,
+		email, exceptID).Scan(&n)
+	return n > 0, err
+}
+
 // CreateUser inserts a user; passwordHash must already be hashed.
 func (s *Store) CreateUser(ctx context.Context, email, passwordHash, appRole string) (User, error) {
 	id := db.NewID()

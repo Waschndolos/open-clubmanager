@@ -77,8 +77,7 @@ func (a *API) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(req.NewPassword) < 8 {
-		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "password must be at least 8 characters"})
+	if !checkPasswordPolicy(w, req.NewPassword, "newPassword") {
 		return
 	}
 

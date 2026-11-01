@@ -71,6 +71,12 @@ func (a *API) CreateAppUser(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid appRole"})
 		return
 	}
+	if !checkPasswordPolicy(w, req.Password, "password") {
+		return
+	}
+	if !a.emailAvailable(w, r, st, string(req.Email), "") {
+		return
+	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -80,7 +86,7 @@ func (a *API) CreateAppUser(w http.ResponseWriter, r *http.Request) {
 
 	u, err := st.CreateUser(r.Context(), string(req.Email), string(hash), string(req.AppRole))
 	if errors.Is(err, store.ErrConflict) {
-		writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "email already in use"})
+		writeEmailInUse(w)
 		return
 	}
 	if err != nil {
@@ -114,6 +120,13 @@ func (a *API) UpdateAppUser(w http.ResponseWriter, r *http.Request, id string) {
 	var email, role *string
 	if req.Email != nil {
 		e := string(*req.Email)
+		if e == "" {
+			writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "email must not be empty"})
+			return
+		}
+		if !a.emailAvailable(w, r, st, e, id) {
+			return
+		}
 		email = &e
 	}
 	if req.AppRole != nil {
@@ -123,7 +136,7 @@ func (a *API) UpdateAppUser(w http.ResponseWriter, r *http.Request, id string) {
 
 	u, err := st.UpdateUser(r.Context(), id, email, role)
 	if errors.Is(err, store.ErrConflict) {
-		writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "email already in use"})
+		writeEmailInUse(w)
 		return
 	}
 	if err != nil {
@@ -172,8 +185,7 @@ func (a *API) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "newPassword is required"})
 		return
 	}
-	if len(req.NewPassword) < 8 {
-		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "newPassword must be at least 8 characters"})
+	if !checkPasswordPolicy(w, req.NewPassword, "newPassword") {
 		return
 	}
 
@@ -236,6 +248,27 @@ func (a *API) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
+}
+
+// emailAvailable writes a 409 response and returns false when email already
+// belongs to the administrator or to a user other than exceptID, ignoring
+// case. A user with the administrator's address could never log in, since the
+// login checks the administrator first.
+func (a *API) emailAvailable(w http.ResponseWriter, r *http.Request, st *store.Store, email, exceptID string) bool {
+	if a.isAdminEmail(email) {
+		writeEmailInUse(w)
+		return false
+	}
+	taken, err := st.UserEmailTaken(r.Context(), email, exceptID)
+	if err != nil {
+		writeStoreError(w, err, "", "failed to check email")
+		return false
+	}
+	if taken {
+		writeEmailInUse(w)
+		return false
+	}
+	return true
 }
 
 func toAPIUser(u store.User) openapi.AppUser {

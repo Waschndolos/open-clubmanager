@@ -3113,6 +3113,7 @@ paths:
     post:
       tags: [users]
       summary: Create a new app user
+      description: The password must have at least 8 characters (400, code PASSWORD_TOO_SHORT). An e-mail address of the administrator or of another user, compared ignoring case, is refused (409, code EMAIL_IN_USE).
       operationId: createAppUser
       security:
         - bearerAuth: []
@@ -3150,6 +3151,7 @@ paths:
     put:
       tags: [users]
       summary: Update an app user
+      description: An e-mail address of the administrator or of another user, compared ignoring case, is refused (409, code EMAIL_IN_USE).
       operationId: updateAppUser
       security:
         - bearerAuth: []
@@ -3174,6 +3176,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
         '500':
           $ref: '#/components/responses/InternalError'
     delete:

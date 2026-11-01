@@ -15,6 +15,8 @@ Here **administrators** create the accounts used to log in to this Open ClubMana
 2. Enter the email address, an initial password (at least 8 characters) and the [role](../erste-schritte/rollen.md).
 3. Share the login details with the person in a secure way.
 
+Each email address can belong to only one account – the administrator's address from the setup can't be used a second time either. Upper and lower case don't matter.
+
 ## Changing the role and deleting users
 
 Use the actions in the list to change the role or delete an account. Deleted accounts can no longer log in; their changes remain visible in the [history](verlauf.md).
