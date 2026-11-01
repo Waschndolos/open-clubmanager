@@ -2,6 +2,7 @@ package dsar
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/Waschndolos/open-clubmanager/server/internal/db"
@@ -21,6 +22,7 @@ func init() {
 	Register(Provider{Key: "feeModel", Title: "Fee model", Scope: db.ScopeFinance, Collect: collectFeeModel})
 	Register(Provider{Key: "fees", Title: "Membership fees", Scope: db.ScopeFinance, Collect: collectFees})
 	Register(Provider{Key: "feePayments", Title: "Bank payments assigned to fees", Scope: db.ScopeMembersBank, Collect: collectFeePayments})
+	Register(Provider{Key: "donations", Title: "Donations and donation receipts", Scope: db.ScopeFinance, Collect: collectDonations})
 	Register(Provider{Key: "loans", Title: "Inventory loans", Scope: db.ScopeInventory, Collect: collectLoans})
 	Register(Provider{Key: "history", Title: "Change history", Scope: db.ScopeMembersCore, Collect: collectHistory})
 }
@@ -244,6 +246,46 @@ func collectFeePayments(ctx context.Context, st *store.Store, id string) ([]Reco
 				{"remittance", "Remittance information", e.Description},
 			})
 		}
+	}
+	return out, nil
+}
+
+func collectDonations(ctx context.Context, st *store.Store, id string) ([]Record, error) {
+	entries, err := st.ListDonations(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var out []Record
+	for _, e := range entries {
+		if e.Member == nil || e.Member.ID != id {
+			continue
+		}
+		out = append(out, Record{
+			{"type", "Type", "donation"},
+			{"date", "Date", date(&e.Date)},
+			{"amount", "Amount", db.FromCents(e.AmountCents)},
+			{"description", "Description", e.Description},
+			{"expenseWaiver", "Waiver of expense reimbursement", e.ExpenseWaiver},
+			{"receipt", "Receipt", e.ReceiptNumber},
+		})
+	}
+	receipts, err := st.ListReceipts(ctx, 0)
+	if err != nil {
+		return nil, err
+	}
+	for _, r := range receipts {
+		if r.MemberID == nil || *r.MemberID != id {
+			continue
+		}
+		out = append(out, Record{
+			{"type", "Type", "donation receipt"},
+			{"number", "Number", r.Number},
+			{"issueDate", "Issue date", date(&r.IssueDate)},
+			{"amount", "Total", db.FromCents(r.TotalCents)},
+			{"recipient", "Name and address", r.RecipientName + ", " + strings.ReplaceAll(r.RecipientAddress, "\n", ", ")},
+			{"duplicate", "Duplicate", r.DuplicateOf != nil},
+			{"voided", "Voided", date(r.VoidedAt)},
+		})
 	}
 	return out, nil
 }

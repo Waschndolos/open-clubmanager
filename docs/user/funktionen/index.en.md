@@ -9,7 +9,7 @@ All areas of Open ClubManager at a glance. Which ones you see depends on your [r
 | [Families & households](haushalte.md) | Households with a main payer, guardians |
 | [Events](termine.md) | Club calendar with recurring events and calendar export |
 | [Attendance](anwesenheit.md) | Record and analyse training attendance |
-| [Finances](finanzen.md) | Cash book, member fees, fee models & billing runs, open items, SEPA direct debit, bank statement import, payment reconciliation |
+| [Finances](finanzen.md) | Cash book, member fees, fee models & billing runs, open items, SEPA direct debit, bank statement import, payment reconciliation, donation receipts |
 | [Inventory](inventar.md) | Items, loans, inspections and maintenance |
 | [Anniversaries & honors](ehrungen.md) | Membership anniversaries, round birthdays, honors |
 | [Qualifications](qualifikationen.md) | Licences, first aid, police clearance certificates with expiry warnings |

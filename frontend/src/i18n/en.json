@@ -440,7 +440,8 @@
             "openItems": "Open items",
             "feeModels": "Fee models",
             "feeRuns": "Billing run",
-            "reconciliation": "Reconciliation"
+            "reconciliation": "Reconciliation",
+            "donations": "Donations"
         },
         "summary": {
             "balance": "Balance",
@@ -1574,6 +1575,121 @@
             "total": "Open in total",
             "overdue": "Of which overdue",
             "members": "Members with open items"
+        }
+    },
+    "donations": {
+        "loadFailed": "Could not load donations.",
+        "actionFailed": "The action failed.",
+        "notConfigured": "First enter the club's data for donation receipts (tax exemption notice, purposes) in the settings.",
+        "exemptionExpired": "The tax exemption notice is too old: receipts are only recognised until {{date}} (§ 63 (5) AO). Enter the current notice in the settings.",
+        "certifiedLocked": "This donation is already certified. Void the receipt first.",
+        "expenseWaiver": "Waiver of reimbursement of expenses",
+        "waiverShort": "Expense waiver",
+        "external": "external",
+        "unassign": "Remove donor",
+        "kind": {
+            "donation": "Monetary donation",
+            "membership_fee": "Membership fee"
+        },
+        "receiptKind": {
+            "single": "Single receipt",
+            "collective": "Collective receipt"
+        },
+        "views": {
+            "donations": "Donations",
+            "issue": "Issue receipts",
+            "log": "Log"
+        },
+        "columns": {
+            "date": "Date",
+            "description": "Description",
+            "amount": "Amount",
+            "donor": "Donor",
+            "receipt": "Receipt"
+        },
+        "list": {
+            "hint": "Incomes with the category \"Spende\" (donation) and all incomes with a donor are listed here. Assign a member or an external donor to each donation.",
+            "unassigned": "{{count}} donations have no donor yet.",
+            "noDonor": "no donor",
+            "empty": "No donations yet. Add an income with the category \"Spende\" in the cash book."
+        },
+        "assign": {
+            "title": "Assign donor",
+            "donor": "Member or donor",
+            "members": "Members",
+            "donors": "External donors"
+        },
+        "donors": {
+            "title": "External donors",
+            "hint": "Donors who are not members. A receipt needs street, postal code and town.",
+            "create": "Add donor",
+            "edit": "Edit donor",
+            "empty": "No external donors yet.",
+            "name": "Name",
+            "street": "Street and number",
+            "postalCode": "Postal code",
+            "city": "Town",
+            "notes": "Note",
+            "inUse": "The donor has donations and cannot be deleted."
+        },
+        "issue": {
+            "year": "Year",
+            "issueDate": "Issue date",
+            "annual": "Annual run: certify all open ({{count}})",
+            "hint": "Membership fees are not certified because they are not deductible for your club (e.g. sports clubs). One donation gives a single receipt, several give a collective receipt.",
+            "hintWithFees": "Donations and paid membership fees of the year are certified. One item gives a single receipt, several give a collective receipt.",
+            "single": "Single receipt",
+            "collective": "Collective receipt",
+            "certified": "No. {{number}}",
+            "noAddress": "Address missing",
+            "created": "{{count}} receipts created.",
+            "duplicateCreated": "These items are already certified – created a duplicate of no. {{number}}.",
+            "nothingOpen": "There is nothing left to certify.",
+            "skipped": "Skipped without a complete address: {{names}}",
+            "missingAddress": "The donor has no complete address.",
+            "alreadyCertified": "Some of the items are already certified.",
+            "empty": "No donations in {{year}}."
+        },
+        "log": {
+            "hint": "Every receipt is logged with a sequential number. A reprint is marked as duplicate; a voided receipt stays in the log.",
+            "number": "No.",
+            "issued": "Issued",
+            "recipient": "Donor",
+            "kind": "Kind",
+            "createdBy": "Created by",
+            "duplicate": "Duplicate of {{number}}",
+            "voidedChip": "voided",
+            "empty": "No receipts issued yet.",
+            "download": "Download PDF",
+            "makeDuplicate": "Create duplicate",
+            "void": "Void",
+            "voidTitle": "Void receipt {{number}}",
+            "voidText": "The receipt stays in the log and is marked as voided. Its items can be certified again afterwards. Ask the donor to return the invalid copy.",
+            "voidReason": "Reason",
+            "voided": "The receipt is voided."
+        },
+        "settings": {
+            "title": "Donation receipts",
+            "description": "These details appear on every donation receipt after the official German template. They are copied into a receipt when it is issued.",
+            "issuerName": "Club name",
+            "issuerAddress": "Club address",
+            "taxOffice": "Tax office",
+            "taxNumber": "Tax number",
+            "kind": {
+                "notice": "Exemption notice / annex to corporate tax assessment",
+                "assessment": "Assessment under § 60a AO (new club)"
+            },
+            "exemptionDate": "Date of the notice",
+            "exemptionDateHelp": "Valid for 5 years (assessment under § 60a AO: 3 years)",
+            "assessmentPeriod": "Last assessment period",
+            "purposes": "Privileged purposes",
+            "purposesPlaceholder": "des Sports (§ 52 Abs. 2 Satz 1 Nr. 21 AO)",
+            "purposesHelp": "In German, as in the notice; completes the sentence \"Wir sind wegen Förderung … befreit\".",
+            "place": "Place of issue",
+            "signatory": "Signatory (name, position)",
+            "feesDeductible": "Membership fees are tax-deductible (not for sports, leisure, local heritage clubs and similar)",
+            "saved": "Donation receipt details saved.",
+            "saveFailed": "Saving failed: {{reason}}"
         }
     }
 }

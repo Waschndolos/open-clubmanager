@@ -5,7 +5,7 @@ routes:
 
 # Finances
 
-Cash book, member fees, fee models with automatic billing runs, open items, fee collection by SEPA direct debit and payment reconciliation with the bank statement. Only visible to **administrators** and **treasurers**.
+Cash book, member fees, fee models with automatic billing runs, open items, fee collection by SEPA direct debit, payment reconciliation with the bank statement and donation receipts. Only visible to **administrators** and **treasurers**.
 
 ![Cash book](../assets/screenshots/finance.png){ .screenshot }
 
@@ -205,6 +205,56 @@ When you confirm the returned debit, the fee is **open** again and can be collec
 
 !!! tip "Trying it with the demo data"
     If you chose the demo data during setup, you can try the reconciliation with the example file [`testdata/camt053-reconciliation.xml`](https://github.com/Waschndolos/open-clubmanager/blob/main/testdata/camt053-reconciliation.xml): it contains certain, probable and unclear payments, a family transfer, a returned direct debit and a sponsoring income.
+
+## Donation receipts
+
+![Donation receipts](../assets/screenshots/finance-donations.png){ .screenshot }
+
+Charitable clubs in Germany may issue **donation receipts** (*Zuwendungsbestätigungen*) for donations (and, depending on their purposes, membership fees), which donors use to deduct the donation from their taxes. Open ClubManager creates them as PDF after the **official template** of the Federal Ministry of Finance – as a single receipt or as a collective receipt with annex. Administrators and treasurers see the **Donations** tab when their device receives the finances and the members' addresses.
+
+!!! warning "The club is liable for correct receipts"
+    Whoever issues a wrong donation receipt intentionally or through gross negligence is liable for the lost tax (§ 10b (4) EStG). Check donor, amount and date before you issue a receipt. When in doubt, ask your tax adviser or the tax office.
+
+### One-time setup
+
+Enter the data of your tax office notice in the [settings](einstellungen.md#donation-receipts): club name and address, tax office, tax number, kind and date of the notice and the **privileged purposes** exactly as in the notice (in German, e.g. "des Sports (§ 52 Abs. 2 Satz 1 Nr. 21 AO)").
+
+| Kind of notice | Valid for receipts |
+|---|---|
+| **Exemption notice** (*Freistellungsbescheid*) or annex to the corporate tax assessment | 5 years from the date of the notice |
+| **Assessment under § 60a AO** (e.g. for a newly founded club) | 3 years from the date of the notice |
+
+If the notice is older, the tax office no longer recognises the receipts (§ 63 (5) AO). Open ClubManager then shows a **warning** in the settings and in the tab, with the date until which the notice was valid.
+
+!!! info "Membership fees"
+    For sports clubs and clubs with leisure purposes (e.g. culture of a leisure nature, local heritage, allotments) membership fees are **not** deductible (§ 10b (1) sentence 8 EStG). Leave the switch *Membership fees are tax-deductible* off: only donations are certified, and the receipt confirms that it is not a membership fee. With the switch on, the paid fees of the year are listed as well.
+
+### Recording donations
+
+A donation is an **income in the cash book** with the category **Spende** (or "Spenden"). **Donations → Donations** lists all such incomes.
+
+1. Click the pencil next to a donation and choose the **member** or an **external donor**. Add external donors (e.g. companies) below under **External donors** or right in the dialog.
+2. Tick **Waiver of reimbursement of expenses** for an *expense donation*, i.e. when someone waives the reimbursement of travel costs or similar.
+3. An income without a category gets the category "Spende" when you assign it.
+
+A receipt needs the donor's complete **address** (street, postal code and town). For members it comes from their contact details.
+
+### Issuing receipts
+
+Under **Donations → Issue receipts** choose the **year** and the **issue date**. The list shows every donor with their donations of the year; items already certified are marked with the receipt number.
+
+- **Single receipt** certifies exactly one donation.
+- **Collective receipt** combines all open donations of a donor in the year. The annex lists each donation with date, kind and amount.
+- **Annual run** creates the missing receipts for all donors of the year at once – a collective receipt for several donations, a single receipt otherwise. Donors without a complete address are skipped and named.
+
+The PDFs are downloaded right away (for the annual run all in one file, each receipt starting on a new page). Print and sign them.
+
+### Numbering, log and duplicates
+
+Every receipt gets a **sequential number** per year, e.g. `2026-0001`. **Donations → Log** shows which receipt was issued when, for whom and by whom.
+
+- A donation can be certified only **once**. If you create a receipt for the same donations again – or click **Create duplicate** in the log – you get a **duplicate** with the same number, clearly marked *DUPLIKAT* on the PDF, which is logged as well.
+- If a receipt was wrong (e.g. wrong amount), **void** it with a reason. It stays in the log and is marked as voided on the PDF; its donations can then be certified again. A certified donation can only be assigned to another donor after the receipt was voided.
 
 ## Deleting the full ledger
 

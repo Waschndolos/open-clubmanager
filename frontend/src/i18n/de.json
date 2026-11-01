@@ -440,7 +440,8 @@
             "openItems": "Offene Posten",
             "feeModels": "Beitragsmodelle",
             "feeRuns": "Sollstellung",
-            "reconciliation": "Zahlungsabgleich"
+            "reconciliation": "Zahlungsabgleich",
+            "donations": "Zuwendungen"
         },
         "summary": {
             "balance": "Kontostand",
@@ -1574,6 +1575,121 @@
             "total": "Offen gesamt",
             "overdue": "Davon überfällig",
             "members": "Mitglieder mit offenen Posten"
+        }
+    },
+    "donations": {
+        "loadFailed": "Zuwendungen konnten nicht geladen werden.",
+        "actionFailed": "Die Aktion ist fehlgeschlagen.",
+        "notConfigured": "Hinterlege zuerst die Vereinsdaten für Zuwendungsbestätigungen (Freistellungsbescheid, Zwecke) in den Einstellungen.",
+        "exemptionExpired": "Der Freistellungsbescheid ist zu alt: Bestätigungen werden nur bis {{date}} anerkannt (§ 63 Abs. 5 AO). Trage den aktuellen Bescheid in den Einstellungen ein.",
+        "certifiedLocked": "Diese Spende ist bereits bescheinigt. Storniere zuerst die Bescheinigung.",
+        "expenseWaiver": "Verzicht auf Erstattung von Aufwendungen (Aufwandsspende)",
+        "waiverShort": "Aufwandsspende",
+        "external": "extern",
+        "unassign": "Spender entfernen",
+        "kind": {
+            "donation": "Geldzuwendung",
+            "membership_fee": "Mitgliedsbeitrag"
+        },
+        "receiptKind": {
+            "single": "Einzelbestätigung",
+            "collective": "Sammelbestätigung"
+        },
+        "views": {
+            "donations": "Spenden",
+            "issue": "Bescheinigungen erstellen",
+            "log": "Protokoll"
+        },
+        "columns": {
+            "date": "Datum",
+            "description": "Buchungstext",
+            "amount": "Betrag",
+            "donor": "Spender",
+            "receipt": "Bescheinigung"
+        },
+        "list": {
+            "hint": "Hier erscheinen Einnahmen mit der Kategorie „Spende“ und alle Einnahmen, denen ein Spender zugeordnet ist. Ordne jeder Spende ein Mitglied oder einen externen Spender zu.",
+            "unassigned": "{{count}} Spenden haben noch keinen Spender.",
+            "noDonor": "kein Spender",
+            "empty": "Noch keine Spenden. Lege im Kassenbuch eine Einnahme mit der Kategorie „Spende“ an."
+        },
+        "assign": {
+            "title": "Spender zuordnen",
+            "donor": "Mitglied oder Spender",
+            "members": "Mitglieder",
+            "donors": "Externe Spender"
+        },
+        "donors": {
+            "title": "Externe Spender",
+            "hint": "Spender, die keine Mitglieder sind. Für eine Bescheinigung braucht es Straße, PLZ und Ort.",
+            "create": "Spender anlegen",
+            "edit": "Spender bearbeiten",
+            "empty": "Noch keine externen Spender.",
+            "name": "Name",
+            "street": "Straße und Hausnummer",
+            "postalCode": "PLZ",
+            "city": "Ort",
+            "notes": "Notiz",
+            "inUse": "Der Spender hat Spenden und kann nicht gelöscht werden."
+        },
+        "issue": {
+            "year": "Jahr",
+            "issueDate": "Ausstellungsdatum",
+            "annual": "Jahreslauf: alle offenen bescheinigen ({{count}})",
+            "hint": "Mitgliedsbeiträge werden nicht bescheinigt, weil sie bei eurem Verein nicht abziehbar sind (z. B. Sportvereine). Eine Spende ergibt eine Einzelbestätigung, mehrere eine Sammelbestätigung.",
+            "hintWithFees": "Bescheinigt werden Spenden und bezahlte Mitgliedsbeiträge des Jahres. Eine Zuwendung ergibt eine Einzelbestätigung, mehrere eine Sammelbestätigung.",
+            "single": "Einzelbestätigung",
+            "collective": "Sammelbestätigung",
+            "certified": "Nr. {{number}}",
+            "noAddress": "Adresse fehlt",
+            "created": "{{count}} Bescheinigungen erstellt.",
+            "duplicateCreated": "Die Zuwendungen sind schon bescheinigt – Duplikat zu Nr. {{number}} erstellt.",
+            "nothingOpen": "Es gibt nichts mehr zu bescheinigen.",
+            "skipped": "Ohne vollständige Adresse übersprungen: {{names}}",
+            "missingAddress": "Für den Spender fehlt eine vollständige Adresse.",
+            "alreadyCertified": "Ein Teil der Zuwendungen ist schon bescheinigt.",
+            "empty": "Keine Spenden im Jahr {{year}}."
+        },
+        "log": {
+            "hint": "Jede erstellte Bescheinigung wird mit fortlaufender Nummer protokolliert. Ein erneuter Ausdruck ist als Duplikat gekennzeichnet; eine stornierte Bescheinigung bleibt im Protokoll.",
+            "number": "Nr.",
+            "issued": "Ausgestellt",
+            "recipient": "Zuwendender",
+            "kind": "Art",
+            "createdBy": "Erstellt von",
+            "duplicate": "Duplikat zu {{number}}",
+            "voidedChip": "storniert",
+            "empty": "Noch keine Bescheinigungen erstellt.",
+            "download": "PDF herunterladen",
+            "makeDuplicate": "Duplikat erstellen",
+            "void": "Stornieren",
+            "voidTitle": "Bescheinigung {{number}} stornieren",
+            "voidText": "Die Bescheinigung bleibt im Protokoll und wird als storniert gekennzeichnet. Die Zuwendungen können danach neu bescheinigt werden. Bitte den Zuwendenden, das ungültige Exemplar zurückzugeben.",
+            "voidReason": "Grund",
+            "voided": "Die Bescheinigung ist storniert."
+        },
+        "settings": {
+            "title": "Zuwendungsbestätigungen",
+            "description": "Diese Angaben stehen auf jeder Zuwendungsbestätigung nach amtlichem Muster. Sie werden beim Erstellen in die Bescheinigung kopiert.",
+            "issuerName": "Name des Vereins",
+            "issuerAddress": "Anschrift des Vereins",
+            "taxOffice": "Finanzamt",
+            "taxNumber": "Steuernummer",
+            "kind": {
+                "notice": "Freistellungsbescheid / Anlage zum KSt-Bescheid",
+                "assessment": "Feststellungsbescheid nach § 60a AO (neuer Verein)"
+            },
+            "exemptionDate": "Datum des Bescheids",
+            "exemptionDateHelp": "Gültig 5 Jahre (Feststellung nach § 60a AO: 3 Jahre)",
+            "assessmentPeriod": "Letzter Veranlagungszeitraum",
+            "purposes": "Begünstigte Zwecke",
+            "purposesPlaceholder": "des Sports (§ 52 Abs. 2 Satz 1 Nr. 21 AO)",
+            "purposesHelp": "Wie im Bescheid, ergänzt den Satz „Wir sind wegen Förderung … befreit“.",
+            "place": "Ort der Ausstellung",
+            "signatory": "Unterzeichner (Name, Funktion)",
+            "feesDeductible": "Mitgliedsbeiträge sind steuerlich abziehbar (nicht bei Sport-, Kultur- mit Freizeitzweck, Heimatvereinen u. ä.)",
+            "saved": "Angaben für Zuwendungsbestätigungen gespeichert.",
+            "saveFailed": "Speichern fehlgeschlagen: {{reason}}"
         }
     }
 }

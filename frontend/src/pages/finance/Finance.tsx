@@ -44,8 +44,9 @@ import { fetchSepaRuns } from '../../api/sepa';
 import { SepaDirectDebitTab, useSepaAccess } from './SepaDirectDebit';
 import { PaymentReconciliationTab } from './PaymentReconciliation';
 import { FeeModelsTab, FeeRunsTab, OpenItemsTab } from './FeeModels';
+import { DonationReceiptsTab, useDonationAccess } from './DonationReceipts';
 
-type FinanceTab = 'transactions' | 'memberfees' | 'openItems' | 'feeModels' | 'feeRuns' | 'directDebit' | 'reconciliation';
+type FinanceTab = 'transactions' | 'memberfees' | 'openItems' | 'feeModels' | 'feeRuns' | 'directDebit' | 'reconciliation' | 'donations';
 
 const FINANCE_RESET_CONFIRM_TEXT = 'DELETE';
 
@@ -291,6 +292,7 @@ export function Finance() {
     const [resetConfirmInput, setResetConfirmInput] = useState('');
     const [resetSubmitting, setResetSubmitting] = useState(false);
     const sepa = useSepaAccess();
+    const donations = useDonationAccess();
     // Fees in a direct debit run that has not been confirmed yet.
     const [inCollection, setInCollection] = useState<Set<string>>(new Set());
 
@@ -571,6 +573,7 @@ export function Finance() {
                 <Tab value="feeRuns" label={t('finance.tabs.feeRuns')} />
                 {sepa.visible && <Tab value="directDebit" label={t('finance.tabs.directDebit')} />}
                 {sepa.visible && <Tab value="reconciliation" label={t('finance.tabs.reconciliation')} />}
+                {donations.visible && <Tab value="donations" label={t('finance.tabs.donations')} />}
             </Tabs>
 
             {tab === 'transactions' && (
@@ -678,6 +681,8 @@ export function Finance() {
                     void handleSepaChanged();
                 }} />
             )}
+
+            {tab === 'donations' && donations.visible && <DonationReceiptsTab editable={donations.editable} />}
 
             {txDialog.open && (
                 <TransactionDialog

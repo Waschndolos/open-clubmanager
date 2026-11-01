@@ -5,7 +5,7 @@ routes:
 
 # Finanzen
 
-Kassenbuch, Mitgliedsbeiträge, Beitragsmodelle mit automatischer Sollstellung, offene Posten, Beitragseinzug per SEPA-Lastschrift und Zahlungsabgleich mit dem Kontoauszug. Sichtbar nur für **Administratoren** und **Kassenwarte**.
+Kassenbuch, Mitgliedsbeiträge, Beitragsmodelle mit automatischer Sollstellung, offene Posten, Beitragseinzug per SEPA-Lastschrift, Zahlungsabgleich mit dem Kontoauszug und Zuwendungsbestätigungen. Sichtbar nur für **Administratoren** und **Kassenwarte**.
 
 ![Kassenbuch](../assets/screenshots/finance.png){ .screenshot }
 
@@ -188,7 +188,7 @@ Die Chips unter dem Vorschlag zeigen, woran er erkannt wurde (z. B. *Mitgliedsnu
 - **Bestätigen** (Häkchen) übernimmt den Vorschlag. Der Beitrag bekommt das Buchungsdatum als Bezahlt-am-Datum.
 - **Alle sicheren bestätigen** übernimmt auf einmal alle Vorschläge mit der Trefferqualität *Sicher*.
 - **Zuordnung ändern** (Stift) öffnet eine Liste aller offenen Beiträge mit Suche. Hake die passenden Beiträge an und passe die Beträge an – so korrigierst du einen Vorschlag oder ordnest eine Buchung ohne Vorschlag selbst zu.
-- **Ohne Beitrag abhaken** markiert eine Buchung als geprüft, wenn sie keinen Beitrag bezahlt (z. B. Spende). Sie verschwindet aus den offenen Buchungen.
+- **Ohne Beitrag abhaken** markiert eine Buchung als geprüft, wenn sie keinen Beitrag bezahlt (z. B. Spende – die bescheinigst du unter [Zuwendungsbestätigungen](#zuwendungsbestatigungen)). Sie verschwindet aus den offenen Buchungen.
 - **Rückgängig** (unter **Erledigt**) nimmt eine Zuordnung zurück. Die Beiträge bekommen den Stand von vorher.
 
 ### Teilzahlungen und Sammelüberweisungen
@@ -205,6 +205,56 @@ Bestätigst du die Rücklastschrift, ist der Beitrag wieder **offen** und kann i
 
 !!! tip "Ausprobieren mit den Beispieldaten"
     Wenn du bei der Einrichtung die Beispieldaten gewählt hast, kannst du den Abgleich mit der Beispieldatei [`testdata/camt053-reconciliation.xml`](https://github.com/Waschndolos/open-clubmanager/blob/main/testdata/camt053-reconciliation.xml) ausprobieren: Sie enthält sichere, wahrscheinliche und unklare Zahlungen, eine Familienüberweisung, eine Rücklastschrift und eine Sponsoring-Einnahme.
+
+## Zuwendungsbestätigungen
+
+![Zuwendungsbestätigungen](../assets/screenshots/finance-donations.png){ .screenshot }
+
+Gemeinnützige Vereine dürfen für Spenden (und, je nach Zweck, Mitgliedsbeiträge) **Zuwendungsbestätigungen** ausstellen, mit denen Spender die Zuwendung von der Steuer absetzen. Open ClubManager erzeugt sie als PDF nach dem **amtlichen Muster** des Bundesfinanzministeriums – als Einzelbestätigung oder als Sammelbestätigung mit Anlage. Den Reiter **Zuwendungen** sehen Administratoren und Kassenwarte, wenn ihr Gerät die Finanzen und die Adressen der Mitglieder bekommt.
+
+!!! warning "Der Verein haftet für richtige Bescheinigungen"
+    Wer vorsätzlich oder grob fahrlässig eine falsche Zuwendungsbestätigung ausstellt, haftet für die entgangene Steuer (§ 10b Abs. 4 EStG). Prüfe deshalb vor dem Erstellen, ob Spender, Betrag und Datum stimmen. Im Zweifel hilft dein Steuerberater oder das Finanzamt.
+
+### Einmalig einrichten
+
+Trage in den [Einstellungen](einstellungen.md#zuwendungsbestatigungen) die Daten aus deinem Bescheid des Finanzamts ein: Name und Anschrift des Vereins, Finanzamt, Steuernummer, Art und Datum des Bescheids und die **begünstigten Zwecke** genau wie im Bescheid (z. B. „des Sports (§ 52 Abs. 2 Satz 1 Nr. 21 AO)“).
+
+| Art des Bescheids | Gültig für Bescheinigungen |
+|---|---|
+| **Freistellungsbescheid** bzw. Anlage zum Körperschaftsteuerbescheid | 5 Jahre ab Datum des Bescheids |
+| **Feststellungsbescheid nach § 60a AO** (z. B. bei einem neu gegründeten Verein) | 3 Jahre ab Datum des Bescheids |
+
+Ist der Bescheid älter, erkennt das Finanzamt die Bescheinigungen nicht mehr an (§ 63 Abs. 5 AO). Open ClubManager zeigt dann in den Einstellungen und im Reiter eine **Warnung** mit dem Datum, bis zu dem der Bescheid reichte.
+
+!!! info "Mitgliedsbeiträge"
+    Bei Sportvereinen und Vereinen mit Freizeitzwecken (z. B. Kultur mit Freizeitcharakter, Heimatpflege, Kleingärten) sind Mitgliedsbeiträge **nicht** absetzbar (§ 10b Abs. 1 Satz 8 EStG). Lass dann den Schalter *Mitgliedsbeiträge sind steuerlich abziehbar* aus: Es werden nur Spenden bescheinigt, und die Bescheinigung bestätigt, dass es sich nicht um einen Mitgliedsbeitrag handelt. Ist der Schalter an, erscheinen auch die bezahlten Beiträge des Jahres.
+
+### Spenden erfassen
+
+Eine Spende ist eine **Einnahme im Kassenbuch** mit der Kategorie **Spende** (oder „Spenden“). Unter **Zuwendungen → Spenden** siehst du alle solchen Einnahmen.
+
+1. Klicke bei einer Spende auf den Stift und wähle das **Mitglied** oder einen **externen Spender**. Externe Spender (z. B. Firmen) legst du darunter unter **Externe Spender** oder direkt im Dialog an.
+2. Hake **Verzicht auf Erstattung von Aufwendungen** an, wenn es eine *Aufwandsspende* ist, also jemand auf die Erstattung von Fahrtkosten o. Ä. verzichtet.
+3. Hat eine Einnahme noch keine Kategorie, bekommt sie beim Zuordnen die Kategorie „Spende“.
+
+Für eine Bescheinigung braucht der Spender eine vollständige **Adresse** (Straße, PLZ und Ort). Bei Mitgliedern kommt sie aus den Kontaktdaten.
+
+### Bescheinigungen erstellen
+
+Unter **Zuwendungen → Bescheinigungen erstellen** wählst du das **Jahr** und das **Ausstellungsdatum**. Die Liste zeigt jeden Spender mit seinen Zuwendungen des Jahres; schon bescheinigte sind mit ihrer Nummer markiert.
+
+- **Einzelbestätigung** bescheinigt genau eine Zuwendung.
+- **Sammelbestätigung** fasst alle noch offenen Zuwendungen eines Spenders im Jahr zusammen. Die Anlage listet jede Zuwendung mit Datum, Art und Betrag.
+- **Jahreslauf** erstellt auf einmal für alle Spender des Jahres die fehlenden Bescheinigungen – eine Sammelbestätigung bei mehreren Zuwendungen, sonst eine Einzelbestätigung. Spender ohne vollständige Adresse werden übersprungen und genannt.
+
+Die PDFs werden sofort heruntergeladen (beim Jahreslauf alle in einer Datei, jede Bescheinigung beginnt auf einer neuen Seite). Drucke sie aus und unterschreibe sie.
+
+### Nummerierung, Protokoll und Duplikate
+
+Jede Bescheinigung bekommt eine **fortlaufende Nummer** pro Jahr, z. B. `2026-0001`. Unter **Zuwendungen → Protokoll** siehst du, welche Bescheinigung wann, für wen und von wem erstellt wurde.
+
+- Eine Zuwendung kann nur **einmal** bescheinigt werden. Erstellst du für dieselben Zuwendungen erneut eine Bescheinigung – oder klickst im Protokoll auf **Duplikat erstellen** –, entsteht ein **Duplikat** mit derselben Nummer, das im PDF deutlich als *DUPLIKAT* gekennzeichnet ist und ebenfalls protokolliert wird.
+- War eine Bescheinigung falsch (z. B. falscher Betrag), **storniere** sie mit einem Grund. Sie bleibt im Protokoll und ist im PDF als *storniert* markiert; ihre Zuwendungen kannst du danach neu bescheinigen. Eine bescheinigte Spende lässt sich erst nach dem Stornieren einem anderen Spender zuordnen.
 
 ## Kassenbuch komplett löschen
 

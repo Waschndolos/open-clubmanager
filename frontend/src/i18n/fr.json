@@ -440,7 +440,8 @@
             "openItems": "Impayés",
             "feeModels": "Barèmes de cotisation",
             "feeRuns": "Appel de cotisations",
-            "reconciliation": "Rapprochement"
+            "reconciliation": "Rapprochement",
+            "donations": "Dons"
         },
         "summary": {
             "balance": "Solde",
@@ -1223,6 +1224,121 @@
             "total": "Total ouvert",
             "overdue": "Dont en retard",
             "members": "Membres avec impayés"
+        }
+    },
+    "donations": {
+        "loadFailed": "Impossible de charger les dons.",
+        "actionFailed": "L'action a échoué.",
+        "notConfigured": "Saisissez d'abord les données de l'association pour les reçus de dons (avis d'exonération, objets) dans les paramètres.",
+        "exemptionExpired": "L'avis d'exonération est trop ancien : les reçus ne sont reconnus que jusqu'au {{date}} (§ 63 al. 5 AO). Saisissez l'avis actuel dans les paramètres.",
+        "certifiedLocked": "Ce don a déjà un reçu. Annulez d'abord le reçu.",
+        "expenseWaiver": "Renonciation au remboursement de frais",
+        "waiverShort": "Renonciation aux frais",
+        "external": "externe",
+        "unassign": "Retirer le donateur",
+        "kind": {
+            "donation": "Don en argent",
+            "membership_fee": "Cotisation"
+        },
+        "receiptKind": {
+            "single": "Reçu individuel",
+            "collective": "Reçu récapitulatif"
+        },
+        "views": {
+            "donations": "Dons",
+            "issue": "Établir des reçus",
+            "log": "Journal"
+        },
+        "columns": {
+            "date": "Date",
+            "description": "Libellé",
+            "amount": "Montant",
+            "donor": "Donateur",
+            "receipt": "Reçu"
+        },
+        "list": {
+            "hint": "Les recettes de catégorie « Spende » (don) et toutes les recettes avec un donateur apparaissent ici. Attribuez un membre ou un donateur externe à chaque don.",
+            "unassigned": "{{count}} dons n'ont pas encore de donateur.",
+            "noDonor": "aucun donateur",
+            "empty": "Aucun don. Saisissez une recette de catégorie « Spende » dans le livre de caisse."
+        },
+        "assign": {
+            "title": "Attribuer le donateur",
+            "donor": "Membre ou donateur",
+            "members": "Membres",
+            "donors": "Donateurs externes"
+        },
+        "donors": {
+            "title": "Donateurs externes",
+            "hint": "Donateurs qui ne sont pas membres. Un reçu nécessite rue, code postal et ville.",
+            "create": "Ajouter un donateur",
+            "edit": "Modifier le donateur",
+            "empty": "Aucun donateur externe.",
+            "name": "Nom",
+            "street": "Rue et numéro",
+            "postalCode": "Code postal",
+            "city": "Ville",
+            "notes": "Note",
+            "inUse": "Le donateur a des dons et ne peut pas être supprimé."
+        },
+        "issue": {
+            "year": "Année",
+            "issueDate": "Date d'établissement",
+            "annual": "Campagne annuelle : tout certifier ({{count}})",
+            "hint": "Les cotisations ne sont pas certifiées car elles ne sont pas déductibles pour votre association (p. ex. clubs sportifs). Un don donne un reçu individuel, plusieurs un reçu récapitulatif.",
+            "hintWithFees": "Les dons et les cotisations payées de l'année sont certifiés. Un élément donne un reçu individuel, plusieurs un reçu récapitulatif.",
+            "single": "Reçu individuel",
+            "collective": "Reçu récapitulatif",
+            "certified": "N° {{number}}",
+            "noAddress": "Adresse manquante",
+            "created": "{{count}} reçus établis.",
+            "duplicateCreated": "Ces éléments ont déjà un reçu – duplicata du n° {{number}} établi.",
+            "nothingOpen": "Il n'y a plus rien à certifier.",
+            "skipped": "Ignorés faute d'adresse complète : {{names}}",
+            "missingAddress": "Le donateur n'a pas d'adresse complète.",
+            "alreadyCertified": "Une partie des éléments a déjà un reçu.",
+            "empty": "Aucun don en {{year}}."
+        },
+        "log": {
+            "hint": "Chaque reçu est journalisé avec un numéro séquentiel. Une réimpression est marquée comme duplicata ; un reçu annulé reste dans le journal.",
+            "number": "N°",
+            "issued": "Établi le",
+            "recipient": "Donateur",
+            "kind": "Type",
+            "createdBy": "Établi par",
+            "duplicate": "Duplicata du {{number}}",
+            "voidedChip": "annulé",
+            "empty": "Aucun reçu établi.",
+            "download": "Télécharger le PDF",
+            "makeDuplicate": "Établir un duplicata",
+            "void": "Annuler",
+            "voidTitle": "Annuler le reçu {{number}}",
+            "voidText": "Le reçu reste dans le journal et est marqué comme annulé. Ses éléments peuvent ensuite être certifiés à nouveau. Demandez au donateur de rendre l'exemplaire invalide.",
+            "voidReason": "Motif",
+            "voided": "Le reçu est annulé."
+        },
+        "settings": {
+            "title": "Reçus de dons",
+            "description": "Ces données figurent sur chaque reçu de don selon le modèle officiel allemand. Elles sont copiées dans le reçu lors de son établissement.",
+            "issuerName": "Nom de l'association",
+            "issuerAddress": "Adresse de l'association",
+            "taxOffice": "Centre des impôts",
+            "taxNumber": "Numéro fiscal",
+            "kind": {
+                "notice": "Avis d'exonération / annexe à l'avis d'IS",
+                "assessment": "Constatation selon § 60a AO (nouvelle association)"
+            },
+            "exemptionDate": "Date de l'avis",
+            "exemptionDateHelp": "Valable 5 ans (constatation selon § 60a AO : 3 ans)",
+            "assessmentPeriod": "Dernière période d'imposition",
+            "purposes": "Objets reconnus",
+            "purposesPlaceholder": "des Sports (§ 52 Abs. 2 Satz 1 Nr. 21 AO)",
+            "purposesHelp": "En allemand, comme dans l'avis ; complète la phrase « Wir sind wegen Förderung … befreit ».",
+            "place": "Lieu d'établissement",
+            "signatory": "Signataire (nom, fonction)",
+            "feesDeductible": "Les cotisations sont déductibles (pas pour les clubs sportifs, de loisirs, etc.)",
+            "saved": "Données des reçus de dons enregistrées.",
+            "saveFailed": "Échec de l'enregistrement : {{reason}}"
         }
     }
 }
