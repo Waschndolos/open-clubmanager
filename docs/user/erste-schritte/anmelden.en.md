@@ -11,7 +11,7 @@ routes:
 
 Log in with the email address and password you set during [setup](einrichtung.md) or received from your administrator.
 
-You stay logged in while the program is open. To log out, click your account at the bottom left of the sidebar → **Logout**.
+You stay logged in while the program is open, also when the page is reloaded. If the program is not used for more than 12 hours, or your password or role changes, the session ends: the login page shows "Your session has expired", and after logging in again you return to the page you were on. To log out, click your account at the bottom left of the sidebar → **Logout**.
 
 ## Changing your password
 

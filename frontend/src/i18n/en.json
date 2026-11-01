@@ -41,7 +41,8 @@
         "errorInvalidCredentials": "Login failed. Please check your credentials.",
         "errorTooManyAttempts": "Too many failed attempts. Please wait a moment and try again.",
         "showPassword": "Show password",
-        "hidePassword": "Hide password"
+        "hidePassword": "Hide password",
+        "sessionExpired": "Your session has expired. Please log in again."
     },
     "forgotPassword": {
         "title": "Forgot Password",

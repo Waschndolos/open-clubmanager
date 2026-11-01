@@ -41,7 +41,8 @@
         "errorInvalidCredentials": "Échec de la connexion. Veuillez vérifier vos identifiants.",
         "errorTooManyAttempts": "Trop de tentatives échouées. Veuillez patienter un instant et réessayer.",
         "showPassword": "Afficher le mot de passe",
-        "hidePassword": "Masquer le mot de passe"
+        "hidePassword": "Masquer le mot de passe",
+        "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter."
     },
     "forgotPassword": {
         "title": "Mot de passe oublié",

@@ -11,7 +11,7 @@ routes:
 
 Melde dich mit der E-Mail-Adresse und dem Passwort an, die du bei der [Einrichtung](einrichtung.md) oder von deinem Administrator bekommen hast.
 
-Die Anmeldung gilt, solange das Programm geöffnet ist. Abmelden kannst du dich über dein Konto unten links in der Seitenleiste → **Abmelden**.
+Die Anmeldung gilt, solange das Programm geöffnet ist – auch über ein Neuladen der Seite hinweg. Wird das Programm länger als 12 Stunden nicht benutzt, oder ändern sich dein Passwort oder deine Rolle, endet die Sitzung: Du landest mit dem Hinweis „Sitzung abgelaufen“ auf der Anmeldeseite und nach dem erneuten Anmelden wieder auf der Seite, auf der du warst. Abmelden kannst du dich über dein Konto unten links in der Seitenleiste → **Abmelden**.
 
 ## Passwort ändern
 
