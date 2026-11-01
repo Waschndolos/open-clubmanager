@@ -9573,18 +9573,12 @@ func (response GetPreferenceByKey200JSONResponse) VisitGetPreferenceByKeyRespons
 	return err
 }
 
-type GetPreferenceByKey404JSONResponse struct{ NotFoundJSONResponse }
+type GetPreferenceByKey204Response struct {
+}
 
-func (response GetPreferenceByKey404JSONResponse) VisitGetPreferenceByKeyResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(404)
-	_, err := buf.WriteTo(w)
-	return err
+func (response GetPreferenceByKey204Response) VisitGetPreferenceByKeyResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
 }
 
 type UpdatePreferenceByIdRequestObject struct {

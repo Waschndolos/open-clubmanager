@@ -1,6 +1,7 @@
 {
     "header": {
         "notifications": {
+            "title": "Notifications",
             "none": "Aucune notification",
             "deleteall": "Tout supprimer"
         }
@@ -85,6 +86,8 @@
         "email": "E-mail",
         "password": "Mot de passe",
         "confirmPassword": "Confirmer le mot de passe",
+        "showConfirmPassword": "Afficher la confirmation du mot de passe",
+        "hideConfirmPassword": "Masquer la confirmation du mot de passe",
         "createButton": "Créer un compte admin",
         "creating": "Création en cours...",
         "demoData": {

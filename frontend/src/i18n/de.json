@@ -1,6 +1,7 @@
 {
     "header": {
         "notifications": {
+            "title": "Benachrichtigungen",
             "none": "Keine Benachrichtigungen",
             "deleteall": "Alle löschen"
         }
@@ -34,7 +35,7 @@
         "email": "E-Mail",
         "password": "Passwort",
         "loginButton": "Anmelden",
-        "setupComplete": "Einrichtung abgeschlossen! Bitte melden Sie sich mit Ihrem neuen Admin-Konto an.",
+        "setupComplete": "Einrichtung abgeschlossen! Bitte melde dich mit deinem neuen Admin-Konto an.",
         "forgotPassword": "Passwort vergessen?",
         "welcomeTitle": "Willkommen beim Open ClubManager",
         "welcomeSubtitle": "Verwalte Mitglieder, Finanzen, Gruppen und Vereinsprozesse in einer modernen, klaren und schnellen Anwendung.",
@@ -45,7 +46,7 @@
     },
     "forgotPassword": {
         "title": "Passwort vergessen",
-        "description": "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen Ihres Passworts.",
+        "description": "Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen deines Passworts.",
         "email": "E-Mail",
         "submitButton": "Link senden",
         "successMessage": "Falls ein Konto mit dieser E-Mail-Adresse existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet.",
@@ -56,18 +57,18 @@
         "newPassword": "Neues Passwort",
         "confirmPassword": "Passwort bestätigen",
         "submitButton": "Passwort zurücksetzen",
-        "successMessage": "Ihr Passwort wurde erfolgreich zurückgesetzt. Sie können sich jetzt anmelden.",
+        "successMessage": "Dein Passwort wurde erfolgreich zurückgesetzt. Du kannst dich jetzt anmelden.",
         "backToLogin": "Zur Anmeldung",
         "passwordMismatch": "Die Passwörter stimmen nicht überein.",
         "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
-        "tokenExpired": "Der Link zum Zurücksetzen des Passworts ist abgelaufen. Bitte fordern Sie einen neuen an.",
+        "tokenExpired": "Der Link zum Zurücksetzen des Passworts ist abgelaufen. Bitte fordere einen neuen an.",
         "tokenInvalid": "Der Link zum Zurücksetzen des Passworts ist ungültig.",
         "genericError": "Beim Zurücksetzen des Passworts ist ein Fehler aufgetreten.",
-        "missingToken": "Kein gültiger Zurücksetz-Token gefunden. Bitte fordern Sie einen neuen Link an."
+        "missingToken": "Kein gültiger Zurücksetz-Token gefunden. Bitte fordere einen neuen Link an."
     },
     "setup": {
         "title": "Willkommen bei Open ClubManager",
-        "description": "Es existiert noch kein Admin-Konto. Erstellen Sie Ihr erstes Administratorkonto, um zu beginnen.",
+        "description": "Es existiert noch kein Admin-Konto. Erstelle dein erstes Administratorkonto, um zu beginnen.",
         "steps": {
             "database": "Datenbank konfigurieren",
             "createAdmin": "Admin-Konto erstellen",
@@ -80,26 +81,28 @@
             "saveButton": "Datenbankmodus speichern",
             "continueButton": "Weiter",
             "saving": "Speichern...",
-            "configured": "Datenbankkonfiguration gespeichert. Erstellen Sie jetzt das Admin-Konto."
+            "configured": "Datenbankkonfiguration gespeichert. Erstelle jetzt das Admin-Konto."
         },
         "email": "E-Mail",
         "password": "Passwort",
         "confirmPassword": "Passwort bestätigen",
+        "showConfirmPassword": "Passwortbestätigung anzeigen",
+        "hideConfirmPassword": "Passwortbestätigung verbergen",
         "createButton": "Admin-Konto erstellen",
         "creating": "Wird erstellt...",
         "demoData": {
             "label": "Testdaten einspielen",
-            "hint": "Erstellt Beispiel-Mitglieder, Vereinsstrukturen und einige Finanzdaten fuers erste Ausprobieren.",
+            "hint": "Erstellt Beispiel-Mitglieder, Vereinsstrukturen und einige Finanzdaten fürs erste Ausprobieren.",
             "seeding": "Admin wird erstellt und Testdaten werden importiert...",
-            "warningContinue": "Admin-Konto wurde erstellt, aber Testdaten konnten nicht vollstaendig importiert werden."
+            "warningContinue": "Admin-Konto wurde erstellt, aber Testdaten konnten nicht vollständig importiert werden."
         },
         "validation": {
-            "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+            "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
             "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
             "passwordMismatch": "Die Passwörter stimmen nicht überein."
         },
         "error": {
-            "generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+            "generic": "Ein Fehler ist aufgetreten. Bitte versuche es erneut."
         }
     },
     "menu": {
@@ -335,11 +338,11 @@
                 "nosqllitedb": "Der Pfad zeigt auf keine valide SQLite Datenbank.",
                 "cannotcreate": "An dem angegebenen Pfad kann keine Datenbank erstellt werden.",
                 "required": "Der Datenbankpfad ist erforderlich.",
-                "invalidsqliteurl": "Bitte geben Sie eine gültige SQLite-URL ein (file:...).",
+                "invalidsqliteurl": "Bitte gib eine gültige SQLite-URL ein (file:...).",
                 "invalidmode": "Ungültiger Datenbankmodus."
             },
             "success": {
-                "newdb": "Der Datenkbankpfad ist potentiell gültig. Kopieren Sie die clubmanager.db an diese Stelle wenn sie diese Stelle nutzen möchten",
+                "newdb": "Der Datenbankpfad ist potenziell gültig. Kopiere die clubmanager.db an diese Stelle, wenn du diese Stelle nutzen möchtest.",
                 "valid": "Der Datenbankpfad ist gültig."
             }
         },
@@ -943,6 +946,7 @@
             "READ_ONLY_AREA": "Deine Rolle darf diese Daten nur ansehen.",
             "STORAGE_MISSING": "Der Speicherort ist nicht erreichbar. Läuft dein Sync-Programm, und ist der Ordner noch da?",
             "NETWORK": "Keine Verbindung zum Programm. Läuft Open ClubManager noch?",
+            "DUPLICATE_VALUE": "Dieser Wert ist schon vergeben. Bitte wähle einen anderen.",
             "default": "Das hat nicht geklappt: {{message}}"
         }
     },

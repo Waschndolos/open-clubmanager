@@ -2410,8 +2410,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserPreferenceValueResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        '204':
+          description: No preference is stored under this key; the client uses its default.
     put:
       tags: [preferences]
       summary: Update a user preference by id

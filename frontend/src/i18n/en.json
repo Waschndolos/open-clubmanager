@@ -1,6 +1,7 @@
 {
     "header": {
         "notifications": {
+            "title": "Notifications",
             "none": "No Notifications",
             "deleteall": "Delete all"
         }
@@ -85,6 +86,8 @@
         "email": "Email",
         "password": "Password",
         "confirmPassword": "Confirm Password",
+        "showConfirmPassword": "Show password confirmation",
+        "hideConfirmPassword": "Hide password confirmation",
         "createButton": "Create Admin Account",
         "creating": "Creating...",
         "demoData": {
@@ -943,6 +946,7 @@
             "READ_ONLY_AREA": "Your role may only see this data.",
             "STORAGE_MISSING": "The storage location is not reachable. Is your sync client running and is the folder still there?",
             "NETWORK": "No connection to the program. Is Open ClubManager still running?",
+            "DUPLICATE_VALUE": "This value is already taken. Please choose another one.",
             "default": "That did not work: {{message}}"
         }
     },

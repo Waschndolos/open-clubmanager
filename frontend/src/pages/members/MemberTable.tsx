@@ -115,7 +115,9 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted,
     useEffect(() => {
         if (!keys.length) return;
         getPreference("memberTableColumns").then((stored) => {
-            const fallback = Object.fromEntries(keys.map((k, i) => [k, i < 10]));
+            // The internal UUID is hidden by default but can be shown via the column menu.
+            const shownByDefault = new Set<keyof Member>(keys.filter((k) => k !== "id").slice(0, 10));
+            const fallback = Object.fromEntries(keys.map((k) => [k, shownByDefault.has(k)]));
             const merged = { ...fallback, ...(stored || {}) };
             setColumnVisibility(merged);
         });

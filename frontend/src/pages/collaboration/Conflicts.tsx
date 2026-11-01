@@ -71,6 +71,13 @@ export default function Conflicts() {
                 if (!api || !row) return;
                 await api.update({ ...row, name: value } as never);
             }
+            // Drop the typed value and any earlier failure: this conflict is resolved.
+            setInput((prev) => {
+                const next = { ...prev };
+                delete next[key(c)];
+                return next;
+            });
+            setError('');
             await load();
             refresh();
         } catch (e) {

@@ -154,8 +154,9 @@ func TestUniquenessConflictsReturn409(t *testing.T) {
 		h.ServeHTTP(rec, httptest.NewRequest(method, path, &buf))
 		var resp openapi.ErrorResponse
 		json.Unmarshal(rec.Body.Bytes(), &resp)
-		if rec.Code != http.StatusConflict || resp.Error != "a record with the same unique value already exists" {
-			t.Errorf("%s %s: %d %q, want 409 with the uniqueness message", method, path, rec.Code, rec.Body.String())
+		if rec.Code != http.StatusConflict || resp.Error != "a record with the same unique value already exists" ||
+			resp.Code == nil || *resp.Code != "DUPLICATE_VALUE" {
+			t.Errorf("%s %s: %d %q, want 409 with the uniqueness message and code DUPLICATE_VALUE", method, path, rec.Code, rec.Body.String())
 		}
 	}
 
