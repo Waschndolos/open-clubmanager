@@ -308,6 +308,11 @@
             "help": "Bis 35 Zeichen ohne Leerzeichen, z. B. NW-1001",
             "taken": "Diese Mandatsreferenz hat bereits ein anderes Mitglied",
             "invalid": "Ungültige Mandatsreferenz: nur Buchstaben, Ziffern und + ? / - : ( ) . , ' ohne Leerzeichen"
+        },
+        "feeModel": {
+            "label": "Beitragsmodell",
+            "help": "Automatisch: nach dem Alter am 1. Januar des Beitragsjahres",
+            "saveFailed": "Beitragsmodell konnte nicht gespeichert werden"
         }
     },
     "settings": {
@@ -431,7 +436,10 @@
         "tabs": {
             "transactions": "Kassenbuch",
             "memberfees": "Mitgliedsbeiträge",
-            "directDebit": "Lastschrift"
+            "directDebit": "Lastschrift",
+            "openItems": "Offene Posten",
+            "feeModels": "Beitragsmodelle",
+            "feeRuns": "Sollstellung"
         },
         "summary": {
             "balance": "Kontostand",
@@ -1368,6 +1376,119 @@
             "paidDate": "Bezahlt am",
             "cancelTitle": "Lastschriftlauf stornieren?",
             "cancelText": "Die Beiträge sind danach wieder offen. Lade die Datei nicht mehr bei der Bank hoch bzw. widerrufe den Auftrag dort."
+        }
+    },
+    "feeModels": {
+        "loadFailed": "Beitragsmodelle konnten nicht geladen werden",
+        "saveFailed": "Beitragsmodell konnte nicht gespeichert werden",
+        "nameTaken": "Es gibt bereits ein Beitragsmodell mit diesem Namen",
+        "create": "Beitragsmodell anlegen",
+        "empty": "Noch keine Beitragsmodelle angelegt",
+        "yes": "ja",
+        "noModel": "Kein passendes Modell",
+        "ageRange": "{{min}}–{{max}} Jahre",
+        "ageFrom": "ab {{min}} Jahre",
+        "ageTo": "bis {{max}} Jahre",
+        "fields": {
+            "name": "Name",
+            "amount": "Betrag (€)",
+            "interval": "Intervall",
+            "minAge": "Mindestalter",
+            "maxAge": "Höchstalter",
+            "age": "Alter",
+            "proRata": "Anteilig",
+            "members": "Mitglieder"
+        },
+        "interval": {
+            "yearly": "jährlich",
+            "half_yearly": "halbjährlich",
+            "quarterly": "quartalsweise",
+            "monthly": "monatlich"
+        },
+        "per": {
+            "yearly": "pro Jahr",
+            "half_yearly": "pro Halbjahr",
+            "quarterly": "pro Quartal",
+            "monthly": "pro Monat"
+        },
+        "mode": {
+            "auto": "Automatisch nach Alter",
+            "exempt": "Beitragsfrei"
+        },
+        "dialog": {
+            "titleCreate": "Neues Beitragsmodell",
+            "titleEdit": "Beitragsmodell bearbeiten",
+            "namePlaceholder": "z. B. Erwachsene, Jugend, Familie, Passiv",
+            "amountHelp": "Betrag je Zeitraum des Intervalls",
+            "ageHelp": "Modelle mit Altersgrenze werden Mitgliedern ohne feste Zuordnung automatisch zugewiesen. Maßgeblich ist das Alter am 1. Januar des Beitragsjahres; die Grenzen zählen mit.",
+            "ageInvalid": "Das Mindestalter ist größer als das Höchstalter",
+            "proRata": "Bei Ein- und Austritt im Zeitraum nur die Monate der Mitgliedschaft berechnen"
+        },
+        "columns": {
+            "ageJan1": "Alter am 1.1.",
+            "assignment": "Zuordnung",
+            "effective": "Beitrag"
+        },
+        "assignments": {
+            "title": "Zuordnung der Mitglieder",
+            "description": "Aktuelle Mitglieder mit ihrem Beitragsmodell für das laufende Jahr. Die Zuordnung kann hier oder im Mitgliederdialog geändert werden.",
+            "withoutModel": "{{count}} Mitglieder haben kein passendes Beitragsmodell (z. B. kein Geburtsdatum) und werden bei der Sollstellung übersprungen."
+        },
+        "deleteTitle": "Beitragsmodell löschen?",
+        "deleteText": "„{{name}}“ wird gelöscht. Zugeordnete Mitglieder erhalten ihr Modell wieder automatisch nach Alter; bereits erzeugte Beiträge bleiben erhalten."
+    },
+    "feeRuns": {
+        "title": "Sollstellung erzeugen",
+        "description": "Erzeugt für alle Mitglieder die Beiträge der Zeiträume, die in den gewählten Monaten beginnen. Bereits berechnete Zeiträume werden erkannt und übersprungen, ausgetretene Mitglieder ab ihrem Austrittsdatum nicht mehr berücksichtigt.",
+        "from": "Von (Monat)",
+        "to": "Bis (Monat)",
+        "rangeInvalid": "Der Endmonat liegt vor dem Startmonat",
+        "dueDate": "Fällig am",
+        "dueDateHelp": "Spätere Zeiträume werden zu ihrem Beginn fällig",
+        "preview": "Vorschau",
+        "create": "Sollstellung speichern",
+        "summary": "{{count}} Beiträge mit zusammen {{total}} werden erzeugt.",
+        "nothingToCharge": "Für diesen Zeitraum ist nichts zu berechnen – er wurde bereits vollständig berechnet oder kein Mitglied hat ein Beitragsmodell.",
+        "proRataOf": "anteilig von {{full}}",
+        "skipped": {
+            "ALREADY_CHARGED": "{{count}} Zeiträume wurden bereits berechnet und werden übersprungen:",
+            "NO_MODEL": "{{count}} Mitglieder ohne passendes Beitragsmodell:",
+            "EXEMPT": "{{count}} beitragsfreie Mitglieder:"
+        },
+        "confirmTitle": "Sollstellung speichern?",
+        "confirmText": "Es werden {{count}} Beiträge mit zusammen {{total}} für {{from}} bis {{to}} angelegt.",
+        "created": "Sollstellung gespeichert: {{count}} Beiträge, {{total}}",
+        "empty": "Nichts zu berechnen: der Zeitraum wurde bereits berechnet",
+        "createFailed": "Sollstellung konnte nicht gespeichert werden",
+        "previewFailed": "Vorschau konnte nicht berechnet werden",
+        "loadFailed": "Sollstellungen konnten nicht geladen werden",
+        "history": "Bisherige Sollstellungen",
+        "noRuns": "Noch keine Sollstellung erzeugt",
+        "columns": {
+            "period": "Zeitraum",
+            "count": "Beiträge",
+            "total": "Summe",
+            "paid": "Bezahlt",
+            "createdAt": "Erzeugt am"
+        },
+        "delete": "Offene Beiträge entfernen",
+        "deleteTitle": "Sollstellung zurücknehmen?",
+        "deleteText": "Die {{count}} noch offenen Beiträge dieser Sollstellung werden gelöscht; bezahlte bleiben erhalten. Die Zeiträume können danach erneut berechnet werden.",
+        "deleted": "{{count}} offene Beiträge entfernt",
+        "inCollection": "Beiträge dieser Sollstellung sind in einem noch nicht bestätigten Lastschrifteinzug",
+        "deleteFailed": "Sollstellung konnte nicht zurückgenommen werden"
+    },
+    "openItems": {
+        "count": "Anzahl",
+        "total": "Offener Betrag",
+        "oldestDue": "Älteste Fälligkeit",
+        "fees": "Beiträge",
+        "overdueSince": "überfällig seit {{date}}",
+        "empty": "Keine offenen Posten – alle Beiträge sind bezahlt",
+        "summary": {
+            "total": "Offen gesamt",
+            "overdue": "Davon überfällig",
+            "members": "Mitglieder mit offenen Posten"
         }
     }
 }

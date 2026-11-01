@@ -81,6 +81,23 @@ const SHOTS = [
     ['finance-fees', '/finance', async (page) => {
         await page.getByRole('tab', { name: t('finance.tabs.memberfees') }).click();
     }],
+    ['finance-open-items', '/finance', async (page) => {
+        await page.getByRole('tab', { name: t('finance.tabs.openItems') }).click();
+    }],
+    ['finance-fee-models', '/finance', async (page) => {
+        await page.getByRole('tab', { name: t('finance.tabs.feeModels') }).click();
+        await page.waitForLoadState('networkidle');
+    }],
+    // The demo data already charged the current year, so the preview shows next year.
+    ['finance-fee-run', '/finance', async (page) => {
+        await page.getByRole('tab', { name: t('finance.tabs.feeRuns') }).click();
+        await page.getByLabel(t('feeRuns.from')).fill('2027-01');
+        await page.getByLabel(t('feeRuns.to')).fill('2027-12');
+        await page.getByLabel(t('feeRuns.dueDate')).fill('2027-03-01');
+        await page.getByRole('button', { name: t('feeRuns.preview') }).click();
+        await page.waitForLoadState('networkidle');
+        await page.getByRole('button', { name: t('feeRuns.create') }).waitFor();
+    }],
     ['finance-direct-debit', '/finance', async (page) => {
         await page.getByRole('tab', { name: t('finance.tabs.directDebit') }).click();
     }],

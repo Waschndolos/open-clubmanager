@@ -2,7 +2,8 @@ import { assignGroupMembers, createGroup } from './groups';
 import { createMember } from './members';
 import { assignRoleMembers, createRole } from './roles';
 import { assignSectionMembers, createSection } from './sections';
-import { createMemberFee, createTransaction } from './finance';
+import { createTransaction, fetchMemberFees, updateMemberFee } from './finance';
+import { createFeeModel, createFeeRun, FeeModel, saveFeeAssignment } from './feeModels';
 import { createInventoryItem, createInventoryLoan } from './inventory';
 import { recordMaintenance, setItemStatus } from './maintenance';
 import { addDays, createEvent, localTimeZone, ymd } from './events';
@@ -34,6 +35,15 @@ const FEE_AMOUNTS: Record<Fee, number> = {
     youth: 90,
     family: 120,
     supporter: 50,
+};
+
+// Fee models: adults and youth are picked by age, family and supporting
+// members are assigned explicitly.
+const FEE_MODELS: Record<Fee, Omit<FeeModel, 'id' | 'amount'>> = {
+    adult: { name: 'Erwachsene', interval: 'yearly', minAge: 18, proRata: true },
+    youth: { name: 'Jugend (U18)', interval: 'yearly', maxAge: 17, proRata: true },
+    family: { name: 'Familie', interval: 'yearly', proRata: true },
+    supporter: { name: 'Fördermitglied', interval: 'yearly', proRata: false },
 };
 
 const FEE_GROUP: Record<Fee, string> = {
@@ -308,23 +318,24 @@ export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
         });
     }
 
-    // Annual fee for every active member; most have paid via SEPA, a few are still open.
-    const unpaid = new Set([1007, 1012, 1013, 1015]);
-    let memberFees = 0;
-    for (const { id, demo } of createdMembers) {
-        if (demo.data.exitDate) continue;
-        await createMemberFee({
-            memberId: id,
-            amount: FEE_AMOUNTS[demo.fee],
-            dueDate: new Date(`${currentYear}-03-01T00:00:00.000Z`).toISOString(),
-            paidDate: unpaid.has(demo.data.number!)
-                ? null
-                : new Date(`${currentYear}-01-15T00:00:00.000Z`).toISOString(),
-            year: currentYear,
-            description: `Jahresbeitrag ${currentYear}`,
-        });
-        memberFees++;
+    // Annual fee for every active member from the fee models (billing run);
+    // most have paid via SEPA, a few are still open.
+    const feeModels = new Map<Fee, FeeModel>();
+    for (const fee of Object.keys(FEE_MODELS) as Fee[]) {
+        feeModels.set(fee, await createFeeModel({ ...FEE_MODELS[fee], amount: FEE_AMOUNTS[fee] }));
     }
+    for (const { id, demo } of createdMembers) {
+        if (demo.fee === 'family' || demo.fee === 'supporter') {
+            await saveFeeAssignment(id, { mode: 'model', feeModelId: feeModels.get(demo.fee)!.id });
+        }
+    }
+    const run = await createFeeRun({ from: `${currentYear}-01`, to: `${currentYear}-12`, dueDate: `${currentYear}-03-01` });
+    const unpaid = new Set([1007, 1012, 1013, 1015]);
+    for (const fee of await fetchMemberFees()) {
+        if (unpaid.has(fee.member?.number ?? 0)) continue;
+        await updateMemberFee({ ...fee, paidDate: new Date(`${currentYear}-01-15T00:00:00.000Z`).toISOString() });
+    }
+    const memberFees = run.count;
 
     const itemIds = new Map<string, string>();
     for (const { key, ...item } of INVENTORY) {

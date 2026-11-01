@@ -308,6 +308,11 @@
             "help": "Jusqu'à 35 caractères sans espaces, p. ex. NW-1001",
             "taken": "Un autre membre a déjà cette référence de mandat",
             "invalid": "Référence de mandat invalide : uniquement lettres, chiffres et + ? / - : ( ) . , ' sans espaces"
+        },
+        "feeModel": {
+            "label": "Barème de cotisation",
+            "help": "Automatique : selon l’âge au 1er janvier de l’année de cotisation",
+            "saveFailed": "Le barème n’a pas pu être enregistré"
         }
     },
     "settings": {
@@ -431,7 +436,10 @@
         "tabs": {
             "transactions": "Livre de caisse",
             "memberfees": "Cotisations",
-            "directDebit": "Prélèvement"
+            "directDebit": "Prélèvement",
+            "openItems": "Impayés",
+            "feeModels": "Barèmes de cotisation",
+            "feeRuns": "Appel de cotisations"
         },
         "summary": {
             "balance": "Solde",
@@ -1017,6 +1025,119 @@
             "paidDate": "Payé le",
             "cancelTitle": "Annuler le lot de prélèvements ?",
             "cancelText": "Les cotisations seront de nouveau ouvertes. Ne déposez plus le fichier à la banque ou révoquez l'ordre."
+        }
+    },
+    "feeModels": {
+        "loadFailed": "Les barèmes n’ont pas pu être chargés",
+        "saveFailed": "Le barème n’a pas pu être enregistré",
+        "nameTaken": "Un barème portant ce nom existe déjà",
+        "create": "Ajouter un barème",
+        "empty": "Aucun barème pour l’instant",
+        "yes": "oui",
+        "noModel": "Aucun barème correspondant",
+        "ageRange": "{{min}}–{{max}} ans",
+        "ageFrom": "à partir de {{min}} ans",
+        "ageTo": "jusqu’à {{max}} ans",
+        "fields": {
+            "name": "Nom",
+            "amount": "Montant (€)",
+            "interval": "Périodicité",
+            "minAge": "Âge minimum",
+            "maxAge": "Âge maximum",
+            "age": "Âge",
+            "proRata": "Au prorata",
+            "members": "Membres"
+        },
+        "interval": {
+            "yearly": "annuelle",
+            "half_yearly": "semestrielle",
+            "quarterly": "trimestrielle",
+            "monthly": "mensuelle"
+        },
+        "per": {
+            "yearly": "par an",
+            "half_yearly": "par semestre",
+            "quarterly": "par trimestre",
+            "monthly": "par mois"
+        },
+        "mode": {
+            "auto": "Automatique selon l’âge",
+            "exempt": "Exonéré"
+        },
+        "dialog": {
+            "titleCreate": "Nouveau barème",
+            "titleEdit": "Modifier le barème",
+            "namePlaceholder": "p. ex. adultes, jeunes, famille, passif",
+            "amountHelp": "Montant par période",
+            "ageHelp": "Les barèmes avec limite d’âge sont attribués automatiquement aux membres sans barème fixe. L’âge au 1er janvier de l’année de cotisation fait foi ; les limites sont incluses.",
+            "ageInvalid": "L’âge minimum est supérieur à l’âge maximum",
+            "proRata": "En cas d’adhésion ou de départ en cours de période, ne facturer que les mois d’adhésion"
+        },
+        "columns": {
+            "ageJan1": "Âge au 1er janv.",
+            "assignment": "Attribution",
+            "effective": "Cotisation"
+        },
+        "assignments": {
+            "title": "Attribution des membres",
+            "description": "Membres actuels avec leur barème pour l’année en cours. L’attribution se modifie ici ou dans la fiche du membre.",
+            "withoutModel": "{{count}} membres n’ont aucun barème correspondant (p. ex. sans date de naissance) et sont ignorés lors de l’appel de cotisations."
+        },
+        "deleteTitle": "Supprimer le barème ?",
+        "deleteText": "« {{name}} » sera supprimé. Les membres concernés reçoivent de nouveau un barème selon leur âge ; les cotisations déjà créées sont conservées."
+    },
+    "feeRuns": {
+        "title": "Générer l’appel de cotisations",
+        "description": "Crée les cotisations de tous les membres pour les périodes commençant dans les mois choisis. Les périodes déjà facturées sont détectées et ignorées ; les membres partis ne sont plus facturés à partir de leur date de départ.",
+        "from": "Du (mois)",
+        "to": "Au (mois)",
+        "rangeInvalid": "Le mois de fin précède le mois de début",
+        "dueDate": "Échéance",
+        "dueDateHelp": "Les périodes ultérieures sont dues à leur début",
+        "preview": "Aperçu",
+        "create": "Enregistrer l’appel",
+        "summary": "{{count}} cotisations pour un total de {{total}} seront créées.",
+        "nothingToCharge": "Rien à facturer pour cette période – elle a déjà été entièrement facturée ou aucun membre n’a de barème.",
+        "proRataOf": "au prorata de {{full}}",
+        "skipped": {
+            "ALREADY_CHARGED": "{{count}} périodes déjà facturées sont ignorées :",
+            "NO_MODEL": "{{count}} membres sans barème correspondant :",
+            "EXEMPT": "{{count}} membres exonérés :"
+        },
+        "confirmTitle": "Enregistrer l’appel de cotisations ?",
+        "confirmText": "{{count}} cotisations pour un total de {{total}} seront créées pour la période {{from}} à {{to}}.",
+        "created": "Appel enregistré : {{count}} cotisations, {{total}}",
+        "empty": "Rien à facturer : la période a déjà été facturée",
+        "createFailed": "L’appel n’a pas pu être enregistré",
+        "previewFailed": "L’aperçu n’a pas pu être calculé",
+        "loadFailed": "Les appels n’ont pas pu être chargés",
+        "history": "Appels précédents",
+        "noRuns": "Aucun appel de cotisations pour l’instant",
+        "columns": {
+            "period": "Période",
+            "count": "Cotisations",
+            "total": "Total",
+            "paid": "Payées",
+            "createdAt": "Créé le"
+        },
+        "delete": "Supprimer les cotisations ouvertes",
+        "deleteTitle": "Annuler l’appel de cotisations ?",
+        "deleteText": "Les {{count}} cotisations encore ouvertes de cet appel seront supprimées ; les cotisations payées sont conservées. Les périodes pourront ensuite être facturées à nouveau.",
+        "deleted": "{{count}} cotisations ouvertes supprimées",
+        "inCollection": "Des cotisations de cet appel font partie d’un prélèvement non encore confirmé",
+        "deleteFailed": "L’appel n’a pas pu être annulé"
+    },
+    "openItems": {
+        "count": "Nombre",
+        "total": "Montant ouvert",
+        "oldestDue": "Échéance la plus ancienne",
+        "fees": "Cotisations",
+        "overdueSince": "en retard depuis le {{date}}",
+        "empty": "Aucun impayé – toutes les cotisations sont réglées",
+        "summary": {
+            "total": "Total ouvert",
+            "overdue": "Dont en retard",
+            "members": "Membres avec impayés"
         }
     }
 }

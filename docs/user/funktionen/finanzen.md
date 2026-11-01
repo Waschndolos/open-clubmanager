@@ -5,7 +5,7 @@ routes:
 
 # Finanzen
 
-Kassenbuch, Mitgliedsbeiträge und Beitragseinzug per SEPA-Lastschrift. Sichtbar nur für **Administratoren** und **Kassenwarte**.
+Kassenbuch, Mitgliedsbeiträge, Beitragsmodelle mit automatischer Sollstellung, offene Posten und Beitragseinzug per SEPA-Lastschrift. Sichtbar nur für **Administratoren** und **Kassenwarte**.
 
 ![Kassenbuch](../assets/screenshots/finance.png){ .screenshot }
 
@@ -37,6 +37,89 @@ Statt jede Buchung abzutippen, importierst du den Kontoauszug deiner Bank im For
 ![Mitgliedsbeiträge](../assets/screenshots/finance-fees.png){ .screenshot }
 
 Hier verwaltest du die Beiträge je Mitglied und Jahr: Betrag, Fälligkeitsdatum, Bezahlt-am-Datum und Beschreibung. Offene Beiträge sind als **Ausstehend** markiert.
+
+Einzelne Beiträge (z. B. eine Aufnahmegebühr) legst du mit **Beitrag hinzufügen** an. Die regelmäßigen Beiträge aller Mitglieder erzeugst du besser auf einmal über [Beitragsmodelle](#beitragsmodelle) und die [Sollstellung](#sollstellung).
+
+## Offene Posten
+
+![Offene Posten](../assets/screenshots/finance-open-items.png){ .screenshot }
+
+Der Reiter **Offene Posten** zeigt alle noch nicht bezahlten Beiträge, zusammengefasst je Mitglied: Anzahl, offener Betrag, älteste Fälligkeit und um welche Beiträge es geht. Oben stehen der **offene Gesamtbetrag**, wie viel davon **überfällig** ist und wie viele Mitglieder offene Posten haben. Überfällige Posten sind rot markiert. Mitglieder mit dem höchsten offenen Betrag stehen oben.
+
+## Beitragsmodelle
+
+![Beitragsmodelle](../assets/screenshots/finance-fee-models.png){ .screenshot }
+
+Ein Beitragsmodell ist eine Beitragsklasse deines Vereins, z. B. *Erwachsene*, *Jugend*, *Familie*, *Passiv* oder *Ermäßigt*. Lege sie im Reiter **Beitragsmodelle** mit **Beitragsmodell anlegen** an:
+
+| Feld | Bedeutung |
+|---|---|
+| **Name** | Erscheint in der Beschreibung der erzeugten Beiträge, z. B. „Erwachsene 2027“. Muss eindeutig sein. |
+| **Betrag** | Betrag **je Zeitraum** des Intervalls (bei *quartalsweise* also der Quartalsbeitrag). |
+| **Intervall** | jährlich, halbjährlich, quartalsweise oder monatlich. Die Zeiträume richten sich nach dem Kalenderjahr (1. Halbjahr = Januar–Juni, 1. Quartal = Januar–März …). |
+| **Mindestalter / Höchstalter** | Optional. Modelle mit Altersgrenze werden automatisch nach Alter vergeben (siehe unten). Beide Grenzen zählen mit: *Höchstalter 17* heißt „bis einschließlich 17 Jahre“. |
+| **Anteilig** | Bei Ein- oder Austritt während eines Zeitraums nur die Monate der Mitgliedschaft berechnen (siehe [Anteilige Berechnung](#anteilige-berechnung)). |
+
+Ändert sich ein Betrag, gilt der neue Betrag für alle künftigen Sollstellungen; bereits erzeugte Beiträge bleiben unverändert.
+
+### Welches Mitglied zahlt welches Modell?
+
+Unter **Zuordnung der Mitglieder** siehst du alle aktuellen Mitglieder mit ihrem Alter am 1. Januar und dem Beitrag, den sie im laufenden Jahr zahlen. Die Zuordnung änderst du direkt in der Liste oder im [Mitglieder-Dialog](mitglieder.md#mitglied-anlegen-oder-bearbeiten) unter **Mitgliedschaft → Beitragsmodell**:
+
+- **Automatisch nach Alter** (Standard): Das Mitglied bekommt das Modell mit Altersgrenze, zu dem sein Alter passt. Passen mehrere, gewinnt das mit der engsten Altersspanne (z. B. *Studierende 18–27* vor *Erwachsene ab 18*).
+- **Ein bestimmtes Modell**, z. B. *Familie* oder *Passiv*: gilt unabhängig vom Alter.
+- **Beitragsfrei**, z. B. für Ehrenmitglieder: Das Mitglied bekommt keine Beiträge.
+
+!!! info "Wechsel mit 18 Jahren"
+    Maßgeblich ist das **Alter am 1. Januar des Beitragsjahres**. Wer im Juni 18 wird, zahlt in diesem Jahr noch den Jugendbeitrag und ab dem folgenden Jahr automatisch den Erwachsenenbeitrag. So gibt es beim Wechsel weder Lücken noch doppelte Beiträge – auch wenn die beiden Modelle unterschiedliche Intervalle haben.
+
+Mitglieder ohne Geburtsdatum oder ohne passendes Modell sind gelb markiert und werden bei der Sollstellung übersprungen. Wird ein Modell gelöscht, erhalten seine Mitglieder ihr Modell wieder automatisch nach Alter.
+
+## Sollstellung
+
+![Sollstellung mit Vorschau](../assets/screenshots/finance-fee-run.png){ .screenshot }
+
+Die Sollstellung erzeugt die Beiträge aller Mitglieder für einen Zeitraum auf einmal – typischerweise zu Beginn des Jahres für das ganze Jahr.
+
+1. Im Reiter **Sollstellung** den Zeitraum wählen: **Von (Monat)** und **Bis (Monat)**, z. B. Januar bis Dezember 2027. Berechnet werden alle Beitragszeiträume, die in diesen Monaten **beginnen**.
+2. **Fällig am** festlegen, z. B. den 1. März. Zeiträume, die erst später beginnen (z. B. das 3. Quartal), werden zu ihrem Beginn fällig.
+3. **Vorschau** klicken. Noch wird nichts gespeichert. Die Vorschau zeigt **Anzahl und Summe** der Beiträge, jeden einzelnen Beitrag mit Betrag und Fälligkeit und darunter, wer übersprungen wird und warum:
+    - **bereits berechnet**: Für diesen Zeitraum hat das Mitglied schon einen Beitrag aus einer Sollstellung,
+    - **ohne passendes Beitragsmodell**: z. B. fehlt das Geburtsdatum,
+    - **beitragsfrei**.
+4. Stimmt alles, **Sollstellung speichern**. Die Beiträge erscheinen unter [Mitgliedsbeiträge](#mitgliedsbeitrage) und [Offene Posten](#offene-posten) und lassen sich wie gewohnt per [Lastschrift](#lastschrift-sepa) einziehen.
+
+Unter **Bisherige Sollstellungen** siehst du jede gespeicherte Sollstellung mit Anzahl, Summe und wie viele Beiträge schon bezahlt sind.
+
+### Keine doppelten Beiträge
+
+Open ClubManager merkt sich für jeden erzeugten Beitrag, für welchen Zeitraum er gilt. Ein Zeitraum, der für ein Mitglied schon berechnet wurde, wird **nie ein zweites Mal** berechnet:
+
+- Startest du dieselbe Sollstellung noch einmal, zeigt die Vorschau „nichts zu berechnen“ und das Speichern wird abgelehnt.
+- Überschneidet sich der Zeitraum mit einer früheren Sollstellung, werden nur die noch fehlenden Zeiträume berechnet. So kannst du die Sollstellung z. B. im Sommer wiederholen, um **neu eingetretene Mitglieder** nachzuberechnen.
+- Löschst du einen erzeugten Beitrag, ist der Zeitraum wieder frei und kann erneut berechnet werden.
+
+!!! warning "Von Hand angelegte Beiträge"
+    Die Erkennung gilt nur für Beiträge aus einer Sollstellung. Hast du Beiträge eines Zeitraums schon von Hand mit **Beitrag hinzufügen** angelegt (z. B. den Jahresbeitrag vor dem Umstieg auf Beitragsmodelle), würden sie ein zweites Mal berechnet. Beginne die erste Sollstellung dann mit dem nächsten Zeitraum oder lösche die von Hand angelegten offenen Beiträge vorher.
+
+Eine versehentliche Sollstellung nimmst du mit dem Papierkorb in der Liste **Bisherige Sollstellungen** zurück: Alle noch offenen Beiträge der Sollstellung werden gelöscht, bezahlte bleiben erhalten. Sind Beiträge in einem noch nicht bestätigten [Lastschriftlauf](#lastschrift-sepa), musst du den Lauf zuerst stornieren oder bestätigen.
+
+### Eintritt und Austritt
+
+- Wer **ausgetreten** ist, wird ab dem Austrittsdatum nicht mehr berücksichtigt: Für Zeiträume, die am oder nach dem Austrittsdatum beginnen, entsteht kein Beitrag. Am Austrittsdatum selbst ist das Mitglied kein Mitglied mehr.
+- Wer erst nach dem Ende eines Zeitraums **eintritt**, bekommt für diesen Zeitraum keinen Beitrag.
+
+### Anteilige Berechnung
+
+Ohne die Option **Anteilig** wird für einen Zeitraum immer der volle Betrag fällig, sobald das Mitglied an mindestens einem Tag darin Mitglied ist. Mit **Anteilig** zählt jeder Monat des Zeitraums, in dem das Mitglied an mindestens einem Tag Mitglied ist; berechnet wird der entsprechende Anteil, auf den Cent gerundet.
+
+| Beispiel (Jahresbeitrag 120 €, anteilig) | Monate | Beitrag |
+|---|---|---|
+| Eintritt am 1. oder 30. April | April–Dezember = 9 | 90,00 € |
+| Austritt zum 1. Juli (letzter Tag: 30. Juni) | Januar–Juni = 6 | 60,00 € |
+| Eintritt 15. März, Austritt 20. August | März–August = 6 | 60,00 € |
+
+In der Vorschau sind anteilige Beiträge mit „anteilig von …“ gekennzeichnet.
 
 ## Lastschrift (SEPA)
 
@@ -75,7 +158,7 @@ Mit **XML-Datei herunterladen** bekommst du die Datei eines Laufs erneut.
 
 ## Kassenbuch komplett löschen
 
-Für einen Neuanfang (z. B. nach dem Ausprobieren mit Beispieldaten) kannst du alle Buchungen und Beiträge auf einmal löschen. Zur Sicherheit musst du dazu ein Bestätigungswort eintippen. **Das lässt sich nicht rückgängig machen** – erstelle vorher eine [Datensicherung](einstellungen.md#datensicherung).
+Für einen Neuanfang (z. B. nach dem Ausprobieren mit Beispieldaten) kannst du alle Buchungen, Beiträge und Sollstellungen auf einmal löschen; die Beitragsmodelle und die Zuordnung der Mitglieder bleiben erhalten. Zur Sicherheit musst du dazu ein Bestätigungswort eintippen. **Das lässt sich nicht rückgängig machen** – erstelle vorher eine [Datensicherung](einstellungen.md#datensicherung).
 
 !!! warning "Kein Ersatz für die Buchhaltung"
     Das Kassenbuch ist eine Hilfe für den Vereinsalltag. Es ersetzt keine steuerlich anerkannte Buchführung, keinen DATEV-Export und keine Beratung durch Steuerberater oder Kassenprüfer.
