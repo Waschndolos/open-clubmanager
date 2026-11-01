@@ -9,7 +9,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-    AREAS, changeDeviceRole, ClubDevice, ClubInvite, ClubJoinRequest, ClubRole, listDevices, listInvites, listRequests,
+    AREAS, cancelJoin, changeDeviceRole, ClubDevice, ClubInvite, ClubJoinRequest, ClubRole, listDevices, listInvites, listRequests,
     listRoles, revokeDevice, withdrawInvite,
 } from '../../api/collaboration';
 import PageHeader from '../../components/common/PageHeader';
@@ -23,8 +23,10 @@ type TabId = 'overview' | 'people' | 'invites' | 'roles' | 'emergency';
 function LocalMode() {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { status } = useCollaboration();
     return (
         <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {status?.joinRejected && <Alert severity="error">{t('collaboration.join.notAdmitted')}</Alert>}
             <Typography variant="h6">{t('collaboration.settings.localTitle')}</Typography>
             <Typography>{t('collaboration.settings.localText')}</Typography>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -33,6 +35,41 @@ function LocalMode() {
                 <Button onClick={() => navigate('/collaboration/recover')}>{t('collaboration.setup.recover')}</Button>
             </Box>
         </Paper>
+    );
+}
+
+/** A join request is pending: view it or withdraw it (issue #194). */
+function JoiningMode() {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const errorText = useErrorText();
+    const { refresh } = useCollaboration();
+    const [busy, setBusy] = useState(false);
+    const [error, setError] = useState('');
+    const cancel = async () => {
+        setBusy(true);
+        setError('');
+        try {
+            await cancelJoin();
+        } catch (e) {
+            setError(errorText(e));
+        } finally {
+            await refresh();
+            setBusy(false);
+        }
+    };
+    return (
+        <Stack spacing={2}>
+            <Alert severity="info" action={
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button onClick={() => navigate('/collaboration/join')}>{t('collaboration.popover.view')}</Button>
+                    <Button id="collab-cancel-join" color="inherit" onClick={cancel} disabled={busy}>{t('collaboration.join.cancel')}</Button>
+                </Box>
+            }>
+                {t('collaboration.status.joining')}
+            </Alert>
+            {error && <Alert severity="error">{error}</Alert>}
+        </Stack>
     );
 }
 
@@ -358,11 +395,7 @@ export default function CollaborationSettings() {
     } else if (status.locked) {
         body = <Alert severity="warning">{t('collaboration.errors.LOCKED')}</Alert>;
     } else if (status.mode === 'joining') {
-        body = (
-            <Alert severity="info" action={<Button onClick={() => navigate('/collaboration/join')}>{t('collaboration.popover.view')}</Button>}>
-                {t('collaboration.status.joining')}
-            </Alert>
-        );
+        body = <JoiningMode />;
     } else if (status.mode === 'revoked') {
         body = <Alert severity="error">{t('collaboration.status.revoked')}</Alert>;
     } else {

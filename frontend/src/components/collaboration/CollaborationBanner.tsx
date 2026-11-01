@@ -10,7 +10,16 @@ export default function CollaborationBanner() {
     const navigate = useNavigate();
     const { pathname } = useLocation();
     const { status } = useCollaboration();
-    if (!status || status.mode === 'local' || pathname.startsWith('/collaboration')) return null;
+    if (!status || pathname.startsWith('/collaboration')) return null;
+    if (status.mode === 'local') {
+        if (!status.joinRejected) return null;
+        return (
+            <Alert severity="error" sx={{ mb: 2 }}
+                   action={<Button color="inherit" size="small" onClick={() => navigate('/collaboration/join')}>{t('collaboration.join.retry')}</Button>}>
+                {t('collaboration.join.notAdmitted')}
+            </Alert>
+        );
+    }
 
     if (status.mode === 'joining') {
         return (

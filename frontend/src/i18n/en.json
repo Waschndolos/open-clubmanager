@@ -42,7 +42,8 @@
         "errorInvalidCredentials": "Login failed. Please check your credentials.",
         "errorTooManyAttempts": "Too many failed attempts. Please wait a moment and try again.",
         "showPassword": "Show password",
-        "hidePassword": "Hide password"
+        "hidePassword": "Hide password",
+        "sessionExpired": "Your session has expired. Please log in again."
     },
     "forgotPassword": {
         "title": "Forgot Password",
@@ -226,9 +227,7 @@
         "automatedDeletionNotice": "was automatically deleted.",
         "saveErrors": {
             "duplicate": "Member number or email address is already taken.",
-            "generic": "Member could not be saved: {{message}}",
-            "invalidNumber": "Please enter a valid member number (1 or higher).",
-            "required": "Please fill in all required fields (*)."
+            "generic": "Member could not be saved: {{message}}"
         },
         "dialogs": {
             "export": {
@@ -253,7 +252,9 @@
                 "3": {
                     "title": "Preview",
                     "duplicateMatchField": "⚠️ Duplicate {{field}} values exist in the imported data!"
-                }
+                },
+                "errors": "{{count}} of {{total}} rows were not imported: {{rows}}",
+                "errorRow": "row {{row}} ({{reason}})"
             },
             "sections": {
                 "personal": "Personal Information",
@@ -323,6 +324,19 @@
             "label": "Fee model",
             "help": "Automatic: by age on 1 January of the fee year",
             "saveFailed": "Fee model could not be saved"
+        },
+        "validation": {
+            "summary": "Please check the highlighted fields.",
+            "required": "Required",
+            "too_long": "At most {{limit}} characters",
+            "not_positive": "Please enter a member number of 1 or higher",
+            "invalid": "Invalid value",
+            "email_invalid": "Not a valid e-mail address",
+            "iban_invalid": "Not a valid IBAN: country code, length or characters are wrong",
+            "iban_checksum": "The IBAN check digits do not match – please check for typos",
+            "bic_invalid": "Not a valid BIC (8 or 11 characters, e.g. COBADEFFXXX)",
+            "exitDate_before_entry": "The exit date cannot be before the entry date",
+            "birthday_in_future": "The birthday cannot be in the future"
         }
     },
     "settings": {
@@ -429,7 +443,9 @@
             "loadFailed": "Failed to load users.",
             "createFailed": "Failed to create user.",
             "updateFailed": "Failed to update user.",
-            "deleteFailed": "Failed to delete user."
+            "deleteFailed": "Failed to delete user.",
+            "passwordTooShort": "Password must be at least 8 characters long.",
+            "emailInUse": "This email address is already used by the administrator or another user."
         }
     },
     "finance": {
@@ -737,7 +753,17 @@
             "welcome": "Welcome! You are in – your role: {{role}}.",
             "rejected": "This device was not admitted to the club or was removed again. Please contact the board.",
             "toApp": "Go to overview",
-            "codeLong": "The code is too long. It has 24 characters – was it pasted twice?"
+            "codeLong": "The code is too long. It has 24 characters – was it pasted twice?",
+            "cancel": "Cancel joining",
+            "cancelHint": "Wrong code or wrong folder? Cancel joining and try again.",
+            "cancelled": "Your join request was withdrawn. You can now try again with another code.",
+            "notAdmitted": "This device was not admitted to the club. Please contact the board.",
+            "retry": "Try again",
+            "errors": {
+                "INVITE_UNKNOWN": "We do not know this invite code. Check it or ask for a new invite. If the invite was created just now, wait until your sync client has updated the folder and try again.",
+                "INVITE_EXPIRED": "The invite has expired. Ask for a new invite.",
+                "INVITE_USED": "The invite has already been used. Ask for a new invite."
+            }
         },
         "recover": {
             "title": "Use the emergency key",
@@ -947,7 +973,8 @@
             "STORAGE_MISSING": "The storage location is not reachable. Is your sync client running and is the folder still there?",
             "NETWORK": "No connection to the program. Is Open ClubManager still running?",
             "DUPLICATE_VALUE": "This value is already taken. Please choose another one.",
-            "default": "That did not work: {{message}}"
+            "default": "That did not work: {{message}}",
+            "NOT_JOINING": "No join request is pending any more. Maybe you were just admitted."
         }
     },
     "auth": {

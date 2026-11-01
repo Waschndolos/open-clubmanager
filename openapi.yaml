@@ -9,7 +9,13 @@ info:
     Notes:
     - The legacy `/api/*` v1 endpoints were removed.
     - Authentication uses bearer access tokens for protected endpoints.
-    - Refresh/logout use an HTTP-only cookie named `refreshToken`.
+    - Login also issues a refresh token. Browsers on the same site as the
+      backend get it as an HTTP-only, SameSite=Strict cookie named
+      `refreshToken` (path `/api/v2/auth`). Clients that cannot use that
+      cookie (the desktop app, whose pages are served from a different site)
+      request it in the response body with `refreshTokenInBody` and send it
+      in the `X-Refresh-Token` header. Every refresh rotates the token; a
+      replaced token presented again revokes the login.
 servers:
   - url: http://localhost:3001/api/v2
     description: Local development server
@@ -43,6 +49,10 @@ components:
       type: apiKey
       in: cookie
       name: refreshToken
+    refreshTokenHeader:
+      type: apiKey
+      in: header
+      name: X-Refresh-Token
 
   schemas:
     ErrorResponse:
@@ -53,7 +63,28 @@ components:
           examples: [INTERNAL_ERROR, MEMBER_VERSION_CONFLICT]
         error:
           type: string
+        fields:
+          type: array
+          description: The problems per field of a `VALIDATION_FAILED` response.
+          items:
+            $ref: '#/components/schemas/FieldError'
       required: [error]
+      additionalProperties: false
+
+    FieldError:
+      type: object
+      description: A problem with one field of a request.
+      properties:
+        field:
+          type: string
+          description: JSON name of the field, e.g. `firstName` or `iban`.
+        code:
+          type: string
+          description: '`required`, `too_long`, `not_positive`, `invalid`, `checksum` (IBAN check digits), `before_entry` (exit before entry date) or `in_future` (birthday).'
+        limit:
+          type: integer
+          description: Maximum length for `too_long`.
+      required: [field, code]
       additionalProperties: false
 
     HealthResponse:
@@ -158,6 +189,9 @@ components:
           format: email
         password:
           type: string
+        refreshTokenInBody:
+          type: boolean
+          description: Return the refresh token in the response body instead of the `refreshToken` cookie. For clients that cannot use a same-site cookie (the desktop app); they send it back in the X-Refresh-Token header.
       required: [email, password]
       additionalProperties: false
 
@@ -194,6 +228,9 @@ components:
       properties:
         accessToken:
           type: string
+        refreshToken:
+          type: string
+          description: New refresh token, only when it was requested in the body (refreshTokenInBody at login, X-Refresh-Token header on refresh). Otherwise it is set as the `refreshToken` cookie.
       required: [accessToken]
       additionalProperties: false
 
@@ -408,6 +445,8 @@ components:
 
     MemberCreateRequest:
       type: object
+      description: >-
+        Writable fields of a member. The server trims the texts and writes IBAN and BIC without spaces in upper case. It answers 400 with code `VALIDATION_FAILED` and `fields` when first or last name is empty, the number is below 1, a text is too long (names 100, e-mail 254, phone numbers and postal code 50, comment 2000, other texts 200 characters), the e-mail is malformed, the IBAN has the wrong length for its country or wrong check digits, the BIC is malformed, the exit date lies before the entry date or the birthday lies in the future.
       properties:
         number:
           type: integer
@@ -1128,6 +1167,11 @@ components:
         locked:
           type: boolean
           description: Device keys exist but are locked until the user who set up collaboration logs in.
+        joinRejected:
+          type: boolean
+          description: |
+            Only in mode local: an admin rejected this device's join request, and
+            the device left the club. Reset by the next join attempt.
         clubName: { type: string }
         clubId: { type: string }
         storagePath: { type: string }
@@ -1493,7 +1537,7 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     Forbidden:
-      description: Authenticated but not allowed, or refresh token invalid/expired.
+      description: Authenticated but not allowed.
       content:
         application/json:
           schema:
@@ -1620,10 +1664,10 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Access token returned and refresh cookie set.
+          description: Access token returned and refresh token issued (cookie or body). Without a database no refresh token is issued.
           headers:
             Set-Cookie:
-              description: HTTP-only `refreshToken` cookie.
+              description: HTTP-only `refreshToken` cookie, unless refreshTokenInBody was set.
               schema:
                 type: string
           content:
@@ -1639,18 +1683,29 @@ paths:
     post:
       tags: [auth]
       summary: Refresh the access token
+      description: |
+        Exchanges the refresh token (cookie or X-Refresh-Token header) for a
+        new access token and a new refresh token, returned the same way the
+        old one came in. The access token of the request is not needed, so
+        this works after it expired. Fails when the account was deleted, its
+        role or password changed, or the user logged out.
       operationId: refreshAccessToken
       security:
         - refreshTokenCookie: []
+        - refreshTokenHeader: []
       responses:
         '200':
-          description: New access token.
+          description: New access token and rotated refresh token (as `refreshToken` cookie, or in the body when the token came in the header).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessTokenResponse'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '401':
+          description: Refresh token missing, unknown, expired, reused or revoked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           $ref: '#/components/responses/InternalError'
 
@@ -1658,9 +1713,11 @@ paths:
     post:
       tags: [auth]
       summary: Log out and clear refresh token cookie
+      description: Revokes the login of the presented refresh token (cookie or X-Refresh-Token header) and clears the cookie.
       operationId: logout
       security:
         - refreshTokenCookie: []
+        - refreshTokenHeader: []
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
@@ -1671,6 +1728,7 @@ paths:
     post:
       tags: [auth]
       summary: Request a password reset email
+      description: Works for the administrator and the users of the database. Always answers 200, whether or not the address is registered. The reset token is valid for one hour and replaces an older token of the same account; only its hash is stored.
       operationId: forgotPassword
       requestBody:
         required: true
@@ -1692,6 +1750,7 @@ paths:
     post:
       tags: [auth]
       summary: Reset password using a valid reset token
+      description: The token works once. The reset ends all sessions of the account that started before it.
       operationId: resetPassword
       requestBody:
         required: true
@@ -3072,6 +3131,7 @@ paths:
     get:
       tags: [history]
       summary: List recent audit log entries
+      description: Entries about finances (cash book, member fees, fee models, direct debits, payment reconciliation, donation receipts) are only returned to roles that may read the finances (ADMIN, TREASURER) on a device with the finance scope.
       operationId: listHistory
       security:
         - bearerAuth: []
@@ -3113,6 +3173,7 @@ paths:
     post:
       tags: [users]
       summary: Create a new app user
+      description: The password must have at least 8 characters (400, code PASSWORD_TOO_SHORT). An e-mail address of the administrator or of another user, compared ignoring case, is refused (409, code EMAIL_IN_USE).
       operationId: createAppUser
       security:
         - bearerAuth: []
@@ -3150,6 +3211,7 @@ paths:
     put:
       tags: [users]
       summary: Update an app user
+      description: An e-mail address of the administrator or of another user, compared ignoring case, is refused (409, code EMAIL_IN_USE).
       operationId: updateAppUser
       security:
         - bearerAuth: []
@@ -3174,6 +3236,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
         '500':
           $ref: '#/components/responses/InternalError'
     delete:
@@ -3299,6 +3363,25 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/SafetyCodeResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/join/cancel:
+    post:
+      tags: [collaboration]
+      summary: Withdraw the pending join request of this device
+      description: |
+        Deletes this device's join request from the storage location and its local
+        club state, so it can join again (for example with a corrected invite code).
+        If the storage location is not reachable, only the local state is removed.
+        Fails with NOT_JOINING when no request is pending, including when the request
+        was approved in the meantime.
+      operationId: cancelCollaborationJoin
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Join request withdrawn; the device is no longer part of a club.
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '409': { $ref: '#/components/responses/Conflict' }

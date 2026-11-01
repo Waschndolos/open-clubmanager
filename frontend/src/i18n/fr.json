@@ -42,7 +42,8 @@
         "errorInvalidCredentials": "Échec de la connexion. Veuillez vérifier vos identifiants.",
         "errorTooManyAttempts": "Trop de tentatives échouées. Veuillez patienter un instant et réessayer.",
         "showPassword": "Afficher le mot de passe",
-        "hidePassword": "Masquer le mot de passe"
+        "hidePassword": "Masquer le mot de passe",
+        "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter."
     },
     "forgotPassword": {
         "title": "Mot de passe oublié",
@@ -226,9 +227,7 @@
         "automatedDeletionNotice": "a été supprimé automatiquement.",
         "saveErrors": {
             "duplicate": "Le numéro de membre ou l’adresse e-mail est déjà utilisé.",
-            "generic": "Le membre n’a pas pu être enregistré : {{message}}",
-            "invalidNumber": "Veuillez saisir un numéro de membre valide (à partir de 1).",
-            "required": "Veuillez remplir tous les champs obligatoires (*)."
+            "generic": "Le membre n’a pas pu être enregistré : {{message}}"
         },
         "dialogs": {
             "export": {
@@ -253,7 +252,9 @@
                 "3": {
                     "title": "Aperçu",
                     "duplicateMatchField": "⚠️ Des valeurs {{field}} en double existent dans les données importées !"
-                }
+                },
+                "errors": "{{count}} lignes sur {{total}} n'ont pas été importées : {{rows}}",
+                "errorRow": "ligne {{row}} ({{reason}})"
             },
             "sections": {
                 "personal": "Informations personnelles",
@@ -323,6 +324,19 @@
             "label": "Barème de cotisation",
             "help": "Automatique : selon l’âge au 1er janvier de l’année de cotisation",
             "saveFailed": "Le barème n’a pas pu être enregistré"
+        },
+        "validation": {
+            "summary": "Veuillez vérifier les champs signalés.",
+            "required": "Champ obligatoire",
+            "too_long": "{{limit}} caractères au maximum",
+            "not_positive": "Veuillez saisir un numéro de membre à partir de 1",
+            "invalid": "Valeur invalide",
+            "email_invalid": "Adresse e-mail invalide",
+            "iban_invalid": "IBAN invalide : code pays, longueur ou caractères incorrects",
+            "iban_checksum": "La clé de contrôle de l'IBAN est incorrecte – vérifiez les fautes de frappe",
+            "bic_invalid": "BIC invalide (8 ou 11 caractères, p. ex. COBADEFFXXX)",
+            "exitDate_before_entry": "La date de sortie ne peut pas précéder la date d'entrée",
+            "birthday_in_future": "La date de naissance ne peut pas être dans le futur"
         }
     },
     "settings": {
@@ -429,7 +443,9 @@
             "loadFailed": "Impossible de charger les utilisateurs.",
             "createFailed": "Impossible de créer l'utilisateur.",
             "updateFailed": "Impossible de mettre à jour l'utilisateur.",
-            "deleteFailed": "Impossible de supprimer l'utilisateur."
+            "deleteFailed": "Impossible de supprimer l'utilisateur.",
+            "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères.",
+            "emailInUse": "Cette adresse e-mail est déjà utilisée par l'administrateur ou un autre utilisateur."
         }
     },
     "finance": {

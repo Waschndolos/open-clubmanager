@@ -63,6 +63,16 @@ func (s *Store) GetUserByEmail(ctx context.Context, email string) (User, error) 
 	return scanUser(s.db.QueryRowContext(ctx, userSelect+` AND email = ?`, email))
 }
 
+// UserEmailTaken reports whether another live user than exceptID (empty for
+// none) has the given e-mail address, ignoring case.
+func (s *Store) UserEmailTaken(ctx context.Context, email, exceptID string) (bool, error) {
+	var n int
+	err := s.db.QueryRowContext(ctx,
+		`SELECT COUNT(*) FROM users WHERE deleted_at IS NULL AND lower(email) = lower(?) AND id != ?`,
+		email, exceptID).Scan(&n)
+	return n > 0, err
+}
+
 // CreateUser inserts a user; passwordHash must already be hashed.
 func (s *Store) CreateUser(ctx context.Context, email, passwordHash, appRole string) (User, error) {
 	id := db.NewID()
@@ -77,12 +87,19 @@ func (s *Store) CreateUser(ctx context.Context, email, passwordHash, appRole str
 }
 
 // UpdateUser changes the e-mail and/or role of a live user; nil leaves a field
-// unchanged.
+// unchanged. The user's refresh tokens are revoked: the account changed.
 func (s *Store) UpdateUser(ctx context.Context, id string, email, appRole *string) (User, error) {
-	err := requireAffected(s.db.ExecContext(ctx,
-		`UPDATE users SET email = COALESCE(?, email), app_role = COALESCE(?, app_role), updated_at = ?
-		 WHERE id = ? AND deleted_at IS NULL`,
-		strArg(email), strArg(appRole), db.Now(), id))
+	err := s.inTx(ctx, func(tx *sql.Tx) error {
+		err := requireAffected(tx.ExecContext(ctx,
+			`UPDATE users SET email = COALESCE(?, email), app_role = COALESCE(?, app_role), updated_at = ?
+			 WHERE id = ? AND deleted_at IS NULL`,
+			strArg(email), strArg(appRole), db.Now(), id))
+		if err != nil {
+			return err
+		}
+		_, err = tx.ExecContext(ctx, `DELETE FROM refresh_tokens WHERE user_id = ?`, id)
+		return err
+	})
 	if err != nil {
 		return User{}, err
 	}
@@ -90,10 +107,17 @@ func (s *Store) UpdateUser(ctx context.Context, id string, email, appRole *strin
 }
 
 // SetUserPassword stores a new password hash for the live user with the given
-// e-mail address.
+// e-mail address and revokes the refresh tokens issued to it.
 func (s *Store) SetUserPassword(ctx context.Context, email, passwordHash string) error {
-	return requireAffected(s.db.ExecContext(ctx,
-		`UPDATE users SET password = ?, updated_at = ? WHERE email = ? AND deleted_at IS NULL`, passwordHash, db.Now(), email))
+	return s.inTx(ctx, func(tx *sql.Tx) error {
+		err := requireAffected(tx.ExecContext(ctx,
+			`UPDATE users SET password = ?, updated_at = ? WHERE email = ? AND deleted_at IS NULL`, passwordHash, db.Now(), email))
+		if err != nil {
+			return err
+		}
+		_, err = tx.ExecContext(ctx, `DELETE FROM refresh_tokens WHERE email = ?`, email)
+		return err
+	})
 }
 
 // DeleteUser tombstones a user and drops its device-local session tokens.

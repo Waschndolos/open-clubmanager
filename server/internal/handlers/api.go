@@ -93,7 +93,10 @@ func (a *API) openDatabase(ctx context.Context, path string) error {
 
 // writeStoreError maps store errors to HTTP responses.
 func writeStoreError(w http.ResponseWriter, err error, notFound, failure string) {
+	var invalid *store.ValidationError
 	switch {
+	case errors.As(err, &invalid):
+		writeValidationError(w, invalid.Fields)
 	case errors.Is(err, store.ErrNotFound):
 		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: notFound})
 	case errors.Is(err, store.ErrConflict):
@@ -105,6 +108,21 @@ func writeStoreError(w http.ResponseWriter, err error, notFound, failure string)
 		log.Printf("%s: %v", failure, err)
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: failure})
 	}
+}
+
+// writeValidationError answers 400 VALIDATION_FAILED with the problem of
+// each field, so clients can show them next to the fields.
+func writeValidationError(w http.ResponseWriter, problems []store.FieldError) {
+	code := "VALIDATION_FAILED"
+	fields := make([]openapi.FieldError, len(problems))
+	for i, p := range problems {
+		fields[i] = openapi.FieldError{Field: p.Field, Code: p.Code}
+		if p.Limit > 0 {
+			limit := p.Limit
+			fields[i].Limit = &limit
+		}
+	}
+	writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Code: &code, Error: (&store.ValidationError{Fields: problems}).Error(), Fields: &fields})
 }
 
 // currentUserID extracts the authenticated user's e-mail from the JWT and uses
@@ -223,6 +241,9 @@ func (a *API) InitializeSetup(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "email and password are required"})
 		return
 	}
+	if !checkPasswordPolicy(w, req.Password, "password") {
+		return
+	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -281,7 +302,14 @@ func (a *API) Login(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	writeJSON(w, http.StatusOK, openapi.AccessTokenResponse{AccessToken: token})
+	resp := openapi.AccessTokenResponse{AccessToken: token}
+	if refresh, err := a.issueRefreshToken(r.Context(), email, role); err != nil {
+		// The login still works, it just ends with the access token.
+		log.Printf("auth: issue refresh token: %v", err)
+	} else if refresh != "" {
+		deliverRefreshToken(w, r, &resp, refresh, req.RefreshTokenInBody != nil && *req.RefreshTokenInBody)
+	}
+	writeJSON(w, http.StatusOK, resp)
 }
 
 // checkLogin verifies the credentials and returns the account's role.
@@ -312,28 +340,6 @@ func (a *API) GetProfile(w http.ResponseWriter, r *http.Request) {
 		Email:   openapi_types.Email(claims.Email),
 		AppRole: &claims.AppRole,
 	})
-}
-
-// Logout is a no-op for JWT-based auth – the client discards the token.
-func (a *API) Logout(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
-}
-
-// RefreshAccessToken issues a new access token when the caller still holds a
-// valid token (stateless refresh – no refresh-token table lookup required for
-// the single-admin desktop deployment).
-func (a *API) RefreshAccessToken(w http.ResponseWriter, r *http.Request) {
-	claims, ok := auth.ClaimsFromContext(r.Context())
-	if !ok {
-		writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "unauthorized"})
-		return
-	}
-	token, err := auth.NewToken(claims.Email, claims.AppRole, a.cfg.JWTSecret)
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to refresh token"})
-		return
-	}
-	writeJSON(w, http.StatusOK, openapi.AccessTokenResponse{AccessToken: token})
 }
 
 func (a *API) GetDbPath(w http.ResponseWriter, _ *http.Request) {

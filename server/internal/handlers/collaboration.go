@@ -50,6 +50,7 @@ func collabError(w http.ResponseWriter, err error) {
 		{collab.ErrLocked, http.StatusForbidden, "LOCKED"},
 		{club.ErrNoClub, http.StatusConflict, "NO_CLUB"},
 		{club.ErrAlreadyInClub, http.StatusConflict, "ALREADY_IN_CLUB"},
+		{club.ErrNotJoining, http.StatusConflict, "NOT_JOINING"},
 		{club.ErrLocalData, http.StatusConflict, "LOCAL_DATA"},
 		{collab.ErrClubExists, http.StatusConflict, "CLUB_EXISTS"},
 		{collab.ErrFolderMissing, http.StatusNotFound, "FOLDER_MISSING"},
@@ -176,6 +177,10 @@ func toStatus(st *collab.Status) openapi.CollaborationStatus {
 		t := true
 		out.StorageError = &t
 	}
+	if st.JoinRejected {
+		t := true
+		out.JoinRejected = &t
+	}
 	return out
 }
 
@@ -271,6 +276,15 @@ func (a *API) JoinCollaborationClub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusCreated, openapi.SafetyCodeResponse{SafetyCode: safety})
+}
+
+// CancelCollaborationJoin withdraws this device's pending join request.
+func (a *API) CancelCollaborationJoin(w http.ResponseWriter, r *http.Request) {
+	if err := a.collab.CancelJoin(r.Context()); err != nil {
+		collabError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (a *API) GetCollaborationSafetyCode(w http.ResponseWriter, _ *http.Request) {

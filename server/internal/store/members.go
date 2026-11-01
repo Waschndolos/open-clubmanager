@@ -245,7 +245,12 @@ func (s *Store) loadMemberLinks(ctx context.Context, members []Member) error {
 }
 
 // CreateMember inserts a member with its contact data, bank details and links.
+// It returns a *ValidationError when the input breaks a rule of
+// ValidateMemberInput.
 func (s *Store) CreateMember(ctx context.Context, in MemberInput) (Member, error) {
+	if err := prepareMemberInput(&in); err != nil {
+		return Member{}, err
+	}
 	id := db.NewID()
 	err := s.inWriteTx(ctx, func(w *writer) error {
 		if err := w.requireUnique("members", "number", in.Number, "id", id); err != nil {
@@ -267,8 +272,12 @@ func (s *Store) CreateMember(ctx context.Context, in MemberInput) (Member, error
 
 // UpdateMember replaces the writable fields of a live member. The number is
 // only checked for uniqueness when it changes, so a member that is part of an
-// open sync conflict can still be edited as long as its number stays.
+// open sync conflict can still be edited as long as its number stays. Like
+// CreateMember it returns a *ValidationError for invalid input.
 func (s *Store) UpdateMember(ctx context.Context, id string, in MemberInput) (Member, error) {
+	if err := prepareMemberInput(&in); err != nil {
+		return Member{}, err
+	}
 	err := s.inWriteTx(ctx, func(w *writer) error {
 		unchanged, err := w.holds("members", "number", in.Number, "id", id)
 		if err != nil {

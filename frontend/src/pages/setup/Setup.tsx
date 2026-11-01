@@ -21,7 +21,7 @@ import {
     initializeAdmin,
     getSetupStatus,
 } from '../../api/setup';
-import { login } from '../../api/authentication';
+import { login, logout } from '../../api/authentication';
 import { useAuth } from '../../context/AuthContext';
 import { ChoiceCard } from '../../components/collaboration/common';
 import { setAccessToken } from '../../api/api';
@@ -153,6 +153,7 @@ const Setup: React.FC = () => {
                     setupWarning = t('setup.demoData.warningContinue');
                 } finally {
                     setAccessToken(null);
+                    await logout();
                 }
             }
 

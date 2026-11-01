@@ -21,3 +21,5 @@ Jeder Eintrag enthält:
 | **Details** | weitere Angaben zur Änderung |
 
 Der Verlauf hilft bei Rückfragen („Wer hat die Adresse geändert?“) und als Nachweis gegenüber Kassenprüfern. Er kann nicht bearbeitet werden.
+
+Einträge zu Finanzen – Buchungen, Beiträge und Beitragsmodelle, Lastschriften, Zahlungsabgleich und Zuwendungsbestätigungen – sehen nur Rollen, die auch die Finanzen sehen dürfen (Administrator und Kassenwart). Siehe [Benutzer & Rollen](../erste-schritte/rollen.md).

@@ -29,6 +29,18 @@ func TestValidIBAN(t *testing.T) {
 			t.Errorf("ValidIBAN(%q) = true", iban)
 		}
 	}
+	// Correct check digits, but one digit too long for a German IBAN.
+	if ValidIBAN("DE543704004405320130001") || WellFormedIBAN("DE543704004405320130001") {
+		t.Error("23-character German IBAN accepted")
+	}
+	for _, iban := range []string{"GB82WEST12345698765432", "NL91ABNA0417164300", "BE68539007547034", "NO9386011117947", "CH9300762011623852957"} {
+		if !ValidIBAN(iban) {
+			t.Errorf("ValidIBAN(%s) = false", iban)
+		}
+	}
+	if !WellFormedIBAN("DE89370400440532013001") || WellFormedIBAN("XX89370400440532013000") {
+		t.Error("WellFormedIBAN must ignore check digits and reject unknown countries")
+	}
 	if got := NormalizeIBAN(" de89 3704 0044 0532 0130 00 "); got != testIBAN1 {
 		t.Errorf("NormalizeIBAN = %s", got)
 	}

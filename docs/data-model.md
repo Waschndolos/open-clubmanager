@@ -118,7 +118,9 @@ Before the goose migrations, the server created Prisma-style tables (`"Member"`,
 database by its `"Member"` table, writes a copy next to it
 (`<name>.pre-uuid-<timestamp>.db`), applies the migrations, copies all data into
 the new tables with fresh UUIDs, and drops the old tables. Refresh and password
-reset tokens are not carried over (they were unused). Restoring an old backup
+reset tokens are not carried over (they were unused). `refresh_tokens` holds
+only SHA-256 hashes of the login refresh tokens, keyed by e-mail (the config
+administrator has no `users` row); see `handlers/refresh.go`. Restoring an old backup
 goes through the same path.
 
 ## Adding a migration

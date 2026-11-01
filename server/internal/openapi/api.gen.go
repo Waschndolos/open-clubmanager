@@ -21,6 +21,7 @@ import (
 const (
 	BearerAuthScopes         bearerAuthContextKey         = "bearerAuth.Scopes"
 	RefreshTokenCookieScopes refreshTokenCookieContextKey = "refreshTokenCookie.Scopes"
+	RefreshTokenHeaderScopes refreshTokenHeaderContextKey = "refreshTokenHeader.Scopes"
 )
 
 // Defines values for AppRole.
@@ -260,6 +261,9 @@ func (e FolderInfoKind) Valid() bool {
 // AccessTokenResponse defines model for AccessTokenResponse.
 type AccessTokenResponse struct {
 	AccessToken string `json:"accessToken"`
+
+	// RefreshToken New refresh token, only when it was requested in the body (refreshTokenInBody at login, X-Refresh-Token header on refresh). Otherwise it is set as the `refreshToken` cookie.
+	RefreshToken *string `json:"refreshToken,omitempty"`
 }
 
 // AppPreferences defines model for AppPreferences.
@@ -409,10 +413,14 @@ type CollaborationStatus struct {
 	DeviceName    *string `json:"deviceName,omitempty"`
 
 	// IncompleteAreas Readable areas without a verified starting snapshot yet.
-	IncompleteAreas int        `json:"incompleteAreas"`
-	IsAdmin         bool       `json:"isAdmin"`
-	LastError       *string    `json:"lastError,omitempty"`
-	LastSync        *time.Time `json:"lastSync,omitempty"`
+	IncompleteAreas int  `json:"incompleteAreas"`
+	IsAdmin         bool `json:"isAdmin"`
+
+	// JoinRejected Only in mode local: an admin rejected this device's join request, and
+	// the device left the club. Reset by the next join attempt.
+	JoinRejected *bool      `json:"joinRejected,omitempty"`
+	LastError    *string    `json:"lastError,omitempty"`
+	LastSync     *time.Time `json:"lastSync,omitempty"`
 
 	// Locked Device keys exist but are locked until the user who set up collaboration logs in.
 	Locked bool `json:"locked"`
@@ -515,6 +523,9 @@ type DbPathResponse struct {
 type ErrorResponse struct {
 	Code  *string `json:"code,omitempty"`
 	Error string  `json:"error"`
+
+	// Fields The problems per field of a `VALIDATION_FAILED` response.
+	Fields *[]FieldError `json:"fields,omitempty"`
 }
 
 // Event A club event. Recurring events are stored once as a series and expanded
@@ -605,6 +616,18 @@ type EventOccurrence struct {
 
 // EventRecurrence Repetition of the event; `biweekly` means every 14 days.
 type EventRecurrence string
+
+// FieldError A problem with one field of a request.
+type FieldError struct {
+	// Code `required`, `too_long`, `not_positive`, `invalid`, `checksum` (IBAN check digits), `before_entry` (exit before entry date) or `in_future` (birthday).
+	Code string `json:"code"`
+
+	// Field JSON name of the field, e.g. `firstName` or `iban`.
+	Field string `json:"field"`
+
+	// Limit Maximum length for `too_long`.
+	Limit *int `json:"limit,omitempty"`
+}
 
 // FinanceResetRequest defines model for FinanceResetRequest.
 type FinanceResetRequest struct {
@@ -780,6 +803,9 @@ type LocalDataResponse struct {
 type LoginRequest struct {
 	Email    openapi_types.Email `json:"email"`
 	Password string              `json:"password"`
+
+	// RefreshTokenInBody Return the refresh token in the response body instead of the `refreshToken` cookie. For clients that cannot use a same-site cookie (the desktop app); they send it back in the X-Refresh-Token header.
+	RefreshTokenInBody *bool `json:"refreshTokenInBody,omitempty"`
 }
 
 // Member defines model for Member.
@@ -810,7 +836,7 @@ type Member struct {
 	VersionToken    *string              `json:"versionToken,omitempty"`
 }
 
-// MemberCreateRequest defines model for MemberCreateRequest.
+// MemberCreateRequest Writable fields of a member. The server trims the texts and writes IBAN and BIC without spaces in upper case. It answers 400 with code `VALIDATION_FAILED` and `fields` when first or last name is empty, the number is below 1, a text is too long (names 100, e-mail 254, phone numbers and postal code 50, comment 2000, other texts 200 characters), the e-mail is malformed, the IBAN has the wrong length for its country or wrong check digits, the BIC is malformed, the exit date lies before the entry date or the birthday lies in the future.
 type MemberCreateRequest struct {
 	AccountHolder   *string                 `json:"accountHolder,omitempty"`
 	BankName        *string                 `json:"bankName,omitempty"`
@@ -1112,6 +1138,9 @@ type bearerAuthContextKey string
 
 // refreshTokenCookieContextKey is the context key for refreshTokenCookie security scheme
 type refreshTokenCookieContextKey string
+
+// refreshTokenHeaderContextKey is the context key for refreshTokenHeader security scheme
+type refreshTokenHeaderContextKey string
 
 // ExportCalendarIcsParams defines parameters for ExportCalendarIcs.
 type ExportCalendarIcsParams struct {
@@ -1496,6 +1525,9 @@ type ServerInterface interface {
 	// Ask to join a club with an invite code
 	// (POST /collaboration/join)
 	JoinCollaborationClub(w http.ResponseWriter, r *http.Request)
+	// Withdraw the pending join request of this device
+	// (POST /collaboration/join/cancel)
+	CancelCollaborationJoin(w http.ResponseWriter, r *http.Request)
 	// Safety code of this device while its join request is pending
 	// (GET /collaboration/join/safety-code)
 	GetCollaborationSafetyCode(w http.ResponseWriter, r *http.Request)
@@ -1865,6 +1897,12 @@ func (_ Unimplemented) WithdrawCollaborationInvite(w http.ResponseWriter, r *htt
 // Ask to join a club with an invite code
 // (POST /collaboration/join)
 func (_ Unimplemented) JoinCollaborationClub(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Withdraw the pending join request of this device
+// (POST /collaboration/join/cancel)
+func (_ Unimplemented) CancelCollaborationJoin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2436,6 +2474,8 @@ func (siw *ServerInterfaceWrapper) Logout(w http.ResponseWriter, r *http.Request
 
 	ctx = context.WithValue(ctx, RefreshTokenCookieScopes, []string{})
 
+	ctx = context.WithValue(ctx, RefreshTokenHeaderScopes, []string{})
+
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -2475,6 +2515,8 @@ func (siw *ServerInterfaceWrapper) RefreshAccessToken(w http.ResponseWriter, r *
 	ctx := r.Context()
 
 	ctx = context.WithValue(ctx, RefreshTokenCookieScopes, []string{})
+
+	ctx = context.WithValue(ctx, RefreshTokenHeaderScopes, []string{})
 
 	r = r.WithContext(ctx)
 
@@ -2841,6 +2883,26 @@ func (siw *ServerInterfaceWrapper) JoinCollaborationClub(w http.ResponseWriter, 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.JoinCollaborationClub(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CancelCollaborationJoin operation middleware
+func (siw *ServerInterfaceWrapper) CancelCollaborationJoin(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CancelCollaborationJoin(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5268,6 +5330,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/collaboration/join", wrapper.JoinCollaborationClub)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/collaboration/join/cancel", wrapper.CancelCollaborationJoin)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/collaboration/join/safety-code", wrapper.GetCollaborationSafetyCode)
 	})
 	r.Group(func(r chi.Router) {
@@ -5810,16 +5875,16 @@ func (response RefreshAccessToken200JSONResponse) VisitRefreshAccessTokenRespons
 	return err
 }
 
-type RefreshAccessToken403JSONResponse struct{ ForbiddenJSONResponse }
+type RefreshAccessToken401JSONResponse ErrorResponse
 
-func (response RefreshAccessToken403JSONResponse) VisitRefreshAccessTokenResponse(w http.ResponseWriter) error {
+func (response RefreshAccessToken401JSONResponse) VisitRefreshAccessTokenResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(403)
+	w.WriteHeader(401)
 	_, err := buf.WriteTo(w)
 	return err
 }
@@ -6599,6 +6664,63 @@ func (response JoinCollaborationClub403JSONResponse) VisitJoinCollaborationClubR
 type JoinCollaborationClub409JSONResponse struct{ ConflictJSONResponse }
 
 func (response JoinCollaborationClub409JSONResponse) VisitJoinCollaborationClubResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelCollaborationJoinRequestObject struct {
+}
+
+type CancelCollaborationJoinResponseObject interface {
+	VisitCancelCollaborationJoinResponse(w http.ResponseWriter) error
+}
+
+type CancelCollaborationJoin204Response struct {
+}
+
+func (response CancelCollaborationJoin204Response) VisitCancelCollaborationJoinResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type CancelCollaborationJoin401JSONResponse struct{ UnauthorizedJSONResponse }
+
+func (response CancelCollaborationJoin401JSONResponse) VisitCancelCollaborationJoinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelCollaborationJoin403JSONResponse struct{ ForbiddenJSONResponse }
+
+func (response CancelCollaborationJoin403JSONResponse) VisitCancelCollaborationJoinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelCollaborationJoin409JSONResponse struct{ ConflictJSONResponse }
+
+func (response CancelCollaborationJoin409JSONResponse) VisitCancelCollaborationJoinResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
@@ -10669,6 +10791,20 @@ func (response UpdateAppUser404JSONResponse) VisitUpdateAppUserResponse(w http.R
 	return err
 }
 
+type UpdateAppUser409JSONResponse struct{ ConflictJSONResponse }
+
+func (response UpdateAppUser409JSONResponse) VisitUpdateAppUserResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type UpdateAppUser500JSONResponse struct{ InternalErrorJSONResponse }
 
 func (response UpdateAppUser500JSONResponse) VisitUpdateAppUserResponse(w http.ResponseWriter) error {
@@ -10814,6 +10950,9 @@ type StrictServerInterface interface {
 	// Ask to join a club with an invite code
 	// (POST /collaboration/join)
 	JoinCollaborationClub(ctx context.Context, request JoinCollaborationClubRequestObject) (JoinCollaborationClubResponseObject, error)
+	// Withdraw the pending join request of this device
+	// (POST /collaboration/join/cancel)
+	CancelCollaborationJoin(ctx context.Context, request CancelCollaborationJoinRequestObject) (CancelCollaborationJoinResponseObject, error)
 	// Safety code of this device while its join request is pending
 	// (GET /collaboration/join/safety-code)
 	GetCollaborationSafetyCode(ctx context.Context, request GetCollaborationSafetyCodeRequestObject) (GetCollaborationSafetyCodeResponseObject, error)
@@ -11617,6 +11756,30 @@ func (sh *strictHandler) JoinCollaborationClub(w http.ResponseWriter, r *http.Re
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(JoinCollaborationClubResponseObject); ok {
 		if err := validResponse.VisitJoinCollaborationClubResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CancelCollaborationJoin operation middleware
+func (sh *strictHandler) CancelCollaborationJoin(w http.ResponseWriter, r *http.Request) {
+	var request CancelCollaborationJoinRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CancelCollaborationJoin(ctx, request.(CancelCollaborationJoinRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CancelCollaborationJoin")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CancelCollaborationJoinResponseObject); ok {
+		if err := validResponse.VisitCancelCollaborationJoinResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

@@ -35,6 +35,8 @@ Du siehst einen **6-stelligen Sicherheitscode**. Nenne ihn der Person, die dich 
 
 Du kannst Open ClubManager solange schließen. Sobald du bestätigt bist, siehst du „Willkommen! Du bist jetzt dabei“ und deine Rolle.
 
+Falscher Code oder falscher Ordner? Mit **Beitritt abbrechen** ziehst du deine Anfrage zurück – auf diesem Bildschirm oder unter *Zusammenarbeit*. Danach kannst du es sofort noch einmal versuchen.
+
 !!! info "Warum ein Sicherheitscode?"
     Der Code stellt sicher, dass wirklich **du** die Einladung benutzt hast und nicht jemand, der die Einladungs-E-Mail abgefangen hat.
 
@@ -42,7 +44,7 @@ Du kannst Open ClubManager solange schließen. Sobald du bestätigt bist, siehst
 
 | Meldung | Was tun |
 |---|---|
-| „Diesen Einladungscode kennen wir nicht“ | Code prüfen oder neue Einladung anfordern |
+| „Diesen Einladungscode kennen wir nicht“ | Code prüfen oder neue Einladung anfordern. Wurde die Einladung gerade erst erstellt, warten, bis das Sync-Programm den Ordner abgeglichen hat, und erneut versuchen |
 | „In diesem Ordner ist kein Verein“ | Prüfen, ob du die Freigabe angenommen hast und dein Sync-Programm läuft |
 | „Die Einladung ist abgelaufen / wurde schon verwendet“ | Neue Einladung anfordern |
-| „Dieses Gerät wurde nicht in den Verein aufgenommen“ | An den Vorstand wenden |
+| „Dieses Gerät wurde nicht in den Verein aufgenommen“ | Der Vorstand hat die Anfrage abgelehnt. An ihn wenden; mit „Erneut versuchen“ kannst du neu beitreten |

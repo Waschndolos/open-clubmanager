@@ -40,6 +40,9 @@ Die Angaben sind in aufklappbare Abschnitte gegliedert:
 | **Vereinsverwaltung** | Zuordnung zu [Abteilungen, Gruppen und Rollen](vereinsstruktur.md) |
 | **Familie & Erziehungsberechtigte** | [Haushalt](haushalte.md) und Erziehungsberechtigte (bei Minderjährigen) |
 
+!!! info "Eingaben prüfen"
+    Beim Speichern prüft Open ClubManager die Angaben und markiert fehlerhafte Felder direkt im Dialog: Vor- und Nachname sind Pflicht, die Mitgliedsnummer muss mindestens 1 sein, die IBAN muss zur Länge ihres Landes passen und eine stimmige Prüfziffer haben (Leerzeichen und Kleinbuchstaben sind egal), eine BIC muss 8 oder 11 Zeichen haben, der Austritt darf nicht vor dem Eintritt und der Geburtstag nicht in der Zukunft liegen. Texte sind in der Länge begrenzt (Namen 100, Kommentar 2000 Zeichen).
+
 !!! info "Mitgliedsnummern"
     Mitgliedsnummern und E-Mail-Adressen müssen eindeutig sein. Bei der [Zusammenarbeit](../zusammenarbeit/index.md) kann es passieren, dass zwei Personen gleichzeitig dieselbe Nummer vergeben – das wird dann unter [Klärungsbedarf](../zusammenarbeit/konflikte.md) angezeigt.
 

@@ -33,6 +33,7 @@ import {fetchSepaMandate, saveSepaMandate} from "../../api/sepa";
 import {assignmentValue, FeeModel, fetchFeeAssignment, fetchFeeModels, saveFeeAssignment, toAssignment} from "../../api/feeModels";
 import {FeeAssignmentSelect} from "../finance/FeeModels";
 import {isAxiosError} from "axios";
+import {FieldProblem, FieldProblems, problemText, serverFieldProblems, validateMember} from "./memberValidation";
 
 // Date picker texts (and with the dayjs locale the field format, e.g.
 // DD.MM.YYYY) follow the UI language.
@@ -46,6 +47,13 @@ function pickerLanguage(language: string | undefined): keyof typeof pickerLocale
     const lang = (language ?? "de").slice(0, 2);
     return lang in pickerLocaleText ? lang as keyof typeof pickerLocaleText : "en";
 }
+
+// The accordion panel that shows a field, to open it when the field has a problem.
+const panelOf: Partial<Record<keyof Member, string>> = {
+    street: 'address', postalCode: 'address', city: 'address', state: 'address',
+    accountHolder: 'bank', iban: 'bank', bic: 'bank', bankName: 'bank', sepaMandateDate: 'bank',
+    entryDate: 'membership', exitDate: 'membership',
+};
 
 type Props = {
     member: Member;
@@ -64,6 +72,11 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
     const [saveError, setSaveError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [expandedPanel, setExpandedPanel] = useState<string | false>('personal');
+    // Problems the server reported for the last save (400 VALIDATION_FAILED);
+    // a field's entry is dropped as soon as it is edited.
+    const [serverProblems, setServerProblems] = useState<FieldProblems>({});
+    // Empty required fields are only marked after the first save attempt.
+    const [submitted, setSubmitted] = useState(false);
 
     // In a collaboration club the device's role decides which member data is
     // shown and editable (UX F10): hidden areas are not rendered at all,
@@ -78,6 +91,24 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
     const contactRO = !editable || contact !== 'write';
     const bankRO = !editable || bank !== 'write';
     const canSave = !coreRO || !contactRO || !bankRO;
+    const clientProblems = validateMember(formData, {
+        core: !coreRO, contact: contact !== 'none' && !contactRO, bank: bank !== 'none' && !bankRO,
+    });
+    const problemOf = (key: keyof Member): FieldProblem | undefined => {
+        const own = clientProblems[key];
+        const live = own && own.code !== 'required' && own.code !== 'not_positive';
+        return serverProblems[key] ?? (submitted || live ? own : undefined);
+    };
+    // error/helperText props for the input of a field.
+    const check = (key: keyof Member) => {
+        const problem = problemOf(key);
+        return {error: !!problem, helperText: problem ? problemText(t, key, problem) : undefined};
+    };
+    const showProblems = (problems: FieldProblems) => {
+        const first = Object.keys(problems)[0] as keyof Member | undefined;
+        if (first) setExpandedPanel(panelOf[first] ?? 'personal');
+        setSaveError(t("members.validation.summary"));
+    };
     const {status} = useCollaboration();
     const roleName = useRoleName();
     const [allRoles, setAllRoles] = useState<Role[]>([]);
@@ -159,6 +190,11 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
 
     const handleChange = (key: keyof Member, value: unknown) => {
         setFormData((prev) => ({...prev, [key]: value}));
+        setServerProblems((prev) => {
+            const next = {...prev};
+            delete next[key];
+            return next;
+        });
     };
 
     // A picked calendar day is sent as UTC midnight of that day. toISOString()
@@ -189,39 +225,47 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                                                         label={t("members.table.header.number")}
                                                                         value={formData.number ?? ''}
                                                                         slotProps={{htmlInput: {min: 1, step: 1}}}
+                                                                        {...check("number")}
                                                                         onChange={(e) => handleChange("number", e.target.value === '' ? undefined : Number(e.target.value))} disabled={coreRO}/></Grid>
                                 {contact !== 'none' && <Grid size={{xs: 12, sm: 6}}><TextField fullWidth required
                                                                         label={t("members.table.header.email")}
                                                                         value={formData.email ?? ''}
+                                                                        {...check("email")}
                                                                         onChange={(e) => handleChange("email", e.target.value)} disabled={contactRO}/></Grid>}
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth required
                                                                         label={t("members.table.header.firstName")}
                                                                         value={formData.firstName ?? ''}
+                                                                        {...check("firstName")}
                                                                         onChange={(e) => handleChange("firstName", e.target.value)} disabled={coreRO}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth required
                                                                         label={t("members.table.header.lastName")}
                                                                         value={formData.lastName ?? ''}
+                                                                        {...check("lastName")}
                                                                         onChange={(e) => handleChange("lastName", e.target.value)} disabled={coreRO}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}>
                                     <DatePicker sx={{xs: 12, sm: 6}}
                                                 label={t("members.table.header.birthday")}
                                                 value={pickedDay(formData.birthday)}
                                                 onChange={(date) => handleChange("birthday", calendarDate(date))}
+                                                slotProps={{textField: check("birthday")}}
                                                 disabled={coreRO}
                                     />
                                 </Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.comment")}
                                                                         value={formData.comment ?? ''}
+                                                                        {...check("comment")}
                                                                         onChange={(e) => handleChange("comment", e.target.value)} disabled={coreRO}/></Grid>
                                 {contact !== 'none' && <>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.phone")}
                                                                         value={formData.phone ?? ''}
+                                                                        {...check("phone")}
                                                                         onChange={(e) => handleChange("phone", e.target.value)} disabled={contactRO}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.phoneMobile")}
                                                                         value={formData.phoneMobile ?? ''}
+                                                                        {...check("phoneMobile")}
                                                                         onChange={(e) => handleChange("phoneMobile", e.target.value)} disabled={contactRO}/></Grid>
                                 </>}
                             </Grid>
@@ -238,17 +282,21 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.street")}
                                                                         value={formData.street ?? ''}
+                                                                        {...check("street")}
                                                                         onChange={(e) => handleChange("street", e.target.value)}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.postalCode")}
                                                                         value={formData.postalCode ?? ''}
+                                                                        {...check("postalCode")}
                                                                         onChange={(e) => handleChange("postalCode", e.target.value)}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth label={t("members.table.header.city")}
                                                                         value={formData.city ?? ''}
+                                                                        {...check("city")}
                                                                         onChange={(e) => handleChange("city", e.target.value)}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.state")}
                                                                         value={formData.state ?? ''}
+                                                                        {...check("state")}
                                                                         onChange={(e) => handleChange("state", e.target.value)}/></Grid>
                             </Grid>
                         </Box>
@@ -266,16 +314,20 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.accountHolder")}
                                                                         value={formData.accountHolder ?? ''}
+                                                                        {...check("accountHolder")}
                                                                         onChange={(e) => handleChange("accountHolder", e.target.value)}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth label={t("members.table.header.iban")}
                                                                         value={formData.iban ?? ''}
+                                                                        {...check("iban")}
                                                                         onChange={(e) => handleChange("iban", e.target.value)}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth label={t("members.table.header.bic")}
                                                                         value={formData.bic ?? ''}
+                                                                        {...check("bic")}
                                                                         onChange={(e) => handleChange("bic", e.target.value)}/></Grid>
                                 <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
                                                                         label={t("members.table.header.bankName")}
                                                                         value={formData.bankName ?? ''}
+                                                                        {...check("bankName")}
                                                                         onChange={(e) => handleChange("bankName", e.target.value)}/></Grid>
 
                                 <Grid size={{xs: 12, sm: 6}}>
@@ -283,6 +335,7 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                         label={t("members.table.header.sepaMandateDate")}
                                         value={pickedDay(formData.sepaMandateDate)}
                                         onChange={(date) => handleChange("sepaMandateDate", calendarDate(date))}
+                                        slotProps={{textField: check("sepaMandateDate")}}
                                     />
                                 </Grid>
                                 {!isNew && <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
@@ -309,11 +362,13 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                     label={t("members.table.header.entryDate")}
                                     value={pickedDay(formData.entryDate)}
                                     onChange={(date) => handleChange("entryDate", calendarDate(date))}
+                                        slotProps={{textField: check("entryDate")}}
                                 />
                                 <DatePicker
                                     label={t("members.table.header.exitDate")}
                                     value={pickedDay(formData.exitDate)}
                                     onChange={(date) => handleChange("exitDate", calendarDate(date))}
+                                        slotProps={{textField: check("exitDate")}}
                                 />
                             </Grid>
                         </Box>
@@ -415,12 +470,9 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                         disabled={!canSave || saving}
                         onClick={async () => {
                             setSaveError(null);
-                            if ((contact !== 'none' && !formData.email) || !formData.firstName?.trim() || !formData.lastName?.trim()) {
-                                setSaveError(t("members.saveErrors.required"));
-                                return;
-                            }
-                            if (!Number.isInteger(formData.number) || (formData.number ?? 0) < 1) {
-                                setSaveError(t("members.saveErrors.invalidNumber"));
+                            setSubmitted(true);
+                            if (Object.keys(clientProblems).length > 0) {
+                                showProblems(clientProblems);
                                 return;
                             }
                             if (!await saveMandateRef()) return;
@@ -439,7 +491,13 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                             try {
                                 await onSave(payload as Member);
                             } catch (e) {
-                                setSaveError(saveErrorMessage(e));
+                                const problems = serverFieldProblems(e);
+                                if (problems) {
+                                    setServerProblems(problems);
+                                    showProblems(problems);
+                                } else {
+                                    setSaveError(saveErrorMessage(e));
+                                }
                             } finally {
                                 setSaving(false);
                             }

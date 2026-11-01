@@ -21,3 +21,5 @@ Each entry contains:
 | **Details** | further information about the change |
 
 The history helps with questions ("Who changed the address?") and as evidence for auditors. It cannot be edited.
+
+Entries about finances – transactions, fees and fee models, direct debits, payment reconciliation and donation receipts – are only shown to roles that may see the finances (Administrator and Treasurer). See [Users & roles](../erste-schritte/rollen.md).

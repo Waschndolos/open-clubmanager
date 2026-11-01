@@ -50,7 +50,7 @@ func TestInviteChecks(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		b.join(FormatInviteCode(id, bytes.Repeat([]byte{7}, inviteSecretSize)))
+		b.joinUnchecked(FormatInviteCode(id, bytes.Repeat([]byte{7}, inviteSecretSize)))
 		if err := requestErr(t, a, b.dev.ID); !errors.Is(err, ErrBadProof) {
 			t.Fatalf("got %v", err)
 		}
@@ -63,7 +63,7 @@ func TestInviteChecks(t *testing.T) {
 	t.Run("unknown invite", func(t *testing.T) {
 		b := newNode(t, "b", mem)
 		_, secret, _ := ParseInviteCode(a.invite(acl.RoleCoach))
-		b.join(FormatInviteCode([]byte("12345"), secret))
+		b.joinUnchecked(FormatInviteCode([]byte("12345"), secret))
 		if err := requestErr(t, a, b.dev.ID); !errors.Is(err, ErrInviteUnknown) {
 			t.Fatalf("got %v", err)
 		}
@@ -98,7 +98,7 @@ func TestInviteChecks(t *testing.T) {
 		if _, err := a.club.Approve(ctx, b.dev.ID); err != nil {
 			t.Fatal(err)
 		}
-		c.join(code)
+		c.joinUnchecked(code)
 		if err := requestErr(t, a, c.dev.ID); !errors.Is(err, ErrInviteUsed) {
 			t.Fatalf("got %v", err)
 		}
@@ -171,7 +171,7 @@ func TestInviteChecks(t *testing.T) {
 		other := newNode(t, "other", transport.NewMemory())
 		other.create("FC").Wipe()
 		b := newNode(t, "b", mem)
-		b.join(other.invite(acl.RoleCoach))
+		b.joinUnchecked(other.invite(acl.RoleCoach))
 		if b.club.Genesis().ClubID != a.club.Genesis().ClubID {
 			t.Fatal("joined the club of the code instead of the storage")
 		}

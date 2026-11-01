@@ -40,6 +40,9 @@ The details are grouped into collapsible sections:
 | **Club Entities** | assignment to [sections, groups and roles](vereinsstruktur.md) |
 | **Family & guardians** | [household](haushalte.md) and guardians (for minors) |
 
+!!! info "Input checks"
+    When saving, Open ClubManager checks the details and marks invalid fields right in the dialog: first and last name are required, the membership number must be 1 or higher, the IBAN must have the length of its country and correct check digits (spaces and lower case don't matter), a BIC must have 8 or 11 characters, the exit date cannot be before the entry date and the birthday cannot be in the future. Texts are limited in length (names 100, comment 2000 characters).
+
 !!! info "Membership numbers"
     Membership numbers and email addresses must be unique. With [collaboration](../zusammenarbeit/index.md), two people may assign the same number at the same time; this then shows up under [Needs attention](../zusammenarbeit/konflikte.md).
 

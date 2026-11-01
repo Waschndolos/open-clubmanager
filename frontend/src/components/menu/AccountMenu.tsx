@@ -7,7 +7,6 @@ import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
-import { setAccessToken as setApiAccessToken } from "../../api/api";
 
 function initials(email: string | null): string {
     if (!email) return "?";
@@ -26,7 +25,7 @@ type Props = {
 export default function AccountMenu({ collapsed, onNavigate }: Props) {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { email, appRole, setAccessToken } = useAuth();
+    const { email, appRole, logout } = useAuth();
     const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 
     const role = appRole ? t(`nav.roles.${appRole}`) : "";
@@ -39,9 +38,7 @@ export default function AccountMenu({ collapsed, onNavigate }: Props) {
 
     const handleLogout = () => {
         setAnchor(null);
-        setApiAccessToken(null);
-        setAccessToken(null);
-        localStorage.removeItem("refreshToken");
+        logout();
         navigate("/login", { replace: true });
     };
 

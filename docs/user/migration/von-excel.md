@@ -34,6 +34,8 @@ Tipps:
 3. **Bestehende Mitglieder aktualisieren über:** E-Mail oder Mitgliedsnummer. Beim ersten Import ist das egal; bei einem späteren erneuten Import werden so vorhandene Mitglieder aktualisiert statt doppelt angelegt.
 4. **Vorschau** prüfen und importieren.
 
+Zeilen mit ungültigen Angaben (z. B. fehlender Name oder IBAN mit falscher Prüfziffer, siehe [Eingaben prüfen](../funktionen/mitglieder.md#mitglied-anlegen-oder-bearbeiten)) werden übersprungen; die übrigen Zeilen werden importiert. Welche Zeilen aus welchem Grund fehlen, zeigt anschließend eine Benachrichtigung – korrigiere sie in der Datei und importiere erneut.
+
 ## 3. Nacharbeiten
 
 - **Abteilungen, Gruppen und Rollen** in der [Vereinsstruktur](../funktionen/vereinsstruktur.md) anlegen und über **Mitglieder zuweisen** gesammelt zuordnen.

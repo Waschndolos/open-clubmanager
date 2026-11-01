@@ -100,8 +100,9 @@ func ParseInviteCode(code string) (id, secret []byte, err error) {
 	return b[:inviteIDSize], b[inviteIDSize:], nil
 }
 
-// CreateInvite creates an invite for a role (§17.2 step 1). The invite is
-// stored only locally. ttl <= 0 means DefaultInviteTTL.
+// CreateInvite creates an invite for a role (§17.2 step 1). The invite
+// (with its secret) is stored only locally; the storage gets its marker
+// only (see InviteMarker). ttl <= 0 means DefaultInviteTTL.
 func (c *Club) CreateInvite(ctx context.Context, role, person string, ttl time.Duration) (*Invite, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -129,6 +130,10 @@ func (c *Club) CreateInvite(ctx context.Context, role, person string, ttl time.D
 		wire.EncodeB64(inv.ID), inv.Secret, role, person, db.FormatTime(inv.CreatedAt), db.FormatTime(inv.ExpiresAt)); err != nil {
 		return nil, err
 	}
+	if err := c.publishInviteMarker(ctx, inv); err != nil {
+		_, _ = c.db.ExecContext(ctx, `DELETE FROM sync_invites WHERE invite_id = ?`, wire.EncodeB64(inv.ID))
+		return nil, err
+	}
 	inv.Code = FormatInviteCode(inv.ID, inv.Secret)
 	return inv, nil
 }
@@ -139,14 +144,21 @@ var ErrNoInvite = errors.New("club: no such invite")
 // WithdrawInvite deletes an unused invite, so requests using its code are
 // no longer accepted. inviteID is the b64 id as returned by Invites.
 func (c *Club) WithdrawInvite(ctx context.Context, inviteID string) error {
-	res, err := c.db.ExecContext(ctx, `DELETE FROM sync_invites WHERE invite_id = ? AND used_at IS NULL`, inviteID)
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	inv, err := scanInvite(c.db.QueryRowContext(ctx,
+		`SELECT invite_id, secret, role, person, created_at, expires_at, used_at, used_by FROM sync_invites WHERE invite_id = ? AND used_at IS NULL`,
+		inviteID))
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrNoInvite
+	}
 	if err != nil {
 		return err
 	}
-	if n, _ := res.RowsAffected(); n == 0 {
-		return ErrNoInvite
+	if _, err := c.db.ExecContext(ctx, `DELETE FROM sync_invites WHERE invite_id = ? AND used_at IS NULL`, inviteID); err != nil {
+		return err
 	}
-	return nil
+	return c.tr.Delete(ctx, layout.InvitePath(InviteMarker(inv.ID, inv.Secret)))
 }
 
 // Invites lists the invites this device created, newest first.
@@ -237,8 +249,18 @@ func Proof(secret, inviteID []byte, signPub ed25519.PublicKey, ageRecipient stri
 // whose files are in tr, the storage location the user selected. It pins
 // that club.json (trust on first use: the code does not name the club) and
 // returns the club in status joining plus the safety code to
-// compare with the admin. Refresh picks up the approval.
+// compare with the admin. Refresh picks up the approval or a rejection.
+//
+// A code without an invite marker in the storage fails with
+// ErrInviteUnknown (ErrInviteUsed, ErrInviteExpired for markers saying so)
+// and leaves the device without a club.
 func Join(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.Transport, code, person, deviceName string) (*Club, string, error) {
+	return join(ctx, conn, dev, tr, code, person, deviceName, true)
+}
+
+// join is Join; checkMarker false skips the invite marker check, so tests
+// can send requests the admin has to refuse.
+func join(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.Transport, code, person, deviceName string, checkMarker bool) (*Club, string, error) {
 	inviteID, secret, err := ParseInviteCode(code)
 	if err != nil {
 		return nil, "", err
@@ -254,6 +276,11 @@ func Join(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.
 	if err != nil {
 		return nil, "", err
 	}
+	if checkMarker {
+		if err := checkInviteMarker(ctx, tr, g, inviteID, secret, time.Now()); err != nil {
+			return nil, "", err
+		}
+	}
 	req := joinRequest{
 		Type: joinType, ClubID: g.ClubID, InviteID: wire.EncodeB64(inviteID), DeviceID: dev.ID,
 		SignPub: dev.SignPubB64(), AgeRecipient: dev.AgeRecipient(), Person: person, DeviceName: deviceName,
@@ -264,6 +291,14 @@ func Join(ctx context.Context, conn *sql.DB, dev *identity.Device, tr transport.
 		return nil, "", err
 	}
 	path := layout.RequestPath(dev.ID)
+	// Files of an earlier, cancelled or rejected request of this device
+	// would block the new request or reject it at once.
+	rejection := layout.RejectionPath(dev.ID)
+	for _, p := range []string{path, layout.SigPath(path), rejection, layout.SigPath(rejection)} {
+		if err := tr.Delete(ctx, p); err != nil {
+			return nil, "", fmt.Errorf("club: remove earlier join request: %w", err)
+		}
+	}
 	if err := tr.Create(ctx, layout.SigPath(path), wire.Sign(dev.Sign, raw)); err != nil {
 		return nil, "", fmt.Errorf("club: write join request: %w", err)
 	}
@@ -466,10 +501,14 @@ func (c *Club) Approve(ctx context.Context, deviceID string) (*acl.Version, erro
 		db.FormatTime(c.Now().UTC()), req.DeviceID, req.InviteID); err != nil {
 		return nil, err
 	}
+	if err := c.publishInviteMarkerByID(ctx, req.InviteID); err != nil {
+		return nil, err
+	}
 	return v, c.deleteRequest(ctx, req.DeviceID)
 }
 
-// RejectRequest deletes a join request without admitting the device.
+// RejectRequest deletes a join request without admitting the device. The
+// device learns about it from a signed rejection notice next to the request.
 func (c *Club) RejectRequest(ctx context.Context, deviceID string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -479,6 +518,9 @@ func (c *Club) RejectRequest(ctx context.Context, deviceID string) error {
 	}
 	if !layout.ValidDeviceID(deviceID) {
 		return ErrNoRequest
+	}
+	if err := c.writeRejection(ctx, deviceID); err != nil {
+		return err
 	}
 	return c.deleteRequest(ctx, deviceID)
 }
