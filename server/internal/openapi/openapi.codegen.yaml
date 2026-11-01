@@ -46,6 +46,10 @@ components:
       type: apiKey
       in: cookie
       name: refreshToken
+    refreshTokenHeader:
+      type: apiKey
+      in: header
+      name: X-Refresh-Token
   schemas:
     ErrorResponse:
       type: object
@@ -171,6 +175,9 @@ components:
           format: email
         password:
           type: string
+        refreshTokenInBody:
+          type: boolean
+          description: Return the refresh token in the response body instead of the `refreshToken` cookie. For clients that cannot use a same-site cookie (the desktop app); they send it back in the X-Refresh-Token header.
       required:
       - email
       - password
@@ -209,6 +216,9 @@ components:
       properties:
         accessToken:
           type: string
+        refreshToken:
+          type: string
+          description: New refresh token, only when it was requested in the body (refreshTokenInBody at login, X-Refresh-Token header on refresh). Otherwise it is set as the `refreshToken` cookie.
       required:
       - accessToken
       additionalProperties: false
@@ -1679,15 +1689,20 @@ paths:
       operationId: refreshAccessToken
       security:
       - refreshTokenCookie: []
+      - refreshTokenHeader: []
       responses:
         '200':
-          description: New access token.
+          description: New access token and rotated refresh token (as `refreshToken` cookie, or in the body when the token came in the header).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessTokenResponse'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '401':
+          description: Refresh token missing, unknown, expired, reused or revoked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           $ref: '#/components/responses/InternalError'
   /auth/logout:
@@ -1698,6 +1713,7 @@ paths:
       operationId: logout
       security:
       - refreshTokenCookie: []
+      - refreshTokenHeader: []
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
