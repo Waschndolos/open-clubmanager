@@ -302,6 +302,12 @@
                 "email": "E-Mail",
                 "actions": "Aktionen"
             }
+        },
+        "mandateReference": {
+            "label": "Mandatsreferenz",
+            "help": "Bis 35 Zeichen ohne Leerzeichen, z. B. NW-1001",
+            "taken": "Diese Mandatsreferenz hat bereits ein anderes Mitglied",
+            "invalid": "Ungültige Mandatsreferenz: nur Buchstaben, Ziffern und + ? / - : ( ) . , ' ohne Leerzeichen"
         }
     },
     "settings": {
@@ -424,7 +430,8 @@
         },
         "tabs": {
             "transactions": "Kassenbuch",
-            "memberfees": "Mitgliedsbeiträge"
+            "memberfees": "Mitgliedsbeiträge",
+            "directDebit": "Lastschrift"
         },
         "summary": {
             "balance": "Kontostand",
@@ -1274,5 +1281,93 @@
         "member": "Mitglied",
         "noRecords": "Keine Anwesenheit im Zeitraum erfasst.",
         "offline": "offline gespeichert"
+    },
+    "sepa": {
+        "loadFailed": "Lastschriftdaten konnten nicht geladen werden",
+        "inCollection": "Im Einzug",
+        "settings": {
+            "title": "SEPA-Lastschrift",
+            "description": "Gläubiger-Identifikationsnummer und Vereinskonto für den Beitragseinzug per SEPA-Basislastschrift. Nur für den Kassenwart sichtbar.",
+            "name": "Name des Vereins (Zahlungsempfänger)",
+            "creditorId": "Gläubiger-ID",
+            "creditorIdHelp": "Von der Deutschen Bundesbank vergeben, z. B. DE98ZZZ09999999999",
+            "iban": "IBAN des Vereinskontos",
+            "ibanInvalid": "Die Prüfziffer der IBAN stimmt nicht",
+            "bic": "BIC (optional)",
+            "bicHelp": "Für Inlandszahlungen nicht nötig",
+            "template": "Vorlage Verwendungszweck",
+            "templateHelp": "Platzhalter: {{placeholders}}",
+            "saved": "SEPA-Einstellungen gespeichert",
+            "saveFailed": "SEPA-Einstellungen konnten nicht gespeichert werden: {{reason}}"
+        },
+        "columns": {
+            "member": "Mitglied",
+            "fee": "Beitrag",
+            "amount": "Betrag",
+            "mandate": "Mandatsreferenz",
+            "iban": "IBAN",
+            "sequence": "Sequenz"
+        },
+        "sequence": {
+            "FRST": "Erstlastschrift: das Mandat wird zum ersten Mal genutzt",
+            "RCUR": "Folgelastschrift"
+        },
+        "issues": {
+            "MISSING_IBAN": "Keine IBAN",
+            "INVALID_IBAN": "IBAN ungültig",
+            "INVALID_BIC": "BIC ungültig",
+            "MISSING_MANDATE": "Kein Mandat (Mandatsdatum fehlt)",
+            "MISSING_MANDATE_REFERENCE": "Keine Mandatsreferenz",
+            "INVALID_MANDATE_REFERENCE": "Mandatsreferenz ungültig",
+            "INVALID_AMOUNT": "Betrag nicht positiv"
+        },
+        "wizard": {
+            "title": "Lastschriftlauf erstellen",
+            "steps": {
+                "fees": "Beiträge auswählen",
+                "details": "Fälligkeit & Verwendungszweck",
+                "summary": "Prüfen & exportieren"
+            },
+            "noOpenFees": "Es gibt keine offenen Beiträge.",
+            "selectAll": "Alle auswählen",
+            "excluded": "Nicht einziehbar ({{count}})",
+            "excludedHint": "Diese Beiträge werden nicht exportiert. Ergänze die Bankdaten und Mandate in den Mitgliederdaten.",
+            "collectionDate": "Fälligkeitsdatum (Einzug)",
+            "collectionDateHelp": "Die Datei muss spätestens einen Bankarbeitstag vorher bei der Bank sein.",
+            "collectionDateInvalid": "Das Datum muss in der Zukunft liegen",
+            "preview": "Vorschau Verwendungszweck",
+            "summary": "{{count}} Lastschriften über {{total}}, Einzug am {{date}}.",
+            "summarySequence": "{{first}} Erstlastschriften (FRST), {{recurring}} Folgelastschriften (RCUR)",
+            "creditor": "Zahlungsempfänger: {{name}}, Gläubiger-ID {{creditorId}}, Konto {{iban}}",
+            "afterExport": "Nach dem Export werden die Beiträge als „im Einzug“ markiert. Lade die Datei (pain.008) im Online-Banking hoch und bestätige den Lauf, sobald die Bank eingezogen hat.",
+            "back": "Zurück",
+            "next": "Weiter",
+            "create": "Erstellen & herunterladen",
+            "created": "Lastschriftlauf erstellt",
+            "createFailed": "Der Lastschriftlauf konnte nicht erstellt werden",
+            "feesChanged": "Einige Beiträge sind nicht mehr einziehbar. Bitte den Assistenten neu öffnen."
+        },
+        "runs": {
+            "create": "Lastschriftlauf erstellen",
+            "empty": "Noch keine Lastschriftläufe",
+            "collectionDate": "Einzug am",
+            "count": "Anzahl",
+            "total": "Summe",
+            "status": "Status",
+            "paid": "Bezahlt am {{date}}",
+            "inCollection": "Im Einzug",
+            "createdAt": "Erstellt",
+            "download": "XML-Datei herunterladen",
+            "confirm": "Als bezahlt bestätigen",
+            "cancel": "Lauf stornieren",
+            "actionFailed": "Die Aktion ist fehlgeschlagen",
+            "notConfigured": "Hinterlege zuerst Gläubiger-ID und Vereinskonto in den Einstellungen.",
+            "openSettings": "Zu den Einstellungen",
+            "confirmTitle": "Einzug bestätigen",
+            "confirmText": "Alle Beiträge dieses Laufs werden mit diesem Datum als bezahlt markiert. Rücklastschriften trägst du danach beim jeweiligen Beitrag nach.",
+            "paidDate": "Bezahlt am",
+            "cancelTitle": "Lastschriftlauf stornieren?",
+            "cancelText": "Die Beiträge sind danach wieder offen. Lade die Datei nicht mehr bei der Bank hoch bzw. widerrufe den Auftrag dort."
+        }
     }
 }

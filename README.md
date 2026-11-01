@@ -91,7 +91,7 @@ If you need members to log in online, a website or a hosted multi-tenant system,
 | **Families & households** | Households with a main payer, shared address/bank details, guardians for minors | [📷](docs/user/assets/screenshots/households.en.png) |
 | **Events** | Club calendar (month/week/list), recurring events, target groups, iCal export | [📷](docs/user/assets/screenshots/events.en.png) |
 | **Attendance** | Record training attendance (also offline), statistics, CSV/PDF export, trainer role | [📷](docs/user/assets/screenshots/attendance-stats.en.png) |
-| **Finance** | Cash book, member fees, CAMT.053 bank statement import | [📷](docs/user/assets/screenshots/finance.en.png) |
+| **Finance** | Cash book, member fees, SEPA direct debit runs (pain.008 export for your bank), CAMT.053 bank statement import | [📷](docs/user/assets/screenshots/finance.en.png) |
 | **Inventory** | Items, loans, condition, inspection schedules, maintenance log (optionally booked as expense) | [📷](docs/user/assets/screenshots/inventory.en.png) |
 | **Anniversaries & honors** | Upcoming membership anniversaries and round birthdays, recorded honors, CSV export | [📷](docs/user/assets/screenshots/honors.en.png) |
 | **Qualifications** | Coach licences, first aid, police clearance with expiry warnings | [📷](docs/user/assets/screenshots/qualifications.en.png) |
