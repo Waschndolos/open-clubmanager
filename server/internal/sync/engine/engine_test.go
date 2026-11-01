@@ -94,7 +94,9 @@ func TestThreeDevicesMemory(t *testing.T) {
 	syncAll(a, b, c)
 	for i, n := range []*node{a, b, c} {
 		in := store.MemberInput{Number: 10, FirstName: "Anna", LastName: "A", Comment: strp("comment " + n.name)}
-		if i == 1 {
+		// Each device has its own clock with millisecond resolution; equal
+		// timestamps would be ordered by the (random) device id.
+		if i > 0 {
 			time.Sleep(2 * time.Millisecond)
 		}
 		if _, err := n.store.UpdateMember(ctx, m.ID, in); err != nil {
