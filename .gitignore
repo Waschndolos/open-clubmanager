@@ -3,6 +3,10 @@ server/dist/
 # Local Go test binary produced by `go build ./cmd/server`
 server/server
 server/server.exe
+# Browser dev server state (dev:browser): own config, database and JWT secret
+server/.dev-config.json
+server/.dev-clubmanager.db*
+server/jwt_secret
 
 # Tauri
 src-tauri/target/
