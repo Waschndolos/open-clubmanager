@@ -10675,6 +10675,20 @@ func (response UpdateAppUser404JSONResponse) VisitUpdateAppUserResponse(w http.R
 	return err
 }
 
+type UpdateAppUser409JSONResponse struct{ ConflictJSONResponse }
+
+func (response UpdateAppUser409JSONResponse) VisitUpdateAppUserResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type UpdateAppUser500JSONResponse struct{ InternalErrorJSONResponse }
 
 func (response UpdateAppUser500JSONResponse) VisitUpdateAppUserResponse(w http.ResponseWriter) error {
