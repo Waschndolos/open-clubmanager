@@ -24,12 +24,9 @@ import (
 )
 
 // bearerAuthRequired wraps the given handler so that requests must carry a
-// valid JWT – mirroring the way the generated openapi middleware applies auth.
+// valid JWT.
 func bearerAuthRequired(jwtMw openapi.MiddlewareFunc, h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), openapi.BearerAuthScopes, []string{})
-		jwtMw(h).ServeHTTP(w, r.WithContext(ctx))
-	}
+	return jwtMw(h).ServeHTTP
 }
 
 func main() {
@@ -74,7 +71,7 @@ func main() {
 	openapi.HandlerWithOptions(api, openapi.ChiServerOptions{
 		BaseURL:     "/api/v2",
 		BaseRouter:  router,
-		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, jwtAuth},
+		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, auth.MiddlewareAllowing(cfg.JWTSecret, api.AllowAnonymous, api.ValidateSession)},
 	})
 
 	// Backup / restore endpoints are not part of the generated OpenAPI spec, so

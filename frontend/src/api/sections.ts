@@ -1,6 +1,6 @@
 import { ClubSection, MemberSummary } from './types';
 import { createEntityApi } from './entityApi';
-import api, { BACKEND_URL } from './api';
+import api from './api';
 
 const entityApi = createEntityApi<ClubSection>('sections');
 
@@ -10,9 +10,8 @@ export const updateSection = entityApi.update;
 export const deleteSection = entityApi.delete;
 
 export async function fetchSectionMembers(id: string): Promise<MemberSummary[]> {
-    const res = await fetch(`${BACKEND_URL}/sections/${id}/members`);
-    if (!res.ok) throw new Error(`Error fetching members for section ${id}.`);
-    return res.json();
+    const res = await api.get<MemberSummary[]>(`/sections/${id}/members`);
+    return res.data;
 }
 
 export async function assignSectionMembers(id: string, memberIds: string[]): Promise<void> {

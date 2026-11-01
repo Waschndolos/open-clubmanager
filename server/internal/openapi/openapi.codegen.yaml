@@ -1802,6 +1802,8 @@ paths:
       - members
       summary: List members
       operationId: listMembers
+      security:
+      - bearerAuth: []
       parameters:
       - name: page
         in: query
@@ -1874,6 +1876,8 @@ paths:
       - members
       summary: Get a member by id
       operationId: getMemberById
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: Member record.
@@ -1952,6 +1956,8 @@ paths:
       - roles
       summary: List roles
       operationId: listRoles
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: List of roles.
@@ -2030,6 +2036,8 @@ paths:
       - roles
       summary: Get members of a role
       operationId: getRoleMembers
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: List of members assigned to the role.
@@ -2075,6 +2083,8 @@ paths:
       - groups
       summary: List groups
       operationId: listGroups
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: List of groups.
@@ -2153,6 +2163,8 @@ paths:
       - groups
       summary: Get members of a group
       operationId: getGroupMembers
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: List of members assigned to the group.
@@ -2196,6 +2208,8 @@ paths:
       - sections
       summary: List sections
       operationId: listSections
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: List of sections.
@@ -2274,6 +2288,8 @@ paths:
       - sections
       summary: Get members of a section
       operationId: getSectionMembers
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: List of members assigned to the section.
@@ -2317,6 +2333,8 @@ paths:
       - preferences
       summary: List stored user preferences
       operationId: listPreferences
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: User preferences.
@@ -2331,6 +2349,8 @@ paths:
       - preferences
       summary: Create or update a user preference for the implicit user
       operationId: upsertPreference
+      security:
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -2350,6 +2370,8 @@ paths:
       - preferences
       summary: Get all app preferences from app-settings.json
       operationId: getAppPreferences
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: Arbitrary app settings object.
@@ -2369,6 +2391,8 @@ paths:
       - preferences
       summary: Get one app preference by key
       operationId: getAppPreferenceByKey
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: Single app preference value.
@@ -2384,6 +2408,8 @@ paths:
       - preferences
       summary: Update one app preference by key
       operationId: updateAppPreferenceByKey
+      security:
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -2420,6 +2446,8 @@ paths:
       - preferences
       summary: Get a user preference by key
       operationId: getPreferenceByKey
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: Preference value with parsed JSON.
@@ -2434,6 +2462,8 @@ paths:
       - preferences
       summary: Update a user preference by id
       operationId: updatePreferenceById
+      security:
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -2455,6 +2485,8 @@ paths:
       - validation
       summary: Validate a SQLite database path
       operationId: validateDbPath
+      security:
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -2480,6 +2512,8 @@ paths:
       - validation
       summary: Validate a database URL for the selected mode
       operationId: validateDbUrl
+      security:
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -2505,6 +2539,8 @@ paths:
       - settings
       summary: Set active database path
       operationId: setDbPath
+      security:
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -2526,6 +2562,8 @@ paths:
       - settings
       summary: Get active database path
       operationId: getDbPath
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: Current active database path.
@@ -2541,6 +2579,8 @@ paths:
       - settings
       summary: Get database mode and connection URL
       operationId: getDatabaseSettings
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: Current database settings.
@@ -2555,6 +2595,8 @@ paths:
       - settings
       summary: Update database mode and connection URL
       operationId: updateDatabaseSettings
+      security:
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -2578,6 +2620,8 @@ paths:
       - statistics
       summary: Get dashboard statistics
       operationId: getStatistics
+      security:
+      - bearerAuth: []
       responses:
         '200':
           description: Statistics array.

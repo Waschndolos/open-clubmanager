@@ -3621,6 +3621,12 @@ func (siw *ServerInterfaceWrapper) UpdateFinanceTransaction(w http.ResponseWrite
 // ListGroups operation middleware
 func (siw *ServerInterfaceWrapper) ListGroups(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListGroups(w, r)
 	}))
@@ -3730,6 +3736,12 @@ func (siw *ServerInterfaceWrapper) GetGroupMembers(w http.ResponseWriter, r *htt
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetGroupMembers(w, r, id)
@@ -4072,6 +4084,12 @@ func (siw *ServerInterfaceWrapper) ListMembers(w http.ResponseWriter, r *http.Re
 	var err error
 	_ = err
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListMembersParams
 
@@ -4192,6 +4210,12 @@ func (siw *ServerInterfaceWrapper) GetMemberById(w http.ResponseWriter, r *http.
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetMemberById(w, r, id)
 	}))
@@ -4238,6 +4262,12 @@ func (siw *ServerInterfaceWrapper) UpdateMember(w http.ResponseWriter, r *http.R
 // ListPreferences operation middleware
 func (siw *ServerInterfaceWrapper) ListPreferences(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListPreferences(w, r)
 	}))
@@ -4252,6 +4282,12 @@ func (siw *ServerInterfaceWrapper) ListPreferences(w http.ResponseWriter, r *htt
 // UpsertPreference operation middleware
 func (siw *ServerInterfaceWrapper) UpsertPreference(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpsertPreference(w, r)
 	}))
@@ -4265,6 +4301,12 @@ func (siw *ServerInterfaceWrapper) UpsertPreference(w http.ResponseWriter, r *ht
 
 // GetAppPreferences operation middleware
 func (siw *ServerInterfaceWrapper) GetAppPreferences(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAppPreferences(w, r)
@@ -4292,6 +4334,12 @@ func (siw *ServerInterfaceWrapper) GetAppPreferenceByKey(w http.ResponseWriter, 
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAppPreferenceByKey(w, r, key)
 	}))
@@ -4317,6 +4365,12 @@ func (siw *ServerInterfaceWrapper) UpdateAppPreferenceByKey(w http.ResponseWrite
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "key", Err: err})
 		return
 	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateAppPreferenceByKey(w, r, key)
@@ -4344,6 +4398,12 @@ func (siw *ServerInterfaceWrapper) GetPreferenceByKey(w http.ResponseWriter, r *
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetPreferenceByKey(w, r, identifier)
 	}))
@@ -4370,6 +4430,12 @@ func (siw *ServerInterfaceWrapper) UpdatePreferenceById(w http.ResponseWriter, r
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdatePreferenceById(w, r, identifier)
 	}))
@@ -4383,6 +4449,12 @@ func (siw *ServerInterfaceWrapper) UpdatePreferenceById(w http.ResponseWriter, r
 
 // ListRoles operation middleware
 func (siw *ServerInterfaceWrapper) ListRoles(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListRoles(w, r)
@@ -4494,6 +4566,12 @@ func (siw *ServerInterfaceWrapper) GetRoleMembers(w http.ResponseWriter, r *http
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetRoleMembers(w, r, id)
 	}))
@@ -4539,6 +4617,12 @@ func (siw *ServerInterfaceWrapper) BulkAssignRoleMembers(w http.ResponseWriter, 
 
 // ListSections operation middleware
 func (siw *ServerInterfaceWrapper) ListSections(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListSections(w, r)
@@ -4650,6 +4734,12 @@ func (siw *ServerInterfaceWrapper) GetSectionMembers(w http.ResponseWriter, r *h
 		return
 	}
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetSectionMembers(w, r, id)
 	}))
@@ -4696,6 +4786,12 @@ func (siw *ServerInterfaceWrapper) BulkAssignSectionMembers(w http.ResponseWrite
 // GetDatabaseSettings operation middleware
 func (siw *ServerInterfaceWrapper) GetDatabaseSettings(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetDatabaseSettings(w, r)
 	}))
@@ -4709,6 +4805,12 @@ func (siw *ServerInterfaceWrapper) GetDatabaseSettings(w http.ResponseWriter, r 
 
 // UpdateDatabaseSettings operation middleware
 func (siw *ServerInterfaceWrapper) UpdateDatabaseSettings(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateDatabaseSettings(w, r)
@@ -4724,6 +4826,12 @@ func (siw *ServerInterfaceWrapper) UpdateDatabaseSettings(w http.ResponseWriter,
 // GetDbPath operation middleware
 func (siw *ServerInterfaceWrapper) GetDbPath(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetDbPath(w, r)
 	}))
@@ -4737,6 +4845,12 @@ func (siw *ServerInterfaceWrapper) GetDbPath(w http.ResponseWriter, r *http.Requ
 
 // SetDbPath operation middleware
 func (siw *ServerInterfaceWrapper) SetDbPath(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetDbPath(w, r)
@@ -4793,6 +4907,12 @@ func (siw *ServerInterfaceWrapper) GetSetupStatus(w http.ResponseWriter, r *http
 
 // GetStatistics operation middleware
 func (siw *ServerInterfaceWrapper) GetStatistics(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetStatistics(w, r)
@@ -4940,6 +5060,12 @@ func (siw *ServerInterfaceWrapper) UpdateAppUser(w http.ResponseWriter, r *http.
 // ValidateDbPath operation middleware
 func (siw *ServerInterfaceWrapper) ValidateDbPath(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ValidateDbPath(w, r)
 	}))
@@ -4953,6 +5079,12 @@ func (siw *ServerInterfaceWrapper) ValidateDbPath(w http.ResponseWriter, r *http
 
 // ValidateDbUrl operation middleware
 func (siw *ServerInterfaceWrapper) ValidateDbUrl(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ValidateDbUrl(w, r)

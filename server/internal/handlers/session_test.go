@@ -36,7 +36,7 @@ func newSessionTestAPI(t *testing.T) (*API, http.Handler) {
 	api := New(&config.Config{JWTSecret: secret, AdminEmail: "admin@example.org", AdminPassword: string(hash)}, conn)
 	router := chi.NewRouter()
 	openapi.HandlerWithOptions(api, openapi.ChiServerOptions{BaseURL: "/api/v2", BaseRouter: router,
-		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, auth.Middleware(secret, api.ValidateSession)}})
+		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, auth.MiddlewareAllowing(secret, api.AllowAnonymous, api.ValidateSession)}})
 	return api, router
 }
 

@@ -35,6 +35,10 @@ type API struct {
 	collab *collab.Service
 
 	logins *loginLimiter
+
+	// setupMu serialises the first-run setup so it can only create the admin
+	// once.
+	setupMu sync.Mutex
 }
 
 // New creates the API. conn may be nil when no database is configured yet.
@@ -134,7 +138,9 @@ func (a *API) GetSetupStatus(w http.ResponseWriter, _ *http.Request) {
 		databaseConfigured = err == nil
 	}
 
-	setupRequired := a.cfg.AdminPassword == "" || a.store() == nil
+	// Setup is done once the admin exists. A missing database is then fixed by
+	// the admin in the settings, not by running the setup again.
+	setupRequired := a.setupPending()
 
 	writeJSON(w, http.StatusOK, openapi.SetupStatus{
 		SetupRequired:      setupRequired,
@@ -146,7 +152,11 @@ func (a *API) GetSetupStatus(w http.ResponseWriter, _ *http.Request) {
 
 // ConfigureSetupDatabase opens (creating and migrating) the SQLite database at
 // the given path and persists the path on success.
+// Once setup is complete only an admin may call it.
 func (a *API) ConfigureSetupDatabase(w http.ResponseWriter, r *http.Request) {
+	if !a.setupPending() && !requireAdmin(w, r) {
+		return
+	}
 	var req openapi.ConfigureDatabaseRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
@@ -191,8 +201,16 @@ func (a *API) switchDatabase(w http.ResponseWriter, r *http.Request, path string
 }
 
 // InitializeSetup hashes the admin password and saves the admin credentials to
-// the config file, completing the first-run setup.
+// the config file, completing the first-run setup. It refuses once an admin
+// exists, so the setup cannot be used to replace the admin credentials.
 func (a *API) InitializeSetup(w http.ResponseWriter, r *http.Request) {
+	a.setupMu.Lock()
+	defer a.setupMu.Unlock()
+	if a.cfg.AdminPassword != "" {
+		writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "setup has already been completed"})
+		return
+	}
+
 	var req openapi.SetupInitializeRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
@@ -328,7 +346,11 @@ func (a *API) GetDatabaseSettings(w http.ResponseWriter, _ *http.Request) {
 }
 
 // UpdateDatabaseSettings switches to the SQLite database at the given path.
+// Only admins may call it.
 func (a *API) UpdateDatabaseSettings(w http.ResponseWriter, r *http.Request) {
+	if !requireAdmin(w, r) {
+		return
+	}
 	var req openapi.DatabaseSettingsRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
@@ -347,8 +369,11 @@ func (a *API) UpdateDatabaseSettings(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// SetDbPath updates the SQLite database path.
+// SetDbPath updates the SQLite database path. Only admins may call it.
 func (a *API) SetDbPath(w http.ResponseWriter, r *http.Request) {
+	if !requireAdmin(w, r) {
+		return
+	}
 	var req openapi.SetDbPathRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.DbPath == "" {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})

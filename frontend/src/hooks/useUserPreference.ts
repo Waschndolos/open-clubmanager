@@ -1,25 +1,16 @@
 import { useCallback } from "react";
-import { BACKEND_URL } from '../api/api';
-
-const API_URL = `${BACKEND_URL}/preferences`;
+import { isAxiosError } from "axios";
+import api from '../api/api';
 
 export function useUserPreference() {
 
     const getPreference = useCallback(async (key: string) => {
         try {
-            const res = await fetch(`${API_URL}/${key}`, {
-                credentials: "include"
-            });
-
-            if (!res.ok) {
-                if (res.status === 404) return null;
-                throw new Error(`HTTP ${res.status}`);
-            }
-
-            const data = await res.json();
-            return data.value;
+            const res = await api.get<{ value: unknown }>(`/preferences/${key}`);
+            return res.data.value;
 
         } catch (err) {
+            if (isAxiosError(err) && err.response?.status === 404) return null;
             console.error("Failed to fetch preference:", err);
             return null;
         }
@@ -27,17 +18,7 @@ export function useUserPreference() {
 
     const setPreference = useCallback(async (key: string, value: unknown) => {
         try {
-            const res = await fetch(API_URL, {
-                method: "POST",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ key, value }),
-            });
-
-            if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
-            }
-
+            await api.post('/preferences', { key, value });
         } catch (err) {
             console.error("Failed to save preference:", err);
         }

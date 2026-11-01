@@ -47,44 +47,61 @@ type SessionCheck func(ctx context.Context, claims *Claims) error
 // matches its account.
 var ErrSessionRevoked = errors.New("session revoked")
 
-// Middleware validates bearer tokens on routes that require auth. Optional
-// checks run after the signature check; any error rejects the request.
+// Middleware requires a valid bearer token on every request it wraps.
+// Optional checks run after the signature check; any error rejects the
+// request.
 func Middleware(secret string, checks ...SessionCheck) openapi.MiddlewareFunc {
+	return MiddlewareAllowing(secret, nil, checks...)
+}
+
+// MiddlewareAllowing requires a valid bearer token on every request except
+// those anonymous reports as open to callers without one. Authentication is
+// the default: an operation without a security requirement in the OpenAPI
+// spec is not public unless anonymous names it. A valid token on an open
+// request still attaches its claims. A token rejected by one of the checks
+// counts as no token.
+func MiddlewareAllowing(secret string, anonymous func(*http.Request) bool, checks ...SessionCheck) openapi.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.Context().Value(openapi.BearerAuthScopes) == nil {
-				next.ServeHTTP(w, r)
-				return
-			}
+			open := anonymous != nil && anonymous(r)
 
-			rawAuth := r.Header.Get("Authorization")
-			tokenString, err := extractBearer(rawAuth)
-			if err != nil {
-				http.Error(w, "unauthorized", http.StatusUnauthorized)
-				return
-			}
-
-			claims := &Claims{}
-			token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-				if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
-					return nil, errors.New("unexpected jwt signing method")
-				}
-				return []byte(secret), nil
-			})
-			if err != nil || !token.Valid {
-				http.Error(w, "unauthorized", http.StatusUnauthorized)
-				return
-			}
+			claims, err := parseToken(r.Header.Get("Authorization"), secret)
 			for _, check := range checks {
-				if check(r.Context(), claims) != nil {
-					http.Error(w, "unauthorized", http.StatusUnauthorized)
+				if err == nil {
+					err = check(r.Context(), claims)
+				}
+			}
+			if err != nil {
+				if open {
+					next.ServeHTTP(w, r)
 					return
 				}
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
 			}
 
 			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), claimsKey, claims)))
 		})
 	}
+}
+
+// parseToken validates the bearer token in an Authorization header.
+func parseToken(rawAuth, secret string) (*Claims, error) {
+	tokenString, err := extractBearer(rawAuth)
+	if err != nil {
+		return nil, err
+	}
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
+			return nil, errors.New("unexpected jwt signing method")
+		}
+		return []byte(secret), nil
+	})
+	if err != nil || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+	return claims, nil
 }
 
 func ClaimsFromContext(ctx context.Context) (*Claims, bool) {
