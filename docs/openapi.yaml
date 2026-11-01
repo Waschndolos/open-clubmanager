@@ -1671,6 +1671,7 @@ paths:
     post:
       tags: [auth]
       summary: Request a password reset email
+      description: Works for the administrator and the users of the database. Always answers 200, whether or not the address is registered. The reset token is valid for one hour and replaces an older token of the same account; only its hash is stored.
       operationId: forgotPassword
       requestBody:
         required: true
@@ -1692,6 +1693,7 @@ paths:
     post:
       tags: [auth]
       summary: Reset password using a valid reset token
+      description: The token works once. The reset ends all sessions of the account that started before it.
       operationId: resetPassword
       requestBody:
         required: true

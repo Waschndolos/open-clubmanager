@@ -27,6 +27,8 @@ The new password must be at least 8 characters long.
 
 **Forgot password?** sends you a reset link by email. This only works if email sending (SMTP) is configured for Open ClubManager, which is usually **not** the case in a normal desktop installation.
 
+The link is valid for one hour and works only once; requesting a new one invalidates the old one. After the reset, all existing sessions of the account are signed out.
+
 Without email sending:
 
 - **You are not the only administrator:** ask another administrator to delete your user account in [user management](../funktionen/benutzer.md) and create it again.

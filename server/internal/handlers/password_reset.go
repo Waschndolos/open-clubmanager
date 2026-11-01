@@ -3,10 +3,10 @@ package handlers
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"log"
 	"net/smtp"
-	"sync"
 	"time"
 
 	"encoding/json"
@@ -14,35 +14,44 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	dbpkg "github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
+	"github.com/Waschndolos/open-clubmanager/server/internal/store"
 )
 
 const resetTokenTTL = time.Hour
 
-// tokenEntry holds a pending password reset token.
-type tokenEntry struct {
-	email     string
-	expiresAt time.Time
-}
+const forgotPasswordMessage = "If the address is registered, a reset link has been sent."
 
-// resetTokenStore is an in-memory store for password reset tokens.
-var (
-	resetTokens   = make(map[string]tokenEntry)
-	resetTokensMu sync.Mutex
-)
-
-// ForgotPassword handles POST /auth/forgot-password.
+// ForgotPassword handles POST /auth/forgot-password. It works for the
+// config-file admin and for the users of the database. Tokens are stored in
+// the database (only their hash), so they survive a restart; a new request
+// replaces an older token of the same account.
 // It always returns HTTP 200 to prevent email enumeration.
 func (a *API) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	var req openapi.ForgotPasswordRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: "If the address is registered, a reset link has been sent."})
+		writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: forgotPasswordMessage})
+		return
+	}
+	st := a.store()
+	email := string(req.Email)
+	if email == "" || st == nil {
+		// Always return 200 – do not reveal whether the email exists.
+		writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: forgotPasswordMessage})
 		return
 	}
 
-	if string(req.Email) == "" || string(req.Email) != a.cfg.AdminEmail {
-		// Always return 200 – do not reveal whether the email exists.
-		writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: "If the address is registered, a reset link has been sent."})
+	var userID, to string
+	if a.isAdminEmail(email) {
+		userID, to = dbpkg.AdminUserID, a.cfg.AdminEmail
+	} else if u, err := st.GetUserByEmail(r.Context(), email); err == nil {
+		userID, to = u.ID, u.Email
+	} else {
+		if !errors.Is(err, store.ErrNotFound) {
+			log.Printf("password reset: look up user: %v", err)
+		}
+		writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: forgotPasswordMessage})
 		return
 	}
 
@@ -51,20 +60,23 @@ func (a *API) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to generate reset token"})
 		return
 	}
+	if err := st.CreatePasswordResetToken(r.Context(), userID, token, time.Now().Add(resetTokenTTL)); err != nil {
+		log.Printf("password reset: store token: %v", err)
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to store reset token"})
+		return
+	}
 
-	resetTokensMu.Lock()
-	resetTokens[token] = tokenEntry{email: a.cfg.AdminEmail, expiresAt: time.Now().Add(resetTokenTTL)}
-	resetTokensMu.Unlock()
-
-	if err := a.sendResetEmail(a.cfg.AdminEmail, token); err != nil {
+	if err := a.sendResetEmail(to, token); err != nil {
 		// Log but do not expose the error to the caller.
 		log.Printf("password reset: failed to send email: %v", err)
 	}
 
-	writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: "If the address is registered, a reset link has been sent."})
+	writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: forgotPasswordMessage})
 }
 
-// ResetPassword handles POST /auth/reset-password.
+// ResetPassword handles POST /auth/reset-password. A token works once and
+// within resetTokenTTL. The new password ends all sessions of the account
+// that started before the reset, as a password change does.
 func (a *API) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	var req openapi.ResetPasswordRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -80,16 +92,20 @@ func (a *API) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	if !checkPasswordPolicy(w, req.NewPassword, "newPassword") {
 		return
 	}
-
-	resetTokensMu.Lock()
-	entry, ok := resetTokens[req.Token]
-	if ok {
-		delete(resetTokens, req.Token)
+	st, ok := a.requireStore(w)
+	if !ok {
+		return
 	}
-	resetTokensMu.Unlock()
 
-	if !ok || time.Now().After(entry.expiresAt) {
+	// Redeeming deletes the token, so a request that fails afterwards needs
+	// a new reset link.
+	userID, err := st.ConsumePasswordResetToken(r.Context(), req.Token)
+	if errors.Is(err, store.ErrNotFound) {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid or expired reset token"})
+		return
+	}
+	if err != nil {
+		writeStoreError(w, err, "", "failed to redeem reset token")
 		return
 	}
 
@@ -99,6 +115,29 @@ func (a *API) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if userID != dbpkg.AdminUserID {
+		// SetUserPassword moves updated_at, which revokes older sessions.
+		u, err := st.GetUser(r.Context(), userID)
+		if err == nil {
+			err = st.SetUserPassword(r.Context(), u.Email, string(hash))
+		}
+		if errors.Is(err, store.ErrNotFound) {
+			writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid or expired reset token"})
+			return
+		}
+		if err != nil {
+			writeStoreError(w, err, "", "failed to save new password")
+			return
+		}
+		log.Printf("password reset: password of user %s updated", userID)
+		writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: "Password reset successful."})
+		return
+	}
+
+	if a.cfg.AdminEmail == "" {
+		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid or expired reset token"})
+		return
+	}
 	a.cfg.AdminPassword = string(hash)
 	a.cfg.AdminTokensValidAfter = time.Now().Unix()
 	if err := saveConfig(a); err != nil {

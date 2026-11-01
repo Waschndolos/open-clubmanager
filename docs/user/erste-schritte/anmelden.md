@@ -27,6 +27,8 @@ Das neue Passwort muss mindestens 8 Zeichen lang sein.
 
 Über **Passwort vergessen?** kannst du dir einen Link zum Zurücksetzen per E-Mail schicken lassen. Das funktioniert nur, wenn für Open ClubManager ein E-Mail-Versand (SMTP) eingerichtet ist – bei einer normalen Desktop-Installation ist das in der Regel **nicht** der Fall.
 
+Der Link gilt eine Stunde und nur einmal; forderst du einen neuen an, wird der alte ungültig. Nach dem Zurücksetzen werden alle bestehenden Anmeldungen dieses Kontos beendet.
+
 Ohne E-Mail-Versand gilt:
 
 - **Du bist nicht der einzige Administrator:** Bitte einen anderen Administrator, dein Benutzerkonto in der [Benutzerverwaltung](../funktionen/benutzer.md) zu löschen und neu anzulegen.
