@@ -41,7 +41,8 @@
         "errorInvalidCredentials": "Login fehlgeschlagen. Bitte überprüfe deine Eingaben.",
         "errorTooManyAttempts": "Zu viele Fehlversuche. Bitte warte einen Moment und versuche es erneut.",
         "showPassword": "Passwort anzeigen",
-        "hidePassword": "Passwort verbergen"
+        "hidePassword": "Passwort verbergen",
+        "sessionExpired": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an."
     },
     "forgotPassword": {
         "title": "Passwort vergessen",

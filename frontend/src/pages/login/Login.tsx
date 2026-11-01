@@ -10,6 +10,15 @@ import {setAccessToken} from "../../api/api";
 import AuthLayout from '../../components/auth/AuthLayout';
 import {fadeUp, reveal, shake, sheen} from '../../components/auth/authAnimations';
 import {alpha} from '@mui/material/styles';
+import type {LoginRedirectState} from '../../guards/RequireAuth';
+
+/** The page to return to after login: an in-app path other than the login. */
+function returnPath(from: string | undefined): string {
+    if (from && from.startsWith('/') && !from.startsWith('//') && !from.startsWith('/login')) {
+        return from;
+    }
+    return '/dashboard';
+}
 
 const Login: React.FC = () => {
     const { t } = useTranslation();
@@ -20,7 +29,7 @@ const Login: React.FC = () => {
     const [submitting, setSubmitting] = useState(false);
     const [errorKey, setErrorKey] = useState(0);
 
-    const {setAccessToken: setAuthAccessToken} = useAuth();
+    const {accessToken, initializing, setAccessToken: setAuthAccessToken} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -36,9 +45,18 @@ const Login: React.FC = () => {
             });
     }, [navigate, setAuthAccessToken]);
 
-    const setupState = (location.state as { setupComplete?: boolean; setupWarning?: string } | null) ?? null;
+    const setupState = (location.state as ({ setupComplete?: boolean; setupWarning?: string } & LoginRedirectState) | null) ?? null;
     const setupComplete = setupState?.setupComplete;
     const setupWarning = setupState?.setupWarning;
+    const sessionExpired = setupState?.sessionExpired;
+    const target = returnPath(setupState?.from);
+
+    // Still signed in (e.g. the login page was reloaded): go on directly.
+    useEffect(() => {
+        if (!initializing && accessToken) {
+            navigate(target, {replace: true});
+        }
+    }, [initializing, accessToken, navigate, target]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -49,7 +67,7 @@ const Login: React.FC = () => {
             const {accessToken} = await login(email, password);
             setAccessToken(accessToken);
             setAuthAccessToken(accessToken);
-            navigate('/dashboard', {replace: true});
+            navigate(target, {replace: true});
         } catch (e) {
             console.log('Login error', e);
             const status = (e as { status?: number }).status;
@@ -79,6 +97,7 @@ const Login: React.FC = () => {
             }}>
                 {setupComplete && <Alert severity="success">{t('login.setupComplete')}</Alert>}
                 {setupWarning && <Alert severity="warning">{setupWarning}</Alert>}
+                {sessionExpired && !error && <Alert severity="info">{t('login.sessionExpired')}</Alert>}
 
                 <TextField
                     label={t('login.email')}

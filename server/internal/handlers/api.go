@@ -280,7 +280,14 @@ func (a *API) Login(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	writeJSON(w, http.StatusOK, openapi.AccessTokenResponse{AccessToken: token})
+	resp := openapi.AccessTokenResponse{AccessToken: token}
+	if refresh, err := a.issueRefreshToken(r.Context(), email, role); err != nil {
+		// The login still works, it just ends with the access token.
+		log.Printf("auth: issue refresh token: %v", err)
+	} else if refresh != "" {
+		deliverRefreshToken(w, r, &resp, refresh, req.RefreshTokenInBody != nil && *req.RefreshTokenInBody)
+	}
+	writeJSON(w, http.StatusOK, resp)
 }
 
 // checkLogin verifies the credentials and returns the account's role.
@@ -311,28 +318,6 @@ func (a *API) GetProfile(w http.ResponseWriter, r *http.Request) {
 		Email:   openapi_types.Email(claims.Email),
 		AppRole: &claims.AppRole,
 	})
-}
-
-// Logout is a no-op for JWT-based auth – the client discards the token.
-func (a *API) Logout(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
-}
-
-// RefreshAccessToken issues a new access token when the caller still holds a
-// valid token (stateless refresh – no refresh-token table lookup required for
-// the single-admin desktop deployment).
-func (a *API) RefreshAccessToken(w http.ResponseWriter, r *http.Request) {
-	claims, ok := auth.ClaimsFromContext(r.Context())
-	if !ok {
-		writeJSON(w, http.StatusUnauthorized, openapi.ErrorResponse{Error: "unauthorized"})
-		return
-	}
-	token, err := auth.NewToken(claims.Email, claims.AppRole, a.cfg.JWTSecret)
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to refresh token"})
-		return
-	}
-	writeJSON(w, http.StatusOK, openapi.AccessTokenResponse{AccessToken: token})
 }
 
 func (a *API) GetDbPath(w http.ResponseWriter, _ *http.Request) {

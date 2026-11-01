@@ -9,7 +9,13 @@ info:
     Notes:
     - The legacy `/api/*` v1 endpoints were removed.
     - Authentication uses bearer access tokens for protected endpoints.
-    - Refresh/logout use an HTTP-only cookie named `refreshToken`.
+    - Login also issues a refresh token. Browsers on the same site as the
+      backend get it as an HTTP-only, SameSite=Strict cookie named
+      `refreshToken` (path `/api/v2/auth`). Clients that cannot use that
+      cookie (the desktop app, whose pages are served from a different site)
+      request it in the response body with `refreshTokenInBody` and send it
+      in the `X-Refresh-Token` header. Every refresh rotates the token; a
+      replaced token presented again revokes the login.
 servers:
   - url: http://localhost:3001/api/v2
     description: Local development server
@@ -43,6 +49,10 @@ components:
       type: apiKey
       in: cookie
       name: refreshToken
+    refreshTokenHeader:
+      type: apiKey
+      in: header
+      name: X-Refresh-Token
 
   schemas:
     ErrorResponse:
@@ -158,6 +168,9 @@ components:
           format: email
         password:
           type: string
+        refreshTokenInBody:
+          type: boolean
+          description: Return the refresh token in the response body instead of the `refreshToken` cookie. For clients that cannot use a same-site cookie (the desktop app); they send it back in the X-Refresh-Token header.
       required: [email, password]
       additionalProperties: false
 
@@ -194,6 +207,9 @@ components:
       properties:
         accessToken:
           type: string
+        refreshToken:
+          type: string
+          description: New refresh token, only when it was requested in the body (refreshTokenInBody at login, X-Refresh-Token header on refresh). Otherwise it is set as the `refreshToken` cookie.
       required: [accessToken]
       additionalProperties: false
 
@@ -1498,7 +1514,7 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     Forbidden:
-      description: Authenticated but not allowed, or refresh token invalid/expired.
+      description: Authenticated but not allowed.
       content:
         application/json:
           schema:
@@ -1625,10 +1641,10 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Access token returned and refresh cookie set.
+          description: Access token returned and refresh token issued (cookie or body). Without a database no refresh token is issued.
           headers:
             Set-Cookie:
-              description: HTTP-only `refreshToken` cookie.
+              description: HTTP-only `refreshToken` cookie, unless refreshTokenInBody was set.
               schema:
                 type: string
           content:
@@ -1644,18 +1660,29 @@ paths:
     post:
       tags: [auth]
       summary: Refresh the access token
+      description: |
+        Exchanges the refresh token (cookie or X-Refresh-Token header) for a
+        new access token and a new refresh token, returned the same way the
+        old one came in. The access token of the request is not needed, so
+        this works after it expired. Fails when the account was deleted, its
+        role or password changed, or the user logged out.
       operationId: refreshAccessToken
       security:
         - refreshTokenCookie: []
+        - refreshTokenHeader: []
       responses:
         '200':
-          description: New access token.
+          description: New access token and rotated refresh token (as `refreshToken` cookie, or in the body when the token came in the header).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessTokenResponse'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '401':
+          description: Refresh token missing, unknown, expired, reused or revoked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           $ref: '#/components/responses/InternalError'
 
@@ -1663,9 +1690,11 @@ paths:
     post:
       tags: [auth]
       summary: Log out and clear refresh token cookie
+      description: Revokes the login of the presented refresh token (cookie or X-Refresh-Token header) and clears the cookie.
       operationId: logout
       security:
         - refreshTokenCookie: []
+        - refreshTokenHeader: []
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
