@@ -126,10 +126,14 @@ func transactionColumns(in TransactionInput) row {
 	}
 }
 
-// DeleteTransaction tombstones a transaction.
+// DeleteTransaction tombstones a transaction. Fees it was assigned to are
+// settled again without it.
 func (s *Store) DeleteTransaction(ctx context.Context, id string) error {
 	return s.inWriteTx(ctx, func(w *writer) error {
-		return affected(w.update("finance_transactions", `id = ? AND deleted_at IS NULL`, []any{id}, row{"deleted_at": db.Now()}))
+		if err := affected(w.update("finance_transactions", `id = ? AND deleted_at IS NULL`, []any{id}, row{"deleted_at": db.Now()})); err != nil {
+			return err
+		}
+		return removePayments(w, `transaction_id = ?`, id)
 	})
 }
 
@@ -216,15 +220,20 @@ func feeColumns(in FeeInput) row {
 	}
 }
 
-// DeleteFee tombstones a fee.
+// DeleteFee tombstones a fee and the payments assigned to it.
 func (s *Store) DeleteFee(ctx context.Context, id string) error {
 	return s.inWriteTx(ctx, func(w *writer) error {
-		return affected(w.update("member_fees", `id = ? AND deleted_at IS NULL`, []any{id}, row{"deleted_at": db.Now()}))
+		now := db.Now()
+		if err := affected(w.update("member_fees", `id = ? AND deleted_at IS NULL`, []any{id}, row{"deleted_at": now})); err != nil {
+			return err
+		}
+		_, err := w.update("member_fee_payments", `fee_id = ? AND deleted_at IS NULL`, []any{id}, row{"deleted_at": now})
+		return err
 	})
 }
 
-// ResetFinance tombstones all live fees and transactions and reports how many
-// of each were removed.
+// ResetFinance tombstones all live fees, transactions and payment
+// assignments and reports how many fees and transactions were removed.
 func (s *Store) ResetFinance(ctx context.Context) (fees, transactions int, err error) {
 	err = s.inWriteTx(ctx, func(w *writer) error {
 		tombstone := row{"deleted_at": db.Now()}
@@ -232,7 +241,10 @@ func (s *Store) ResetFinance(ctx context.Context) (fees, transactions int, err e
 		if fees, err = w.update("member_fees", `deleted_at IS NULL`, nil, tombstone); err != nil {
 			return err
 		}
-		transactions, err = w.update("finance_transactions", `deleted_at IS NULL`, nil, tombstone)
+		if transactions, err = w.update("finance_transactions", `deleted_at IS NULL`, nil, tombstone); err != nil {
+			return err
+		}
+		_, err = w.update("member_fee_payments", `deleted_at IS NULL`, nil, tombstone)
 		return err
 	})
 	return fees, transactions, err

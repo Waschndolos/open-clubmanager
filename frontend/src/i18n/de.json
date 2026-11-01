@@ -431,7 +431,8 @@
         "tabs": {
             "transactions": "Kassenbuch",
             "memberfees": "Mitgliedsbeiträge",
-            "directDebit": "Lastschrift"
+            "directDebit": "Lastschrift",
+            "reconciliation": "Zahlungsabgleich"
         },
         "summary": {
             "balance": "Kontostand",
@@ -442,7 +443,7 @@
         "transactions": {
             "create": "Buchung hinzufügen",
             "importCamt": "CAMT.053 importieren",
-            "importResult": "CAMT.053: {{imported}} importiert, {{skipped}} übersprungen ({{total}} gesamt), {{matched}} Mitgliedern zugeordnet, {{paid}} Beiträge als bezahlt markiert, {{createdFees}} Beiträge neu angelegt",
+            "importResult": "CAMT.053: {{imported}} importiert, {{skipped}} übersprungen ({{total}} gesamt)",
             "importError": "CAMT.053 Import fehlgeschlagen.",
             "fields": {
                 "date": "Datum",
@@ -1368,6 +1369,90 @@
             "paidDate": "Bezahlt am",
             "cancelTitle": "Lastschriftlauf stornieren?",
             "cancelText": "Die Beiträge sind danach wieder offen. Lade die Datei nicht mehr bei der Bank hoch bzw. widerrufe den Auftrag dort."
+        }
+    },
+    "reconciliation": {
+        "loadFailed": "Zahlungsabgleich konnte nicht geladen werden",
+        "actionFailed": "Aktion fehlgeschlagen",
+        "feesChanged": "Die Beiträge haben sich inzwischen geändert. Bitte die Zuordnung prüfen.",
+        "confirmed": "Zuordnung bestätigt",
+        "reopened": "Zuordnung zurückgenommen",
+        "certainConfirmed": "{{count}} sichere Zuordnungen bestätigt",
+        "importHint": "Für {{count}} Buchungen gibt es einen Zuordnungsvorschlag zu offenen Beiträgen. Gebucht wird erst nach deiner Bestätigung.",
+        "openReview": "Zum Zahlungsabgleich",
+        "empty": "Noch keine Bankbuchungen importiert. Importiere im Kassenbuch einen Kontoauszug (CAMT.053); Zahlungseingänge und Rücklastschriften erscheinen dann hier zur Prüfung.",
+        "allDone": "Alles geprüft – keine offenen Buchungen.",
+        "hint": "Vorschläge entstehen aus Mitgliedsnummer im Verwendungszweck, IBAN des Zahlers sowie Name und Betrag. Nichts wird ohne Bestätigung gebucht; jede Zuordnung lässt sich zurücknehmen.",
+        "unknownPayer": "Unbekannter Zahler",
+        "return": "Rücklastschrift",
+        "noSuggestion": "Kein passender Beitrag gefunden",
+        "noFee": "Ohne Beitrag geprüft",
+        "unallocated": "{{amount}} bleiben ohne Beitrag",
+        "filter": {
+            "open": "Offen ({{count}})",
+            "done": "Erledigt",
+            "all": "Alle"
+        },
+        "confidence": {
+            "certain": "Sicher",
+            "probable": "Wahrscheinlich",
+            "unclear": "Unklar"
+        },
+        "status": {
+            "unmatched": "Ohne Vorschlag",
+            "reconciled": "Zugeordnet",
+            "dismissed": "Ohne Beitrag",
+            "open": "Offen",
+            "none": "–"
+        },
+        "reasons": {
+            "END_TO_END_ID": "Lastschrift-Referenz",
+            "MEMBER_NUMBER": "Mitgliedsnummer",
+            "IBAN": "IBAN",
+            "NAME": "Name",
+            "AMOUNT": "Betrag passt",
+            "HOUSEHOLD": "Haushalt",
+            "PARTIAL": "Teilzahlung",
+            "OVERPAID": "Überzahlung"
+        },
+        "returnReasons": {
+            "AC04": "Konto erloschen",
+            "AC06": "Konto gesperrt",
+            "AM04": "Keine Deckung",
+            "MD01": "Kein Mandat",
+            "MD06": "Rückgabe durch Zahler",
+            "MS02": "Ohne Angabe von Gründen",
+            "MS03": "Ohne Angabe von Gründen",
+            "SL01": "Dienstleistung der Bank"
+        },
+        "columns": {
+            "date": "Datum",
+            "payer": "Zahler",
+            "remittance": "Verwendungszweck",
+            "amount": "Betrag",
+            "assignment": "Zuordnung",
+            "fee": "Beitrag"
+        },
+        "actions": {
+            "confirm": "Bestätigen",
+            "confirmCertain": "Alle sicheren bestätigen ({{count}})",
+            "edit": "Zuordnung ändern",
+            "dismiss": "Ohne Beitrag abhaken",
+            "undo": "Rückgängig"
+        },
+        "dialog": {
+            "title": "Zahlung Beiträgen zuordnen",
+            "titleReturn": "Rücklastschrift Beiträgen zuordnen",
+            "search": "Mitglied oder Beitrag suchen",
+            "due": "Offen",
+            "paid": "Bezahlt",
+            "assigned": "Zugeordnet",
+            "sum": "Zugeordnet: {{assigned}} von {{amount}}",
+            "rest": "Rest ohne Beitrag: {{rest}}",
+            "invalidAmount": "Ein Betrag ist ungültig oder höher als bei diesem Beitrag möglich.",
+            "exceeds": "Die zugeordneten Beträge sind höher als die Buchung.",
+            "noOpenFees": "Es gibt keine offenen Beiträge.",
+            "noPaidFees": "Es gibt keine bezahlten Beiträge, die zurückgebucht werden könnten."
         }
     }
 }

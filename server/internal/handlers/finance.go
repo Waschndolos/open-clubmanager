@@ -4,10 +4,14 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
+	"github.com/Waschndolos/open-clubmanager/server/internal/sepa"
 	"github.com/Waschndolos/open-clubmanager/server/internal/store"
 )
 
@@ -253,6 +257,11 @@ func (a *API) ResetFinanceLedger(w http.ResponseWriter, r *http.Request) {
 
 // ── CAMT.053 Import ───────────────────────────────────────────────────────────
 
+// ImportFinanceTransactionsCamt053 creates a transaction per statement entry.
+// On a device that may write bank data, the payer's name, IBAN and the
+// references are kept for the payment reconciliation; matchedMemberCount
+// counts the entries for which it has a suggestion. Nothing is assigned to
+// fees here, the treasurer confirms that in the reconciliation.
 func (a *API) ImportFinanceTransactionsCamt053(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
 	if !ok {
@@ -270,8 +279,10 @@ func (a *API) ImportFinanceTransactionsCamt053(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	keepBank := a.collab.CanWrite(r.Context(), db.ScopeMembersBank)
 	imported := 0
 	skipped := 0
+	var ids []string
 
 	for _, e := range entries {
 		txType := "income"
@@ -279,16 +290,32 @@ func (a *API) ImportFinanceTransactionsCamt053(w http.ResponseWriter, r *http.Re
 			txType = "expense"
 			e.Amount = -e.Amount
 		}
+		var bank *store.BankEntry
+		if keepBank {
+			bank = &e.Bank
+		}
 
-		t, err := st.CreateTransaction(r.Context(), store.TransactionInput{
-			Date: e.Date, Description: e.Description, Amount: float64(e.Amount), Type: txType,
-		})
+		t, err := st.ImportTransaction(r.Context(), store.TransactionInput{
+			Date: e.Date, Description: e.Description, Amount: e.Amount, Type: txType,
+		}, bank)
 		if err != nil {
 			skipped++
 			continue
 		}
 		st.Audit(r.Context(), "CREATE", "FinanceTransaction", t.ID, currentUserID(r))
+		ids = append(ids, t.ID)
 		imported++
+	}
+
+	matched := 0
+	if keepBank && len(ids) > 0 {
+		if s, err := reconciliationSuggestions(r.Context(), st); err == nil {
+			for _, id := range ids {
+				if s[id] != nil {
+					matched++
+				}
+			}
+		}
 	}
 
 	total := imported + skipped
@@ -296,39 +323,81 @@ func (a *API) ImportFinanceTransactionsCamt053(w http.ResponseWriter, r *http.Re
 		TotalCount:           total,
 		ImportedCount:        imported,
 		SkippedCount:         skipped,
-		MatchedMemberCount:   0,
+		MatchedMemberCount:   matched,
 		MemberFeesCreated:    0,
 		MemberFeesMarkedPaid: 0,
 	})
 }
 
-// camt053Entry is a minimal parsed bank statement entry.
+// camt053Entry is a parsed bank statement entry. Amount is negative for debits.
 type camt053Entry struct {
 	Date        time.Time
-	Amount      float32
+	Amount      float64
 	Description string
+	Bank        store.BankEntry
 }
 
-// parseCamt053 is a best-effort parser for the CAMT.053 bank statement format.
+// German bank transaction code (GVC) of a returned SEPA direct debit, as
+// used in the proprietary BkTxCd of German banks (e.g. "NRTI+109+…").
+var gvcReturnedDebit = regexp.MustCompile(`(^|\+)109(\+|$)`)
+
+// parseCamt053 is a best-effort parser for the CAMT.053 bank statement
+// format (versions .001.02 to .001.08). Of entries with several transactions
+// (batch bookings) the first transaction supplies payer and references.
 func parseCamt053(xmlData string) ([]camt053Entry, error) {
-	type Amount struct {
-		Value     float32 `xml:",chardata"`
-		Currency  string  `xml:"Ccy,attr"`
-		CdtDbtInd string
+	type Party struct {
+		Nm  string `xml:"Nm"`
+		Pty struct {
+			Nm string `xml:"Nm"`
+		} `xml:"Pty"`
+	}
+	type Account struct {
+		Id struct {
+			IBAN string `xml:"IBAN"`
+		} `xml:"Id"`
+	}
+	type BkTxCd struct {
+		Domn struct {
+			Fmly struct {
+				SubFmlyCd string `xml:"SubFmlyCd"`
+			} `xml:"Fmly"`
+		} `xml:"Domn"`
+		Prtry struct {
+			Cd string `xml:"Cd"`
+		} `xml:"Prtry"`
+	}
+	type TxDtls struct {
+		Refs struct {
+			EndToEndId string `xml:"EndToEndId"`
+			MndtId     string `xml:"MndtId"`
+		} `xml:"Refs"`
+		BkTxCd    BkTxCd `xml:"BkTxCd"`
+		RltdPties struct {
+			Dbtr     Party   `xml:"Dbtr"`
+			DbtrAcct Account `xml:"DbtrAcct"`
+			Cdtr     Party   `xml:"Cdtr"`
+			CdtrAcct Account `xml:"CdtrAcct"`
+		} `xml:"RltdPties"`
+		RmtInf struct {
+			Ustrd []string `xml:"Ustrd"`
+		} `xml:"RmtInf"`
+		RtrInf struct {
+			Rsn struct {
+				Cd string `xml:"Cd"`
+			} `xml:"Rsn"`
+		} `xml:"RtrInf"`
+		AddtlTxInf string `xml:"AddtlTxInf"`
 	}
 	type Ntry struct {
-		Amt       Amount `xml:"Amt"`
+		Amt       string `xml:"Amt"`
 		CdtDbtInd string `xml:"CdtDbtInd"`
 		BookgDt   struct {
-			Dt string `xml:"Dt"`
+			Dt   string `xml:"Dt"`
+			DtTm string `xml:"DtTm"`
 		} `xml:"BookgDt"`
+		BkTxCd   BkTxCd `xml:"BkTxCd"`
 		NtryDtls struct {
-			TxDtls struct {
-				RmtInf struct {
-					Ustrd string `xml:"Ustrd"`
-				} `xml:"RmtInf"`
-				AddtlTxInf string `xml:"AddtlTxInf"`
-			} `xml:"TxDtls"`
+			TxDtls []TxDtls `xml:"TxDtls"`
 		} `xml:"NtryDtls"`
 		AddtlNtryInf string `xml:"AddtlNtryInf"`
 	}
@@ -341,21 +410,68 @@ func parseCamt053(xmlData string) ([]camt053Entry, error) {
 		return nil, err
 	}
 
+	optional := func(values ...string) *string {
+		for _, v := range values {
+			if v = strings.Join(strings.Fields(v), " "); v != "" && v != "NOTPROVIDED" {
+				return &v
+			}
+		}
+		return nil
+	}
+	name := func(p Party) string {
+		if p.Nm != "" {
+			return p.Nm
+		}
+		return p.Pty.Nm
+	}
+
 	var results []camt053Entry
 	for _, e := range doc.Entries {
-		date, _ := time.Parse("2006-01-02", e.BookgDt.Dt)
-		description := strings.TrimSpace(e.NtryDtls.TxDtls.RmtInf.Ustrd)
+		date, err := time.Parse("2006-01-02", e.BookgDt.Dt)
+		if err != nil && len(e.BookgDt.DtTm) >= 10 {
+			date, _ = time.Parse("2006-01-02", e.BookgDt.DtTm[:10])
+		}
+		var tx TxDtls
+		if len(e.NtryDtls.TxDtls) > 0 {
+			tx = e.NtryDtls.TxDtls[0]
+		}
+		remittance := strings.TrimSpace(strings.Join(tx.RmtInf.Ustrd, " "))
+		description := remittance
 		if description == "" {
-			description = strings.TrimSpace(e.NtryDtls.TxDtls.AddtlTxInf)
+			description = strings.TrimSpace(tx.AddtlTxInf)
 		}
 		if description == "" {
 			description = strings.TrimSpace(e.AddtlNtryInf)
 		}
-		amount := e.Amt.Value
-		if e.CdtDbtInd == "DBIT" {
+		amount, _ := strconv.ParseFloat(strings.TrimSpace(e.Amt), 64)
+		debit := e.CdtDbtInd == "DBIT"
+		if debit {
 			amount = -amount
 		}
-		results = append(results, camt053Entry{Date: date, Amount: amount, Description: description})
+
+		isReturn := false
+		if debit {
+			for _, code := range []BkTxCd{e.BkTxCd, tx.BkTxCd} {
+				if code.Domn.Fmly.SubFmlyCd == "UPDD" || gvcReturnedDebit.MatchString(code.Prtry.Cd) {
+					isReturn = true
+				}
+			}
+			isReturn = isReturn || tx.RtrInf.Rsn.Cd != ""
+		}
+		// The other party: the payer of a credit or of a returned debit,
+		// otherwise the payee.
+		party, account := tx.RltdPties.Dbtr, tx.RltdPties.DbtrAcct
+		if debit && !(isReturn && (name(party) != "" || account.Id.IBAN != "")) {
+			party, account = tx.RltdPties.Cdtr, tx.RltdPties.CdtrAcct
+		}
+		bank := store.BankEntry{
+			CounterpartyName: optional(name(party)), EndToEndID: optional(tx.Refs.EndToEndId),
+			MandateRef: optional(tx.Refs.MndtId), IsReturn: isReturn, ReturnReason: optional(tx.RtrInf.Rsn.Cd),
+		}
+		if iban := sepa.NormalizeIBAN(account.Id.IBAN); iban != "" {
+			bank.CounterpartyIBAN = &iban
+		}
+		results = append(results, camt053Entry{Date: date, Amount: amount, Description: description, Bank: bank})
 	}
 	return results, nil
 }

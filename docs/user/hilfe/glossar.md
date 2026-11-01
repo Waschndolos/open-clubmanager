@@ -15,6 +15,7 @@
 | **Migration (Datenbank)** | Automatische Anpassung der Datenbank an eine neue Programmversion beim Start. Siehe [Updates](../migration/updates.md). |
 | **Notfallschlüssel** | Text zum Wiederherstellen der Verwaltung, wenn kein Vorstandsgerät mehr da ist. Siehe [Notfallschlüssel](../zusammenarbeit/notfallschluessel.md). |
 | **Rolle (Vereinsstruktur)** | Amt eines Mitglieds im Verein, z. B. Jugendwart. Gibt keine Rechte im Programm. |
+| **Rücklastschrift** | Lastschrift, die die Bank des Mitglieds zurückgibt, z. B. mangels Deckung. Siehe [Zahlungsabgleich](../funktionen/finanzen.md#rucklastschriften). |
 | **Sicherheitscode** | 6-stelliger Code, den eine beitretende Person dem Vorstand nennt, damit dieser den Beitritt bestätigt. |
 | **SEPA-Mandat** | Erlaubnis eines Mitglieds, Beiträge per Lastschrift einzuziehen. |
 | **Sync** | Austausch der Änderungen zwischen den Geräten bei der Zusammenarbeit. |

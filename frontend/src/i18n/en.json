@@ -431,7 +431,8 @@
         "tabs": {
             "transactions": "Cashbook",
             "memberfees": "Member Fees",
-            "directDebit": "Direct debit"
+            "directDebit": "Direct debit",
+            "reconciliation": "Reconciliation"
         },
         "summary": {
             "balance": "Balance",
@@ -442,7 +443,7 @@
         "transactions": {
             "create": "Add Transaction",
             "importCamt": "Import CAMT.053",
-            "importResult": "CAMT.053: {{imported}} imported, {{skipped}} skipped ({{total}} total), matched to {{matched}} members, marked {{paid}} fees as paid, created {{createdFees}} new fees",
+            "importResult": "CAMT.053: {{imported}} imported, {{skipped}} skipped ({{total}} total)",
             "importError": "CAMT.053 import failed.",
             "fields": {
                 "date": "Date",
@@ -1368,6 +1369,90 @@
             "paidDate": "Paid on",
             "cancelTitle": "Cancel direct debit run?",
             "cancelText": "The fees will be open again. Do not upload the file to the bank, or revoke the order there."
+        }
+    },
+    "reconciliation": {
+        "loadFailed": "Could not load the payment reconciliation",
+        "actionFailed": "Action failed",
+        "feesChanged": "The fees have changed in the meantime. Please check the assignment.",
+        "confirmed": "Assignment confirmed",
+        "reopened": "Assignment undone",
+        "certainConfirmed": "Confirmed {{count}} certain assignments",
+        "importHint": "{{count}} transactions have a suggested match with open fees. Nothing is booked until you confirm it.",
+        "openReview": "Open reconciliation",
+        "empty": "No bank transactions imported yet. Import a bank statement (CAMT.053) in the cash book; incoming payments and returned direct debits then show up here for review.",
+        "allDone": "All reviewed – no open transactions.",
+        "hint": "Suggestions are based on the member number in the remittance text, the payer's IBAN, and name and amount. Nothing is booked without confirmation; every assignment can be undone.",
+        "unknownPayer": "Unknown payer",
+        "return": "Returned direct debit",
+        "noSuggestion": "No matching fee found",
+        "noFee": "Reviewed without fee",
+        "unallocated": "{{amount}} remain without fee",
+        "filter": {
+            "open": "Open ({{count}})",
+            "done": "Done",
+            "all": "All"
+        },
+        "confidence": {
+            "certain": "Certain",
+            "probable": "Probable",
+            "unclear": "Unclear"
+        },
+        "status": {
+            "unmatched": "No suggestion",
+            "reconciled": "Assigned",
+            "dismissed": "Without fee",
+            "open": "Open",
+            "none": "–"
+        },
+        "reasons": {
+            "END_TO_END_ID": "Debit reference",
+            "MEMBER_NUMBER": "Member number",
+            "IBAN": "IBAN",
+            "NAME": "Name",
+            "AMOUNT": "Amount matches",
+            "HOUSEHOLD": "Household",
+            "PARTIAL": "Partial payment",
+            "OVERPAID": "Overpayment"
+        },
+        "returnReasons": {
+            "AC04": "Account closed",
+            "AC06": "Account blocked",
+            "AM04": "Insufficient funds",
+            "MD01": "No mandate",
+            "MD06": "Refund requested by payer",
+            "MS02": "Reason not specified",
+            "MS03": "Reason not specified",
+            "SL01": "Bank service"
+        },
+        "columns": {
+            "date": "Date",
+            "payer": "Payer",
+            "remittance": "Remittance text",
+            "amount": "Amount",
+            "assignment": "Assignment",
+            "fee": "Fee"
+        },
+        "actions": {
+            "confirm": "Confirm",
+            "confirmCertain": "Confirm all certain ({{count}})",
+            "edit": "Change assignment",
+            "dismiss": "Mark as reviewed without fee",
+            "undo": "Undo"
+        },
+        "dialog": {
+            "title": "Assign payment to fees",
+            "titleReturn": "Assign returned debit to fees",
+            "search": "Search member or fee",
+            "due": "Due",
+            "paid": "Paid",
+            "assigned": "Assigned",
+            "sum": "Assigned: {{assigned}} of {{amount}}",
+            "rest": "Rest without fee: {{rest}}",
+            "invalidAmount": "An amount is invalid or higher than this fee allows.",
+            "exceeds": "The assigned amounts exceed the transaction.",
+            "noOpenFees": "There are no open fees.",
+            "noPaidFees": "There are no paid fees that could be reversed."
         }
     }
 }

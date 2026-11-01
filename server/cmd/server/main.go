@@ -169,6 +169,13 @@ func main() {
 	router.Get("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(cfg.JWTSecret, api.GetSEPAMandate))
 	router.Put("/api/v2/members/{id}/sepa-mandate", bearerAuthRequired(cfg.JWTSecret, api.SetSEPAMandate))
 
+	// Payment reconciliation: imported bank transactions assigned to member fees.
+	router.Get("/api/v2/reconciliation", bearerAuthRequired(cfg.JWTSecret, api.GetReconciliation))
+	router.Post("/api/v2/reconciliation/confirm-certain", bearerAuthRequired(cfg.JWTSecret, api.ConfirmCertainReconciliations))
+	router.Post("/api/v2/reconciliation/{id}/confirm", bearerAuthRequired(cfg.JWTSecret, api.ConfirmReconciliation))
+	router.Post("/api/v2/reconciliation/{id}/dismiss", bearerAuthRequired(cfg.JWTSecret, api.DismissReconciliation))
+	router.Post("/api/v2/reconciliation/{id}/reopen", bearerAuthRequired(cfg.JWTSecret, api.ReopenReconciliation))
+
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))

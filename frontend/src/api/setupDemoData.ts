@@ -8,6 +8,7 @@ import { recordMaintenance, setItemStatus } from './maintenance';
 import { addDays, createEvent, localTimeZone, ymd } from './events';
 import { saveAttendance } from './attendance';
 import { saveSepaCreditor, saveSepaMandate } from './sepa';
+import { createHousehold } from './households';
 import { Member } from './types';
 
 export interface SetupDemoDataResult {
@@ -308,8 +309,18 @@ export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
         });
     }
 
-    // Annual fee for every active member; most have paid via SEPA, a few are still open.
-    const unpaid = new Set([1007, 1012, 1013, 1015]);
+    // Siblings Nele and Paul Kruse form a household; their parents pay both
+    // fees with one transfer (see testdata/camt053-reconciliation.xml).
+    const memberId = (number: number) => createdMembers.find((m) => m.demo.data.number === number)!.id;
+    await createHousehold({
+        name: 'Familie Kruse', payerId: memberId(1010), shareAddress: true, shareBank: false,
+        memberIds: [memberId(1010), memberId(1011)],
+    });
+
+    // Annual fee for every active member; most have paid via SEPA, a few are
+    // still open and are paid by the transfers of the example bank statement
+    // in testdata/camt053-reconciliation.xml.
+    const unpaid = new Set([1007, 1010, 1011, 1012, 1013, 1015]);
     let memberFees = 0;
     for (const { id, demo } of createdMembers) {
         if (demo.data.exitDate) continue;

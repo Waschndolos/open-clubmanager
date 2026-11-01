@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+    Alert,
     Box,
     Button,
     Chip,
@@ -41,6 +42,7 @@ import { usePermission } from '../../context/CollaborationContext';
 import PageHeader from '../../components/common/PageHeader';
 import { fetchSepaRuns } from '../../api/sepa';
 import { SepaDirectDebitTab, useSepaAccess } from './SepaDirectDebit';
+import { PaymentReconciliationTab } from './PaymentReconciliation';
 
 const FINANCE_RESET_CONFIRM_TEXT = 'DELETE';
 
@@ -280,6 +282,8 @@ export function Finance() {
     const [fees, setFees] = useState<MemberFee[]>([]);
     const [members, setMembers] = useState<Member[]>([]);
     const [importSummary, setImportSummary] = useState<string | null>(null);
+    // Imported entries with a suggestion, shown with a link to the reconciliation.
+    const [importMatched, setImportMatched] = useState(0);
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
     const [resetConfirmInput, setResetConfirmInput] = useState('');
     const [resetSubmitting, setResetSubmitting] = useState(false);
@@ -354,11 +358,9 @@ export function Finance() {
                 imported: result.importedCount,
                 skipped: result.skippedCount,
                 total: result.totalCount,
-                matched: result.matchedMemberCount,
-                paid: result.memberFeesMarkedPaid,
-                createdFees: result.memberFeesCreated,
             })
         );
+        setImportMatched(sepa.visible ? result.matchedMemberCount : 0);
     };
 
     // ── Member fee handlers ───────────────────────────────────────────────────
@@ -385,6 +387,7 @@ export function Finance() {
             const result = await resetFinanceLedger();
             setTransactions([]);
             setFees([]);
+            setImportMatched(0);
             setImportSummary(
                 t('finance.ledgerReset.success', {
                     transactions: result.deletedTransactions,
@@ -561,6 +564,7 @@ export function Finance() {
                 <Tab label={t('finance.tabs.transactions')} />
                 <Tab label={t('finance.tabs.memberfees')} />
                 {sepa.visible && <Tab label={t('finance.tabs.directDebit')} />}
+                {sepa.visible && <Tab label={t('finance.tabs.reconciliation')} />}
             </Tabs>
 
             {tab === 0 && (
@@ -616,6 +620,12 @@ export function Finance() {
                             {importSummary}
                         </Typography>
                     )}
+                    {importMatched > 0 && (
+                        <Alert severity="info" sx={{ mt: 1 }}
+                            action={<Button color="inherit" size="small" onClick={() => setTab(3)}>{t('reconciliation.openReview')}</Button>}>
+                            {t('reconciliation.importHint', { count: importMatched })}
+                        </Alert>
+                    )}
                 </Box>
             )}
 
@@ -649,6 +659,13 @@ export function Finance() {
             )}
 
             {tab === 2 && sepa.visible && <SepaDirectDebitTab onFeesChanged={handleSepaChanged} />}
+
+            {tab === 3 && sepa.visible && (
+                <PaymentReconciliationTab editable={sepa.editable} onFeesChanged={() => {
+                    setImportMatched(0);
+                    void handleSepaChanged();
+                }} />
+            )}
 
             {txDialog.open && (
                 <TransactionDialog
