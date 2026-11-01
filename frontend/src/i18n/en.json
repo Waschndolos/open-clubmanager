@@ -221,6 +221,12 @@
     },
     "members": {
         "automatedDeletionNotice": "was automatically deleted.",
+        "saveErrors": {
+            "duplicate": "Member number or email address is already taken.",
+            "generic": "Member could not be saved: {{message}}",
+            "invalidNumber": "Please enter a valid member number (1 or higher).",
+            "required": "Please fill in all required fields (*)."
+        },
         "dialogs": {
             "export": {
                 "title": "Export member list",

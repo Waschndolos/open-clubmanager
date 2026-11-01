@@ -784,30 +784,30 @@ type LoginRequest struct {
 
 // Member defines model for Member.
 type Member struct {
-	AccountHolder   *string             `json:"accountHolder,omitempty"`
-	BankName        *string             `json:"bankName,omitempty"`
-	Bic             *string             `json:"bic,omitempty"`
-	Birthday        *time.Time          `json:"birthday,omitempty"`
-	City            *string             `json:"city,omitempty"`
-	Comment         *string             `json:"comment,omitempty"`
-	Email           openapi_types.Email `json:"email"`
-	EntryDate       *time.Time          `json:"entryDate,omitempty"`
-	ExitDate        *time.Time          `json:"exitDate,omitempty"`
-	FirstName       string              `json:"firstName"`
-	Groups          []NamedEntity       `json:"groups"`
-	Iban            *string             `json:"iban,omitempty"`
-	Id              string              `json:"id"`
-	LastName        string              `json:"lastName"`
-	Number          int                 `json:"number"`
-	Phone           *string             `json:"phone,omitempty"`
-	PhoneMobile     *string             `json:"phoneMobile,omitempty"`
-	PostalCode      *string             `json:"postalCode,omitempty"`
-	Roles           []NamedEntity       `json:"roles"`
-	Sections        []NamedEntity       `json:"sections"`
-	SepaMandateDate *time.Time          `json:"sepaMandateDate,omitempty"`
-	State           *string             `json:"state,omitempty"`
-	Street          *string             `json:"street,omitempty"`
-	VersionToken    *string             `json:"versionToken,omitempty"`
+	AccountHolder   *string              `json:"accountHolder,omitempty"`
+	BankName        *string              `json:"bankName,omitempty"`
+	Bic             *string              `json:"bic,omitempty"`
+	Birthday        *time.Time           `json:"birthday,omitempty"`
+	City            *string              `json:"city,omitempty"`
+	Comment         *string              `json:"comment,omitempty"`
+	Email           *openapi_types.Email `json:"email,omitempty"`
+	EntryDate       *time.Time           `json:"entryDate,omitempty"`
+	ExitDate        *time.Time           `json:"exitDate,omitempty"`
+	FirstName       string               `json:"firstName"`
+	Groups          []NamedEntity        `json:"groups"`
+	Iban            *string              `json:"iban,omitempty"`
+	Id              string               `json:"id"`
+	LastName        string               `json:"lastName"`
+	Number          int                  `json:"number"`
+	Phone           *string              `json:"phone,omitempty"`
+	PhoneMobile     *string              `json:"phoneMobile,omitempty"`
+	PostalCode      *string              `json:"postalCode,omitempty"`
+	Roles           []NamedEntity        `json:"roles"`
+	Sections        []NamedEntity        `json:"sections"`
+	SepaMandateDate *time.Time           `json:"sepaMandateDate,omitempty"`
+	State           *string              `json:"state,omitempty"`
+	Street          *string              `json:"street,omitempty"`
+	VersionToken    *string              `json:"versionToken,omitempty"`
 }
 
 // MemberCreateRequest defines model for MemberCreateRequest.

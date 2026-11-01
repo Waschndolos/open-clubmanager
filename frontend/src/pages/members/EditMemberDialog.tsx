@@ -1,5 +1,5 @@
 import {
-    Accordion, AccordionDetails, Box,
+    Accordion, AccordionDetails, Alert, Box,
     AccordionSummary,
     Autocomplete,
     Button,
@@ -20,8 +20,11 @@ import {fetchRoles} from "../../api/roles";
 import {fetchGroups} from "../../api/groups";
 import {fetchSections} from "../../api/sections";
 import dayjs from "dayjs";
+import "dayjs/locale/de";
+import "dayjs/locale/fr";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {deDE, enUS, frFR} from "@mui/x-date-pickers/locales";
 import {useCollaboration, usePermission} from "../../context/CollaborationContext";
 import {useRoleName} from "../../components/collaboration/common";
 import {FamilySection, PayerExitWarning, useMemberHousehold} from "./FamilySection";
@@ -31,18 +34,35 @@ import {assignmentValue, FeeModel, fetchFeeAssignment, fetchFeeModels, saveFeeAs
 import {FeeAssignmentSelect} from "../finance/FeeModels";
 import {isAxiosError} from "axios";
 
+// Date picker texts (and with the dayjs locale the field format, e.g.
+// DD.MM.YYYY) follow the UI language.
+const pickerLocaleText = {
+    de: deDE.components.MuiLocalizationProvider.defaultProps.localeText,
+    en: enUS.components.MuiLocalizationProvider.defaultProps.localeText,
+    fr: frFR.components.MuiLocalizationProvider.defaultProps.localeText,
+};
+
+function pickerLanguage(language: string | undefined): keyof typeof pickerLocaleText {
+    const lang = (language ?? "de").slice(0, 2);
+    return lang in pickerLocaleText ? lang as keyof typeof pickerLocaleText : "en";
+}
+
 type Props = {
     member: Member;
     onClose: () => void;
-    onSave: (updated: Member) => void;
+    /** Rejects when saving failed; the dialog then shows the error. */
+    onSave: (updated: Member) => Promise<void> | void;
     isNew?: boolean;
     /** Opens another member, for the links to family members. */
     onOpenMember?: (id: string) => void;
 };
 
 export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}: Props) {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
+    const language = pickerLanguage(i18n.language);
     const [formData, setFormData] = useState<Member>({...member});
+    const [saveError, setSaveError] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
     const [expandedPanel, setExpandedPanel] = useState<string | false>('personal');
 
     // In a collaboration club the device's role decides which member data is
@@ -124,6 +144,15 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
         }
     };
 
+    const saveErrorMessage = (e: unknown): string => {
+        if (isAxiosError(e)) {
+            if (e.response?.status === 409) return t("members.saveErrors.duplicate");
+            const message = e.response?.data?.error ?? e.message;
+            return t("members.saveErrors.generic", {message});
+        }
+        return t("members.saveErrors.generic", {message: e instanceof Error ? e.message : String(e)});
+    };
+
     const handleAccordionChange = (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
         setExpandedPanel(isExpanded ? panel : false);
     };
@@ -133,32 +162,35 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
     };
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={language}
+                              localeText={pickerLocaleText[language]}>
             <Dialog open onClose={onClose} maxWidth="md" fullWidth>
                 <DialogTitle>
                     {isNew ? t("members.dialogs.create.title") : t("members.dialogs.edit.title")}
                 </DialogTitle>
 
                 <DialogContent>
+                    {saveError && <Alert severity="error" sx={{mb: 2}} onClose={() => setSaveError(null)}>{saveError}</Alert>}
                     <Accordion defaultExpanded expanded={expandedPanel === 'personal'} onChange={handleAccordionChange('personal')}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
                             <Typography>{t("members.dialogs.sections.personal")}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                             <Grid container spacing={2}>
-                                <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
+                                <Grid size={{xs: 12, sm: 6}}><TextField fullWidth required type="number"
                                                                         label={t("members.table.header.number")}
                                                                         value={formData.number ?? ''}
-                                                                        onChange={(e) => handleChange("number", e.target.value)} disabled={coreRO}/></Grid>
+                                                                        slotProps={{htmlInput: {min: 1, step: 1}}}
+                                                                        onChange={(e) => handleChange("number", e.target.value === '' ? undefined : Number(e.target.value))} disabled={coreRO}/></Grid>
                                 {contact !== 'none' && <Grid size={{xs: 12, sm: 6}}><TextField fullWidth required
                                                                         label={t("members.table.header.email")}
                                                                         value={formData.email ?? ''}
                                                                         onChange={(e) => handleChange("email", e.target.value)} disabled={contactRO}/></Grid>}
-                                <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
+                                <Grid size={{xs: 12, sm: 6}}><TextField fullWidth required
                                                                         label={t("members.table.header.firstName")}
                                                                         value={formData.firstName ?? ''}
                                                                         onChange={(e) => handleChange("firstName", e.target.value)} disabled={coreRO}/></Grid>
-                                <Grid size={{xs: 12, sm: 6}}><TextField fullWidth
+                                <Grid size={{xs: 12, sm: 6}}><TextField fullWidth required
                                                                         label={t("members.table.header.lastName")}
                                                                         value={formData.lastName ?? ''}
                                                                         onChange={(e) => handleChange("lastName", e.target.value)} disabled={coreRO}/></Grid>
@@ -372,9 +404,17 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                     <Button onClick={onClose}>{t("buttons.abort")}</Button>
                     <Button
                         variant="contained"
-                        disabled={!canSave}
+                        disabled={!canSave || saving}
                         onClick={async () => {
-                            if (contact !== 'none' && !formData.email) return;
+                            setSaveError(null);
+                            if ((contact !== 'none' && !formData.email) || !formData.firstName?.trim() || !formData.lastName?.trim()) {
+                                setSaveError(t("members.saveErrors.required"));
+                                return;
+                            }
+                            if (!Number.isInteger(formData.number) || (formData.number ?? 0) < 1) {
+                                setSaveError(t("members.saveErrors.invalidNumber"));
+                                return;
+                            }
                             if (!await saveMandateRef()) return;
                             if (!await saveFeeModel()) return;
                             const payload = {
@@ -387,7 +427,14 @@ export function EditMemberDialog({member, onClose, onSave, isNew, onOpenMember}:
                                 birthday: formData.birthday || undefined,
                                 sepaMandateDate: formData.sepaMandateDate || undefined,
                             };
-                            onSave(payload as Member);
+                            setSaving(true);
+                            try {
+                                await onSave(payload as Member);
+                            } catch (e) {
+                                setSaveError(saveErrorMessage(e));
+                            } finally {
+                                setSaving(false);
+                            }
                         }}
                     >
                         {t("buttons.save")}

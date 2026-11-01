@@ -13,14 +13,14 @@ import {createMember, deleteMembers, fetchMembers} from "../../api/members";
 import {useNotification} from "../../context/NotificationContext";
 import PageHeader from "../../components/common/PageHeader";
 
-export function createEmptyMember(): Member {
+export function createEmptyMember(number = 1): Member {
     return {
         id: "",
         email: "",
-        number: 0,
+        number,
         firstName: "",
         lastName: "",
-        birthday: new Date(),
+        birthday: undefined,
         phone: "",
         phoneMobile: "",
         comment: "",
@@ -84,11 +84,10 @@ export default function Members() {
     );
 
     const handleMemberUpdated = (updated: Member) => {
-        if (members.find((member) => member.email === updated.email)) {
-            setMembers(prev => prev.map(m => m.email === updated.email ? updated : m));
-        } else {
-            setMembers([...members, updated])
-        }
+        // Match by id: members without an e-mail would otherwise all match.
+        setMembers(prev => prev.some(m => m.id === updated.id)
+            ? prev.map(m => m.id === updated.id ? updated : m)
+            : [...prev, updated]);
     };
 
     const handleMemberDeleted = (deleted: Member[]) => {
@@ -103,7 +102,10 @@ export default function Members() {
         fetchMembers().then((members) => {
             setLoading(false);
             setMembers(members);
-        }).catch(setError);
+        }).catch((e: unknown) => {
+            setLoading(false);
+            setError(e instanceof Error ? e.message : String(e));
+        });
     }, []);
 
     // Automatic member deletion, by logins that may delete members
@@ -134,13 +136,14 @@ export default function Members() {
         });
     }, [t, addNotification, members.length, canEdit]);
 
+    // Errors propagate to the dialog, which shows them.
     const handleMemberCreated = async (member: Member) => {
-        createMember(member).then((member) => {
-            setLoading(false);
-            handleMemberUpdated(member);
-            setNewMemberDialogOpen(false);
-        })
+        const created = await createMember(member);
+        handleMemberUpdated(created);
+        setNewMemberDialogOpen(false);
     };
+
+    const nextMemberNumber = members.reduce((max, m) => Math.max(max, m.number ?? 0), 0) + 1;
 
     if (loading) return <CircularProgress/>;
     if (error) return <Typography color="error">{error}</Typography>;
@@ -184,7 +187,7 @@ export default function Members() {
                          openMemberId={openMemberId} onOpened={clearOpenMember}/>
             {newMemberDialogOpen && (
                 <EditMemberDialog
-                    member={createEmptyMember()}
+                    member={createEmptyMember(nextMemberNumber)}
                     isNew
                     onClose={() => setNewMemberDialogOpen(false)}
                     onSave={handleMemberCreated}

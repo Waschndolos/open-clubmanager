@@ -411,7 +411,6 @@ components:
       - number
       - firstName
       - lastName
-      - email
       - roles
       - groups
       - sections

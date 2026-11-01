@@ -100,11 +100,14 @@ func (a *API) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update the in-memory admin password for the running process.
 	a.cfg.AdminPassword = string(hash)
 	a.cfg.AdminTokensValidAfter = time.Now().Unix()
-
-	log.Printf("password reset: admin password updated. New hash: %s", string(hash))
+	if err := saveConfig(a); err != nil {
+		log.Printf("password reset: failed to save config: %v", err)
+		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to save new password"})
+		return
+	}
+	log.Printf("password reset: admin password updated")
 
 	writeJSON(w, http.StatusOK, openapi.MessageResponse{Message: "Password reset successful."})
 }
