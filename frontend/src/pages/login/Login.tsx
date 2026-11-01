@@ -52,7 +52,8 @@ const Login: React.FC = () => {
             navigate('/dashboard', {replace: true});
         } catch (e) {
             console.log('Login error', e);
-            setError(t('login.errorInvalidCredentials'));
+            const status = (e as { status?: number }).status;
+            setError(t(status === 429 ? 'login.errorTooManyAttempts' : 'login.errorInvalidCredentials'));
             setErrorKey((k) => k + 1);
             setSubmitting(false);
         }

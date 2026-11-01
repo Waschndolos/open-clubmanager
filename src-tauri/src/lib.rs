@@ -13,6 +13,10 @@ pub fn run() {
         .manage(SidecarState(Mutex::new(None)))
         .setup(|app| {
             let sidecar = app.shell().sidecar("open-clubmanager-server")?;
+            // `tauri dev` loads the UI from the Vite dev server, whose origin
+            // the API only trusts when told so; release builds never do.
+            #[cfg(debug_assertions)]
+            let sidecar = sidecar.env("CORS_ALLOWED_ORIGINS", "http://localhost:5173");
             let (_rx, child) = sidecar.spawn()?;
             *app.state::<SidecarState>().0.lock().unwrap() = Some(child);
             Ok(())

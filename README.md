@@ -156,6 +156,8 @@ Settings are read from `config.json` (default `~/.config/open-clubmanager/config
 | `JWT_SECRET` / `JWT_ACCESS_SECRET` | `jwtSecret` | *generated* | Secret for login tokens. Generated on first start and stored in `jwt_secret` next to `config.json` (`0600`). |
 | `JWT_SECRET_FILE` | – | `<config dir>/jwt_secret` | Alternative location of the generated secret |
 | `DATABASE_PATH` | `databasePath` | `./clubmanager.db` | SQLite database file, created and migrated on first use |
+| `CORS_ALLOWED_ORIGINS` | `allowedOrigins` | – | Comma-separated browser origins allowed to call the API besides the Tauri app, e.g. `http://localhost:5173` for the Vite dev server (`npm run dev:browser` sets it). Other origins get `403`. |
+| `ALLOWED_HOSTS` | `allowedHosts` | – | Comma-separated host names accepted in the `Host` header besides `localhost` and IP addresses (protection against DNS rebinding). Needed only when the API is reached via a DNS name. |
 
 > When running the backend for tests, always set `SERVER_CONFIG_FILE` and `DATABASE_PATH` to throwaway paths – otherwise setup overwrites the config of your installed app.
 </details>

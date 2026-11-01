@@ -49,7 +49,7 @@ for LANG_CODE in $LANGUAGES; do
   DATA_DIR="$(mktemp -d -t ocm-docs-data-XXXXXX)"
   echo "[$LANG_CODE] Starting backend on :$API_PORT …"
   SERVER_CONFIG_FILE="$DATA_DIR/config.json" DATABASE_PATH="$DATA_DIR/clubmanager.db" PORT="$API_PORT" \
-    "$BIN_DIR/open-clubmanager-docs-server" >"$DATA_DIR/server.log" 2>&1 &
+    CORS_ALLOWED_ORIGINS="http://localhost:$UI_PORT" "$BIN_DIR/open-clubmanager-docs-server" >"$DATA_DIR/server.log" 2>&1 &
   SERVER_PID=$!
   wait_for "http://localhost:$API_PORT/api/v2/system/health"
 

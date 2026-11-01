@@ -39,6 +39,7 @@
         "welcomeTitle": "Willkommen beim Open ClubManager",
         "welcomeSubtitle": "Verwalte Mitglieder, Finanzen, Gruppen und Vereinsprozesse in einer modernen, klaren und schnellen Anwendung.",
         "errorInvalidCredentials": "Login fehlgeschlagen. Bitte überprüfe deine Eingaben.",
+        "errorTooManyAttempts": "Zu viele Fehlversuche. Bitte warte einen Moment und versuche es erneut.",
         "showPassword": "Passwort anzeigen",
         "hidePassword": "Passwort verbergen"
     },

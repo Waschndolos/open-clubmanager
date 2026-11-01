@@ -38,7 +38,18 @@ func NewToken(email string, role openapi.AppRole, secret string) (string, error)
 	return token.SignedString([]byte(secret))
 }
 
-func Middleware(secret string) openapi.MiddlewareFunc {
+// SessionCheck re-validates the claims of a correctly signed token against the
+// current account state, so that deleted users, role changes and password
+// changes take effect immediately instead of when the token expires.
+type SessionCheck func(ctx context.Context, claims *Claims) error
+
+// ErrSessionRevoked is returned by a SessionCheck for a token that no longer
+// matches its account.
+var ErrSessionRevoked = errors.New("session revoked")
+
+// Middleware validates bearer tokens on routes that require auth. Optional
+// checks run after the signature check; any error rejects the request.
+func Middleware(secret string, checks ...SessionCheck) openapi.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.Context().Value(openapi.BearerAuthScopes) == nil {
@@ -63,6 +74,12 @@ func Middleware(secret string) openapi.MiddlewareFunc {
 			if err != nil || !token.Valid {
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
+			}
+			for _, check := range checks {
+				if check(r.Context(), claims) != nil {
+					http.Error(w, "unauthorized", http.StatusUnauthorized)
+					return
+				}
 			}
 
 			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), claimsKey, claims)))

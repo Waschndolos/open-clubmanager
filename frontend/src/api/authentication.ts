@@ -10,7 +10,8 @@ export async function login(email: string, password: string) {
         credentials: "include", // wichtig für httpOnly cookie (Refresh Token)
     });
 
-    if (!res.ok) throw new Error("Login failed");
+    // status lets the caller tell a lockout (429) from wrong credentials (401).
+    if (!res.ok) throw Object.assign(new Error("Login failed"), { status: res.status });
 
     return res.json(); // { accessToken, refreshToken (optional) }
 }

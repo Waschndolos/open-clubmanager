@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"golang.org/x/crypto/bcrypt"
@@ -196,6 +197,7 @@ func (a *API) ChangePassword(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		a.cfg.AdminPassword = string(hash)
+		a.cfg.AdminTokensValidAfter = time.Now().Unix()
 		if err := saveConfig(a); err != nil {
 			writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: "failed to save new password"})
 			return
