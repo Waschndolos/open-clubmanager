@@ -41,3 +41,28 @@ func TestComputeJubilees(t *testing.T) {
 		t.Fatalf("honored stage suggested again: %+v", got)
 	}
 }
+
+// Member dates are stored as UTC midnight of the calendar day (#189). A
+// birthday or entry date picked on the 10th must stay on the 10th.
+func TestComputeJubileesKeepsCalendarDay(t *testing.T) {
+	members := []jubileeMember{
+		{ref: MemberRef{ID: "a", Number: 1}, birthday: day(1977, 5, 10), entry: day(2002, 1, 1)},
+	}
+	q := JubileeQuery{
+		From: time.Date(2027, 1, 1, 0, 0, 0, 0, time.UTC), To: time.Date(2027, 12, 31, 0, 0, 0, 0, time.UTC),
+		MembershipYears: []int{25}, Ages: []int{50},
+	}
+	got := computeJubilees(members, nil, q)
+	if len(got) != 2 {
+		t.Fatalf("unexpected jubilees: %+v", got)
+	}
+	want := map[string]time.Time{
+		HonorBirthday:   time.Date(2027, 5, 10, 0, 0, 0, 0, time.UTC),
+		HonorMembership: time.Date(2027, 1, 1, 0, 0, 0, 0, time.UTC),
+	}
+	for _, j := range got {
+		if !j.Date.Equal(want[j.Kind]) {
+			t.Errorf("%s jubilee on %s, want %s", j.Kind, j.Date.Format("2006-01-02"), want[j.Kind].Format("2006-01-02"))
+		}
+	}
+}
