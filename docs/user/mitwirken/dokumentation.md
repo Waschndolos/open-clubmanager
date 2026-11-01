@@ -26,7 +26,7 @@ scripts/docs-screenshots/          erzeugt die Screenshots mit Playwright
 | Wann | Was | Wo |
 |---|---|---|
 | Jeder Pull Request | Prüfung: Jede Route der App (`frontend/src/routes/routes.tsx`) ist im Front Matter genau einer Handbuchseite je Sprache eingetragen; jede Seite hat ihre Übersetzung; jeder Screenshot existiert in beiden Sprachen und wird verwendet; `mkdocs build --strict` findet keine kaputten Links | Job `docs` in `.github/workflows/ci.yml` |
-| Push auf `main` (App geändert) | Screenshots werden in beiden Sprachen neu erzeugt; haben sie sich geändert, entsteht ein Pull Request „Update screenshots“ | `.github/workflows/docs-screenshots.yml` |
+| Push auf `main` (App geändert) | Screenshots werden in beiden Sprachen neu erzeugt; haben sie sich geändert, werden sie direkt auf `main` committet und die Doku wird neu veröffentlicht | `.github/workflows/docs-screenshots.yml` |
 | Push auf `main` (Doku geändert) | Handbuch und API-Referenz werden gebaut und auf GitHub Pages veröffentlicht | `.github/workflows/docs.yml` |
 | Release | Release-Notes verlinken Handbuch und Versionshinweise; PRs mit Label `breaking-change` erscheinen unter „Manual steps needed“ | `.github/release-drafter.yml` |
 

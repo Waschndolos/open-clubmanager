@@ -25,7 +25,7 @@ scripts/docs-screenshots/          generates the screenshots with Playwright
 | When | What | Where |
 |---|---|---|
 | Every pull request | Check: every route of the app (`frontend/src/routes/routes.tsx`) is listed in the front matter of exactly one page per language; every page has its translation; every screenshot is used; `mkdocs build --strict` finds no broken links | `docs` job in `.github/workflows/ci.yml` |
-| Push to `main` (app changed) | Screenshots are regenerated in both languages; if they changed, an "Update screenshots" pull request is opened | `.github/workflows/docs-screenshots.yml` |
+| Push to `main` (app changed) | Screenshots are regenerated in both languages; if they changed, they are committed straight to `main` and the docs are republished | `.github/workflows/docs-screenshots.yml` |
 | Push to `main` (docs changed) | Guide and API reference are built and published to GitHub Pages | `.github/workflows/docs.yml` |
 | Release | Release notes link the guide and the update notes; PRs labelled `breaking-change` appear under "Manual steps needed" | `.github/release-drafter.yml` |
 

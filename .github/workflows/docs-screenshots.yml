@@ -1,8 +1,9 @@
 name: Docs screenshots
 
-# Regenerates the screenshots of the user documentation from the current app
-# and opens (or updates) a pull request when they changed. The browser clock is
-# frozen, so only real UI changes produce a diff.
+# Regenerates the screenshots of the user documentation from the current app,
+# commits them straight to main when they changed and republishes the docs in
+# the same go. The browser clock is frozen, so only real UI changes produce a
+# diff.
 
 on:
   push:
@@ -16,7 +17,7 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
+  actions: write
 
 concurrency:
   group: docs-screenshots
@@ -55,16 +56,27 @@ jobs:
       - name: Check that every screenshot is documented
         run: python3 scripts/check_docs_coverage.py
 
-      - name: Open pull request with updated screenshots
-        uses: peter-evans/create-pull-request@v7
-        with:
-          branch: docs/update-screenshots
-          add-paths: docs/user/assets/screenshots/*.png
-          commit-message: 'docs: update screenshots of the user documentation'
-          title: '[Docs] Update screenshots of the user documentation'
-          body: |
-            Screenshots regenerated automatically by `.github/workflows/docs-screenshots.yml`
-            after changes to the app on `main`. Please check that the pages in `docs/user/`
-            still match the new screenshots.
-          labels: documentation
-          signoff: true
+      - name: Commit updated screenshots
+        id: commit
+        run: |
+          git add docs/user/assets/screenshots/*.png
+          if git diff --cached --quiet; then
+            echo "Screenshots unchanged."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -s -m 'docs: update screenshots of the user documentation'
+          # main may have moved on while the screenshots were captured.
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # Pushes made with GITHUB_TOKEN do not trigger other workflows, so the docs
+      # are republished explicitly.
+      - name: Publish documentation
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run docs.yml --ref main
