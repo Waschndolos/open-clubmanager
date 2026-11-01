@@ -78,12 +78,24 @@ git checkout -b feature/my-feature-name
 * Add comments where helpful
 * Update documentation if necessary
 
-### 4. Test Before Commit
+### 4. Document It
+
+Every user-visible change updates the user documentation in [`docs/user/`](docs/user) in the same pull request, in German (`page.md`) and English (`page.en.md`). CI fails if a page of the app (a route in `frontend/src/routes/routes.tsx`) is not listed in the `routes:` front matter of a documentation page in both languages, or if a page has no translation. Add a screenshot to `scripts/docs-screenshots/capture.mjs` for new pages or dialogs. If users must do something by hand when updating, add a guide to `docs/user/migration/versionshinweise.md` and `versionshinweise.en.md` (template: [`docs/templates/migration-guide.md`](docs/templates/migration-guide.md)).
+
+```bash
+pip install -r docs/requirements.txt
+npm run docs:build        # coverage check + strict MkDocs build
+npm run docs:serve        # live preview
+```
+
+Details: [docs/user/mitwirken/dokumentation.md](docs/user/mitwirken/dokumentation.md).
+
+### 5. Test Before Commit
 
 * Make sure your feature or fix works as expected
 * Run the app and test relevant parts manually
 
-### 5. Commit with a Clear Message
+### 6. Commit with a Clear Message
 
 ```bash
 git commit -s -m "feat: add new feature X"
@@ -91,7 +103,7 @@ git commit -s -m "feat: add new feature X"
 
 The `-s` flag adds a `Signed-off-by` line (see [Licensing of contributions](#-licensing-of-contributions)).
 
-### 6. Push and Open a Pull Request
+### 7. Push and Open a Pull Request
 
 ```bash
 git push origin feature/my-feature-name

@@ -1,0 +1,4 @@
+# Build dependencies of the user documentation (mkdocs.yml).
+mkdocs==1.6.1
+mkdocs-material==9.6.21
+mkdocs-static-i18n==1.3.1

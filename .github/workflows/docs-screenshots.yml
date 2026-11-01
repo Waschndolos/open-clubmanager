@@ -1,0 +1,70 @@
+name: Docs screenshots
+
+# Regenerates the screenshots of the user documentation from the current app
+# and opens (or updates) a pull request when they changed. The browser clock is
+# frozen, so only real UI changes produce a diff.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/src/**'
+      - 'server/**'
+      - 'scripts/docs-screenshots/**'
+      - '.github/workflows/docs-screenshots.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: docs-screenshots
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: |
+            frontend/package-lock.json
+            scripts/docs-screenshots/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm --prefix frontend ci
+          npm --prefix scripts/docs-screenshots ci
+          npx --prefix scripts/docs-screenshots playwright install --with-deps chromium-headless-shell
+
+      - name: Capture screenshots
+        env:
+          TZ: Europe/Berlin
+        run: bash scripts/docs-screenshots/run.sh
+
+      - name: Check that every screenshot is documented
+        run: python3 scripts/check_docs_coverage.py
+
+      - name: Open pull request with updated screenshots
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: docs/update-screenshots
+          add-paths: docs/user/assets/screenshots/*.png
+          commit-message: 'docs: update screenshots of the user documentation'
+          title: '[Docs] Update screenshots of the user documentation'
+          body: |
+            Screenshots regenerated automatically by `.github/workflows/docs-screenshots.yml`
+            after changes to the app on `main`. Please check that the pages in `docs/user/`
+            still match the new screenshots.
+          labels: documentation
+          signoff: true

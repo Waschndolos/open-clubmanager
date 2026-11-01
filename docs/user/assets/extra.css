@@ -1,0 +1,23 @@
+/* Brand colours of the app (frontend/src/theme/createAppTheme.ts). */
+:root,
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #1e5a46;
+  --md-primary-fg-color--light: #2f7a60;
+  --md-primary-fg-color--dark: #143d30;
+  --md-accent-fg-color: #2f7a60;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #143d30;
+  --md-primary-fg-color--light: #2f7a60;
+  --md-primary-fg-color--dark: #0d2a21;
+  --md-accent-fg-color: #5bc49a;
+  --md-typeset-a-color: #5bc49a;
+}
+
+/* Screenshots: framed so they stand out from the page. */
+.md-typeset img.screenshot {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
+}
