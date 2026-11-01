@@ -7,7 +7,8 @@ export function useUserPreference() {
     const getPreference = useCallback(async (key: string) => {
         try {
             const res = await api.get<{ value: unknown }>(`/preferences/${key}`);
-            return res.data.value;
+            // 204: nothing stored yet, the caller uses its defaults.
+            return res.status === 204 ? null : res.data.value;
 
         } catch (err) {
             if (isAxiosError(err) && err.response?.status === 404) return null;

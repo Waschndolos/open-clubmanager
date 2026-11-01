@@ -8,7 +8,6 @@ export function useStatistics() {
         async function loadStatistics() {
             try {
                 const data = await fetchStatistics();
-                console.log("Data fetched from API:", data);
                 setStatistics(data);
             } catch (error) {
                 console.error(error);

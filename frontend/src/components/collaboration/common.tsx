@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     Box,
-    Radio,
     Table,
     TableBody,
     TableCell,
@@ -11,6 +10,9 @@ import {
     Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { isAxiosError } from 'axios';
+import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { AREAS, AreaPermission, AreaPermissions, ClubRole, CollaborationError } from '../../api/collaboration';
 
 /** Turns an error of the collaboration API into a sentence for the user. */
@@ -21,6 +23,14 @@ export function useErrorText(): (e: unknown) => string {
             const key = `collaboration.errors.${e.code}`;
             if (i18n.exists(key)) return t(key);
             return t('collaboration.errors.default', { message: e.message });
+        }
+        // Plain API calls (members, groups, ...) fail with an Axios error; use the
+        // server's code or message instead of "Request failed with status code …".
+        if (isAxiosError(e)) {
+            const data = e.response?.data as { code?: string; error?: string } | undefined;
+            const code = data?.code ?? (e.response ? undefined : 'NETWORK');
+            if (code && i18n.exists(`collaboration.errors.${code}`)) return t(`collaboration.errors.${code}`);
+            return t('collaboration.errors.default', { message: data?.error ?? e.message });
         }
         return t('collaboration.errors.default', { message: e instanceof Error ? e.message : String(e) });
     };
@@ -125,10 +135,16 @@ export function ChoiceCard(props: {
     children?: React.ReactNode;
 }) {
     const { selected, onSelect, title, description, children } = props;
+    const id = React.useId();
+    // The card itself is the radio; it is named by its title (not by nested
+    // fields). The icon is only the visual indicator, so there is no second,
+    // unnamed radio input inside.
     return (
         <Box
             role="radio"
             aria-checked={selected}
+            aria-labelledby={`${id}-title`}
+            aria-describedby={description ? `${id}-desc` : undefined}
             tabIndex={0}
             onClick={onSelect}
             onKeyDown={(e) => {
@@ -150,10 +166,12 @@ export function ChoiceCard(props: {
                 '&:focus-visible': { outline: 2, outlineColor: 'primary.main', outlineStyle: 'solid' },
             }}
         >
-            <Radio checked={selected} size="small" sx={{ p: 0.25 }} tabIndex={-1} />
+            <Box aria-hidden sx={{ p: 0.25, display: 'flex', color: selected ? 'primary.main' : 'action.active' }}>
+                {selected ? <RadioButtonCheckedIcon fontSize="small" /> : <RadioButtonUncheckedIcon fontSize="small" />}
+            </Box>
             <Box sx={{ minWidth: 0, flex: 1 }}>
-                <Typography sx={{ fontWeight: 600, wordBreak: 'break-word' }}>{title}</Typography>
-                {description && <Typography variant="body2" color="text.secondary">{description}</Typography>}
+                <Typography id={`${id}-title`} sx={{ fontWeight: 600, wordBreak: 'break-word' }}>{title}</Typography>
+                {description && <Typography id={`${id}-desc`} variant="body2" color="text.secondary">{description}</Typography>}
                 {children}
             </Box>
         </Box>

@@ -86,8 +86,8 @@ export default function InviteWizard({ roles, onDone }: Props) {
                 <>
                     <TextField id="collab-invite-name" label={t('collaboration.invite.name')} placeholder={t('collaboration.invite.namePlaceholder')}
                                value={name} onChange={(e) => setName(e.target.value)} autoFocus required />
-                    <Typography sx={{ fontWeight: 600 }}>{t('collaboration.invite.role')}</Typography>
-                    <Stack spacing={1}>
+                    <Typography id="collab-invite-role" sx={{ fontWeight: 600 }}>{t('collaboration.invite.role')}</Typography>
+                    <Stack spacing={1} role="radiogroup" aria-labelledby="collab-invite-role">
                         {roles.map((r) => (
                             <ChoiceCard key={r.id} selected={role === r.id} onSelect={() => setRole(r.id)}
                                         title={roleName(r.id)} description={t(`collaboration.roleDesc.${r.id}`, { defaultValue: '' })} />

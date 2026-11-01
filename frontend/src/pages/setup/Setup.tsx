@@ -157,7 +157,7 @@ const Setup: React.FC = () => {
                 }
             }
 
-            navigate('/login', { replace: true, state: { setupComplete: true, setupWarning } });
+            navigate('/login', { replace: true, state: { setupComplete: true, setupWarning, email } });
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : t('setup.error.generic'));
         } finally {
@@ -182,13 +182,15 @@ const Setup: React.FC = () => {
                         <Box display="flex" flexDirection="column" gap={2}>
                             {currentStep === 0 && (
                                 <>
-                                    <Typography sx={{ fontWeight: 600 }}>{t('collaboration.setup.question')}</Typography>
+                                    <Typography id="setup-usage-question" sx={{ fontWeight: 600 }}>{t('collaboration.setup.question')}</Typography>
+                                    <Box role="radiogroup" aria-labelledby="setup-usage-question" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                     <ChoiceCard selected={usage === 'local'} onSelect={() => setUsage('local')}
                                                 title={t('collaboration.setup.local')} description={t('collaboration.setup.localDesc')} />
                                     <ChoiceCard selected={usage === 'create'} onSelect={() => setUsage('create')}
                                                 title={t('collaboration.setup.create')} description={t('collaboration.setup.createDesc')} />
                                     <ChoiceCard selected={usage === 'join'} onSelect={() => setUsage('join')}
                                                 title={t('collaboration.setup.join')} description={t('collaboration.setup.joinDesc')} />
+                                    </Box>
                                     {usage !== 'local' && (
                                         <Alert severity="info" variant="outlined">{t('collaboration.setup.accountFirst')}</Alert>
                                     )}
@@ -283,7 +285,7 @@ const Setup: React.FC = () => {
                                                         <IconButton
                                                             onClick={() => setShowPassword((prev) => !prev)}
                                                             edge="end"
-                                                            aria-label="toggle password visibility"
+                                                            aria-label={t(showPassword ? 'login.hidePassword' : 'login.showPassword')}
                                                             size="small"
                                                         >
                                                             {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
@@ -314,7 +316,7 @@ const Setup: React.FC = () => {
                                                         <IconButton
                                                             onClick={() => setShowConfirmPassword((prev) => !prev)}
                                                             edge="end"
-                                                            aria-label="toggle confirm password visibility"
+                                                            aria-label={t(showConfirmPassword ? 'setup.hideConfirmPassword' : 'setup.showConfirmPassword')}
                                                             size="small"
                                                         >
                                                             {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}

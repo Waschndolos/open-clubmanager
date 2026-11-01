@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	dbpkg "github.com/Waschndolos/open-clubmanager/server/internal/db"
 	"github.com/Waschndolos/open-clubmanager/server/internal/openapi"
+	"github.com/Waschndolos/open-clubmanager/server/internal/store"
 )
 
 // preferenceUserID is the user all preferences are stored under. The desktop
@@ -65,6 +67,12 @@ func (a *API) GetPreferenceByKey(w http.ResponseWriter, r *http.Request, identif
 		return
 	}
 	p, err := st.GetPreference(r.Context(), preferenceUserID, identifier)
+	if errors.Is(err, store.ErrNotFound) {
+		// Nothing saved yet is the normal case; a 404 would show up as an
+		// error in the browser console on every page load.
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 	if err != nil {
 		writeStoreError(w, err, "preference not found", "failed to load preference")
 		return

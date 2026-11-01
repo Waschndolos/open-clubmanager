@@ -22,7 +22,9 @@ function returnPath(from: string | undefined): string {
 
 const Login: React.FC = () => {
     const { t } = useTranslation();
-    const [email, setEmail] = useState('');
+    const location = useLocation();
+    // Setup hands over the new admin's e-mail so it does not have to be typed again.
+    const [email, setEmail] = useState((location.state as { email?: string } | null)?.email ?? '');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -31,7 +33,6 @@ const Login: React.FC = () => {
 
     const {accessToken, initializing, setAccessToken: setAuthAccessToken} = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
 
     useEffect(() => {
         getSetupStatus()
@@ -95,7 +96,7 @@ const Login: React.FC = () => {
                     },
                 },
             }}>
-                {setupComplete && <Alert severity="success">{t('login.setupComplete')}</Alert>}
+                {setupComplete && !error && <Alert severity="success">{t('login.setupComplete')}</Alert>}
                 {setupWarning && <Alert severity="warning">{setupWarning}</Alert>}
                 {sessionExpired && !error && <Alert severity="info">{t('login.sessionExpired')}</Alert>}
 

@@ -100,7 +100,8 @@ func writeStoreError(w http.ResponseWriter, err error, notFound, failure string)
 	case errors.Is(err, store.ErrNotFound):
 		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: notFound})
 	case errors.Is(err, store.ErrConflict):
-		writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Error: "a record with the same unique value already exists"})
+		code := "DUPLICATE_VALUE"
+		writeJSON(w, http.StatusConflict, openapi.ErrorResponse{Code: &code, Error: "a record with the same unique value already exists"})
 	case errors.Is(err, store.ErrInvalidReference):
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "referenced record does not exist"})
 	default:

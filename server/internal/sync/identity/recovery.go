@@ -111,7 +111,8 @@ func ParseRecoveryKit(text string) (*RecoveryKit, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: root age key", ErrBadRecoveryKit)
 	}
-	if kitChecksum(clubID, seed, ageLine) != check {
+	// The checksum is hex; accept it in any case, like the invite code.
+	if !strings.EqualFold(kitChecksum(clubID, seed, ageLine), check) {
 		return nil, fmt.Errorf("%w: checksum mismatch (typing error?)", ErrBadRecoveryKit)
 	}
 	return &RecoveryKit{

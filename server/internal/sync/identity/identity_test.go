@@ -120,6 +120,16 @@ func TestRecoveryKit(t *testing.T) {
 	if _, err := ParseRecoveryKit(strings.Join(keyLines, "\r\n")); err != nil {
 		t.Errorf("key lines only: %v", err)
 	}
+	// The hex checksum may be typed in upper case.
+	checkLine := ""
+	for _, l := range strings.Split(text, "\n") {
+		if strings.HasPrefix(l, kitCheck) {
+			checkLine = l
+		}
+	}
+	if _, err := ParseRecoveryKit(strings.Replace(text, checkLine, kitCheck+strings.ToUpper(strings.TrimPrefix(checkLine, kitCheck)), 1)); err != nil {
+		t.Errorf("upper-case checksum: %v", err)
+	}
 
 	seedB64 := wire.EncodeB64(root.Sign.Seed())
 	typo := []byte(seedB64)

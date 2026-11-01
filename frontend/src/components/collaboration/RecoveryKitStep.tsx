@@ -85,7 +85,8 @@ export default function RecoveryKitStep({ kit, clubName, onDone }: Props) {
                 sx={{ maxWidth: 360 }}
             />
             <FormControlLabel
-                control={<Checkbox id="collab-key-kept" checked={kept} onChange={(e) => setKept(e.target.checked)} />}
+                control={<Checkbox id="collab-key-kept" checked={kept} onChange={(e) => setKept(e.target.checked)}
+                                   inputProps={{ 'aria-label': t('collaboration.key.confirm') }} />}
                 label={t('collaboration.key.confirm')}
             />
             <Typography variant="body2" color="text.secondary">{t('collaboration.key.deleted')}</Typography>
