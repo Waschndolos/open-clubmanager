@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -59,8 +60,8 @@ func (a *API) CreateMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var req openapi.MemberCreateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
+	if err := decodeMemberRequest(w, r, &req); err != nil {
+		writeMemberDecodeError(w, err)
 		return
 	}
 
@@ -103,8 +104,8 @@ func (a *API) UpdateMember(w http.ResponseWriter, r *http.Request, id string) {
 		return
 	}
 	var req openapi.MemberUpdateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
+	if err := decodeMemberRequest(w, r, &req); err != nil {
+		writeMemberDecodeError(w, err)
 		return
 	}
 
@@ -137,6 +138,30 @@ func (a *API) DeleteMember(w http.ResponseWriter, r *http.Request, id string) {
 	}
 	st.Audit(r.Context(), "DELETE", "Member", id, currentUserID(r))
 	writeJSON(w, http.StatusOK, openapi.SuccessResponse{Success: true})
+}
+
+// ── request decoding ──────────────────────────────────────────────────────────
+
+// maxMemberRequestBytes is far above what the field length limits allow.
+const maxMemberRequestBytes = 1 << 16
+
+func decodeMemberRequest(w http.ResponseWriter, r *http.Request, req any) error {
+	return json.NewDecoder(http.MaxBytesReader(w, r.Body, maxMemberRequestBytes)).Decode(req)
+}
+
+// writeMemberDecodeError answers a request body that could not be decoded.
+// A malformed e-mail or a value of the wrong type is reported as a field
+// problem like the checks of store.ValidateMemberInput.
+func writeMemberDecodeError(w http.ResponseWriter, err error) {
+	var typeErr *json.UnmarshalTypeError
+	switch {
+	case errors.Is(err, openapi_types.ErrValidationEmail):
+		writeValidationError(w, []store.FieldError{{Field: "email", Code: store.CodeInvalid}})
+	case errors.As(err, &typeErr) && typeErr.Field != "":
+		writeValidationError(w, []store.FieldError{{Field: typeErr.Field, Code: store.CodeInvalid}})
+	default:
+		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "invalid request payload"})
+	}
 }
 
 // ── mapping ───────────────────────────────────────────────────────────────────

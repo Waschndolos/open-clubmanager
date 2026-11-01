@@ -61,8 +61,30 @@ components:
           - MEMBER_VERSION_CONFLICT
         error:
           type: string
+        fields:
+          type: array
+          description: The problems per field of a `VALIDATION_FAILED` response.
+          items:
+            $ref: '#/components/schemas/FieldError'
       required:
       - error
+      additionalProperties: false
+    FieldError:
+      type: object
+      description: A problem with one field of a request.
+      properties:
+        field:
+          type: string
+          description: JSON name of the field, e.g. `firstName` or `iban`.
+        code:
+          type: string
+          description: '`required`, `too_long`, `not_positive`, `invalid`, `checksum` (IBAN check digits), `before_entry` (exit before entry date) or `in_future` (birthday).'
+        limit:
+          type: integer
+          description: Maximum length for `too_long`.
+      required:
+      - field
+      - code
       additionalProperties: false
     HealthResponse:
       type: object
@@ -427,6 +449,8 @@ components:
       additionalProperties: false
     MemberCreateRequest:
       type: object
+      description: >-
+        Writable fields of a member. The server trims the texts and writes IBAN and BIC without spaces in upper case. It answers 400 with code `VALIDATION_FAILED` and `fields` when first or last name is empty, the number is below 1, a text is too long (names 100, e-mail 254, phone numbers and postal code 50, comment 2000, other texts 200 characters), the e-mail is malformed, the IBAN has the wrong length for its country or wrong check digits, the BIC is malformed, the exit date lies before the entry date or the birthday lies in the future.
       properties:
         number:
           type: integer

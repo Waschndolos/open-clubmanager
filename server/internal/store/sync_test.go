@@ -321,7 +321,7 @@ func TestPreSaveUniquenessChecks(t *testing.T) {
 		}
 	}
 	// Not-found wins over conflict for unknown ids, as before.
-	if _, err := s.UpdateMember(ctx, "missing", MemberInput{Number: 1}); !errors.Is(err, ErrNotFound) {
+	if _, err := s.UpdateMember(ctx, "missing", MemberInput{Number: 1, FirstName: "M", LastName: "M"}); !errors.Is(err, ErrNotFound) {
 		t.Errorf("update unknown member: %v, want ErrNotFound", err)
 	}
 

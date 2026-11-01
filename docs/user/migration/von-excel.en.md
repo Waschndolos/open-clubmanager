@@ -34,6 +34,8 @@ Tips:
 3. **Update existing members by:** email or membership number. For the first import it doesn't matter; for a later re-import, existing members are updated instead of duplicated.
 4. Check the **preview** and import.
 
+Rows with invalid details (e.g. a missing name or an IBAN with wrong check digits, see [input checks](../funktionen/mitglieder.md#adding-or-editing-a-member)) are skipped; the other rows are imported. A notification then lists which rows are missing and why. Fix them in the file and import again.
+
 ## 3. Follow-up
 
 - Create **sections, groups and roles** in the [club structure](../funktionen/vereinsstruktur.md) and assign them in bulk via **Assign members**.

@@ -224,9 +224,7 @@
         "automatedDeletionNotice": "wurde automatisch gelöscht.",
         "saveErrors": {
             "duplicate": "Mitgliedsnummer oder E-Mail-Adresse ist bereits vergeben.",
-            "generic": "Mitglied konnte nicht gespeichert werden: {{message}}",
-            "invalidNumber": "Bitte eine gültige Mitgliedsnummer (ab 1) eingeben.",
-            "required": "Bitte alle Pflichtfelder (*) ausfüllen."
+            "generic": "Mitglied konnte nicht gespeichert werden: {{message}}"
         },
         "dialogs": {
             "export": {
@@ -251,7 +249,9 @@
                 "3": {
                     "title": "Vorschau",
                     "duplicateMatchField": "⚠️ Es gibt doppelte {{field}}-Werte in den importierten Daten!"
-                }
+                },
+                "errors": "{{count}} von {{total}} Zeilen wurden nicht importiert: {{rows}}",
+                "errorRow": "Zeile {{row}} ({{reason}})"
             },
             "sections": {
                 "personal": "Persönliche Informationen",
@@ -321,6 +321,19 @@
             "label": "Beitragsmodell",
             "help": "Automatisch: nach dem Alter am 1. Januar des Beitragsjahres",
             "saveFailed": "Beitragsmodell konnte nicht gespeichert werden"
+        },
+        "validation": {
+            "summary": "Bitte die markierten Felder prüfen.",
+            "required": "Pflichtfeld",
+            "too_long": "Höchstens {{limit}} Zeichen",
+            "not_positive": "Bitte eine Mitgliedsnummer ab 1 eingeben",
+            "invalid": "Ungültiger Wert",
+            "email_invalid": "Keine gültige E-Mail-Adresse",
+            "iban_invalid": "Keine gültige IBAN: Länderkennung, Länge oder Zeichen stimmen nicht",
+            "iban_checksum": "Die Prüfziffer der IBAN stimmt nicht – bitte auf Tippfehler prüfen",
+            "bic_invalid": "Keine gültige BIC (8 oder 11 Zeichen, z. B. COBADEFFXXX)",
+            "exitDate_before_entry": "Der Austritt darf nicht vor dem Eintritt liegen",
+            "birthday_in_future": "Der Geburtstag darf nicht in der Zukunft liegen"
         }
     },
     "settings": {

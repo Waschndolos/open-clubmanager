@@ -52,7 +52,7 @@ func TestSEPADirectDebit(t *testing.T) {
 			"bic": "COBADEFFXXX", "sepaMandateDate": "2020-04-01T00:00:00.000Z"},
 		{"number": 2, "firstName": "Merle", "lastName": "Hansen", "email": "merle@example.org", "iban": "DE02500105170137075030",
 			"accountHolder": "Familie Hansen", "sepaMandateDate": "2021-05-15T00:00:00.000Z"},
-		{"number": 3, "firstName": "Ole", "lastName": "Jensen", "email": "ole@example.org", "iban": "DE02500105170137075031"}, // bad check digits, no mandate
+		{"number": 3, "firstName": "Ole", "lastName": "Jensen", "email": "ole@example.org", "iban": "DE02120300000000202051"}, // no mandate
 	}
 	ids := make([]string, len(members))
 	fees := make([]string, len(members))
@@ -70,6 +70,12 @@ func TestSEPADirectDebit(t *testing.T) {
 			t.Fatalf("create fee: %d", code)
 		}
 		fees[i] = f.Id
+	}
+	// The API refuses IBANs with bad check digits (#193), but older data or a
+	// pre-validation device of a collaboration club may still hold one.
+	if _, err := conn.ExecContext(context.Background(),
+		`UPDATE member_bank_details SET iban = 'DE02500105170137075031' WHERE member_id = ?`, ids[2]); err != nil {
+		t.Fatal(err)
 	}
 
 	call := func(role openapi.AppRole, method, path, body string) *httptest.ResponseRecorder {

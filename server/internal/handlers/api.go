@@ -93,7 +93,10 @@ func (a *API) openDatabase(ctx context.Context, path string) error {
 
 // writeStoreError maps store errors to HTTP responses.
 func writeStoreError(w http.ResponseWriter, err error, notFound, failure string) {
+	var invalid *store.ValidationError
 	switch {
+	case errors.As(err, &invalid):
+		writeValidationError(w, invalid.Fields)
 	case errors.Is(err, store.ErrNotFound):
 		writeJSON(w, http.StatusNotFound, openapi.ErrorResponse{Error: notFound})
 	case errors.Is(err, store.ErrConflict):
@@ -104,6 +107,21 @@ func writeStoreError(w http.ResponseWriter, err error, notFound, failure string)
 		log.Printf("%s: %v", failure, err)
 		writeJSON(w, http.StatusInternalServerError, openapi.ErrorResponse{Error: failure})
 	}
+}
+
+// writeValidationError answers 400 VALIDATION_FAILED with the problem of
+// each field, so clients can show them next to the fields.
+func writeValidationError(w http.ResponseWriter, problems []store.FieldError) {
+	code := "VALIDATION_FAILED"
+	fields := make([]openapi.FieldError, len(problems))
+	for i, p := range problems {
+		fields[i] = openapi.FieldError{Field: p.Field, Code: p.Code}
+		if p.Limit > 0 {
+			limit := p.Limit
+			fields[i].Limit = &limit
+		}
+	}
+	writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Code: &code, Error: (&store.ValidationError{Fields: problems}).Error(), Fields: &fields})
 }
 
 // currentUserID extracts the authenticated user's e-mail from the JWT and uses

@@ -224,9 +224,7 @@
         "automatedDeletionNotice": "was automatically deleted.",
         "saveErrors": {
             "duplicate": "Member number or email address is already taken.",
-            "generic": "Member could not be saved: {{message}}",
-            "invalidNumber": "Please enter a valid member number (1 or higher).",
-            "required": "Please fill in all required fields (*)."
+            "generic": "Member could not be saved: {{message}}"
         },
         "dialogs": {
             "export": {
@@ -251,7 +249,9 @@
                 "3": {
                     "title": "Preview",
                     "duplicateMatchField": "⚠️ Duplicate {{field}} values exist in the imported data!"
-                }
+                },
+                "errors": "{{count}} of {{total}} rows were not imported: {{rows}}",
+                "errorRow": "row {{row}} ({{reason}})"
             },
             "sections": {
                 "personal": "Personal Information",
@@ -321,6 +321,19 @@
             "label": "Fee model",
             "help": "Automatic: by age on 1 January of the fee year",
             "saveFailed": "Fee model could not be saved"
+        },
+        "validation": {
+            "summary": "Please check the highlighted fields.",
+            "required": "Required",
+            "too_long": "At most {{limit}} characters",
+            "not_positive": "Please enter a member number of 1 or higher",
+            "invalid": "Invalid value",
+            "email_invalid": "Not a valid e-mail address",
+            "iban_invalid": "Not a valid IBAN: country code, length or characters are wrong",
+            "iban_checksum": "The IBAN check digits do not match – please check for typos",
+            "bic_invalid": "Not a valid BIC (8 or 11 characters, e.g. COBADEFFXXX)",
+            "exitDate_before_entry": "The exit date cannot be before the entry date",
+            "birthday_in_future": "The birthday cannot be in the future"
         }
     },
     "settings": {
