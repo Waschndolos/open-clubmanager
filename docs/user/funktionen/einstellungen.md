@@ -24,6 +24,18 @@ Nur sichtbar für Administratoren und Kassenwarte. Hier hinterlegst du die Daten
 - **IBAN des Vereinskontos** und optional die **BIC** (für Inlandszahlungen nicht nötig)
 - **Vorlage Verwendungszweck** – mit Platzhaltern, die beim Lauf durch die Daten des Mitglieds und Beitrags ersetzt werden
 
+## Zuwendungsbestätigungen
+
+Nur sichtbar für Administratoren und Kassenwarte. Hier hinterlegst du die Angaben für [Zuwendungsbestätigungen](finanzen.md#zuwendungsbestatigungen) nach amtlichem Muster:
+
+- **Name und Anschrift des Vereins**, **Finanzamt** und **Steuernummer**
+- **Art des Bescheids** (Freistellungsbescheid bzw. Anlage zum Körperschaftsteuerbescheid, oder Feststellungsbescheid nach § 60a AO), **Datum** und beim Freistellungsbescheid den **letzten Veranlagungszeitraum**
+- **Begünstigte Zwecke** wie im Bescheid
+- **Ort** und **Unterzeichner** für die Unterschriftszeile
+- ob **Mitgliedsbeiträge steuerlich abziehbar** sind (bei Sportvereinen nicht)
+
+Ist der Bescheid älter als 5 Jahre (Feststellung nach § 60a AO: 3 Jahre), erscheint eine Warnung.
+
 ## Zusammenarbeit
 
 Kurzinfo zum Stand der [Zusammenarbeit](../zusammenarbeit/index.md) und Link zu ihren Einstellungen.

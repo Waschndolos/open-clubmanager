@@ -24,6 +24,18 @@ Only visible to administrators and treasurers. Here you enter the details for [c
 - **IBAN of the club account** and optionally the **BIC** (not needed for domestic payments)
 - **Remittance template**, with placeholders that are replaced by the member's and fee's data in each run
 
+## Donation receipts
+
+Only visible to administrators and treasurers. Here you enter the details for [donation receipts](finanzen.md#donation-receipts) after the official template:
+
+- **club name and address**, **tax office** and **tax number**
+- **kind of notice** (exemption notice or annex to the corporate tax assessment, or assessment under § 60a AO), its **date** and, for an exemption notice, the **last assessment period**
+- **privileged purposes** as in the notice
+- **place** and **signatory** for the signature line
+- whether **membership fees are tax-deductible** (not for sports clubs)
+
+If the notice is older than 5 years (assessment under § 60a AO: 3 years), a warning appears.
+
 ## Collaboration
 
 A short status of [collaboration](../zusammenarbeit/index.md) and a link to its settings.

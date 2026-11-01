@@ -3,10 +3,13 @@
 | Term | Meaning |
 |---|---|
 | **CAMT.053** | Standard format for electronic bank statements (XML), offered by almost all banks. |
+| **Collective receipt** | A [donation receipt](../funktionen/finanzen.md#donation-receipts) covering several donations of a year, with an annex (*Sammelbestätigung*). |
 | **Conflict / to resolve** | Unique values assigned twice during collaboration. See [Needs attention](../zusammenarbeit/konflikte.md). |
 | **Database file** | The file (`.db`) that stores all club data on your computer (SQLite format). |
 | **Device role** | In collaboration: which data areas a device receives (board, treasurer, secretary, coach, equipment manager). |
+| **Donation receipt** | Receipt after the official German template (*Zuwendungsbestätigung*) with which donors deduct a donation from their taxes. See [Donation receipts](../funktionen/finanzen.md#donation-receipts). |
 | **Emergency key** | Text for restoring administration when no board device is left. See [Emergency key](../zusammenarbeit/notfallschluessel.md). |
+| **Exemption notice** | Tax office notice that the club is charitable and exempt from corporate tax (*Freistellungsbescheid*). Basis for [donation receipts](../funktionen/finanzen.md#donation-receipts); valid for 5 years. |
 | **Group** | Thematic or organisational group of members, e.g. a training group. |
 | **Invite code** | 24-character code a new device uses to join a club. Valid for 7 days, usable once. |
 | **Main payer** | Member who pays the fees of a [household](../funktionen/haushalte.md). |

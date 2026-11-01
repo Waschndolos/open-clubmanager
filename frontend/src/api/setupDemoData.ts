@@ -10,6 +10,7 @@ import { addDays, createEvent, localTimeZone, ymd } from './events';
 import { saveAttendance } from './attendance';
 import { saveSepaCreditor, saveSepaMandate } from './sepa';
 import { createHousehold } from './households';
+import { assignDonation, createDonor, saveDonationSettings } from './donations';
 import { Member } from './types';
 
 export interface SetupDemoDataResult {
@@ -248,7 +249,10 @@ const TRANSACTIONS: DemoTransaction[] = [
     { month: '06-08', description: 'Pokale und Verpflegung Fehmarn Kite Cup', amount: 610, type: 'expense', category: 'Veranstaltungen' },
     { month: '07-14', description: 'Kursgebühren Kiteschule Juli', amount: 3260, type: 'income', category: 'Kiteschule' },
     { month: '07-22', description: 'Ersatz-Bladder und Reparaturmaterial', amount: 185, type: 'expense', category: 'Material' },
+    { month: '04-20', description: 'Spende Renovierung Vereinsheim', amount: 250, type: 'income', category: 'Spenden' },
+    { month: '06-09', description: 'Aufwandsspende Fahrtkosten Fehmarn Kite Cup', amount: 84, type: 'income', category: 'Spenden' },
     { month: '08-30', description: 'Spende Surfshop Nordwind', amount: 500, type: 'income', category: 'Spenden' },
+    { month: '09-12', description: 'Spende Jugendarbeit', amount: 100, type: 'income', category: 'Spenden' },
     { month: '09-05', description: 'VDWS-Lizenzverlängerung Kitelehrer', amount: 270, type: 'expense', category: 'Ausbildung' },
 ];
 
@@ -309,15 +313,33 @@ export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
         if (demo.data.iban && demo.data.number !== 1012) await saveSepaMandate(id, `NW-${demo.data.number}`);
     }
 
+    const transactionIds = new Map<string, string>();
     for (const tx of TRANSACTIONS) {
-        await createTransaction({
+        const created = await createTransaction({
             date: new Date(`${currentYear}-${tx.month}T10:00:00.000Z`).toISOString(),
             description: tx.description,
             amount: tx.amount,
             type: tx.type,
             category: tx.category,
         });
+        transactionIds.set(tx.description, created.id);
     }
+
+    // Donation receipts: the club's exemption data, an external donor and
+    // donations by members (one an expense waiver); "Spende Jugendarbeit" is
+    // left without a donor to show the hint.
+    await saveDonationSettings({
+        issuerName: 'Kiteclub Nordwind e.V.', issuerAddress: 'Strandpromenade 1\n23769 Fehmarn',
+        taxOffice: 'Ostholstein', taxNumber: '22/290/12345', exemptionKind: 'notice',
+        exemptionDate: `${currentYear - 1}-02-12`, assessmentPeriod: String(currentYear - 3),
+        purposes: 'des Sports (§ 52 Abs. 2 Satz 1 Nr. 21 AO)', feesDeductible: false,
+        signatory: 'Kassenwart', place: 'Fehmarn',
+    });
+    const surfshop = await createDonor({ name: 'Surfshop Nordwind GmbH', street: 'Hafenstraße 12', postalCode: '23769', city: 'Fehmarn' });
+    const donationMember = (number: number) => createdMembers.find((m) => m.demo.data.number === number)!.id;
+    await assignDonation(transactionIds.get('Spende Surfshop Nordwind')!, { donorId: surfshop.id, expenseWaiver: false });
+    await assignDonation(transactionIds.get('Spende Renovierung Vereinsheim')!, { memberId: donationMember(1002), expenseWaiver: false });
+    await assignDonation(transactionIds.get('Aufwandsspende Fahrtkosten Fehmarn Kite Cup')!, { memberId: donationMember(1002), expenseWaiver: true });
 
     // Siblings Nele and Paul Kruse form a household; their parents pay both
     // fees with one transfer (see testdata/camt053-reconciliation.xml).

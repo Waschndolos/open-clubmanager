@@ -25,6 +25,7 @@ import {createBackup, restoreBackup} from "../../api/backup";
 import PageHeader from "../../components/common/PageHeader";
 import {useNavigate} from "react-router-dom";
 import {SepaCreditorSettings} from "../finance/SepaDirectDebit";
+import {DonationSettingsCard} from "../finance/DonationReceipts";
 
 const LAST_BACKUP_KEY = 'lastBackupDate';
 
@@ -207,6 +208,9 @@ export function Settings() {
 
             {/* ── SEPA direct debit (treasurer only) ─────────────────────────── */}
             <SepaCreditorSettings />
+
+            {/* ── Donation receipts (treasurer only) ─────────────────────────── */}
+            <DonationSettingsCard />
 
             {/* ── Backup & Restore ─────────────────────────────────────────── */}
             <Typography variant="h6" sx={{mt: 4, mb: 1}}>

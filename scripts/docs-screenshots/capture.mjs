@@ -114,6 +114,12 @@ const SHOTS = [
         }
         await table.waitFor();
     }],
+    // Donations of the demo data, grouped by donor, ready for receipts.
+    ['finance-donations', '/finance', async (page) => {
+        await page.getByRole('tab', { name: t('finance.tabs.donations') }).click();
+        await page.getByRole('button', { name: t('donations.views.issue') }).click();
+        await page.getByText('Surfshop Nordwind GmbH').first().waitFor();
+    }],
     ['inventory', '/inventory'],
     ['honors', '/honors'],
     ['qualifications', '/qualifications'],

@@ -189,6 +189,25 @@ func main() {
 	router.Post("/api/v2/reconciliation/{id}/dismiss", bearerAuthRequired(cfg.JWTSecret, api.DismissReconciliation))
 	router.Post("/api/v2/reconciliation/{id}/reopen", bearerAuthRequired(cfg.JWTSecret, api.ReopenReconciliation))
 
+	// Donation receipts (Zuwendungsbestätigungen) after the official template.
+	router.Get("/api/v2/donations", bearerAuthRequired(cfg.JWTSecret, api.ListDonations))
+	router.Get("/api/v2/donations/settings", bearerAuthRequired(cfg.JWTSecret, api.GetDonationSettings))
+	router.Put("/api/v2/donations/settings", bearerAuthRequired(cfg.JWTSecret, api.SetDonationSettings))
+	router.Get("/api/v2/donations/donors", bearerAuthRequired(cfg.JWTSecret, api.ListDonors))
+	router.Post("/api/v2/donations/donors", bearerAuthRequired(cfg.JWTSecret, api.CreateDonor))
+	router.Put("/api/v2/donations/donors/{id}", bearerAuthRequired(cfg.JWTSecret, api.UpdateDonor))
+	router.Delete("/api/v2/donations/donors/{id}", bearerAuthRequired(cfg.JWTSecret, api.DeleteDonor))
+	router.Get("/api/v2/donations/candidates", bearerAuthRequired(cfg.JWTSecret, api.ListDonationCandidates))
+	router.Get("/api/v2/donations/receipts", bearerAuthRequired(cfg.JWTSecret, api.ListDonationReceipts))
+	router.Post("/api/v2/donations/receipts", bearerAuthRequired(cfg.JWTSecret, api.CreateDonationReceipt))
+	router.Post("/api/v2/donations/receipts/annual", bearerAuthRequired(cfg.JWTSecret, api.CreateAnnualDonationReceipts))
+	router.Get("/api/v2/donations/receipts/pdf", bearerAuthRequired(cfg.JWTSecret, api.DownloadDonationReceipts))
+	router.Get("/api/v2/donations/receipts/{id}/pdf", bearerAuthRequired(cfg.JWTSecret, api.DownloadDonationReceipts))
+	router.Post("/api/v2/donations/receipts/{id}/duplicate", bearerAuthRequired(cfg.JWTSecret, api.DuplicateDonationReceipt))
+	router.Post("/api/v2/donations/receipts/{id}/void", bearerAuthRequired(cfg.JWTSecret, api.VoidDonationReceipt))
+	router.Put("/api/v2/donations/{id}", bearerAuthRequired(cfg.JWTSecret, api.SetDonation))
+	router.Delete("/api/v2/donations/{id}", bearerAuthRequired(cfg.JWTSecret, api.RemoveDonation))
+
 	// Chart statistics endpoint – extends the existing statistics API with
 	// chart-ready time series and distribution data.
 	router.Get("/api/v2/statistics/charts", bearerAuthRequired(cfg.JWTSecret, api.GetStatisticsCharts))
