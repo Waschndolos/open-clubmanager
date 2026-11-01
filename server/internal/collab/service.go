@@ -78,6 +78,9 @@ type Service struct {
 	// incomplete is the number of readable scopes without a starting
 	// snapshot after the last sync.
 	incomplete int
+	// joinRejected is set when an admin rejected this device's join request
+	// and the device left the club; cleared by the next join attempt.
+	joinRejected bool
 }
 
 // New returns a service. Call Run to start background refreshes.
@@ -133,6 +136,18 @@ func (s *Service) closeLocked() {
 	s.requests, s.lostOwn, s.badKeys, s.lastErr, s.incomplete = nil, 0, 0, "", 0
 	s.lastSync = time.Time{}
 	s.attempts = map[string]int{}
+	s.joinRejected = false
+}
+
+// dropClubLocked forgets the open club after this device left it (join
+// cancelled or rejected). Callers hold s.mu.
+func (s *Service) dropClubLocked() {
+	if s.tr != nil {
+		_ = s.tr.Close()
+	}
+	s.club, s.engine, s.tr, s.path = nil, nil, nil, ""
+	s.requests, s.lostOwn, s.badKeys, s.lastErr, s.incomplete = nil, 0, 0, "", 0
+	s.lastSync = time.Time{}
 }
 
 // Unlock loads the device keys with the login password and opens the club.
@@ -253,6 +268,12 @@ func (s *Service) Sync(ctx context.Context) (*Status, error) {
 
 	s.mu.Lock()
 	s.syncing = false
+	if s.club == c && errors.Is(err, club.ErrJoinRejected) {
+		s.dropClubLocked()
+		s.joinRejected = true
+		s.mu.Unlock()
+		return s.Status(ctx)
+	}
 	if s.club == c {
 		if err != nil {
 			s.lastErr = err.Error()
@@ -279,7 +300,10 @@ const (
 // Status is what the UI shows about collaboration (UX F7).
 type Status struct {
 	// Mode is "local", "joining", "member" or "revoked".
-	Mode            string
+	Mode string
+	// JoinRejected is true in local mode after an admin rejected this
+	// device's join request.
+	JoinRejected    bool
 	Locked          bool
 	ClubName        string
 	ClubID          string
@@ -317,7 +341,7 @@ func (s *Service) Status(ctx context.Context) (*Status, error) {
 	if err != nil {
 		return nil, err
 	}
-	st := &Status{Mode: "local", Permissions: map[db.Scope]string{}}
+	st := &Status{Mode: "local", Permissions: map[db.Scope]string{}, JoinRejected: s.joinRejected}
 	for _, sc := range db.Scopes {
 		st.Permissions[sc] = PermWrite
 	}

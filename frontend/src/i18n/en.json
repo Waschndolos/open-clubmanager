@@ -734,7 +734,17 @@
             "welcome": "Welcome! You are in – your role: {{role}}.",
             "rejected": "This device was not admitted to the club or was removed again. Please contact the board.",
             "toApp": "Go to overview",
-            "codeLong": "The code is too long. It has 24 characters – was it pasted twice?"
+            "codeLong": "The code is too long. It has 24 characters – was it pasted twice?",
+            "cancel": "Cancel joining",
+            "cancelHint": "Wrong code or wrong folder? Cancel joining and try again.",
+            "cancelled": "Your join request was withdrawn. You can now try again with another code.",
+            "notAdmitted": "This device was not admitted to the club. Please contact the board.",
+            "retry": "Try again",
+            "errors": {
+                "INVITE_UNKNOWN": "We do not know this invite code. Check it or ask for a new invite. If the invite was created just now, wait until your sync client has updated the folder and try again.",
+                "INVITE_EXPIRED": "The invite has expired. Ask for a new invite.",
+                "INVITE_USED": "The invite has already been used. Ask for a new invite."
+            }
         },
         "recover": {
             "title": "Use the emergency key",
@@ -943,7 +953,8 @@
             "READ_ONLY_AREA": "Your role may only see this data.",
             "STORAGE_MISSING": "The storage location is not reachable. Is your sync client running and is the folder still there?",
             "NETWORK": "No connection to the program. Is Open ClubManager still running?",
-            "default": "That did not work: {{message}}"
+            "default": "That did not work: {{message}}",
+            "NOT_JOINING": "No join request is pending any more. Maybe you were just admitted."
         }
     },
     "auth": {

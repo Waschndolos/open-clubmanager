@@ -14,6 +14,8 @@ export type AreaPermissions = Record<Area, AreaPermission>;
 export interface CollaborationStatus {
     mode: 'local' | 'joining' | 'member' | 'revoked';
     locked: boolean;
+    /** Only in local mode: an admin rejected this device's join request. */
+    joinRejected?: boolean;
     clubName?: string;
     clubId?: string;
     storagePath?: string;
@@ -130,6 +132,9 @@ export const createClub = (req: { folder: string; clubName: string; person: stri
 export const joinClub = (req: {
     folder: string; code: string; person: string; deviceName: string; password: string; replaceLocalData?: boolean;
 }) => call(() => api.post<{ safetyCode: string }>('/collaboration/join', req));
+
+/** Withdraws the pending join request; the device is then no longer in a club. */
+export const cancelJoin = () => call(() => api.post<void>('/collaboration/join/cancel'));
 
 export const getSafetyCode = () => call(() => api.get<{ safetyCode: string }>('/collaboration/join/safety-code'));
 

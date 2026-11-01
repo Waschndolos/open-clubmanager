@@ -82,6 +82,17 @@ func (n *node) join(code string) string {
 	return safety
 }
 
+// joinUnchecked sends a join request without the invite marker check, as a
+// modified client could.
+func (n *node) joinUnchecked(code string) {
+	n.t.Helper()
+	c, _, err := join(ctx, n.conn, n.dev, n.tr, code, "Person "+n.name, "Laptop", false)
+	if err != nil {
+		n.t.Fatalf("%s join: %v", n.name, err)
+	}
+	n.club = c
+}
+
 func (n *node) refresh() *RefreshResult {
 	n.t.Helper()
 	r, err := n.club.Refresh(ctx)

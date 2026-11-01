@@ -303,6 +303,10 @@ From [F1](#f1-first-start) → „Ich habe eine Einladung“.
 1. **Code eingeben:** a text field for pasting the code, or „QR-Code scannen“
    (camera, where available). Invalid or expired codes get a clear error:
    „Dieser Code ist abgelaufen. Bitte frag nach einer neuen Einladung.“
+   Whether the code belongs to an invite of the club is checked when the
+   request is sent (invite marker, spec §17.2): „Diesen Einladungscode kennen
+   wir nicht. Prüfe ihn oder frag nach einer neuen Einladung.“ Nothing is
+   saved in that case, so the person can simply correct the code.
 2. **Speicherort:**
    - The code only identifies the invite. The app asks where the club's data
      is: „Gemeinsamer Ordner“, „Nextcloud direkt“ or „Server“. A QR code or
@@ -339,8 +343,13 @@ From [F1](#f1-first-start) → „Ich habe eine Einladung“.
 6. **Waiting:** the same screen with „Warte auf Bestätigung …“. When
    approved: progress „Vereinsdaten werden geladen …“, then the dashboard
    with a welcome message naming the role.
-7. **Rejected:** „Deine Anfrage wurde abgelehnt. Bitte wende dich an
-   <Einladende Person>.“
+   - „Beitritt abbrechen“ is always available on this screen and in
+     *Zusammenarbeit*. It withdraws the request; afterwards the person can
+     join again, e.g. with a corrected code.
+7. **Rejected:** the rejecting admin leaves a signed rejection notice (spec
+   §17.2). The device leaves the club and shows „Dieses Gerät wurde nicht in
+   den Verein aufgenommen. Bitte wende dich an den Vorstand.“ with
+   „Erneut versuchen“.
 
 ## F5 Approving a join request
 

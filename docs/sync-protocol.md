@@ -173,6 +173,9 @@ acl/<version>-<hash>.json.sig
 keys/<scope>/<epoch>/<recipient-id>.age       wrapped scope keys
 requests/<device_id>.json                     join requests
 requests/<device_id>.json.sig                 join-request signature
+requests/<device_id>.rejected.json            rejection notice (§17.2)
+requests/<device_id>.rejected.json.sig        admin signature over the notice
+invites/<marker>.json                         invite marker (§17.2)
 segments/<device_id>/<scope>/<seq>.seg        change segments
 snapshots/<scope>/<epoch>/<hlc>-<device_id>.snap
 ```
@@ -181,10 +184,13 @@ snapshots/<scope>/<epoch>/<hlc>-<device_id>.snap
 - `<version>` is a zero-padded 8-digit decimal number.
 - `<hash>` is the full lowercase hex SHA-256 of the ACL file.
 - `<recipient-id>` is a `device_id` or the literal `root`.
+- `<marker>` is 64 lowercase hex characters (§17.2).
 
 **Every file is created once and never modified.** The only deletions are
-compaction ([§15](#15-snapshots-compaction-and-erasure)) and removal of
-handled join requests.
+compaction ([§15](#15-snapshots-compaction-and-erasure)), removal of
+handled or cancelled join requests and their rejection notices, and invite
+markers, which the admin device that owns the invite replaces (open → used)
+and removes (withdrawn or expired).
 
 Readers MUST ignore any file whose name does not match the patterns above
 exactly. This covers temporary files, `.tmp-*` files and conflict copies made
@@ -824,6 +830,48 @@ Steps:
    out-of-band channel used for the safety-code comparison.
 6. **New device starts syncing:** it verifies and pins the checkpoint, finds
    itself in the ACL, unwraps the keys and syncs.
+
+**Invite markers.** So that a mistyped code is reported at once instead of
+leaving the new device waiting, the admin device writes
+`invites/<marker>.json` for every invite it creates, where `<marker>` is the
+lowercase hex `SHA-256("ocm.invite-marker.v1\0" || invite_id_raw ||
+invite_secret_raw)`:
+
+```json
+{ "type": "ocm.invite", "club_id": "...", "expires_at": "2026-11-08T12:00:00Z", "used": true }
+```
+
+- `used` is omitted while the invite is open. The admin replaces the marker
+  when the invite is used and removes it when the invite is withdrawn or has
+  expired. On every refresh it (re)publishes the markers of its invites.
+- Before writing the request (step 3) the new device computes the marker of
+  the entered code. No marker, or one for another club: "unknown invite
+  code", and nothing is written. A marker with `used` or a past `expires_at`
+  gives the matching message.
+- The marker names neither `invite_id` nor `invite_secret`; recovering a code
+  from it is a 120-bit preimage search. Markers are unsigned hints only: a
+  forged marker at most lets a request through that step 4 refuses anyway,
+  and someone who can delete markers can also delete requests.
+
+**Rejection.** Rejecting a request (also after three wrong safety codes)
+writes `requests/<device_id>.rejected.json` before deleting the request:
+
+```json
+{ "type": "ocm.join.rejected", "club_id": "...", "device_id": "...", "invite_id": "<b64>", "by": "<admin device_id>" }
+```
+
+`.sig` holds the b64 Ed25519 signature of the rejecting admin device over the
+exact bytes. A joining device accepts the notice only if `by` is an active
+admin in its accepted ACL, the signature verifies with that device's key, and
+`club_id`, `device_id` and `invite_id` match its own pending request. It then
+deletes the notice and its local club state and tells the person that it was
+not admitted. The absence of the request file alone is never read as a
+rejection: an approval also deletes it, and the ACL file may arrive later.
+
+**Cancelling.** While waiting, the new device may withdraw its request: it
+deletes its request (and any rejection notice) and its local club state.
+A new join of the same device first removes leftover files of an earlier
+request.
 
 ### 17.3 Changing a role
 

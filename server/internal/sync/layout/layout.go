@@ -30,6 +30,13 @@ const (
 	KindRequestSig
 	KindSegment
 	KindSnapshot
+	// KindInvite is a marker of an open invite (invites/<hash>.json). It
+	// lets a joining device tell a mistyped invite code from a valid one.
+	KindInvite
+	// KindRejection and KindRejectionSig are the admin-signed notice that a
+	// join request was rejected (requests/<device_id>.rejected.json).
+	KindRejection
+	KindRejectionSig
 )
 
 const (
@@ -45,6 +52,7 @@ const (
 	ACLDir      = "acl/"
 	KeysDir     = "keys/"
 	RequestsDir = "requests/"
+	InvitesDir  = "invites/"
 )
 
 // Entry is a parsed file name. Only the fields of its Kind are set.
@@ -53,7 +61,7 @@ type Entry struct {
 	// Version and HashPrefix (16 lowercase hex characters) of an ACL file.
 	Version    uint64
 	HashPrefix string
-	// DeviceID of a request, segment or snapshot.
+	// DeviceID of a request, rejection, segment or snapshot.
 	DeviceID string
 	Scope    db.Scope
 	Epoch    uint64
@@ -61,6 +69,8 @@ type Entry struct {
 	Recipient string
 	Seq       uint64
 	HLC       string
+	// Marker is the 64 hex characters naming an invite marker.
+	Marker string
 }
 
 const (
@@ -75,6 +85,8 @@ var (
 	aclRe      = regexp.MustCompile(`^acl/([0-9]{8})-([0-9a-f]{16})\.json(\.sig)?$`)
 	keyRe      = regexp.MustCompile(`^keys/([a-z.]+)/(` + epochPat + `)/(` + deviceIDPat + `|root)\.age$`)
 	requestRe  = regexp.MustCompile(`^requests/(` + deviceIDPat + `)\.json(\.sig)?$`)
+	rejectRe   = regexp.MustCompile(`^requests/(` + deviceIDPat + `)\.rejected\.json(\.sig)?$`)
+	inviteRe   = regexp.MustCompile(`^invites/([0-9a-f]{64})\.json$`)
 	segmentRe  = regexp.MustCompile(`^segments/(` + deviceIDPat + `)/([a-z.]+)/([0-9]{12})\.seg$`)
 	snapshotRe = regexp.MustCompile(`^snapshots/([a-z.]+)/(` + epochPat + `)/(` + hlcPat + `)-(` + deviceIDPat + `)\.snap$`)
 )
@@ -126,6 +138,16 @@ func Parse(path string) (Entry, bool) {
 		}
 		return Entry{Kind: k, DeviceID: m[1]}, true
 	}
+	if m := rejectRe.FindStringSubmatch(path); m != nil {
+		k := KindRejection
+		if m[2] != "" {
+			k = KindRejectionSig
+		}
+		return Entry{Kind: k, DeviceID: m[1]}, true
+	}
+	if m := inviteRe.FindStringSubmatch(path); m != nil {
+		return Entry{Kind: KindInvite, Marker: m[1]}, true
+	}
 	if m := segmentRe.FindStringSubmatch(path); m != nil {
 		seq, ok := parseUint(m[3])
 		if !ok || seq == 0 || !ValidScope(db.Scope(m[2])) {
@@ -164,6 +186,13 @@ func KeyPath(scope db.Scope, epoch uint64, recipient string) string {
 
 // RequestPath returns requests/<device_id>.json.
 func RequestPath(deviceID string) string { return RequestsDir + deviceID + ".json" }
+
+// RejectionPath returns requests/<device_id>.rejected.json.
+func RejectionPath(deviceID string) string { return RequestsDir + deviceID + ".rejected.json" }
+
+// InvitePath returns invites/<marker>.json for a marker of 64 lowercase hex
+// characters.
+func InvitePath(marker string) string { return InvitesDir + marker + ".json" }
 
 // SegmentPath returns segments/<device_id>/<scope>/<seq>.seg.
 func SegmentPath(deviceID string, scope db.Scope, seq uint64) string {

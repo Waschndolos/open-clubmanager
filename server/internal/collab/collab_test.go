@@ -243,15 +243,15 @@ func TestInviteWithdraw(t *testing.T) {
 	if err := a.svc.WithdrawInvite(ctx, encodeID(invs[0].ID)); !errors.Is(err, club.ErrNoInvite) {
 		t.Fatalf("second withdraw: %v", err)
 	}
-	if _, err := b.svc.Join(ctx, shared, inv.Code, "B", "PC", "pw", false); err != nil {
-		t.Fatal(err)
+	// The withdrawn code is refused at once; the device stays without a club.
+	if _, err := b.svc.Join(ctx, shared, inv.Code, "B", "PC", "pw", false); !errors.Is(err, club.ErrInviteUnknown) {
+		t.Fatalf("join with withdrawn invite: %v", err)
 	}
-	a.sync(t)
-	if r := a.svc.Requests(); len(r) != 1 || !errors.Is(r[0].Err, club.ErrInviteUnknown) {
-		t.Fatalf("request with withdrawn invite = %+v", r)
+	if st := b.status(t); st.Mode != "local" {
+		t.Fatalf("status after refused join = %+v", st)
 	}
-	if st := a.status(t); st.PendingRequests != 0 {
-		t.Fatalf("invalid request counted as pending: %+v", st)
+	if st := a.sync(t); st.PendingRequests != 0 || len(a.svc.Requests()) != 0 {
+		t.Fatalf("refused join left a request: %+v", st)
 	}
 }
 
@@ -359,5 +359,77 @@ func TestSyncExchangesData(t *testing.T) {
 	}
 	if st.WaitingStreams != 0 || st.QuarantinedStreams != 0 || st.WaitingChanges != 0 {
 		t.Fatalf("a status %+v", st)
+	}
+}
+
+// TestJoinOutcomes covers issue #194: a joining device must never get stuck.
+func TestJoinOutcomes(t *testing.T) {
+	ctx := context.Background()
+	a, b := newNode(t), newNode(t)
+	shared := t.TempDir()
+	if _, err := a.svc.Create(ctx, shared, "Club", "A", "PC", "pw-a"); err != nil {
+		t.Fatal(err)
+	}
+	invite := func() string {
+		inv, err := a.svc.CreateInvite(ctx, acl.RoleCoach, "B")
+		if err != nil {
+			t.Fatal(err)
+		}
+		return inv.Code
+	}
+
+	// Unknown code: refused at once, nothing to clean up.
+	if _, err := b.svc.Join(ctx, shared, "AAAA-BBBB-CCCC-DDDD-EEEE-FFFF", "B", "PC", "pw-b", false); !errors.Is(err, club.ErrInviteUnknown) {
+		t.Fatalf("unknown code: %v", err)
+	}
+	if st := b.status(t); st.Mode != "local" {
+		t.Fatalf("after unknown code: %+v", st)
+	}
+
+	// Rejected: the device learns it with its next sync and is free again.
+	if _, err := b.svc.Join(ctx, shared, invite(), "B", "PC", "pw-b", false); err != nil {
+		t.Fatal(err)
+	}
+	a.sync(t)
+	reqs := a.svc.Requests()
+	if len(reqs) != 1 {
+		t.Fatalf("requests = %+v", reqs)
+	}
+	if err := a.svc.Reject(ctx, reqs[0].DeviceID); err != nil {
+		t.Fatal(err)
+	}
+	if st := b.sync(t); st.Mode != "local" || !st.JoinRejected || st.ClubName != "" {
+		t.Fatalf("after rejection: %+v", st)
+	}
+
+	// Cancel: possible while waiting, then a new attempt works.
+	if _, err := b.svc.Join(ctx, shared, invite(), "B", "PC", "pw-b", false); err != nil {
+		t.Fatal(err)
+	}
+	if st := b.status(t); st.Mode != "joining" || st.JoinRejected {
+		t.Fatalf("joining again: %+v", st)
+	}
+	if err := b.svc.CancelJoin(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if st := b.status(t); st.Mode != "local" {
+		t.Fatalf("after cancel: %+v", st)
+	}
+	if st := a.sync(t); st.PendingRequests != 0 {
+		t.Fatalf("cancelled request still pending: %+v", st)
+	}
+	if err := b.svc.CancelJoin(ctx); !errors.Is(err, club.ErrNotJoining) {
+		t.Fatalf("cancel without request: %v", err)
+	}
+	safety, err := b.svc.Join(ctx, shared, invite(), "B", "PC", "pw-b", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a.sync(t)
+	if err := a.svc.Approve(ctx, a.svc.Requests()[0].DeviceID, safety); err != nil {
+		t.Fatal(err)
+	}
+	if st := b.sync(t); st.Mode != "member" || st.Role != acl.RoleCoach {
+		t.Fatalf("after approval: %+v", st)
 	}
 }

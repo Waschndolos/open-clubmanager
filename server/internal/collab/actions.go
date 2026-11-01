@@ -138,10 +138,46 @@ func (s *Service) Join(ctx context.Context, folder, code, person, deviceName, pa
 		_ = tr.Close()
 		return "", err
 	}
+	s.joinRejected = false
 	if err := s.adopt(ctx, c, tr, dir); err != nil {
 		return "", err
 	}
 	return safety, nil
+}
+
+// CancelJoin withdraws the pending join request of this device (UX F4):
+// the request file is deleted and the local club state removed, so the
+// device can join again, e.g. with a corrected code. If the storage is not
+// reachable, only the local state is removed.
+func (s *Service) CancelJoin(ctx context.Context) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	conn, err := s.current()
+	if err != nil {
+		return err
+	}
+	if s.dev == nil {
+		var n int
+		if conn.QueryRowContext(ctx, `SELECT COUNT(*) FROM sync_club`).Scan(&n); n == 0 {
+			return club.ErrNotJoining
+		}
+		return ErrLocked
+	}
+	if s.club == nil {
+		// The storage could not be opened; maybe it is reachable now.
+		_ = s.openClubLocked(ctx)
+	}
+	if s.club != nil {
+		err = s.club.CancelJoin(ctx)
+	} else {
+		err = club.AbandonJoin(ctx, conn)
+	}
+	if err != nil {
+		return err
+	}
+	s.dropClubLocked()
+	s.joinRejected = false
+	return nil
 }
 
 // SafetyCode returns the safety code of this device, shown while a join
