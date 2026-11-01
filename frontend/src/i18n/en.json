@@ -440,7 +440,9 @@
             "loadFailed": "Failed to load users.",
             "createFailed": "Failed to create user.",
             "updateFailed": "Failed to update user.",
-            "deleteFailed": "Failed to delete user."
+            "deleteFailed": "Failed to delete user.",
+            "passwordTooShort": "Password must be at least 8 characters long.",
+            "emailInUse": "This email address is already used by the administrator or another user."
         }
     },
     "finance": {

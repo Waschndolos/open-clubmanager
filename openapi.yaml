@@ -1728,6 +1728,7 @@ paths:
     post:
       tags: [auth]
       summary: Request a password reset email
+      description: Works for the administrator and the users of the database. Always answers 200, whether or not the address is registered. The reset token is valid for one hour and replaces an older token of the same account; only its hash is stored.
       operationId: forgotPassword
       requestBody:
         required: true
@@ -1749,6 +1750,7 @@ paths:
     post:
       tags: [auth]
       summary: Reset password using a valid reset token
+      description: The token works once. The reset ends all sessions of the account that started before it.
       operationId: resetPassword
       requestBody:
         required: true
@@ -3129,6 +3131,7 @@ paths:
     get:
       tags: [history]
       summary: List recent audit log entries
+      description: Entries about finances (cash book, member fees, fee models, direct debits, payment reconciliation, donation receipts) are only returned to roles that may read the finances (ADMIN, TREASURER) on a device with the finance scope.
       operationId: listHistory
       security:
         - bearerAuth: []
@@ -3170,6 +3173,7 @@ paths:
     post:
       tags: [users]
       summary: Create a new app user
+      description: The password must have at least 8 characters (400, code PASSWORD_TOO_SHORT). An e-mail address of the administrator or of another user, compared ignoring case, is refused (409, code EMAIL_IN_USE).
       operationId: createAppUser
       security:
         - bearerAuth: []
@@ -3207,6 +3211,7 @@ paths:
     put:
       tags: [users]
       summary: Update an app user
+      description: An e-mail address of the administrator or of another user, compared ignoring case, is refused (409, code EMAIL_IN_USE).
       operationId: updateAppUser
       security:
         - bearerAuth: []
@@ -3231,6 +3236,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
         '500':
           $ref: '#/components/responses/InternalError'
     delete:

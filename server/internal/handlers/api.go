@@ -240,6 +240,9 @@ func (a *API) InitializeSetup(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, openapi.ErrorResponse{Error: "email and password are required"})
 		return
 	}
+	if !checkPasswordPolicy(w, req.Password, "password") {
+		return
+	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {

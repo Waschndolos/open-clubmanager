@@ -28,6 +28,7 @@ import {
 import { Delete, Edit, PersonAdd } from '@mui/icons-material';
 import PeopleIcon from '@mui/icons-material/People';
 import { useTranslation } from 'react-i18next';
+import { isAxiosError } from 'axios';
 import PageHeader from '../../components/common/PageHeader';
 import { AppRole, AppUser } from '../../api/types';
 import { createAppUser, deleteAppUser, listAppUsers, updateAppUser } from '../../api/users';
@@ -42,6 +43,20 @@ interface UserFormState {
 
 const defaultForm: UserFormState = { email: '', password: '', appRole: 'READONLY' };
 
+// Same policy as the server (and the setup): at least 8 characters.
+const MIN_PASSWORD_LENGTH = 8;
+
+// errorMessageKey maps the error codes of the user API to messages; other
+// errors fall back to the generic message.
+function errorMessageKey(e: unknown, fallback: string): string {
+    const code = isAxiosError(e) ? e.response?.data?.code : undefined;
+    switch (code) {
+        case 'PASSWORD_TOO_SHORT': return 'users.errors.passwordTooShort';
+        case 'EMAIL_IN_USE': return 'users.errors.emailInUse';
+        default: return fallback;
+    }
+}
+
 export default function Users() {
     const { t } = useTranslation();
     const [users, setUsers] = useState<AppUser[]>([]);
@@ -53,6 +68,7 @@ export default function Users() {
     const [deleteUser, setDeleteUser] = useState<AppUser | null>(null);
 
     const [form, setForm] = useState<UserFormState>(defaultForm);
+    const [createError, setCreateError] = useState<string | null>(null);
     const [editRole, setEditRole] = useState<AppRole>('READONLY');
 
     const [snack, setSnack] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
@@ -76,15 +92,21 @@ export default function Users() {
 
     useEffect(() => { load(); }, []);
 
+    const closeCreate = () => {
+        setCreateOpen(false);
+        setForm(defaultForm);
+        setCreateError(null);
+    };
+
     const handleCreate = async () => {
         try {
             await createAppUser(form.email, form.password, form.appRole);
-            setCreateOpen(false);
-            setForm(defaultForm);
+            closeCreate();
             await load();
             setSnack({ open: true, message: t('users.snack.created'), severity: 'success' });
-        } catch {
-            setSnack({ open: true, message: t('users.errors.createFailed'), severity: 'error' });
+        } catch (e) {
+            // Shown in the dialog, which stays open so the input can be fixed.
+            setCreateError(t(errorMessageKey(e, 'users.errors.createFailed')));
         }
     };
 
@@ -95,8 +117,8 @@ export default function Users() {
             setEditUser(null);
             await load();
             setSnack({ open: true, message: t('users.snack.updated'), severity: 'success' });
-        } catch {
-            setSnack({ open: true, message: t('users.errors.updateFailed'), severity: 'error' });
+        } catch (e) {
+            setSnack({ open: true, message: t(errorMessageKey(e, 'users.errors.updateFailed')), severity: 'error' });
         }
     };
 
@@ -184,9 +206,10 @@ export default function Users() {
             )}
 
             {/* Create dialog */}
-            <Dialog open={createOpen} onClose={() => setCreateOpen(false)} maxWidth="xs" fullWidth>
+            <Dialog open={createOpen} onClose={closeCreate} maxWidth="xs" fullWidth>
                 <DialogTitle>{t('users.dialogs.create.title')}</DialogTitle>
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
+                    {createError && <Alert severity="error">{createError}</Alert>}
                     <TextField
                         label={t('users.dialogs.create.email')}
                         type="email"
@@ -200,6 +223,8 @@ export default function Users() {
                         type="password"
                         value={form.password}
                         onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                        error={form.password.length > 0 && form.password.length < MIN_PASSWORD_LENGTH}
+                        helperText={t('users.errors.passwordTooShort')}
                         fullWidth
                         required
                     />
@@ -217,11 +242,11 @@ export default function Users() {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setCreateOpen(false)}>{t('buttons.abort')}</Button>
+                    <Button onClick={closeCreate}>{t('buttons.abort')}</Button>
                     <Button
                         variant="contained"
                         onClick={handleCreate}
-                        disabled={!form.email || !form.password}
+                        disabled={!form.email || form.password.length < MIN_PASSWORD_LENGTH}
                     >
                         {t('buttons.save')}
                     </Button>

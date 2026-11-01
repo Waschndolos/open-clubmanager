@@ -19,6 +19,8 @@ The stricter of the two always wins.
 
 "Club data" means members, club structure, inventory, events, households and tasks.
 
+"No finances" means: no cash book, no fees or fee models, no direct debits, no payment reconciliation, no donation receipts – and no entries about them in the [history](../funktionen/verlauf.md).
+
 !!! info "How does Open ClubManager know a trainer's groups?"
     An account with the role **Trainer** is linked to a member by **email address**. The groups and sections of that member decide for which events the trainer may record attendance.
 

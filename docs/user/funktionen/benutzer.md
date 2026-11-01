@@ -15,6 +15,8 @@ Hier legen **Administratoren** die Konten an, mit denen man sich an diesem Open 
 2. Gib E-Mail-Adresse, ein Startpasswort (mindestens 8 Zeichen) und die [Rolle](../erste-schritte/rollen.md) ein.
 3. Teile der Person die Zugangsdaten auf sicherem Weg mit.
 
+Jede E-Mail-Adresse kann nur ein Konto haben – auch die des Administrators aus der Einrichtung kann kein zweites Mal vergeben werden. Groß- und Kleinschreibung spielen dabei keine Rolle.
+
 ## Rolle ändern und Benutzer löschen
 
 Über die Aktionen in der Liste änderst du die Rolle oder löschst ein Konto. Gelöschte Konten können sich nicht mehr anmelden; ihre Änderungen bleiben im [Verlauf](verlauf.md) sichtbar.
