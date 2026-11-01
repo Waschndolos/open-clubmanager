@@ -107,3 +107,59 @@ func TestAppRoleWrites(t *testing.T) {
 		t.Errorf("members created by data editors missing: %s", rec.Body)
 	}
 }
+
+// TestHistoryHidesFinances checks that the history (audit log) shows entries
+// about finances only to the roles that may read the finances (#191).
+func TestHistoryHidesFinances(t *testing.T) {
+	conn, err := dbpkg.Open(context.Background(), filepath.Join(t.TempDir(), "club.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { conn.Close() })
+	t.Setenv("SERVER_CONFIG_FILE", filepath.Join(t.TempDir(), "config.json"))
+
+	const secret = "test-secret"
+	api := New(&config.Config{JWTSecret: secret}, conn)
+	router := chi.NewRouter()
+	openapi.HandlerWithOptions(api, openapi.ChiServerOptions{BaseURL: "/api/v2", BaseRouter: router,
+		Middlewares: []openapi.MiddlewareFunc{api.ScopeGuard, auth.Middleware(secret)}})
+
+	ctx := context.Background()
+	clubData := []string{"Member", "Event", "InventoryMaintenance", "Attendance"}
+	finances := make([]string, 0, len(financeAuditEntities))
+	for entity := range financeAuditEntities {
+		finances = append(finances, entity)
+	}
+	for _, entity := range append(clubData, finances...) {
+		api.store().Audit(ctx, "CREATE", entity, "id-"+entity, "user@example.org")
+	}
+
+	entities := func(role openapi.AppRole) []string {
+		var list []openapi.AuditLog
+		if code := doJSONAs(t, router, secret, role, "/api/v2/history", &list); code != http.StatusOK {
+			t.Fatalf("%s: GET /history: %d", role, code)
+		}
+		out := make([]string, len(list))
+		for i, e := range list {
+			out[i] = e.Entity
+		}
+		return out
+	}
+
+	for _, role := range []openapi.AppRole{openapi.READONLY, openapi.SECRETARY, openapi.TRAINER, openapi.AppRole("GUEST")} {
+		got := entities(role)
+		for _, e := range got {
+			if financeAuditEntities[e] {
+				t.Errorf("%s sees the finance entry %s", role, e)
+			}
+		}
+		if len(got) != len(clubData) {
+			t.Errorf("%s sees %v, want %v", role, got, clubData)
+		}
+	}
+	for _, role := range []openapi.AppRole{openapi.ADMIN, openapi.TREASURER} {
+		if got := entities(role); len(got) != len(clubData)+len(finances) {
+			t.Errorf("%s sees %d entries, want all %d", role, len(got), len(clubData)+len(finances))
+		}
+	}
+}

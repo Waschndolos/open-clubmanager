@@ -19,6 +19,8 @@ Es gilt immer die strengere der beiden Regeln.
 
 „Vereinsdaten“ sind Mitglieder, Vereinsstruktur, Inventar, Termine, Haushalte und Aufgaben.
 
+„Keine Finanzen“ heißt: kein Kassenbuch, keine Beiträge und Beitragsmodelle, keine Lastschriften, kein Zahlungsabgleich, keine Zuwendungsbestätigungen – und im [Verlauf](../funktionen/verlauf.md) keine Einträge dazu.
+
 !!! info "Wie findet Open ClubManager die Gruppen eines Trainers?"
     Ein Konto mit der Rolle **Trainer** wird über die **E-Mail-Adresse** mit einem Mitglied verknüpft. Die Gruppen und Abteilungen dieses Mitglieds bestimmen, für welche Termine der Trainer Anwesenheit erfassen darf.
 

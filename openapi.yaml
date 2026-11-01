@@ -3074,6 +3074,7 @@ paths:
     get:
       tags: [history]
       summary: List recent audit log entries
+      description: Entries about finances (cash book, member fees, fee models, direct debits, payment reconciliation, donation receipts) are only returned to roles that may read the finances (ADMIN, TREASURER) on a device with the finance scope.
       operationId: listHistory
       security:
         - bearerAuth: []
