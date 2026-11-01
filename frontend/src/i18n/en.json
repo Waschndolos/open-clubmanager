@@ -308,6 +308,11 @@
             "help": "Up to 35 characters without spaces, e.g. NW-1001",
             "taken": "Another member already has this mandate reference",
             "invalid": "Invalid mandate reference: only letters, digits and + ? / - : ( ) . , ' without spaces"
+        },
+        "feeModel": {
+            "label": "Fee model",
+            "help": "Automatic: by age on 1 January of the fee year",
+            "saveFailed": "Fee model could not be saved"
         }
     },
     "settings": {
@@ -431,7 +436,10 @@
         "tabs": {
             "transactions": "Cashbook",
             "memberfees": "Member Fees",
-            "directDebit": "Direct debit"
+            "directDebit": "Direct debit",
+            "openItems": "Open items",
+            "feeModels": "Fee models",
+            "feeRuns": "Billing run"
         },
         "summary": {
             "balance": "Balance",
@@ -1368,6 +1376,119 @@
             "paidDate": "Paid on",
             "cancelTitle": "Cancel direct debit run?",
             "cancelText": "The fees will be open again. Do not upload the file to the bank, or revoke the order there."
+        }
+    },
+    "feeModels": {
+        "loadFailed": "Fee models could not be loaded",
+        "saveFailed": "Fee model could not be saved",
+        "nameTaken": "A fee model with this name already exists",
+        "create": "Add fee model",
+        "empty": "No fee models yet",
+        "yes": "yes",
+        "noModel": "No matching model",
+        "ageRange": "{{min}}–{{max}} years",
+        "ageFrom": "{{min}} years and over",
+        "ageTo": "up to {{max}} years",
+        "fields": {
+            "name": "Name",
+            "amount": "Amount (€)",
+            "interval": "Interval",
+            "minAge": "Minimum age",
+            "maxAge": "Maximum age",
+            "age": "Age",
+            "proRata": "Pro rata",
+            "members": "Members"
+        },
+        "interval": {
+            "yearly": "yearly",
+            "half_yearly": "half-yearly",
+            "quarterly": "quarterly",
+            "monthly": "monthly"
+        },
+        "per": {
+            "yearly": "per year",
+            "half_yearly": "per half-year",
+            "quarterly": "per quarter",
+            "monthly": "per month"
+        },
+        "mode": {
+            "auto": "Automatic by age",
+            "exempt": "Exempt from fees"
+        },
+        "dialog": {
+            "titleCreate": "New fee model",
+            "titleEdit": "Edit fee model",
+            "namePlaceholder": "e.g. adults, youth, family, passive",
+            "amountHelp": "Amount per period of the interval",
+            "ageHelp": "Models with an age limit are assigned automatically to members without a fixed model. The age on 1 January of the fee year counts; the limits are inclusive.",
+            "ageInvalid": "The minimum age is greater than the maximum age",
+            "proRata": "When members join or leave during a period, charge only the months of membership"
+        },
+        "columns": {
+            "ageJan1": "Age on 1 Jan",
+            "assignment": "Assignment",
+            "effective": "Fee"
+        },
+        "assignments": {
+            "title": "Member assignments",
+            "description": "Current members with their fee model for this year. Change the assignment here or in the member dialog.",
+            "withoutModel": "{{count}} members have no matching fee model (e.g. no birthday) and are skipped by billing runs."
+        },
+        "deleteTitle": "Delete fee model?",
+        "deleteText": "“{{name}}” will be deleted. Assigned members get their model by age again; fees already created stay."
+    },
+    "feeRuns": {
+        "title": "Create billing run",
+        "description": "Creates the fees of all members for the periods starting in the selected months. Periods already charged are detected and skipped; members who left are no longer charged from their exit date.",
+        "from": "From (month)",
+        "to": "To (month)",
+        "rangeInvalid": "The end month is before the start month",
+        "dueDate": "Due on",
+        "dueDateHelp": "Later periods are due when they start",
+        "preview": "Preview",
+        "create": "Save billing run",
+        "summary": "{{count}} fees totalling {{total}} will be created.",
+        "nothingToCharge": "Nothing to charge for this range – it has been charged completely or no member has a fee model.",
+        "proRataOf": "pro rata of {{full}}",
+        "skipped": {
+            "ALREADY_CHARGED": "{{count}} periods have already been charged and are skipped:",
+            "NO_MODEL": "{{count}} members without a matching fee model:",
+            "EXEMPT": "{{count}} members exempt from fees:"
+        },
+        "confirmTitle": "Save billing run?",
+        "confirmText": "{{count}} fees totalling {{total}} will be created for {{from}} to {{to}}.",
+        "created": "Billing run saved: {{count}} fees, {{total}}",
+        "empty": "Nothing to charge: the range has already been charged",
+        "createFailed": "Billing run could not be saved",
+        "previewFailed": "Preview could not be calculated",
+        "loadFailed": "Billing runs could not be loaded",
+        "history": "Previous billing runs",
+        "noRuns": "No billing run yet",
+        "columns": {
+            "period": "Range",
+            "count": "Fees",
+            "total": "Total",
+            "paid": "Paid",
+            "createdAt": "Created"
+        },
+        "delete": "Remove open fees",
+        "deleteTitle": "Undo billing run?",
+        "deleteText": "The {{count}} open fees of this run will be deleted; paid ones stay. The periods can then be charged again.",
+        "deleted": "{{count}} open fees removed",
+        "inCollection": "Fees of this run are in a direct debit run that has not been confirmed",
+        "deleteFailed": "Billing run could not be undone"
+    },
+    "openItems": {
+        "count": "Number",
+        "total": "Open amount",
+        "oldestDue": "Oldest due date",
+        "fees": "Fees",
+        "overdueSince": "overdue since {{date}}",
+        "empty": "No open items – all fees are paid",
+        "summary": {
+            "total": "Open in total",
+            "overdue": "Of which overdue",
+            "members": "Members with open items"
         }
     }
 }

@@ -41,6 +41,9 @@ import { usePermission } from '../../context/CollaborationContext';
 import PageHeader from '../../components/common/PageHeader';
 import { fetchSepaRuns } from '../../api/sepa';
 import { SepaDirectDebitTab, useSepaAccess } from './SepaDirectDebit';
+import { FeeModelsTab, FeeRunsTab, OpenItemsTab } from './FeeModels';
+
+type FinanceTab = 'transactions' | 'memberfees' | 'openItems' | 'feeModels' | 'feeRuns' | 'directDebit';
 
 const FINANCE_RESET_CONFIRM_TEXT = 'DELETE';
 
@@ -274,7 +277,7 @@ export function Finance() {
     const { t } = useTranslation();
     const { appRole } = useAuth();
     const canEdit = canEditFinance(appRole) && usePermission('finance') === 'write';
-    const [tab, setTab] = useState(0);
+    const [tab, setTab] = useState<FinanceTab>('transactions');
     const [loading, setLoading] = useState(true);
     const [transactions, setTransactions] = useState<FinanceTransaction[]>([]);
     const [fees, setFees] = useState<MemberFee[]>([]);
@@ -557,13 +560,16 @@ export function Finance() {
 
             <BalanceSummary transactions={transactions} fees={fees} />
 
-            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
-                <Tab label={t('finance.tabs.transactions')} />
-                <Tab label={t('finance.tabs.memberfees')} />
-                {sepa.visible && <Tab label={t('finance.tabs.directDebit')} />}
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }} variant="scrollable" allowScrollButtonsMobile>
+                <Tab value="transactions" label={t('finance.tabs.transactions')} />
+                <Tab value="memberfees" label={t('finance.tabs.memberfees')} />
+                <Tab value="openItems" label={t('finance.tabs.openItems')} />
+                <Tab value="feeModels" label={t('finance.tabs.feeModels')} />
+                <Tab value="feeRuns" label={t('finance.tabs.feeRuns')} />
+                {sepa.visible && <Tab value="directDebit" label={t('finance.tabs.directDebit')} />}
             </Tabs>
 
-            {tab === 0 && (
+            {tab === 'transactions' && (
                 <Box>
                     {canEdit && <Box display="flex" justifyContent="flex-end" mb={1}>
                         <Button
@@ -619,7 +625,7 @@ export function Finance() {
                 </Box>
             )}
 
-            {tab === 1 && (
+            {tab === 'memberfees' && (
                 <Box>
                     {canEdit && <Box display="flex" justifyContent="flex-end" mb={1}>
                         <Button
@@ -648,7 +654,13 @@ export function Finance() {
                 </Box>
             )}
 
-            {tab === 2 && sepa.visible && <SepaDirectDebitTab onFeesChanged={handleSepaChanged} />}
+            {tab === 'openItems' && <OpenItemsTab fees={fees} />}
+
+            {tab === 'feeModels' && <FeeModelsTab canEdit={canEdit} />}
+
+            {tab === 'feeRuns' && <FeeRunsTab canEdit={canEdit} onFeesChanged={async () => setFees(await fetchMemberFees())} />}
+
+            {tab === 'directDebit' && sepa.visible && <SepaDirectDebitTab onFeesChanged={handleSepaChanged} />}
 
             {txDialog.open && (
                 <TransactionDialog

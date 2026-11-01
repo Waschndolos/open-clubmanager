@@ -36,7 +36,7 @@ The details are grouped into collapsible sections:
 | **Personal Information** | membership number, email (required), first and last name, birthday, phone, mobile, comment |
 | **Address** | street, postal code, city, state |
 | **Bank Details** | account holder, IBAN, BIC, bank, date of the SEPA mandate, mandate reference (for [direct debit](finanzen.md#direct-debit-sepa), up to 35 characters without spaces, unique) |
-| **Membership** | entry and exit date |
+| **Membership** | entry and exit date; for existing members the [fee model](finanzen.md#which-member-pays-which-model) (automatic by age, a specific model or exempt; only administrators and treasurers may change it) |
 | **Club Entities** | assignment to [sections, groups and roles](vereinsstruktur.md) |
 | **Family & guardians** | [household](haushalte.md) and guardians (for minors) |
 
