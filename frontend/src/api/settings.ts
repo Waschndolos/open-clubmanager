@@ -1,6 +1,4 @@
-import {BACKEND_URL} from "./api";
-
-const BASE_URL = `${BACKEND_URL}/settings`;
+import api from "./api";
 
 // Only local SQLite databases are supported.
 export type DatabaseMode = 'sqlite-local';
@@ -11,19 +9,12 @@ export interface DatabaseSettings {
 }
 
 export async function saveDatabaseSettings(settings: DatabaseSettings): Promise<void> {
-    const res = await fetch(`${BASE_URL}/database`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
-    });
-
-    if (!res.ok) throw new Error(await res.text());
+    await api.post('/settings/database', settings);
 }
 
 export async function getDatabaseSettings(): Promise<DatabaseSettings> {
-    const res = await fetch(`${BASE_URL}/database`);
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
+    const res = await api.get<DatabaseSettings>('/settings/database');
+    return res.data;
 }
 
 export async function saveDbPath(dbPath: string) {

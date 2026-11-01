@@ -16,8 +16,11 @@ import (
 )
 
 // BackupDatabase creates a ZIP archive containing a consistent snapshot of
-// the SQLite database and streams it as a download.
+// the SQLite database and streams it as a download. Only admins may call it.
 func (a *API) BackupDatabase(w http.ResponseWriter, r *http.Request) {
+	if !requireAdmin(w, r) {
+		return
+	}
 	a.dbMu.RLock()
 	conn := a.conn
 	a.dbMu.RUnlock()
@@ -72,8 +75,11 @@ func (a *API) BackupDatabase(w http.ResponseWriter, r *http.Request) {
 
 // RestoreDatabase accepts a multipart/form-data upload containing a ZIP backup
 // file, replaces the active SQLite database, and reconnects. Backups taken
-// before the UUID schema are migrated on reopen.
+// before the UUID schema are migrated on reopen. Only admins may call it.
 func (a *API) RestoreDatabase(w http.ResponseWriter, r *http.Request) {
+	if !requireAdmin(w, r) {
+		return
+	}
 	if a.cfg.DatabasePath == "" {
 		writeJSON(w, http.StatusServiceUnavailable, openapi.ErrorResponse{Error: "database path is not configured"})
 		return
