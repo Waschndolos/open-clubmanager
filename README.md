@@ -48,6 +48,7 @@ Open ClubManager runs exclusively with the backend API and a database.
 
 * 🧑‍🤝‍🧑 Manage members, roles, groups, and sections
 * 📄 Track addresses, banking information, SEPA mandates
+* 🏦 Collect fees by SEPA direct debit: export pain.008.001.08 files for your bank
 * 🗓️ Record entry/exit dates, comments, and status
 * 🔒 Local-first: SQLite on every device, works offline
 * 🔄 Collaboration via encrypted sync over a shared folder, WebDAV or an optional server *(in progress)*

@@ -302,6 +302,12 @@
                 "email": "E-mail",
                 "actions": "Actions"
             }
+        },
+        "mandateReference": {
+            "label": "Référence du mandat",
+            "help": "Jusqu'à 35 caractères sans espaces, p. ex. NW-1001",
+            "taken": "Un autre membre a déjà cette référence de mandat",
+            "invalid": "Référence de mandat invalide : uniquement lettres, chiffres et + ? / - : ( ) . , ' sans espaces"
         }
     },
     "settings": {
@@ -424,7 +430,8 @@
         },
         "tabs": {
             "transactions": "Livre de caisse",
-            "memberfees": "Cotisations"
+            "memberfees": "Cotisations",
+            "directDebit": "Prélèvement"
         },
         "summary": {
             "balance": "Solde",
@@ -923,5 +930,93 @@
         "member": "Membre",
         "noRecords": "Aucune présence saisie sur cette période.",
         "offline": "enregistré hors ligne"
+    },
+    "sepa": {
+        "loadFailed": "Impossible de charger les données de prélèvement",
+        "inCollection": "En prélèvement",
+        "settings": {
+            "title": "Prélèvement SEPA",
+            "description": "Identifiant créancier et compte du club pour l'encaissement des cotisations par prélèvement SEPA Core. Visible uniquement par le trésorier.",
+            "name": "Nom du club (créancier)",
+            "creditorId": "Identifiant créancier (ICS)",
+            "creditorIdHelp": "Attribué par la banque nationale, p. ex. DE98ZZZ09999999999",
+            "iban": "IBAN du compte du club",
+            "ibanInvalid": "La clé de contrôle de l'IBAN est fausse",
+            "bic": "BIC (facultatif)",
+            "bicHelp": "Inutile pour les paiements nationaux",
+            "template": "Modèle de libellé",
+            "templateHelp": "Variables : {{placeholders}}",
+            "saved": "Paramètres SEPA enregistrés",
+            "saveFailed": "Impossible d'enregistrer les paramètres SEPA : {{reason}}"
+        },
+        "columns": {
+            "member": "Membre",
+            "fee": "Cotisation",
+            "amount": "Montant",
+            "mandate": "Référence du mandat",
+            "iban": "IBAN",
+            "sequence": "Séquence"
+        },
+        "sequence": {
+            "FRST": "Premier prélèvement : le mandat est utilisé pour la première fois",
+            "RCUR": "Prélèvement récurrent"
+        },
+        "issues": {
+            "MISSING_IBAN": "Pas d'IBAN",
+            "INVALID_IBAN": "IBAN invalide",
+            "INVALID_BIC": "BIC invalide",
+            "MISSING_MANDATE": "Pas de mandat (date manquante)",
+            "MISSING_MANDATE_REFERENCE": "Pas de référence de mandat",
+            "INVALID_MANDATE_REFERENCE": "Référence de mandat invalide",
+            "INVALID_AMOUNT": "Montant non positif"
+        },
+        "wizard": {
+            "title": "Créer un lot de prélèvements",
+            "steps": {
+                "fees": "Choisir les cotisations",
+                "details": "Échéance et libellé",
+                "summary": "Vérifier et exporter"
+            },
+            "noOpenFees": "Il n'y a aucune cotisation ouverte.",
+            "selectAll": "Tout sélectionner",
+            "excluded": "Non prélevables ({{count}})",
+            "excludedHint": "Ces cotisations ne sont pas exportées. Complétez les coordonnées bancaires et les mandats des membres.",
+            "collectionDate": "Date d'échéance",
+            "collectionDateHelp": "Le fichier doit parvenir à la banque au moins un jour ouvré avant.",
+            "collectionDateInvalid": "La date doit être dans le futur",
+            "preview": "Aperçu du libellé",
+            "summary": "{{count}} prélèvements pour {{total}}, échéance le {{date}}.",
+            "summarySequence": "{{first}} premiers prélèvements (FRST), {{recurring}} récurrents (RCUR)",
+            "creditor": "Créancier : {{name}}, ICS {{creditorId}}, compte {{iban}}",
+            "afterExport": "Après l'export, les cotisations sont marquées « en prélèvement ». Déposez le fichier (pain.008) dans votre banque en ligne et confirmez le lot une fois encaissé.",
+            "back": "Retour",
+            "next": "Suivant",
+            "create": "Créer et télécharger",
+            "created": "Lot de prélèvements créé",
+            "createFailed": "Impossible de créer le lot de prélèvements",
+            "feesChanged": "Certaines cotisations ne sont plus prélevables. Rouvrez l'assistant."
+        },
+        "runs": {
+            "create": "Créer un lot de prélèvements",
+            "empty": "Aucun lot de prélèvements",
+            "collectionDate": "Échéance",
+            "count": "Nombre",
+            "total": "Total",
+            "status": "Statut",
+            "paid": "Payé le {{date}}",
+            "inCollection": "En prélèvement",
+            "createdAt": "Créé",
+            "download": "Télécharger le fichier XML",
+            "confirm": "Confirmer comme payé",
+            "cancel": "Annuler le lot",
+            "actionFailed": "L'action a échoué",
+            "notConfigured": "Saisissez d'abord l'identifiant créancier et le compte du club dans les paramètres.",
+            "openSettings": "Ouvrir les paramètres",
+            "confirmTitle": "Confirmer l'encaissement",
+            "confirmText": "Toutes les cotisations de ce lot sont marquées payées à cette date. Saisissez ensuite les rejets sur la cotisation concernée.",
+            "paidDate": "Payé le",
+            "cancelTitle": "Annuler le lot de prélèvements ?",
+            "cancelText": "Les cotisations seront de nouveau ouvertes. Ne déposez plus le fichier à la banque ou révoquez l'ordre."
+        }
     }
 }

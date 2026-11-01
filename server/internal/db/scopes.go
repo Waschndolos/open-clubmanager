@@ -64,6 +64,10 @@ var SyncedTables = []Table{
 	{Name: "member_guardians", Scope: ScopeMembersContact, PK: idPK},
 
 	{Name: "member_bank_details", Scope: ScopeMembersBank, PK: []string{"member_id"}},
+	{Name: "member_sepa_mandates", Scope: ScopeMembersBank, PK: []string{"member_id"}},
+	{Name: "sepa_creditor", Scope: ScopeMembersBank, PK: idPK},
+	{Name: "sepa_runs", Scope: ScopeMembersBank, PK: idPK},
+	{Name: "sepa_run_items", Scope: ScopeMembersBank, PK: idPK},
 
 	{Name: "finance_transactions", Scope: ScopeFinance, PK: idPK},
 	{Name: "member_fees", Scope: ScopeFinance, PK: idPK},
@@ -114,4 +118,5 @@ var UniqueColumns = []UniqueColumn{
 	{Table: "groups", Column: "name"},
 	{Table: "sections", Column: "name"},
 	{Table: "qualification_types", Column: "name"},
+	{Table: "member_sepa_mandates", Column: "mandate_reference"},
 }

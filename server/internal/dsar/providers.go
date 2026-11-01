@@ -17,6 +17,7 @@ func init() {
 	Register(Provider{Key: "assignments", Title: "Roles, groups and sections", Scope: db.ScopeMembersCore, Collect: collectAssignments})
 	Register(Provider{Key: "household", Title: "Household", Scope: db.ScopeMembersCore, Collect: collectHousehold})
 	Register(Provider{Key: "guardians", Title: "Guardians", Scope: db.ScopeMembersContact, Collect: collectGuardians})
+	Register(Provider{Key: "directDebits", Title: "SEPA direct debits", Scope: db.ScopeMembersBank, Collect: collectDirectDebits})
 	Register(Provider{Key: "fees", Title: "Membership fees", Scope: db.ScopeFinance, Collect: collectFees})
 	Register(Provider{Key: "loans", Title: "Inventory loans", Scope: db.ScopeInventory, Collect: collectLoans})
 	Register(Provider{Key: "history", Title: "Change history", Scope: db.ScopeMembersCore, Collect: collectHistory})
@@ -73,13 +74,43 @@ func collectBank(ctx context.Context, st *store.Store, id string) ([]Record, err
 		return nil, err
 	}
 	b := m.Bank
+	ref, err := st.GetMandateReference(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 	return []Record{{
 		{"accountHolder", "Account holder", b.AccountHolder},
 		{"iban", "IBAN", b.IBAN},
 		{"bic", "BIC", b.BIC},
 		{"bankName", "Bank", b.BankName},
 		{"sepaMandateDate", "SEPA mandate date", date(b.SEPAMandateDate)},
+		{"sepaMandateReference", "SEPA mandate reference", ref},
 	}}, nil
+}
+
+func collectDirectDebits(ctx context.Context, st *store.Store, id string) ([]Record, error) {
+	runs, err := st.ListSEPARuns(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var out []Record
+	for _, run := range runs {
+		for _, it := range run.Items {
+			if it.Member.ID != id {
+				continue
+			}
+			out = append(out, Record{
+				{"collectionDate", "Collection date", date(&run.CollectionDate)},
+				{"amount", "Amount", db.FromCents(it.AmountCents)},
+				{"mandateReference", "Mandate reference", it.MandateRef},
+				{"sequenceType", "Sequence type", it.SequenceType},
+				{"debtorName", "Account holder", it.DebtorName},
+				{"iban", "IBAN", it.IBAN},
+				{"remittance", "Remittance information", it.Remittance},
+			})
+		}
+	}
+	return out, nil
 }
 
 func collectAssignments(ctx context.Context, st *store.Store, id string) ([]Record, error) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -39,6 +39,8 @@ import { FinanceTransaction, MemberFee, Member, canEditFinance } from '../../api
 import { useAuth } from '../../context/AuthContext';
 import { usePermission } from '../../context/CollaborationContext';
 import PageHeader from '../../components/common/PageHeader';
+import { fetchSepaRuns } from '../../api/sepa';
+import { SepaDirectDebitTab, useSepaAccess } from './SepaDirectDebit';
 
 const FINANCE_RESET_CONFIRM_TEXT = 'DELETE';
 
@@ -281,6 +283,9 @@ export function Finance() {
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
     const [resetConfirmInput, setResetConfirmInput] = useState('');
     const [resetSubmitting, setResetSubmitting] = useState(false);
+    const sepa = useSepaAccess();
+    // Fees in a direct debit run that has not been confirmed yet.
+    const [inCollection, setInCollection] = useState<Set<string>>(new Set());
 
     const [txDialog, setTxDialog] = useState<{ open: boolean; item: Partial<FinanceTransaction>; isNew: boolean }>({
         open: false,
@@ -302,6 +307,23 @@ export function Finance() {
             })
             .finally(() => setLoading(false));
     }, []);
+
+    const reloadCollection = useCallback(async () => {
+        if (!sepa.visible) return;
+        try {
+            const runs = await fetchSepaRuns();
+            setInCollection(new Set(runs.filter((r) => !r.paidDate).flatMap((r) => r.items.map((i) => i.feeId))));
+        } catch {
+            setInCollection(new Set());
+        }
+    }, [sepa.visible]);
+
+    useEffect(() => { void reloadCollection(); }, [reloadCollection]);
+
+    const handleSepaChanged = async () => {
+        setFees(await fetchMemberFees());
+        await reloadCollection();
+    };
 
     // ── Transaction handlers ──────────────────────────────────────────────────
 
@@ -476,6 +498,8 @@ export function Finance() {
             renderCell: (params) =>
                 params.value ? (
                     <Chip size="small" label={new Date(params.value as string).toLocaleDateString()} color="success" />
+                ) : inCollection.has((params.row as MemberFee).id) ? (
+                    <Chip size="small" label={t('sepa.inCollection')} color="info" />
                 ) : (
                     <Chip size="small" label={t('finance.memberfees.unpaid')} color="warning" />
                 ),
@@ -536,6 +560,7 @@ export function Finance() {
             <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
                 <Tab label={t('finance.tabs.transactions')} />
                 <Tab label={t('finance.tabs.memberfees')} />
+                {sepa.visible && <Tab label={t('finance.tabs.directDebit')} />}
             </Tabs>
 
             {tab === 0 && (
@@ -622,6 +647,8 @@ export function Finance() {
                     />
                 </Box>
             )}
+
+            {tab === 2 && sepa.visible && <SepaDirectDebitTab onFeesChanged={handleSepaChanged} />}
 
             {txDialog.open && (
                 <TransactionDialog

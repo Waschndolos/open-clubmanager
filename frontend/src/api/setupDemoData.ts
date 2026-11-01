@@ -7,6 +7,7 @@ import { createInventoryItem, createInventoryLoan } from './inventory';
 import { recordMaintenance, setItemStatus } from './maintenance';
 import { addDays, createEvent, localTimeZone, ymd } from './events';
 import { saveAttendance } from './attendance';
+import { saveSepaCreditor, saveSepaMandate } from './sepa';
 import { Member } from './types';
 
 export interface SetupDemoDataResult {
@@ -49,9 +50,19 @@ interface DemoMember {
     sections?: string[];
 }
 
-// Standard documentation IBAN, never a real account.
-const DEMO_IBAN = 'DE89370400440532013000';
-const DEMO_BIC = 'COBADEFFXXX';
+// Example IBANs from bank documentation with valid check digits, never
+// real accounts; the creditor ID is the Bundesbank's test identifier.
+const DEMO_IBANS = [
+    'DE89370400440532013000',
+    'DE02500105170137075030',
+    'DE02100500000054540402',
+    'DE75512108001245126199',
+    'DE12500105170648489890',
+    'DE88100900001234567892',
+];
+const DEMO_CLUB_IBAN = 'DE02120300000000202051';
+const DEMO_CREDITOR_ID = 'DE98ZZZ09999999999';
+let nextIban = 0;
 
 function date(value: string): Date {
     return new Date(`${value}T00:00:00.000Z`);
@@ -60,8 +71,7 @@ function date(value: string): Date {
 function sepa(accountHolder: string, mandateDate: string) {
     return {
         accountHolder,
-        iban: DEMO_IBAN,
-        bic: DEMO_BIC,
+        iban: DEMO_IBANS[nextIban++ % DEMO_IBANS.length],
         bankName: 'Demo Bank',
         sepaMandateDate: date(mandateDate),
     };
@@ -127,6 +137,7 @@ const MEMBERS: DemoMember[] = [
             number: 1007, firstName: 'Mats', lastName: 'Andresen', email: 'mats.andresen@example.org',
             birthday: date('1986-12-01'), entryDate: date('2015-07-01'),
             street: 'Dünenpfad 2', postalCode: '25980', city: 'Sylt', state: 'Schleswig-Holstein',
+            ...sepa('Mats Andresen', '2015-07-01'),
             comment: 'Fährt im Winter Snowkite-Ausfahrten nach Norwegen',
         },
         fee: 'adult', sections: ['Wave & Strapless', 'Snowkiten'],
@@ -172,6 +183,8 @@ const MEMBERS: DemoMember[] = [
             number: 1012, firstName: 'Tjark', lastName: 'Albers', email: 'tjark.albers@example.org',
             birthday: date('2008-06-28'), entryDate: date('2022-06-15'),
             street: 'Ostseeallee 30', postalCode: '23570', city: 'Lübeck-Travemünde', state: 'Schleswig-Holstein',
+            // Mandate date but no mandate reference yet: shown as not collectable.
+            ...sepa('Familie Albers', '2022-06-15'),
         },
         fee: 'youth', sections: ['Twintip & Freestyle', 'Foil'],
     },
@@ -275,6 +288,16 @@ export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
         ...[...sectionMembers].map(([name, ids]) => assignSectionMembers(sectionIds.get(name)!, ids)),
     ]);
 
+    // SEPA creditor and mandate references (NW-<number>), so the direct debit
+    // wizard can be tried with the open fees below.
+    await saveSepaCreditor({
+        name: 'Kiteclub Nordwind e.V.', creditorId: DEMO_CREDITOR_ID, iban: DEMO_CLUB_IBAN,
+        remittanceTemplate: '{description} Mitglied {number}',
+    });
+    for (const { id, demo } of createdMembers) {
+        if (demo.data.iban && demo.data.number !== 1012) await saveSepaMandate(id, `NW-${demo.data.number}`);
+    }
+
     for (const tx of TRANSACTIONS) {
         await createTransaction({
             date: new Date(`${currentYear}-${tx.month}T10:00:00.000Z`).toISOString(),
@@ -286,7 +309,7 @@ export async function seedSetupDemoData(): Promise<SetupDemoDataResult> {
     }
 
     // Annual fee for every active member; most have paid via SEPA, a few are still open.
-    const unpaid = new Set([1007, 1012, 1013]);
+    const unpaid = new Set([1007, 1012, 1013, 1015]);
     let memberFees = 0;
     for (const { id, demo } of createdMembers) {
         if (demo.data.exitDate) continue;
