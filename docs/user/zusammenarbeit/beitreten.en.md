@@ -35,6 +35,8 @@ You see a **6-digit safety code**. Tell it to the person who invited you, ideall
 
 You can close Open ClubManager in the meantime. As soon as you are approved, you see "Welcome! You're in" and your role.
 
+Wrong code or wrong folder? **Cancel joining** withdraws your request – on this screen or under *Collaboration*. You can try again right away.
+
 !!! info "Why a safety code?"
     The code makes sure that it really is **you** who used the invite, and not someone who intercepted the invite email.
 
@@ -42,7 +44,7 @@ You can close Open ClubManager in the meantime. As soon as you are approved, you
 
 | Message | What to do |
 |---|---|
-| "We don't know this invite code" | Check the code or ask for a new invite |
+| "We don't know this invite code" | Check the code or ask for a new invite. If the invite was created just now, wait until your sync app has updated the folder and try again |
 | "There is no club in this folder" | Check that you accepted the share and your sync app is running |
 | "The invite has expired / was already used" | Ask for a new invite |
-| "This device was not admitted to the club" | Contact the board |
+| "This device was not admitted to the club" | The board rejected the request. Contact them; "Try again" lets you join anew |

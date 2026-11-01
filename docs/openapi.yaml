@@ -1128,6 +1128,11 @@ components:
         locked:
           type: boolean
           description: Device keys exist but are locked until the user who set up collaboration logs in.
+        joinRejected:
+          type: boolean
+          description: |
+            Only in mode local: an admin rejected this device's join request, and
+            the device left the club. Reset by the next join attempt.
         clubName: { type: string }
         clubId: { type: string }
         storagePath: { type: string }
@@ -3299,6 +3304,25 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/SafetyCodeResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /collaboration/join/cancel:
+    post:
+      tags: [collaboration]
+      summary: Withdraw the pending join request of this device
+      description: |
+        Deletes this device's join request from the storage location and its local
+        club state, so it can join again (for example with a corrected invite code).
+        If the storage location is not reachable, only the local state is removed.
+        Fails with NOT_JOINING when no request is pending, including when the request
+        was approved in the meantime.
+      operationId: cancelCollaborationJoin
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Join request withdrawn; the device is no longer part of a club.
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '409': { $ref: '#/components/responses/Conflict' }

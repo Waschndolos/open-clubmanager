@@ -734,7 +734,17 @@
             "welcome": "Willkommen! Du bist jetzt dabei – deine Rolle: {{role}}.",
             "rejected": "Dieses Gerät wurde nicht in den Verein aufgenommen oder wieder entfernt. Bitte wende dich an den Vorstand.",
             "toApp": "Zur Übersicht",
-            "codeLong": "Der Code ist zu lang. Er hat 24 Zeichen – wurde er doppelt eingefügt?"
+            "codeLong": "Der Code ist zu lang. Er hat 24 Zeichen – wurde er doppelt eingefügt?",
+            "cancel": "Beitritt abbrechen",
+            "cancelHint": "Falscher Code oder falscher Ordner? Brich den Beitritt ab und versuch es noch einmal.",
+            "cancelled": "Die Beitrittsanfrage wurde zurückgezogen. Du kannst es jetzt mit einem anderen Code erneut versuchen.",
+            "notAdmitted": "Dieses Gerät wurde nicht in den Verein aufgenommen. Bitte wende dich an den Vorstand.",
+            "retry": "Erneut versuchen",
+            "errors": {
+                "INVITE_UNKNOWN": "Diesen Einladungscode kennen wir nicht. Prüfe ihn oder frag nach einer neuen Einladung. Wurde die Einladung gerade erst erstellt, warte, bis dein Sync-Programm den Ordner abgeglichen hat, und versuch es noch einmal.",
+                "INVITE_EXPIRED": "Die Einladung ist abgelaufen. Frag nach einer neuen Einladung.",
+                "INVITE_USED": "Die Einladung wurde schon verwendet. Frag nach einer neuen Einladung."
+            }
         },
         "recover": {
             "title": "Notfallschlüssel verwenden",
@@ -943,7 +953,8 @@
             "READ_ONLY_AREA": "Deine Rolle darf diese Daten nur ansehen.",
             "STORAGE_MISSING": "Der Speicherort ist nicht erreichbar. Läuft dein Sync-Programm, und ist der Ordner noch da?",
             "NETWORK": "Keine Verbindung zum Programm. Läuft Open ClubManager noch?",
-            "default": "Das hat nicht geklappt: {{message}}"
+            "default": "Das hat nicht geklappt: {{message}}",
+            "NOT_JOINING": "Es wartet keine Beitrittsanfrage mehr. Vielleicht wurdest du gerade aufgenommen."
         }
     },
     "auth": {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Box, Button, Checkbox, CircularProgress, FormControlLabel, Stack, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { FolderInfo, getLocalData, getSafetyCode, joinClub, syncNow } from '../../api/collaboration';
+import { cancelJoin, CollaborationError, FolderInfo, getLocalData, getSafetyCode, joinClub, syncNow } from '../../api/collaboration';
 import FolderPicker, { folderUsable, joinFolderClub } from '../../components/collaboration/FolderPicker';
 import { SafetyCodeDisplay, useErrorText, useRoleName } from '../../components/collaboration/common';
 import { useCollaboration } from '../../context/CollaborationContext';
@@ -16,9 +16,15 @@ export function normalizeInviteCode(code: string): string {
 
 /** UX F4: join a club with an invite code, then wait for approval. */
 export default function JoinClubWizard() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const errorText = useErrorText();
+    const genericErrorText = useErrorText();
+    // Join-specific wording for invite errors, which mean something else on
+    // the admin side.
+    const errorText = (e: unknown) => {
+        const key = e instanceof CollaborationError ? `collaboration.join.errors.${e.code}` : '';
+        return key && i18n.exists(key) ? t(key) : genericErrorText(e);
+    };
     const roleName = useRoleName();
     const { status, refresh } = useCollaboration();
 
@@ -33,7 +39,9 @@ export default function JoinClubWizard() {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
     const [safety, setSafety] = useState('');
-    const [result, setResult] = useState<'member' | 'revoked' | null>(null);
+    const [result, setResult] = useState<'member' | 'revoked' | 'notAdmitted' | null>(null);
+    const [cancelling, setCancelling] = useState(false);
+    const [notice, setNotice] = useState('');
     const [role, setRole] = useState('');
 
     const normalized = normalizeInviteCode(code);
@@ -69,6 +77,12 @@ export default function JoinClubWizard() {
                     refresh();
                 } else if (st.mode === 'revoked') {
                     setResult('revoked');
+                } else if (st.mode === 'local') {
+                    // Rejected by the board, or cancelled elsewhere.
+                    setSafety('');
+                    if (st.joinRejected) setResult('notAdmitted');
+                    else setStep(0);
+                    refresh();
                 }
             } catch {
                 // try again
@@ -100,12 +114,41 @@ export default function JoinClubWizard() {
         }
     };
 
+    const cancel = async () => {
+        setCancelling(true);
+        setError('');
+        try {
+            await cancelJoin();
+            // Update the shared status first, so the wizard does not jump
+            // back to the waiting screen.
+            await refresh();
+            setSafety('');
+            setStep(0);
+            setNotice(t('collaboration.join.cancelled'));
+        } catch (e) {
+            setError(errorText(e));
+            refresh();
+        } finally {
+            setCancelling(false);
+        }
+    };
+
+    const retry = () => {
+        setResult(null);
+        setSafety('');
+        setStep(0);
+    };
+
     const steps = ['code', 'storage', 'name', 'safety'].map((s) => t(`collaboration.join.steps.${s}`));
 
     return (
         <WizardFrame title={t('collaboration.join.title')} steps={steps} active={step}>
-            {step === 0 && (
+            {step === 0 && !result && (
                 <Stack spacing={2}>
+                    {notice && <Alert severity="info" onClose={() => setNotice('')}>{notice}</Alert>}
+                    {!notice && status?.mode === 'local' && status.joinRejected && (
+                        <Alert severity="error">{t('collaboration.join.notAdmitted')}</Alert>
+                    )}
                     <TextField
                         id="collab-invite-code"
                         label={t('collaboration.join.codeLabel')}
@@ -177,6 +220,13 @@ export default function JoinClubWizard() {
                     {safety && <SafetyCodeDisplay code={safety} />}
                     <Typography>{t('collaboration.join.safetyWait')}</Typography>
                     <Alert severity="info" icon={<CircularProgress size={18} />}>{t('collaboration.join.waiting')}</Alert>
+                    {error && <Alert severity="error">{error}</Alert>}
+                    <Typography variant="body2" color="text.secondary">{t('collaboration.join.cancelHint')}</Typography>
+                    <Box>
+                        <Button id="collab-cancel-join" variant="outlined" color="inherit" onClick={cancel} disabled={cancelling}>
+                            {cancelling ? <CircularProgress size={18} /> : t('collaboration.join.cancel')}
+                        </Button>
+                    </Box>
                 </Stack>
             )}
 
@@ -189,6 +239,15 @@ export default function JoinClubWizard() {
                 </Stack>
             )}
             {result === 'revoked' && <Alert severity="error">{t('collaboration.join.rejected')}</Alert>}
+            {result === 'notAdmitted' && (
+                <Stack spacing={2}>
+                    <Alert severity="error">{t('collaboration.join.notAdmitted')}</Alert>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Button onClick={() => navigate('/dashboard')}>{t('collaboration.join.toApp')}</Button>
+                        <Button variant="contained" onClick={retry}>{t('collaboration.join.retry')}</Button>
+                    </Box>
+                </Stack>
+            )}
         </WizardFrame>
     );
 }

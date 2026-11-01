@@ -373,6 +373,10 @@ func (c *Club) Refresh(ctx context.Context) (*RefreshResult, error) {
 }
 
 func (c *Club) refresh(ctx context.Context) (*RefreshResult, error) {
+	if c.status == "" {
+		// This device left the club (cancelled or rejected join).
+		return nil, ErrNoClub
+	}
 	if err := c.checkRemoteGenesis(ctx); err != nil {
 		return nil, err
 	}
@@ -422,6 +426,18 @@ func (c *Club) refresh(ctx context.Context) (*RefreshResult, error) {
 		}
 	}
 	res.Head = head
+	if status == StatusJoining && c.status == StatusJoining {
+		rejected, err := c.rejected(ctx, head)
+		if err != nil {
+			return nil, err
+		}
+		if rejected {
+			if err := c.leave(ctx); err != nil {
+				return nil, err
+			}
+			return nil, ErrJoinRejected
+		}
+	}
 
 	tx, err := c.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -454,6 +470,11 @@ func (c *Club) refresh(ctx context.Context) (*RefreshResult, error) {
 	if head != nil {
 		if err := c.syncKeys(ctx, head, res); err != nil {
 			return nil, err
+		}
+		if head.IsAdmin(c.dev.ID) {
+			if err := c.syncInviteMarkers(ctx); err != nil {
+				return nil, err
+			}
 		}
 	}
 	return res, nil

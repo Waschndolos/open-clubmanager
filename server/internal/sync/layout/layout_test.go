@@ -6,7 +6,10 @@ import (
 	"github.com/Waschndolos/open-clubmanager/server/internal/db"
 )
 
-const dev = "abcdefghijklmnopqrstuvwxyz"
+const (
+	dev   = "abcdefghijklmnopqrstuvwxyz"
+	hex64 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+)
 
 func TestParse(t *testing.T) {
 	valid := map[string]Entry{
@@ -18,6 +21,9 @@ func TestParse(t *testing.T) {
 		"keys/finance/12/root.age":                             {Kind: KindKey, Scope: db.ScopeFinance, Epoch: 12, Recipient: "root"},
 		"requests/" + dev + ".json":                            {Kind: KindRequest, DeviceID: dev},
 		"requests/" + dev + ".json.sig":                        {Kind: KindRequestSig, DeviceID: dev},
+		"requests/" + dev + ".rejected.json":                   {Kind: KindRejection, DeviceID: dev},
+		"requests/" + dev + ".rejected.json.sig":               {Kind: KindRejectionSig, DeviceID: dev},
+		"invites/" + hex64 + ".json":                           {Kind: KindInvite, Marker: hex64},
 		"segments/" + dev + "/inventory/000000000001.seg":      {Kind: KindSegment, DeviceID: dev, Scope: db.ScopeInventory, Seq: 1},
 		"snapshots/admin/1/0000019a1b2c-0003-" + dev + ".snap": {Kind: KindSnapshot, Scope: db.ScopeAdmin, Epoch: 1, HLC: "0000019a1b2c-0003", DeviceID: dev},
 	}
@@ -57,6 +63,10 @@ func TestParse(t *testing.T) {
 		"keys/finance/1/abc.age",
 		"requests/" + dev[:25] + ".json",
 		"requests/" + dev + "1.json",
+		"requests/" + dev + ".rejected (1).json",
+		"invites/" + hex64[:63] + ".json",
+		"invites/" + hex64 + ".json.sig",
+		"invites/0123456789ABCDEF0123456789abcdef0123456789abcdef0123456789abcdef.json",
 		"segments/" + dev + "/inventory/000000000000.seg",
 		"segments/" + dev + "/inventory/1.seg",
 		"segments/" + dev + "/photos/000000000001.seg",
