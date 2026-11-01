@@ -178,8 +178,9 @@ func toAPIMember(m store.Member) openapi.Member {
 		Groups:          toAPINamedList(m.Groups),
 		Sections:        toAPINamedList(m.Sections),
 	}
-	if m.Contact.Email != nil {
-		out.Email = openapi_types.Email(*m.Contact.Email)
+	if m.Contact.Email != nil && *m.Contact.Email != "" {
+		email := openapi_types.Email(*m.Contact.Email)
+		out.Email = &email
 	}
 	return out
 }

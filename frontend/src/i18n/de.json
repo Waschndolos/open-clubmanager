@@ -221,6 +221,12 @@
     },
     "members": {
         "automatedDeletionNotice": "wurde automatisch gelöscht.",
+        "saveErrors": {
+            "duplicate": "Mitgliedsnummer oder E-Mail-Adresse ist bereits vergeben.",
+            "generic": "Mitglied konnte nicht gespeichert werden: {{message}}",
+            "invalidNumber": "Bitte eine gültige Mitgliedsnummer (ab 1) eingeben.",
+            "required": "Bitte alle Pflichtfelder (*) ausfüllen."
+        },
         "dialogs": {
             "export": {
                 "title": "Mitgliederliste exportieren",

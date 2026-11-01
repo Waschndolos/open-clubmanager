@@ -80,7 +80,7 @@ func TestMembersEndpoints(t *testing.T) {
 	if code := doJSON(t, h, http.MethodGet, "/api/v2/members?search=grace", nil, &list); code != http.StatusOK {
 		t.Fatalf("list: %d", code)
 	}
-	if list.Total != 1 || len(list.Items) != 1 || list.Items[0].Id != created.Id || string(list.Items[0].Email) != "grace@example.org" {
+	if list.Total != 1 || len(list.Items) != 1 || list.Items[0].Id != created.Id || list.Items[0].Email == nil || string(*list.Items[0].Email) != "grace@example.org" {
 		t.Errorf("list = %+v", list)
 	}
 
@@ -94,6 +94,29 @@ func TestMembersEndpoints(t *testing.T) {
 	}
 	if code := doJSON(t, h, http.MethodGet, "/api/v2/members/"+created.Id, nil, nil); code != http.StatusNotFound {
 		t.Errorf("get after delete: %d, want 404", code)
+	}
+}
+
+// A member without e-mail used to make the whole list fail to encode, which
+// came back as 200 with an empty body (#186).
+func TestMemberWithoutEmailIsListed(t *testing.T) {
+	h := newTestRouter(t)
+	var created openapi.Member
+	if code := doJSON(t, h, http.MethodPost, "/api/v2/members", map[string]any{
+		"number": 7, "firstName": "No", "lastName": "Mail",
+	}, &created); code != http.StatusCreated {
+		t.Fatalf("create member: %d", code)
+	}
+	if created.Email != nil {
+		t.Errorf("email = %q, want none", *created.Email)
+	}
+
+	var list openapi.MembersListResponse
+	if code := doJSON(t, h, http.MethodGet, "/api/v2/members", nil, &list); code != http.StatusOK || len(list.Items) != 1 {
+		t.Fatalf("list: %d %+v", code, list)
+	}
+	if code := doJSON(t, h, http.MethodGet, "/api/v2/members/"+created.Id, nil, nil); code != http.StatusOK {
+		t.Errorf("get: %d", code)
 	}
 }
 

@@ -335,9 +335,7 @@ export default function MemberTable({members, onMemberUpdated, onMembersDeleted,
                     member={editingMember!}
                     onOpenMember={openMember}
                     onClose={() => setEditingMember(null)}
-                    onSave={(update: Member) => {
-                        handleSaveEdit(update);
-                    }}
+                    onSave={handleSaveEdit}
                 />
             )}
             {deletingMembers && (

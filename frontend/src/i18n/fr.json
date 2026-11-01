@@ -221,6 +221,12 @@
     },
     "members": {
         "automatedDeletionNotice": "a été supprimé automatiquement.",
+        "saveErrors": {
+            "duplicate": "Le numéro de membre ou l’adresse e-mail est déjà utilisé.",
+            "generic": "Le membre n’a pas pu être enregistré : {{message}}",
+            "invalidNumber": "Veuillez saisir un numéro de membre valide (à partir de 1).",
+            "required": "Veuillez remplir tous les champs obligatoires (*)."
+        },
         "dialogs": {
             "export": {
                 "title": "Exporter la liste des membres",
