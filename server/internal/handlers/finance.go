@@ -19,7 +19,7 @@ import (
 
 func (a *API) ListFinanceTransactions(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok {
+	if !ok || !a.financeAccess(w, r, false) {
 		return
 	}
 	list, err := st.ListTransactions(r.Context())
@@ -123,7 +123,7 @@ func (a *API) DeleteFinanceTransaction(w http.ResponseWriter, r *http.Request, i
 
 func (a *API) ListMemberFees(w http.ResponseWriter, r *http.Request) {
 	st, ok := a.requireStore(w)
-	if !ok {
+	if !ok || !a.financeAccess(w, r, false) {
 		return
 	}
 	list, err := st.ListFees(r.Context())

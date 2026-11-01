@@ -38,6 +38,7 @@ func TestSEPADirectDebit(t *testing.T) {
 	router.Get("/api/v2/sepa/creditor", wrap(api.GetSEPACreditor))
 	router.Put("/api/v2/sepa/creditor", wrap(api.SetSEPACreditor))
 	router.Get("/api/v2/sepa/candidates", wrap(api.ListSEPACandidates))
+	router.Get("/api/v2/finance/memberfees", wrap(api.ListMemberFees))
 	router.Get("/api/v2/sepa/runs", wrap(api.ListSEPARuns))
 	router.Post("/api/v2/sepa/runs", wrap(api.CreateSEPARun))
 	router.Get("/api/v2/sepa/runs/{id}/xml", wrap(api.DownloadSEPARun))
@@ -192,7 +193,7 @@ func TestSEPADirectDebit(t *testing.T) {
 		t.Errorf("cancel confirmed run: %d", rec.Code)
 	}
 	var fee openapi.MemberFee
-	for _, f := range listFees(t, router) {
+	for _, f := range listFees(t, router, secret) {
 		if f.Id == fees[0] {
 			fee = f
 		}
@@ -216,9 +217,9 @@ func TestSEPADirectDebit(t *testing.T) {
 	}
 }
 
-func listFees(t *testing.T, h http.Handler) []openapi.MemberFee {
+func listFees(t *testing.T, h http.Handler, secret string) []openapi.MemberFee {
 	var list []openapi.MemberFee
-	if code := doJSON(t, h, http.MethodGet, "/api/v2/finance/memberfees", nil, &list); code != http.StatusOK {
+	if code := doJSONAs(t, h, secret, openapi.TREASURER, "/api/v2/finance/memberfees", &list); code != http.StatusOK {
 		t.Fatalf("list fees: %d", code)
 	}
 	return list
